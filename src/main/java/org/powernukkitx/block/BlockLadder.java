@@ -1,5 +1,7 @@
 package org.powernukkitx.block;
 
+import org.powernukkitx.block.definition.BlockDefinition;
+
 import org.powernukkitx.Player;
 import org.powernukkitx.block.property.CommonBlockProperties;
 import org.powernukkitx.item.Item;
@@ -15,6 +17,17 @@ import org.jetbrains.annotations.NotNull;
  */
 public class BlockLadder extends BlockTransparent implements Faceable {
     public static final BlockProperties PROPERTIES = new BlockProperties(LADDER, CommonBlockProperties.FACING_DIRECTION);
+    public static final BlockDefinition DEFINITION = TRANSPARENT.toBuilder()
+            .hardness(0.4)
+            .resistance(2)
+            .toolType(ItemTool.TYPE_AXE)
+            .breaksWhenMoved(true)
+            .sticksToPiston(false)
+            .canBeClimbed(true)
+            .isSolid(false)
+            .hasEntityCollision(true)
+            .waterloggingLevel(1)
+            .build();
 
     @Override
     @NotNull
@@ -27,7 +40,7 @@ public class BlockLadder extends BlockTransparent implements Faceable {
     }
 
     public BlockLadder(BlockState blockstate) {
-        super(blockstate);
+        super(blockstate, DEFINITION);
     }
 
     @Override
@@ -36,40 +49,11 @@ public class BlockLadder extends BlockTransparent implements Faceable {
     }
 
     @Override
-    public boolean hasEntityCollision() {
-        return true;
-    }
-
-    @Override
-    public boolean canBeClimbed() {
-        return true;
-    }
-
-    @Override
-    public boolean isSolid() {
-        return false;
-    }
-
-    @Override
     public boolean isSolid(BlockFace side) {
         return false;
     }
 
-    @Override
-    public int getWaterloggingLevel() {
-        return 1;
-    }
-
-    @Override
-    public double getHardness() {
-        return 0.4;
-    }
-
-    @Override
-    public double getResistance() {
-        return 2;
-    }
-
+    
     private double offMinX;
     private double offMinZ;
     private double offMaxX;
@@ -183,11 +167,7 @@ public class BlockLadder extends BlockTransparent implements Faceable {
         return 0;
     }
 
-    @Override
-    public int getToolType() {
-        return ItemTool.TYPE_AXE;
-    }
-
+    
     @Override
     public Item[] getDrops(Item item) {
         return new Item[]{
@@ -206,13 +186,5 @@ public class BlockLadder extends BlockTransparent implements Faceable {
         calculateOffsets();
     }
 
-    @Override
-    public boolean breaksWhenMoved() {
-        return true;
+    
     }
-
-    @Override
-    public boolean sticksToPiston() {
-        return false;
-    }
-}

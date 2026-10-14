@@ -9,6 +9,7 @@ import org.powernukkitx.item.customitem.data.RenderOffsets;
 import org.powernukkitx.item.utils.DiggerEntry;
 import org.powernukkitx.item.utils.ItemArmorType;
 import org.powernukkitx.item.utils.ItemEnchantSlot;
+import org.powernukkitx.item.definition.ItemDefinition;
 import org.powernukkitx.item.utils.RepairEntry;
 import org.powernukkitx.item.utils.ShooterAmmo;
 import org.powernukkitx.nbt.tag.CompoundTag;
@@ -32,6 +33,10 @@ import org.jetbrains.annotations.NotNull;
 import com.google.common.base.Preconditions;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.ToString;
+import lombok.experimental.Accessors;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -45,10 +50,44 @@ import lombok.extern.slf4j.Slf4j;
  * specialized logic not covered by the builder.
  */
 @Slf4j
-public record CustomItemDefinition(String identifier, CompoundTag nbt) implements BlockID {
+@Getter
+@Accessors(fluent = true)
+@EqualsAndHashCode(callSuper = false)
+@ToString
+public class CustomItemDefinition extends ItemDefinition implements BlockID {
     private static final Object2IntOpenHashMap<String> INTERNAL_ALLOCATION_ID_MAP = new Object2IntOpenHashMap<>();
     private static final AtomicInteger nextRuntimeId = new AtomicInteger(10000);
     public record BlockPlacerData(String blockId, List<String> useOn) {}
+
+    protected final String identifier;
+    protected final CompoundTag nbt;
+
+    /**
+     * Creates a definition whose inherited {@link ItemDefinition} values are read from the components on top of
+     * {@link Item#DEFAULT_DEFINITION}. Class level values of the item (tool, armor, food...) are not applied, prefer
+     * {@link #simpleBuilder(Item)} or {@link #CustomItemDefinition(String, CompoundTag, ItemDefinition)}.
+     *
+     * @param identifier the custom item identifier
+     * @param nbt        the client component NBT
+     */
+    public CustomItemDefinition(String identifier, CompoundTag nbt) {
+        this(identifier, nbt, Item.DEFAULT_DEFINITION);
+    }
+
+    /**
+     * Creates a definition whose inherited {@link ItemDefinition} values are read from the components once, on top
+     * of {@code base}. Values without a matching component keep the value from {@code base}. Changing {@code nbt}
+     * afterwards does not update them.
+     *
+     * @param identifier the custom item identifier
+     * @param nbt        the client component NBT
+     * @param base       the definition the components are applied on, usually the item class definition
+     */
+    public CustomItemDefinition(String identifier, CompoundTag nbt, @NotNull ItemDefinition base) {
+        super(applyComponents(base.toBuilder(), nbt.getCompound("components")));
+        this.identifier = identifier;
+        this.nbt = nbt;
+    }
 
     /**
      * Definition builder for custom items (deprecated signature).
@@ -975,7 +1014,7 @@ public record CustomItemDefinition(String identifier, CompoundTag nbt) implement
         public CustomItemDefinition customBuild(Consumer<CompoundTag> nbtConsumer) {
             var def = this.build();
             nbtConsumer.accept(def.nbt);
-            return def;
+            return new CustomItemDefinition(def.identifier, def.nbt, this.item.definition());
         }
 
         public CustomItemDefinition build() {
@@ -995,17 +1034,14 @@ public record CustomItemDefinition(String identifier, CompoundTag nbt) implement
             writeBaseItemProps(itemProps);
             writeUseAnimationAndModifiers(itemProps, components);
             writeCooldown(components);
-
-            CustomItemDefinition result = new CustomItemDefinition(identifier, nbt);
-            allocateRuntimeId(result.identifier());
-
             writeDurability(components);
             writeDamage(itemProps, components);
             writeFood(components, itemProps);
             writeWearable(components);
             applyAutoToolTag(itemProps);
 
-            return result;
+            allocateRuntimeId(identifier);
+            return new CustomItemDefinition(identifier, nbt, this.item.definition());
         }
 
         // Write Build Definition Helpers
@@ -1775,51 +1811,38 @@ public record CustomItemDefinition(String identifier, CompoundTag nbt) implement
         return comps != null ? comps.getCompound("item_properties") : null;
     }
 
-    public boolean isEdible() {
-        return hasComponent("minecraft:food");
-    }
-
     public boolean isWearable() {
         return getWearableType() != ItemArmorType.NONE;
     }
 
     public @NotNull ItemArmorType getWearableType() {
-        CompoundTag wearable = getComponent("minecraft:wearable");
-        if (wearable == null) return ItemArmorType.NONE;
-
-        String slot = wearable.getString("slot");
-        return ItemArmorType.get(slot);
+        return wearableType(getComponents());
     }
-    public boolean isHelmet()     { return getWearableType() == ItemArmorType.HEAD; }
-    public boolean isChestplate() { return getWearableType() == ItemArmorType.CHEST; }
-    public boolean isLeggings()   { return getWearableType() == ItemArmorType.LEGS; }
-    public boolean isBoots()      { return getWearableType() == ItemArmorType.FEET; }
+
+    private static @NotNull ItemArmorType wearableType(CompoundTag components) {
+        if (!components.contains("minecraft:wearable")) return ItemArmorType.NONE;
+        return ItemArmorType.get(components.getCompound("minecraft:wearable").getString("slot"));
+    }
 
     public @Nullable ItemEnchantSlot getEnchantSlot() {
-        CompoundTag itemProps = getComponent("item_properties");
-        if (itemProps == null) return null;
+        return enchantSlot(getComponents());
+    }
 
-        String slot = itemProps.getString("enchantable_slot");
+    private static @Nullable ItemEnchantSlot enchantSlot(CompoundTag components) {
+        if (!components.contains("item_properties")) return null;
+
+        String slot = components.getCompound("item_properties").getString("enchantable_slot");
         if (slot == null || slot.isBlank()) return null;
 
         return ItemEnchantSlot.fromId(slot);
     }
-    public boolean isSword()     { return getEnchantSlot() == ItemEnchantSlot.SWORD; }
-    public boolean isMace()      { return getEnchantSlot() == ItemEnchantSlot.MACE; }
-    public boolean isShield()    { return getEnchantSlot() == ItemEnchantSlot.SHIELD; }
-    public boolean isPickaxe()   { return getEnchantSlot() == ItemEnchantSlot.PICKAXE; }
-    public boolean isShovel()    { return getEnchantSlot() == ItemEnchantSlot.SHOVEL; }
-    public boolean isAxe()       { return getEnchantSlot() == ItemEnchantSlot.AXE; }
-    public boolean isHoe()       { return getEnchantSlot() == ItemEnchantSlot.HOE; }
-    public boolean isShears()    { return getEnchantSlot() == ItemEnchantSlot.SHEARS; }
-    public boolean isBow()       { return getEnchantSlot() == ItemEnchantSlot.BOW; }
-    public boolean isCrossbow()  { return getEnchantSlot() == ItemEnchantSlot.CROSSBOW; }
-    public boolean isTrident()   { return getEnchantSlot() == ItemEnchantSlot.TRIDENT; }
-    public boolean isSpear()   { return getEnchantSlot() == ItemEnchantSlot.SPEAR; }
 
     public int wearableProtection() {
-        CompoundTag wearable = getComponent("minecraft:wearable");
-        return wearable != null ? wearable.getInt("protection") : 0;
+        return wearableProtection(getComponents());
+    }
+
+    private static int wearableProtection(CompoundTag components) {
+        return components.contains("minecraft:wearable") ? components.getCompound("minecraft:wearable").getInt("protection") : 0;
     }
 
     public boolean hidesPlayerLocation() {
@@ -1832,24 +1855,110 @@ public record CustomItemDefinition(String identifier, CompoundTag nbt) implement
     }
 
     public int maxDurability() {
-        return hasComponent("minecraft:durability") ?
-                getComponent("minecraft:durability").getInt("max_durability")
+        return maxDurability(getComponents());
+    }
+
+    private static int maxDurability(CompoundTag components) {
+        return components.contains("minecraft:durability") ?
+                components.getCompound("minecraft:durability").getInt("max_durability")
                 : -1;
     }
 
     public int damageChanceMin() {
-        return hasComponent("minecraft:durability")
-                ? getComponent("minecraft:durability").getCompound("damage_chance").getInt("min")
-                : 100;
+        return damageChance(getComponents(), "min");
     }
 
     public int damageChanceMax() {
-        return hasComponent("minecraft:durability")
-                ? getComponent("minecraft:durability").getCompound("damage_chance").getInt("max")
+        return damageChance(getComponents(), "max");
+    }
+
+    private static int damageChance(CompoundTag components, String bound) {
+        return components.contains("minecraft:durability")
+                ? components.getCompound("minecraft:durability").getCompound("damage_chance").getInt(bound)
                 : 100;
     }
 
     public CompoundTag getNbt() {
         return this.nbt;
+    }
+
+    private static ItemDefinition.ItemDefinitionBuilder<?, ?> applyComponents(ItemDefinition.ItemDefinitionBuilder<?, ?> b, CompoundTag components) {
+        ItemArmorType wearable = wearableType(components);
+        ItemEnchantSlot slot = enchantSlot(components);
+        boolean sword = slot == ItemEnchantSlot.SWORD;
+        boolean axe = slot == ItemEnchantSlot.AXE;
+        boolean pickaxe = slot == ItemEnchantSlot.PICKAXE;
+        boolean shovel = slot == ItemEnchantSlot.SHOVEL;
+        boolean hoe = slot == ItemEnchantSlot.HOE;
+        boolean shears = slot == ItemEnchantSlot.SHEARS;
+
+        // only touch fields whose component is present, otherwise the subclass definition
+        // (ItemCustomTool, ItemCustomFood...) would lose its defaults
+        if (components.contains("minecraft:durability")) {
+            b.canTakeDamage(true)
+                    .maxDurability(maxDurability(components))
+                    .damageChanceMin(damageChance(components, "min"))
+                    .damageChanceMax(damageChance(components, "max"));
+        }
+
+        if (components.contains("minecraft:wearable")) {
+            b.helmet(wearable == ItemArmorType.HEAD)
+                    .chestplate(wearable == ItemArmorType.CHEST)
+                    .leggings(wearable == ItemArmorType.LEGS)
+                    .boots(wearable == ItemArmorType.FEET)
+                    .armorPoints(wearableProtection(components));
+        }
+
+        if (slot != null) {
+            b.sword(sword)
+                    .spear(slot == ItemEnchantSlot.SPEAR)
+                    .axe(axe)
+                    .pickaxe(pickaxe)
+                    .shovel(shovel)
+                    .hoe(hoe)
+                    .shears(shears)
+                    .shield(slot == ItemEnchantSlot.SHIELD)
+                    .bow(slot == ItemEnchantSlot.BOW)
+                    .crossbow(slot == ItemEnchantSlot.CROSSBOW)
+                    .trident(slot == ItemEnchantSlot.TRIDENT)
+                    .mace(slot == ItemEnchantSlot.MACE);
+            // a bow or shield slot says nothing about the tool flag, keep whatever the base had
+            if (pickaxe || axe || shovel || hoe || sword || shears) {
+                b.tool(true);
+            }
+        }
+
+        if (components.contains("minecraft:max_stack_size")) {
+            b.maxStackSize(components.getCompound("minecraft:max_stack_size").getByte("value") & 0xFF);
+        }
+
+        if (components.contains("minecraft:use_modifiers")) {
+            CompoundTag useModifiers = components.getCompound("minecraft:use_modifiers");
+            b.useDuration(useModifiers.getFloat("use_duration"));
+            b.movementModifier(useModifiers.getFloat("movement_modifier"));
+        }
+
+        if (components.contains("minecraft:food")) {
+            CompoundTag food = components.getCompound("minecraft:food");
+            int nutrition = food.getInt("nutrition");
+            b.edible(true);
+            b.nutrition(nutrition);
+            b.saturation(nutrition * food.getFloat("saturation_modifier") * 2f);
+            b.requiresHunger(!food.getBoolean("can_always_eat"));
+        }
+
+        CompoundTag properties = components.getCompound("item_properties");
+        CompoundTag damage = components.getCompound("minecraft:damage");
+        if (damage.contains("value")) {
+            b.attackDamage(damage.getByte("value") & 0xFF);
+        } else if (properties.contains("damage")) {
+            b.attackDamage(properties.getInt("damage"));
+        }
+
+        if (properties.contains("should_despawn")) {
+            b.shouldDespawn(properties.getBoolean("should_despawn"));
+        }
+
+        return b;
     }
 }

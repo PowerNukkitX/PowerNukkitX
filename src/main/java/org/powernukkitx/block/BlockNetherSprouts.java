@@ -1,10 +1,16 @@
 package org.powernukkitx.block;
 
+import org.powernukkitx.block.definition.BlockDefinition;
+
 import org.powernukkitx.item.Item;
 import org.jetbrains.annotations.NotNull;
 
 public class BlockNetherSprouts extends BlockHanging {
     public static final BlockProperties PROPERTIES = new BlockProperties(NETHER_SPROUTS);
+    public static final BlockDefinition DEFINITION = BlockHanging.DEFINITION.toBuilder()
+            .burnChance(5)
+            .canBeReplaced(true)
+            .build();
 
     @Override
     @NotNull public BlockProperties getProperties() {
@@ -16,7 +22,7 @@ public class BlockNetherSprouts extends BlockHanging {
     }
 
     public BlockNetherSprouts(BlockState blockstate) {
-        super(blockstate);
+        super(blockstate, DEFINITION);
     }
 
     @Override
@@ -32,18 +38,10 @@ public class BlockNetherSprouts extends BlockHanging {
         return Item.EMPTY_ARRAY;
     }
 
-    @Override
-    public boolean canBeReplaced() {
-        return true;
-    }
-
+    
     @Override
     public int getSnowloggingLevel() {
         return 1;
     }
 
-    @Override
-    public int getBurnChance() {
-        return 5;
     }
-}

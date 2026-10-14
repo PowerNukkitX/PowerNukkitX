@@ -1,6 +1,15 @@
 package org.powernukkitx.item;
 
+import org.powernukkitx.item.definition.ItemDefinition;
+
 public class ItemGoldenLeggings extends ItemArmor {
+    public static final ItemDefinition DEFINITION = ARMOR.toBuilder()
+            .armorPoints(3)
+            .leggings(true)
+            .maxDurability(106)
+            .tier(Item.WEARABLE_TIER_GOLD)
+            .build();
+
     public ItemGoldenLeggings() {
         this(0, 1);
     }
@@ -10,26 +19,6 @@ public class ItemGoldenLeggings extends ItemArmor {
     }
 
     public ItemGoldenLeggings(Integer meta, int count) {
-        super(GOLDEN_LEGGINGS, meta, count, "Golden Leggings");
-    }
-
-    @Override
-    public int getTier() {
-        return Item.WEARABLE_TIER_GOLD;
-    }
-
-    @Override
-    public boolean isLeggings() {
-        return true;
-    }
-
-    @Override
-    public int getArmorPoints() {
-        return 3;
-    }
-
-    @Override
-    public int getMaxDurability() {
-        return 106;
+        super(GOLDEN_LEGGINGS, meta, count, "Golden Leggings", DEFINITION);
     }
 }

@@ -1,11 +1,18 @@
 package org.powernukkitx.block;
 
+import org.powernukkitx.block.definition.BlockDefinition;
+
 import org.powernukkitx.item.Item;
 import org.powernukkitx.item.ItemTool;
 import org.jetbrains.annotations.NotNull;
 
 public class BlockInfestedChiseledStoneBricks extends BlockSolid {
     public static final BlockProperties PROPERTIES = new BlockProperties(INFESTED_CHISELED_STONE_BRICKS);
+    public static final BlockDefinition DEFINITION = SOLID.toBuilder()
+            .hardness(0.75)
+            .resistance(0.75)
+            .toolType(ItemTool.TYPE_PICKAXE)
+            .build();
 
     @Override
     @NotNull
@@ -18,27 +25,12 @@ public class BlockInfestedChiseledStoneBricks extends BlockSolid {
     }
 
     public BlockInfestedChiseledStoneBricks(BlockState blockState) {
-        super(blockState);
+        super(blockState, DEFINITION);
     }
 
     @Override
     public String getName() {
         return "Infested Chiseled Stone Bricks";
-    }
-
-    @Override
-    public double getHardness() {
-        return 0.75;
-    }
-
-    @Override
-    public double getResistance() {
-        return 0.75;
-    }
-
-    @Override
-    public int getToolType() {
-        return ItemTool.TYPE_PICKAXE;
     }
 
     @Override

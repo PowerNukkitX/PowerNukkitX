@@ -1,5 +1,7 @@
 package org.powernukkitx.block.copper.chain;
 
+import org.powernukkitx.block.definition.BlockDefinition;
+
 import org.powernukkitx.Player;
 import org.powernukkitx.block.*;
 import org.powernukkitx.block.property.CommonBlockProperties;
@@ -17,28 +19,20 @@ import javax.annotation.Nullable;
  * @since 1.21.110
  */
 public abstract class AbstractBlockCopperChain extends BlockTransparent implements Oxidizable, Waxable {
+    public static final BlockDefinition DEFINITION = TRANSPARENT.toBuilder()
+            .hardness(5)
+            .resistance(6)
+            .toolType(ItemTool.TYPE_PICKAXE)
+            .toolTier(ItemTool.TIER_WOODEN)
+            .canBeActivated(true)
+            .canHarvestWithHand(false)
+            .build();
     public AbstractBlockCopperChain(BlockState blockState) {
-        super(blockState);
+        super(blockState, DEFINITION);
     }
 
-    @Override
-    public double getHardness() {
-        return 5;
-    }
-
-    @Override
-    public double getResistance() {
-        return 6;
-    }
-
-    @Override
-    public int getToolType() {
-        return ItemTool.TYPE_PICKAXE;
-    }
-
-    @Override
-    public int getToolTier() {
-        return ItemTool.TIER_WOODEN;
+    public AbstractBlockCopperChain(BlockState blockState, BlockDefinition definition) {
+        super(blockState, definition);
     }
 
     @Override
@@ -50,16 +44,6 @@ public abstract class AbstractBlockCopperChain extends BlockTransparent implemen
     @Override
     public int onUpdate(int type) {
         return Oxidizable.super.onUpdate(type);
-    }
-
-    @Override
-    public boolean canBeActivated() {
-        return true;
-    }
-
-    @Override
-    public boolean canHarvestWithHand() {
-        return false;
     }
 
     @Override

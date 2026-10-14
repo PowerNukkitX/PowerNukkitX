@@ -175,27 +175,27 @@ public record ChunkSection(byte y, BlockPalette[] blockLayer, Palette<Integer> b
     }
 
     public void setBlockState(int x, int y, int z, BlockState blockState, int layer) {
-        blockChanges.addAndGet(1);
         int blockIndex = index(x, y, z);
         blockLayer[layer].set(blockIndex, blockState);
         refreshCombinedLightProperties(blockIndex);
+        blockChanges.addAndGet(1);
     }
 
     void setBlockState(int x, int y, int z, BlockState blockState, int layer, BlockState previousState) {
+        if (previousState != blockState) {
+            int blockIndex = index(x, y, z);
+            blockLayer[layer].set(blockIndex, blockState, previousState);
+            refreshCombinedLightProperties(blockIndex);
+        }
         blockChanges.addAndGet(1);
-        if (previousState == blockState) return;
-
-        int blockIndex = index(x, y, z);
-        blockLayer[layer].set(blockIndex, blockState, previousState);
-        refreshCombinedLightProperties(blockIndex);
     }
 
     public BlockState getAndSetBlockState(int x, int y, int z, BlockState blockstate, int layer) {
-        blockChanges.addAndGet(1);
         int blockIndex = index(x, y, z);
         BlockState result = blockLayer[layer].get(blockIndex);
         blockLayer[layer].set(blockIndex, blockstate, result);
         refreshCombinedLightProperties(blockIndex);
+        blockChanges.addAndGet(1);
 
         return result;
     }
@@ -214,6 +214,8 @@ public record ChunkSection(byte y, BlockPalette[] blockLayer, Palette<Integer> b
 
     public void setBiomeId(int x, int y, int z, int biomeId) {
         biomes.set(index(x, y, z), boxBiomeId(biomeId));
+        // not a block, but the cached chunk payload validates against this counter and carries biomes
+        blockChanges.addAndGet(1);
     }
 
     public int getBiomeId(int x, int y, int z) {

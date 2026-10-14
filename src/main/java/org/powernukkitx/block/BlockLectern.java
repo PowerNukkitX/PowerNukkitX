@@ -1,5 +1,7 @@
 package org.powernukkitx.block;
 
+import org.powernukkitx.block.definition.BlockDefinition;
+
 import org.powernukkitx.Player;
 import org.powernukkitx.block.property.CommonBlockProperties;
 import org.powernukkitx.block.property.CommonPropertyMap;
@@ -25,6 +27,15 @@ import java.util.Objects;
 
 public class BlockLectern extends BlockTransparent implements RedstoneComponent, Faceable, BlockEntityHolder<BlockEntityLectern> {
     public static final BlockProperties PROPERTIES = new BlockProperties(LECTERN, CommonBlockProperties.MINECRAFT_CARDINAL_DIRECTION, CommonBlockProperties.POWERED_BIT);
+    public static final BlockDefinition DEFINITION = TRANSPARENT.toBuilder()
+            .hardness(2.5)
+            .resistance(12.5)
+            .toolType(ItemTool.TYPE_AXE)
+            .canBeActivated(true)
+            .hasComparatorInputOverride(true)
+            .isPowerSource(true)
+            .waterloggingLevel(1)
+            .build();
 
     @Override
     @NotNull
@@ -37,7 +48,7 @@ public class BlockLectern extends BlockTransparent implements RedstoneComponent,
     }
 
     public BlockLectern(BlockState blockstate) {
-        super(blockstate);
+        super(blockstate, DEFINITION);
     }
 
     @Override
@@ -57,41 +68,13 @@ public class BlockLectern extends BlockTransparent implements RedstoneComponent,
         return BlockEntity.LECTERN;
     }
 
-    @Override
-    public int getWaterloggingLevel() {
-        return 1;
-    }
-
-    @Override
-    public boolean canBeActivated() {
-        return true;
-    }
-
-    @Override
-    public double getHardness() {
-        return 2.5;
-    }
-
-    @Override
-    public double getResistance() {
-        return 12.5;
-    }
-
-    @Override
-    public int getToolType() {
-        return ItemTool.TYPE_AXE;
-    }
-
+    
     @Override
     public double getMaxY() {
         return y + 0.89999;
     }
 
-    @Override
-    public boolean hasComparatorInputOverride() {
-        return true;
-    }
-
+    
     @Override
     public int getComparatorInputOverride() {
         int power = 0;
@@ -147,11 +130,7 @@ public class BlockLectern extends BlockTransparent implements RedstoneComponent,
         return true;
     }
 
-    @Override
-    public boolean isPowerSource() {
-        return true;
-    }
-
+    
     public boolean isActivated() {
         return getPropertyValue(CommonBlockProperties.POWERED_BIT);
     }

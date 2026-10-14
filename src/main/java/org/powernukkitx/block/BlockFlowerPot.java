@@ -1,5 +1,7 @@
 package org.powernukkitx.block;
 
+import org.powernukkitx.block.definition.BlockDefinition;
+
 import org.powernukkitx.Player;
 import org.powernukkitx.block.property.CommonBlockProperties;
 import org.powernukkitx.blockentity.BlockEntity;
@@ -19,13 +21,19 @@ import javax.annotation.Nullable;
  */
 public class BlockFlowerPot extends BlockFlowable implements BlockEntityHolder<BlockEntityFlowerPot> {
     public static final BlockProperties PROPERTIES = new BlockProperties(FLOWER_POT, CommonBlockProperties.UPDATE_BIT);
+    public static final BlockDefinition DEFINITION = FLOWABLE.toBuilder()
+            .canPassThrough(false)
+            .canBePulled(false)
+            .canBeActivated(true)
+            .waterloggingLevel(1)
+            .build();
 
     public BlockFlowerPot() {
-        super(PROPERTIES.getDefaultState());
+        this(PROPERTIES.getDefaultState());
     }
 
     public BlockFlowerPot(BlockState blockstate) {
-        super(blockstate);
+        super(blockstate, DEFINITION);
     }
 
     @Override
@@ -34,11 +42,7 @@ public class BlockFlowerPot extends BlockFlowable implements BlockEntityHolder<B
         return PROPERTIES;
     }
 
-    @Override
-    public int getWaterloggingLevel() {
-        return 1;
-    }
-
+    
     @Override
     public String getName() {
         return "Flower Pot";
@@ -134,11 +138,7 @@ public class BlockFlowerPot extends BlockFlowable implements BlockEntityHolder<B
         return blockEntity.getNbt().containsCompound("PlantBlock");
     }
 
-    @Override
-    public boolean canBeActivated() {
-        return true;
-    }
-
+    
     @Override
     public boolean onActivate(@NotNull Item item, @Nullable Player player, BlockFace blockFace, float fx, float fy, float fz) {
         if (getPropertyValue(CommonBlockProperties.UPDATE_BIT)) {
@@ -217,16 +217,7 @@ public class BlockFlowerPot extends BlockFlowable implements BlockEntityHolder<B
         return this.z + 0.6875;
     }
 
-    @Override
-    public boolean canBePulled() {
-        return false;
-    }
-
-    @Override
-    public boolean canPassThrough() {
-        return false;
-    }
-
+    
     /**
      * Blocks implementing this interface can be placed in flower pots.
      */

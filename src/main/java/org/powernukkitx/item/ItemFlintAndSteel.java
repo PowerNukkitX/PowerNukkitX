@@ -5,6 +5,7 @@ import org.powernukkitx.block.Block;
 import org.powernukkitx.block.BlockFire;
 import org.powernukkitx.block.BlockID;
 import org.powernukkitx.event.block.BlockIgniteEvent;
+import org.powernukkitx.item.definition.ItemDefinition;
 import org.powernukkitx.level.Level;
 import org.powernukkitx.level.Sound;
 import org.powernukkitx.level.vibration.VibrationEvent;
@@ -14,6 +15,10 @@ import org.powernukkitx.math.BlockFace;
 import java.util.concurrent.ThreadLocalRandom;
 
 public class ItemFlintAndSteel extends ItemTool {
+    public static final ItemDefinition DEFINITION = TOOL.toBuilder()
+            .canBeActivated(true)
+            .maxDurability(ItemTool.DURABILITY_FLINT_STEEL)
+            .build();
 
     public ItemFlintAndSteel() {
         this(0, 1);
@@ -24,12 +29,7 @@ public class ItemFlintAndSteel extends ItemTool {
     }
 
     public ItemFlintAndSteel(Integer meta, int count) {
-        super(FLINT_AND_STEEL, meta, count, "Flint and Steel");
-    }
-
-    @Override
-    public boolean canBeActivated() {
-        return true;
+        super(FLINT_AND_STEEL, meta, count, "Flint and Steel", DEFINITION);
     }
 
     @Override
@@ -83,11 +83,6 @@ public class ItemFlintAndSteel extends ItemTool {
             }
         }
         block.getLevel().addSound(block, Sound.FIRE_IGNITE);
-    }
-
-    @Override
-    public int getMaxDurability() {
-        return ItemTool.DURABILITY_FLINT_STEEL;
     }
 
     @Override

@@ -2,6 +2,7 @@ package org.powernukkitx.item.customitem;
 
 import org.powernukkitx.item.Item;
 import org.powernukkitx.item.ItemTool;
+import org.powernukkitx.item.definition.ItemDefinition;
 import org.powernukkitx.nbt.tag.CompoundTag;
 import org.powernukkitx.registry.Registries;
 import org.jetbrains.annotations.NotNull;
@@ -14,13 +15,12 @@ import org.jetbrains.annotations.NotNull;
  */
 @Deprecated
 public abstract class ItemCustomTool extends ItemTool implements CustomItem {
-    public ItemCustomTool(@NotNull String id) {
-        super(id);
-    }
+    public static final ItemDefinition DEFINITION = TOOL.toBuilder()
+            .maxDurability(DURABILITY_WOODEN)
+            .build();
 
-    @Override
-    public int getMaxDurability() {
-        return DURABILITY_WOODEN;
+    public ItemCustomTool(@NotNull String id) {
+        super(id, DEFINITION);
     }
 
     /**

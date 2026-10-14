@@ -68,6 +68,7 @@ import org.powernukkitx.level.DimensionEnum;
 import org.powernukkitx.level.GameRule;
 import org.powernukkitx.level.Level;
 import org.powernukkitx.level.Position;
+import org.powernukkitx.level.format.Chunk;
 import org.powernukkitx.level.format.IChunk;
 import org.powernukkitx.level.format.LevelConfig;
 import org.powernukkitx.level.format.LevelProvider;
@@ -400,6 +401,7 @@ public class Server {
             }
         }
         this.settings.save();
+        Chunk.setNetworkPayloadBudgetMb(this.settings.chunkSettings().payloadCacheMemoryMb());
         while (updateConfiguration()) {
             /* repeat until all configuration updates are applied */
         }
@@ -636,13 +638,29 @@ public class Server {
                 );
             }
 
+            String configuredDPGroupUUID = settings.miscSettings().defaultDynamicPropertiesGroupUUID();
+            configuredDPGroupUUID = configuredDPGroupUUID == null ? "" : configuredDPGroupUUID.trim();
+            if (!configuredDPGroupUUID.isEmpty()) {
+                try {
+                    configuredDPGroupUUID = UUID.fromString(configuredDPGroupUUID).toString();
+                } catch (IllegalArgumentException e) {
+                    throw new IllegalStateException("Invalid misc-settings.defaultDynamicPropertiesGroupUUID", e);
+                }
+            }
+
             byte[] dynamicPropertiesUUID = serverDataDB.get(ServerDBStorageFormat.SERVER_DATA_DYNAMIC_PROPERTIES_UUID_KEY);
-            if (dynamicPropertiesUUID == null) {
-                DP_DEFAULT_GROUP_UUID = UUID.randomUUID().toString();
-                serverDataDB.put(ServerDBStorageFormat.SERVER_DATA_DYNAMIC_PROPERTIES_UUID_KEY, DP_DEFAULT_GROUP_UUID.getBytes(StandardCharsets.UTF_8)
-                );
-            } else {
-                DP_DEFAULT_GROUP_UUID = UUID.fromString(new String(dynamicPropertiesUUID, StandardCharsets.UTF_8)).toString();
+            String persistedDPGroupUUID = dynamicPropertiesUUID == null ? null
+                : UUID.fromString(new String(dynamicPropertiesUUID, StandardCharsets.UTF_8)).toString();
+
+            initializeDefaultDynamicPropertiesGroupUUID(configuredDPGroupUUID, persistedDPGroupUUID);
+
+            if (!DP_DEFAULT_GROUP_UUID.equals(persistedDPGroupUUID)) {
+                if (persistedDPGroupUUID != null) {
+                    log.warn("Overriding persisted Dynamic Properties UUID '{}' with configured UUID '{}'",
+                        persistedDPGroupUUID, DP_DEFAULT_GROUP_UUID);
+                }
+                serverDataDB.put(ServerDBStorageFormat.SERVER_DATA_DYNAMIC_PROPERTIES_UUID_KEY,
+                    DP_DEFAULT_GROUP_UUID.getBytes(StandardCharsets.UTF_8));
             }
 
             dynamicProperties = new DynamicProperties(this::readServerDynamicProperties, this::writeServerDynamicProperties);
@@ -3621,20 +3639,9 @@ public class Server {
         return DP_DEFAULT_GROUP_UUID;
     }
 
-    /**
-     * Overrides the global Dynamic Properties namespace UUID and persists it.
-     */
-    public static void setDefaultDynamicPropertiesGroupUUID(String uuid) {
-        try {
-            String normalized = UUID.fromString(uuid).toString();
-            if (!normalized.equalsIgnoreCase(uuid)) throw new IllegalArgumentException();
-            DP_DEFAULT_GROUP_UUID = normalized;
-            if (instance != null && instance.serverDataDB != null) {
-                instance.serverDataDB.put(ServerDBStorageFormat.SERVER_DATA_DYNAMIC_PROPERTIES_UUID_KEY, normalized.getBytes(StandardCharsets.UTF_8));
-            }
-        } catch (IllegalArgumentException | NullPointerException e) {
-            log.warn("DynamicProperties global UUID rejected: '{}'", uuid);
-        }
+    private static void initializeDefaultDynamicPropertiesGroupUUID(String configuredUUID, String persistedUUID) {
+        DP_DEFAULT_GROUP_UUID = !configuredUUID.isEmpty() ? configuredUUID
+            : persistedUUID != null ? persistedUUID : UUID.randomUUID().toString();
     }
 
     public static int getDynamicPropertiesMaxStringBytes() {

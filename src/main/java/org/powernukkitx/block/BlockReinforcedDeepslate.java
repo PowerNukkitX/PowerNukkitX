@@ -1,10 +1,17 @@
 package org.powernukkitx.block;
 
+import org.powernukkitx.block.definition.BlockDefinition;
+
 
 import org.jetbrains.annotations.NotNull;
 
 public class BlockReinforcedDeepslate extends BlockSolid {
     public static final BlockProperties PROPERTIES = new BlockProperties(REINFORCED_DEEPSLATE);
+    public static final BlockDefinition DEFINITION = SOLID.toBuilder()
+            .resistance(1200.0)
+            .canBePushed(false)
+            .canBePulled(false)
+            .build();
 
     @Override
     @NotNull public BlockProperties getProperties() {
@@ -16,7 +23,7 @@ public class BlockReinforcedDeepslate extends BlockSolid {
     }
 
     public BlockReinforcedDeepslate(BlockState blockstate) {
-        super(blockstate);
+        super(blockstate, DEFINITION);
     }
 
     @Override
@@ -24,18 +31,4 @@ public class BlockReinforcedDeepslate extends BlockSolid {
         return "ReinForced DeepSlate";
     }
 
-    @Override
-    public double getResistance() {
-        return 1200.0;
     }
-
-    @Override
-    public boolean canBePushed() {
-        return false;
-    }
-
-    @Override
-    public boolean canBePulled() {
-        return false;
-    }
-}

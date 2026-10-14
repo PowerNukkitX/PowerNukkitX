@@ -1,5 +1,7 @@
 package org.powernukkitx.block;
 
+import org.powernukkitx.block.definition.BlockDefinition;
+
 import org.powernukkitx.Player;
 import org.powernukkitx.block.property.CommonBlockProperties;
 import org.powernukkitx.block.property.CommonPropertyMap;
@@ -14,6 +16,10 @@ import static org.powernukkitx.block.property.CommonBlockProperties.REPEATER_DEL
 public abstract class BlockRedstoneRepeater extends BlockRedstoneDiode {
     public BlockRedstoneRepeater(BlockState blockState) {
         super(blockState);
+    }
+
+    public BlockRedstoneRepeater(BlockState blockState, BlockDefinition definition) {
+        super(blockState, definition);
     }
 
     @Override
