@@ -30,7 +30,7 @@ import static org.powernukkitx.math.VectorMath.calculateFace;
 
 
 @Slf4j
-public abstract class BlockWallBase extends BlockTransparent implements BlockConnectable {
+public abstract class BlockWallBase extends BlockTransparent implements BlockConnectable, StateDeriving {
     public static final BlockDefinition DEFINITION = TRANSPARENT.toBuilder()
             .hardness(2)
             .resistance(30)
@@ -109,6 +109,7 @@ public abstract class BlockWallBase extends BlockTransparent implements BlockCon
         return false;
     }
 
+    @Override
     public boolean autoConfigureState() {
         final short previousMeta = blockstate.specialValue();
 
