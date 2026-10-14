@@ -75,15 +75,15 @@ public class NearestTargetEntitySensor<T extends Entity> implements ISensor {
 
             //Find the nearest entity within range
             Entity nearest = null;
-            double nearestDistanceSquared = Double.MAX_VALUE;
+            double nearestSquared = Double.MAX_VALUE;
             for (int chunkX = minChunkX; chunkX <= maxChunkX; ++chunkX) {
                 for (int chunkZ = minChunkZ; chunkZ <= maxChunkZ; ++chunkZ) {
                     for (Entity p : level.getChunkEntities(chunkX, chunkZ, false).values()) {
                         double distanceSquared = entity.distanceSquared(p);
                         if (distanceSquared <= maxRangeSquared && distanceSquared >= minRangeSquared
-                                && distanceSquared < nearestDistanceSquared && !p.equals(entity)) {
+                                && distanceSquared < nearestSquared && !p.equals(entity)) {
                             nearest = p;
-                            nearestDistanceSquared = distanceSquared;
+                            nearestSquared = distanceSquared;
                         }
                     }
                 }
@@ -97,8 +97,8 @@ public class NearestTargetEntitySensor<T extends Entity> implements ISensor {
         if (allTargetFunction != null) {
             int len = memories.size();
             Entity[] nearest = new Entity[len];
-            double[] nearestDistanceSquared = new double[len];
-            Arrays.fill(nearestDistanceSquared, Double.MAX_VALUE);
+            double[] nearestSquared = new double[len];
+            Arrays.fill(nearestSquared, Double.MAX_VALUE);
 
             for (int chunkX = minChunkX; chunkX <= maxChunkX; ++chunkX) {
                 for (int chunkZ = minChunkZ; chunkZ <= maxChunkZ; ++chunkZ) {
@@ -106,12 +106,12 @@ public class NearestTargetEntitySensor<T extends Entity> implements ISensor {
                         double distanceSquared = entity.distanceSquared(p);
                         if (distanceSquared <= maxRangeSquared && distanceSquared >= minRangeSquared && !p.equals(entity)) {
                             for (int i = 0; i < len; ++i) {
-                                if (distanceSquared >= nearestDistanceSquared[i]) continue;
+                                if (distanceSquared >= nearestSquared[i]) continue;
                                 @SuppressWarnings("unchecked")
                                 T castedP = (T) p;
                                 if (allTargetFunction[i].apply(castedP)) {
                                     nearest[i] = p;
-                                    nearestDistanceSquared[i] = distanceSquared;
+                                    nearestSquared[i] = distanceSquared;
                                 }
                             }
                         }

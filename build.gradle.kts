@@ -101,6 +101,11 @@ tasks.withType<JavaCompile>().configureEach {
     options.isWarnings = false
 }
 
+// The test sources also need the JMH generator, which only lives in testAnnotationProcessor
+tasks.named<JavaCompile>("compileTestJava") {
+    options.annotationProcessorPath = configurations.getByName("testAnnotationProcessor")
+}
+
 java {
     withSourcesJar()
     withJavadocJar()
@@ -221,6 +226,22 @@ tasks.withType<Test>().configureEach {
     onlyIf { !project.hasProperty("skipTests") }
 }
 
+tasks.register<JavaExec>("jmh") {
+    group = LifecycleBasePlugin.VERIFICATION_GROUP
+    description = "Run a JMH benchmark, e.g. ./gradlew jmh -Pbenchmark=MobAIBenchmark"
+    dependsOn(tasks.testClasses)
+    classpath = sourceSets["test"].runtimeClasspath
+    mainClass = "org.openjdk.jmh.Main"
+    jvmArgs(
+        "--add-opens", "java.base/java.lang=ALL-UNNAMED",
+        "--add-opens", "java.base/java.io=ALL-UNNAMED",
+        "-Xmx2g"
+    )
+    //accepts the benchmark pattern plus any JMH option, e.g. -Pbenchmark="-wi 5 -i 5 MobAIBenchmark"
+    val arguments = providers.gradleProperty("benchmark").getOrElse(".*").split(" ").filter { it.isNotBlank() }
+    argumentProviders.add(CommandLineArgumentProvider { arguments })
+}
+
 tasks.register<DefaultTask>("testFast") {
     group = LifecycleBasePlugin.VERIFICATION_GROUP
     description = "Run the unit test suite without documentation or packaging tasks"
@@ -231,19 +252,6 @@ tasks.register<DefaultTask>("checkFast") {
     group = LifecycleBasePlugin.VERIFICATION_GROUP
     description = "Compile main/test sources and run fast unit checks"
     dependsOn(tasks.compileJava, tasks.compileTestJava, tasks.test)
-}
-
-tasks.register<JavaExec>("jmh") {
-    group = LifecycleBasePlugin.VERIFICATION_GROUP
-    description = "Run the JMH benchmarks in src/test/java/jmh. Filter with -Pjmh.include=<regex>."
-    dependsOn(tasks.compileTestJava)
-    classpath = sourceSets["test"].runtimeClasspath
-    mainClass.set("org.openjdk.jmh.Main")
-    val include = providers.gradleProperty("jmh.include").orElse(".*")
-    val extra = providers.gradleProperty("jmh.args").orElse("")
-    argumentProviders.add(CommandLineArgumentProvider {
-        listOf(include.get()) + extra.get().split(" ").filter { it.isNotBlank() }
-    })
 }
 
 tasks.named<JacocoReport>("jacocoTestReport") {

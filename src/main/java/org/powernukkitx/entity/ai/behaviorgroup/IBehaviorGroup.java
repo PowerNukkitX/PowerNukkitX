@@ -20,6 +20,9 @@ public interface IBehaviorGroup {
 
     /**
      * Call the evaluator {@link org.powernukkitx.entity.ai.evaluator.IBehaviorEvaluator} of all behavior {@link IBehavior} inside the behavior group
+     * <p>
+     * Not re-entrant: calling this again on the same group from an {@code onStart} or {@code onInterrupt}
+     * of one of its behaviors clears the shared evaluation scratch list mid-loop and silently skips behaviors.
      *
      * @param entity the target entity object
      */

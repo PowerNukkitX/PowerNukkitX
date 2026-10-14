@@ -3,13 +3,27 @@ package org.powernukkitx.entity.ai.sensor;
 import org.powernukkitx.block.Block;
 import org.powernukkitx.entity.EntityIntelligent;
 import org.powernukkitx.entity.ai.memory.MemoryType;
+import org.powernukkitx.level.Level;
 import org.powernukkitx.level.entity.condition.Condition;
 import org.powernukkitx.level.entity.condition.ConditionTrue;
+import lombok.AccessLevel;
 import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Comparator;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.IntStream;
+
 @Getter
 public class BlockSensor implements ISensor {
+
+    //each offset component is stored in 10 bits, biased so that negative offsets stay positive
+    private static final int OFFSET_BIAS = 512;
+    //the table grows with the cube of the radius, so keep it well below what the packing could hold
+    private static final int MAX_SEARCH_RADIUS = 64;
+
+    private static final Map<Long, int[]> SEARCH_OFFSETS = new ConcurrentHashMap<>();
 
     protected int range;
     protected int lookY;
@@ -21,6 +35,8 @@ public class BlockSensor implements ISensor {
     @NotNull
     protected MemoryType<Block> memory;
     protected Condition condition;
+    @Getter(AccessLevel.NONE)
+    private final int[] searchOffsets;
 
     public BlockSensor(Class<? extends Block> blockClass, MemoryType<Block> memory, int range, int lookY) {
         this(blockClass, memory, range, lookY, 1);
@@ -30,36 +46,31 @@ public class BlockSensor implements ISensor {
         this(blockClass, memory, range, lookY, period, new ConditionTrue());
     }
     public BlockSensor(@NotNull Class<? extends Block> blockClass, @NotNull MemoryType<Block> memory, int range, int lookY, int period, Condition condition) {
+        if (range < 0 || range > MAX_SEARCH_RADIUS || lookY < 0 || lookY > MAX_SEARCH_RADIUS) {
+            throw new IllegalArgumentException("range and lookY of a block sensor must be between 0 and " + MAX_SEARCH_RADIUS);
+        }
         this.blockClass = blockClass;
         this.memory = memory;
         this.range = range;
         this.lookY = lookY;
         this.period = period;
         this.condition = condition;
+        this.searchOffsets = SEARCH_OFFSETS.computeIfAbsent(((long) range << 32) | (lookY & 0xffffffffL), shape -> buildSearchOffsets(range, lookY));
     }
 
     @Override
     public void sense(EntityIntelligent entity) {
-        //the offsets are the only thing the distance depends on, so it stays an integer comparison
-        int distanceSquared = Integer.MAX_VALUE;
         Block block = null;
+        Level level = entity.getLevel();
         int baseX = entity.getFloorX();
         int baseY = entity.getFloorY();
         int baseZ = entity.getFloorZ();
-        for(int x = -range; x<=range; x++) {
-            for(int z = -range; z<=range; z++) {
-                for(int y = -lookY; y<=lookY; y++) {
-                    int lookDistSquared = x * x + y * y + z * z;
-                    if(lookDistSquared < distanceSquared) {
-                        Block lookBlock = entity.level.getBlock(baseX + x, baseY + y, baseZ + z);
-                        if(blockClass.isAssignableFrom(lookBlock.getClass())) {
-                            if(condition.evaluate(lookBlock)) {
-                                block = lookBlock;
-                                distanceSquared = lookDistSquared;
-                            }
-                        }
-                    }
-                }
+        //the offsets are ordered by distance, so the first match is the nearest one and ends the scan
+        for(int offset : searchOffsets) {
+            Block lookBlock = level.getBlock(baseX + unpackX(offset), baseY + unpackY(offset), baseZ + unpackZ(offset));
+            if(blockClass.isAssignableFrom(lookBlock.getClass()) && condition.evaluate(lookBlock)) {
+                block = lookBlock;
+                break;
             }
         }
         if(block == null) {
@@ -72,5 +83,50 @@ public class BlockSensor implements ISensor {
     @Override
     public int getPeriod() {
         return period;
+    }
+
+    /**
+     * Builds the offsets of the search volume, ordered from the closest to the farthest one. They only depend on the
+     * shape of the volume, so sensors sharing a shape - every mob of a kind does - share one table.
+     */
+    private static int[] buildSearchOffsets(int range, int lookY) {
+        int[] offsets = new int[(2 * range + 1) * (2 * range + 1) * (2 * lookY + 1)];
+        int index = 0;
+        for (int x = -range; x <= range; x++) {
+            for (int z = -range; z <= range; z++) {
+                for (int y = -lookY; y <= lookY; y++) {
+                    offsets[index++] = pack(x, y, z);
+                }
+            }
+        }
+        //a stable sort keeps the original iteration order between offsets that are equally far away
+        return IntStream.of(offsets)
+                .boxed()
+                .sorted(Comparator.comparingInt(BlockSensor::squaredLength))
+                .mapToInt(Integer::intValue)
+                .toArray();
+    }
+
+    private static int squaredLength(int offset) {
+        int x = unpackX(offset);
+        int y = unpackY(offset);
+        int z = unpackZ(offset);
+        return x * x + y * y + z * z;
+    }
+
+    private static int pack(int x, int y, int z) {
+        return ((x + OFFSET_BIAS) << 20) | ((y + OFFSET_BIAS) << 10) | (z + OFFSET_BIAS);
+    }
+
+    private static int unpackX(int offset) {
+        return (offset >>> 20) - OFFSET_BIAS;
+    }
+
+    private static int unpackY(int offset) {
+        return ((offset >>> 10) & 0x3ff) - OFFSET_BIAS;
+    }
+
+    private static int unpackZ(int offset) {
+        return (offset & 0x3ff) - OFFSET_BIAS;
     }
 }

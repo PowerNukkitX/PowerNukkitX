@@ -10,4 +10,9 @@ public class ItemTotemOfUndying extends Item {
     public ItemTotemOfUndying() {
         super(TOTEM_OF_UNDYING, DEFINITION);
     }
+
+    @Override
+    public String[] getAliases() {
+        return new String[]{"minecraft:totem"};
+    }
 }

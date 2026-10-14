@@ -11,4 +11,9 @@ public class ItemCookedCod extends ItemCod {
     public ItemCookedCod() {
         super(COOKED_COD, 0, 1, DEFINITION);
     }
+
+    @Override
+    public String[] getAliases() {
+        return new String[]{"minecraft:cooked_fish"};
+    }
 }

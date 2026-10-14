@@ -11,4 +11,9 @@ public class ItemTropicalFish extends ItemFish {
     public ItemTropicalFish() {
         super(TROPICAL_FISH, 0, 1, DEFINITION);
     }
+
+    @Override
+    public String[] getAliases() {
+        return new String[]{"minecraft:clownfish"};
+    }
 }

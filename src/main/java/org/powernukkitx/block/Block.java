@@ -34,6 +34,7 @@ import org.powernukkitx.registry.BlockRegistry;
 import org.powernukkitx.registry.Registries;
 import org.powernukkitx.tags.BlockTags;
 import org.powernukkitx.utils.BlockColor;
+import io.netty.util.internal.EmptyArrays;
 import org.powernukkitx.block.definition.BlockDefinition;
 import org.powernukkitx.nbt.tag.Tag;
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
@@ -554,6 +555,13 @@ public abstract class Block extends Position implements Metadatable, AxisAligned
         }
         color.applyTint(level.getBiomeId(getFloorX(), getFloorY(), getFloorZ()));
         return color;
+    }
+
+/**
+     * @return the alias identifiers for this block, or an empty array if it has none
+     */
+    public String[] getAliases() {
+        return EmptyArrays.EMPTY_STRINGS;
     }
 
     public String getName() {
