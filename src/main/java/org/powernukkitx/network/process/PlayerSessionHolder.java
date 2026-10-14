@@ -1,5 +1,7 @@
 package org.powernukkitx.network.process;
 
+import io.netty.channel.Channel;
+import io.netty.util.ReferenceCountUtil;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import lombok.AccessLevel;
 import lombok.Data;
@@ -8,6 +10,7 @@ import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.cloudburstmc.math.vector.Vector2f;
 import org.cloudburstmc.nbt.NbtMap;
+import org.cloudburstmc.protocol.bedrock.codec.BedrockCodecHelper;
 import org.cloudburstmc.protocol.bedrock.BedrockServerSession;
 import org.cloudburstmc.protocol.bedrock.data.*;
 import org.cloudburstmc.protocol.bedrock.data.camera.CameraAimAssistPresetPacketOperation;
@@ -19,13 +22,13 @@ import org.cloudburstmc.protocol.bedrock.data.payload.common.DimensionType;
 import org.cloudburstmc.protocol.bedrock.data.payload.connection.DisconnectPacketMessages;
 import org.cloudburstmc.protocol.bedrock.data.payload.editor.ServerEditorConnectionPolicy;
 import org.cloudburstmc.protocol.bedrock.data.payload.experiment.Experiments;
-import org.cloudburstmc.protocol.bedrock.data.payload.list.PlayerListAddEntry;
 import org.cloudburstmc.protocol.bedrock.data.payload.pack.PackIdVersion;
 import org.cloudburstmc.protocol.bedrock.data.payload.pack.PackInfoData;
 import org.cloudburstmc.protocol.bedrock.packet.*;
 import org.cloudburstmc.protocol.common.DefinitionRegistry;
 import org.cloudburstmc.protocol.common.SimpleDefinitionRegistry;
 import org.cloudburstmc.protocol.common.util.OptionalBoolean;
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
 import org.powernukkitx.Player;
 import org.powernukkitx.PlayerHandle;
@@ -34,8 +37,15 @@ import org.powernukkitx.block.customblock.CustomBlockDefinition;
 import org.powernukkitx.config.category.network.RateLimitSettings;
 import org.powernukkitx.entity.data.property.EntityProperty;
 import org.powernukkitx.event.player.PlayerCreationEvent;
+import org.powernukkitx.event.server.PacketSendEvent;
+import org.powernukkitx.level.Level;
+import org.powernukkitx.math.NukkitMath;
+import org.powernukkitx.math.Vector3;
+import org.powernukkitx.network.HoldableServerSession;
+import org.powernukkitx.network.NetworkConstants;
 import org.powernukkitx.nbt.tag.CompoundTag;
 import org.powernukkitx.network.process.pack.InternalPackManager;
+import org.powernukkitx.plugin.InternalPlugin;
 import org.powernukkitx.registry.ItemRegistry;
 import org.powernukkitx.registry.ItemRuntimeIdRegistry;
 import org.powernukkitx.registry.Registries;
@@ -43,17 +53,26 @@ import org.powernukkitx.registry.VoxelShapeRegistry;
 import org.powernukkitx.utils.DefaultCameraAimAssistPresets;
 import org.powernukkitx.utils.DefaultCameraPresets;
 import org.powernukkitx.utils.RuntimeBlockDefinitionRegistry;
-import org.powernukkitx.utils.SkinConverter;
 
 import java.lang.reflect.Constructor;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
+import java.util.Queue;
 import java.util.Set;
 import java.util.UUID;
+import java.util.WeakHashMap;
+import java.util.function.LongSupplier;
+import java.util.function.Supplier;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * @author Kaooot
@@ -63,9 +82,10 @@ import java.util.concurrent.TimeUnit;
 public class PlayerSessionHolder {
 
     private final BedrockServerSession session;
-    private SessionState state = SessionState.INITIAL;
+    // Written on the level thread during the spawn handoff and read on the network thread
+    private volatile SessionState state = SessionState.INITIAL;
     @Setter(AccessLevel.PRIVATE)
-    private Player player;
+    private volatile Player player;
     private Player.PlayerInfo playerInfo;
     @Setter(AccessLevel.PRIVATE)
     private PlayerHandle playerHandle;
@@ -93,6 +113,130 @@ public class PlayerSessionHolder {
 
     private final Object rateLimitLock = new Object();
     private volatile boolean disconnected = false;
+    @Getter(AccessLevel.NONE)
+    private final AtomicBoolean loginAdmitted = new AtomicBoolean();
+    @Getter(AccessLevel.NONE)
+    private final AtomicBoolean playerSlotReserved = new AtomicBoolean();
+    @Getter(AccessLevel.NONE)
+    private final AtomicBoolean playerDataPreloading = new AtomicBoolean();
+
+    @Getter(AccessLevel.NONE)
+    @Setter(AccessLevel.NONE)
+    private Server.PreloadedPlayerData preloadedPlayerData;
+
+    /** Packets that arrived while the player was being created, see {@link #deferUntilSpawned}. */
+    @Getter(AccessLevel.NONE)
+    private final Queue<BedrockPacket> spawnBacklog = new ConcurrentLinkedQueue<>();
+
+    private static volatile ItemRegistryCache itemRegistryCache;
+
+
+    /** Share of a tick a level spends creating joining players before the rest wait for the next tick. */
+    private static final int SPAWN_BUDGET_DIVISOR = 5;
+
+    /**
+     * Per level: the tick the spawn budget was last counted for, and the nanoseconds spent creating
+     * players in it. Only touched by the thread that ticks the level.
+     */
+    private static final Map<Level, long[]> SPAWN_BUDGETS = Collections.synchronizedMap(new WeakHashMap<>());
+
+    /**
+     * The item palette sent to every client, built once instead of per join. Rebuilt when items are
+     * registered after it was built. Only the immutable definitions are shared; every client gets a
+     * packet of its own, since plugins may change a packet while it is sent.
+     */
+    private record ItemRegistryCache(long itemDataChanges, long customItemChanges, NbtMap itemComponents,
+                                     List<ItemDefinition> itemDefinitions, DefinitionRegistry<ItemDefinition> definitions) {
+        boolean matches() {
+            return this.itemDataChanges == ItemRuntimeIdRegistry.getItemDataChanges()
+                && this.customItemChanges == Registries.ITEM.getCustomItemDefinitionChanges()
+                && this.itemComponents == ItemRegistry.getItemComponents();
+        }
+    }
+
+    /**
+     * Reserves one of the {@link LoginService} slots for this session while its login is verified,
+     * or queues the login until a slot frees up, see {@link LoginService#admit}. The slot is freed by
+     * {@link #releaseLogin(Server)}, or when the session closes at the latest, and a queued login is
+     * dropped from the queue when the session closes first.
+     *
+     * @param onAdmitted run on the session's event loop once a queued login got its slot; not run
+     *                   when the login was admitted right away or refused
+     * @return whether the login holds a slot now, waits for one, or was refused
+     */
+    public LoginService.Admission admitLogin(Server server, Runnable onAdmitted) {
+        if (this.loginAdmitted.get()) {
+            return LoginService.Admission.ADMITTED;
+        }
+        final Channel channel = this.session.getPeer().getChannel();
+        final Runnable resume = () -> {
+            this.markLoginAdmitted(server);
+            try {
+                channel.eventLoop().execute(() -> {
+                    if (this.session.isConnected()) {
+                        onAdmitted.run();
+                    } else {
+                        this.releaseLogin(server);
+                    }
+                });
+            } catch (RejectedExecutionException e) {
+                this.releaseLogin(server);
+            }
+        };
+        final LoginService.Admission admission = server.getLoginService().admit(this.remoteAddress(), resume);
+        if (admission == LoginService.Admission.ADMITTED) {
+            this.markLoginAdmitted(server);
+        } else if (admission == LoginService.Admission.QUEUED) {
+            channel.closeFuture().addListener(_ -> server.getLoginService().cancelWaiting(resume));
+        }
+        return admission;
+    }
+
+    private void markLoginAdmitted(Server server) {
+        this.loginAdmitted.set(true);
+        this.session.getPeer().getChannel().closeFuture().addListener(_ -> this.releaseLogin(server));
+    }
+
+    /**
+     * Frees the login slot taken by {@link #admitLogin(Server, Runnable)}, if any. Safe to call more than once.
+     */
+    public void releaseLogin(Server server) {
+        if (this.loginAdmitted.compareAndSet(true, false)) {
+            server.getLoginService().release(this.remoteAddress());
+        }
+    }
+
+    /**
+     * Takes one of the {@code max-players} slots for this session until its player is online, see
+     * {@link LoginService#tryReservePlayerSlot(int, int)}. The slot is freed when the session
+     * closes at the latest.
+     *
+     * @return {@code false} when the server is full
+     */
+    public boolean tryReservePlayerSlot(Server server) {
+        if (this.playerSlotReserved.get()) {
+            return true;
+        }
+        if (!server.getLoginService().tryReservePlayerSlot(server.getOnlinePlayers().size(), server.getMaxPlayers())) {
+            return false;
+        }
+        this.playerSlotReserved.set(true);
+        this.session.getPeer().getChannel().closeFuture().addListener(_ -> this.releasePlayerSlot(server));
+        return true;
+    }
+
+    /**
+     * Frees the slot taken by {@link #tryReservePlayerSlot(Server)}, if any. Safe to call more than once.
+     */
+    public void releasePlayerSlot(Server server) {
+        if (this.playerSlotReserved.compareAndSet(true, false)) {
+            server.getLoginService().releasePlayerSlot();
+        }
+    }
+
+    private @Nullable InetAddress remoteAddress() {
+        return this.session.getSocketAddress() instanceof InetSocketAddress inet ? inet.getAddress() : null;
+    }
 
     public InternalPackManager getInternalPackManager() {
         if (this.internalPackManager == null) {
@@ -227,36 +371,257 @@ public class PlayerSessionHolder {
         this.session.sendPacketImmediately(infoPacket);
     }
 
+    /**
+     * Starts creating the player once the client has accepted the resource packs.
+     * <p>
+     * Called on the network thread. The stored player data is read on the player data thread of
+     * the {@link LoginService}, the chunk the player stands in is loaded on the chunk IO executor,
+     * and everything that touches the world then runs on the thread of the level the player joins,
+     * see {@link #sendBeforeSpawn(Server)}. None of it blocks the network thread, which serves many
+     * other sessions.
+     */
+    public void beginSpawn(Server server) {
+        this.setState(SessionState.SPAWNING);
+        final UUID uuid = Server.uuidFromXUID(Server.resolveXuid(this.playerInfo, server.getProxyAuthProvider()));
+        server.beginPlayerDataPreload(uuid);
+        this.playerDataPreloading.set(true);
+        this.session.getPeer().getChannel().closeFuture().addListener(_ -> this.endPlayerDataPreload(server, uuid));
+        this.schedulePreload(server, uuid);
+    }
+
+    private void schedulePreload(Server server, UUID uuid) {
+        try {
+            server.getLoginService().executePlayerData(() -> this.preloadAndSchedule(server, uuid));
+        } catch (RejectedExecutionException e) {
+            this.endPlayerDataPreload(server, uuid);
+            this.disconnect(DisconnectFailReason.UNKNOWN, "Server is shutting down");
+        }
+    }
+
+    private void endPlayerDataPreload(Server server, UUID uuid) {
+        if (this.playerDataPreloading.compareAndSet(true, false)) {
+            server.endPlayerDataPreload(uuid);
+        }
+    }
+
+    /**
+     * Reads the stored player data on the player data thread and hands it to the level thread. A
+     * read that would miss a save still on its way is retried on the next tick for as long as the
+     * client stays connected, so the level thread never reads storage or waits for a write itself.
+     */
+    private void preloadAndSchedule(Server server, UUID uuid) {
+        if (!this.session.isConnected()) {
+            this.endPlayerDataPreload(server, uuid);
+            return;
+        }
+
+        final Server.PreloadedPlayerData preloaded;
+        try {
+            preloaded = server.preloadPlayerData(uuid);
+        } catch (Exception e) {
+            log.error("Failed to load player data for {}", uuid, e);
+            this.endPlayerDataPreload(server, uuid);
+            this.disconnect(DisconnectFailReason.UNKNOWN, "Failed to load player data");
+            return;
+        }
+        if (preloaded == null) {
+            server.getScheduler().scheduleDelayedTask(InternalPlugin.INSTANCE,
+                () -> this.schedulePreload(server, uuid), 1);
+            return;
+        }
+
+        final String levelName = preloaded.levelName();
+        final Level storedLevel = levelName != null ? server.getLevelByName(levelName) : null;
+        final Level level = storedLevel != null ? storedLevel : server.getDefaultLevel();
+        final Vector3 position = storedLevel != null ? preloaded.position() : null;
+
+        final CompletableFuture<?> spawnChunk = position != null
+            ? level.getChunkAsync(NukkitMath.floorDouble(position.x) >> 4, NukkitMath.floorDouble(position.z) >> 4)
+                .exceptionally(error -> {
+                    log.debug("Could not load the spawn chunk of {} ahead of time", uuid, error);
+                    return null;
+                })
+            : CompletableFuture.completedFuture(null);
+        spawnChunk.thenRun(() -> this.scheduleSpawn(server, uuid, preloaded, level));
+    }
+
+    /**
+     * Hands the creation of the player to the thread of {@code level}, or of the default level when
+     * {@code level} was unloaded meanwhile: an unloaded level never runs its tasks again, which
+     * would leave the login waiting until the client gives up. The player then joins the default
+     * level, as it does whenever its stored level is not loaded.
+     */
+    private void scheduleSpawn(Server server, UUID uuid, Server.PreloadedPlayerData preloaded, Level level) {
+        final Level target = level.isClosing() || server.getLevel(level.getId()) != level ? server.getDefaultLevel() : level;
+        target.getScheduler().scheduleTask(InternalPlugin.INSTANCE,
+            () -> this.spawnWithinBudget(server, target, () -> this.completeSpawn(server, uuid, preloaded, target)));
+    }
+
+    /**
+     * Runs {@code spawn} on the level's thread unless the level has already spent its share of this
+     * tick on creating players, in which case it waits for the next tick. A burst of joins is spread
+     * over several ticks instead of stalling one; the first spawn of a tick always runs.
+     */
+    private void spawnWithinBudget(Server server, Level level, Runnable spawn) {
+        final long[] budget = SPAWN_BUDGETS.computeIfAbsent(level, _ -> new long[]{Long.MIN_VALUE, 0L});
+        final long tick = level.getTick();
+        if (budget[0] != tick) {
+            budget[0] = tick;
+            budget[1] = 0L;
+        } else if (budget[1] >= server.getNanosPerTick() / SPAWN_BUDGET_DIVISOR) {
+            level.getScheduler().scheduleDelayedTask(InternalPlugin.INSTANCE,
+                () -> this.spawnWithinBudget(server, level, spawn), 1);
+            return;
+        }
+        final long start = System.nanoTime();
+        try {
+            spawn.run();
+        } finally {
+            budget[1] += System.nanoTime() - start;
+        }
+    }
+
+    /**
+     * Whether the player is being created on the level thread right now.
+     */
+    public boolean isSpawning() {
+        final SessionState current = this.state;
+        return current == SessionState.SPAWNING || current == SessionState.BEFORE_SPAWN;
+    }
+
+    /**
+     * Whether a packet that needs the player has to wait in the backlog: while the player is being
+     * created, and afterwards until every packet held back meanwhile has been handled, so a newer
+     * packet never overtakes an older one.
+     */
+    boolean shouldDeferUntilSpawned() {
+        return this.isSpawning() || !this.spawnBacklog.isEmpty();
+    }
+
+    /**
+     * Holds a packet that arrived while the player was being created, and handles it on the
+     * level thread once the creation is done, in arrival order.
+     */
+    void deferUntilSpawned(BedrockPacket packet) {
+        this.spawnBacklog.add(packet);
+        // The creation may have finished, and drained the backlog, while this packet was added
+        if (!this.isSpawning()) {
+            final Player created = this.player;
+            if (created != null) {
+                this.scheduleDrain(created.getLevel());
+            } else {
+                this.spawnBacklog.clear();
+            }
+        }
+    }
+
+    private void scheduleDrain(Level level) {
+        level.getScheduler().scheduleTask(InternalPlugin.INSTANCE, () -> this.drainSpawnBacklog(level));
+    }
+
+    /**
+     * Handles the packets held back while the player was created, on the thread of {@code owner}.
+     * When the player is in another level, or moves to one while a packet is handled, the rest is
+     * handed to the thread of that level instead, so packets are always handled by the thread
+     * that ticks the player.
+     *
+     * @param owner the level whose thread this runs on
+     */
+    private void drainSpawnBacklog(Level owner) {
+        final Player created = this.player;
+        if (created == null || !created.isConnected()
+                || !(this.session.getPacketHandler() instanceof NetworkPacketHandler handler)) {
+            this.spawnBacklog.clear();
+            return;
+        }
+        BedrockPacket packet;
+        while ((packet = this.spawnBacklog.peek()) != null) {
+            final Level current = created.getLevel();
+            if (current != owner) {
+                this.scheduleDrain(current);
+                return;
+            }
+            try {
+                handler.processInbound(packet);
+            } catch (Exception e) {
+                log.error("Error handling packet {} for player {}", packet.getClass().getSimpleName(), created.getName(), e);
+            } finally {
+                this.spawnBacklog.poll();
+            }
+        }
+    }
+
+    /**
+     * Runs on the level thread: creates the player and sends everything the client needs before it
+     * can spawn. A disconnect that happened meanwhile is handled here, because the network thread
+     * leaves a session in {@link SessionState#SPAWNING} alone.
+     */
+    private void completeSpawn(Server server, UUID uuid, Server.PreloadedPlayerData preloaded, Level owner) {
+        if (!this.session.isConnected()) {
+            this.endPlayerDataPreload(server, uuid);
+            return;
+        }
+        if (!server.isPreloadCurrent(preloaded)) {
+            this.schedulePreload(server, uuid);
+            return;
+        }
+
+        this.preloadedPlayerData = preloaded;
+        // Off the event loop, so the order of the login burst has to be kept by holding it back;
+        // see HoldableServerSession. Released below whatever happens
+        final HoldableServerSession holdable = this.session instanceof HoldableServerSession h ? h : null;
+        if (holdable != null) {
+            holdable.holdOutbound();
+        }
+        try {
+            this.sendBeforeSpawn(server);
+        } catch (Exception e) {
+            log.error("Failed to spawn a player from {}", this.session.getSocketAddress(), e);
+            if (this.player != null) {
+                this.player.close("Failed to create player");
+            } else {
+                this.session.close("Failed to create player");
+            }
+        } finally {
+            this.preloadedPlayerData = null;
+            this.endPlayerDataPreload(server, uuid);
+            if (holdable != null) {
+                holdable.releaseOutbound();
+            }
+        }
+
+        try {
+            this.drainSpawnBacklog(owner);
+        } finally {
+            this.setState(SessionState.CHUNKS);
+        }
+        final Player created = this.player;
+        if (created != null && !this.session.isConnected()) {
+            created.close("Disconnected");
+        }
+        this.drainSpawnBacklog(owner);
+    }
+
     public void sendBeforeSpawn(Server server) {
         this.doPlayerCreation();
+        if (this.player == null || !this.player.isConnected()) {
+            // Refused by a plugin or failed to load; closing has already been taken care of
+            return;
+        }
         this.setState(SessionState.BEFORE_SPAWN);
 
         server.sendSleepingPlayersStatusImmediately(Set.of(this.player));
 
-        final PlayerListPacket playerListPacket = new PlayerListPacket();
-        final PlayerListAddEntry playerListEntry = new PlayerListAddEntry();
-
-        playerListEntry.setUuid(this.player.getUniqueId());
-        playerListEntry.setActorUniqueID(this.player.uniqueIdLong());
-        playerListEntry.setPlayerName(this.player.getName());
-        playerListEntry.setXblXUID(this.player.getXUID());
-        playerListEntry.setPlatformOnlineID("");
-        playerListEntry.setBuildPlatform(BuildPlatform.UNKNOWN);
-        playerListEntry.setSerializedSkin(
-            SkinConverter.toSerializedSkin(
-                this.player.getSkin().getSkin(),
-                this.player.getSkin().isTrusted()
-            )
-        );
-        playerListEntry.setPlayerColor(this.player.getLocatorBarColor().getRGB());
-
-        playerListPacket.getEntries().add(playerListEntry);
-        this.player.sendPacketImmediately(playerListPacket);
+        if (!PlayerListEncoder.trySend(this.player, List.of(this.player), 1)) {
+            final PlayerListPacket playerListPacket = new PlayerListPacket();
+            playerListPacket.getEntries().add(PlayerListEncoder.addEntry(this.player));
+            this.player.sendPacketImmediately(playerListPacket);
+        }
 
         this.player.getLevel().sendTime(this.player);
 
-        this.player.sendPacketImmediately(VoxelShapeRegistry.getPACKET());
-        this.player.sendPacketImmediately(Registries.STRUCTURE.getJigsawStructureData());
+        this.sendEncoded(StaticPacket.VOXEL_SHAPES);
+        this.sendEncoded(StaticPacket.JIGSAW_STRUCTURES);
         this.sendStartGame(server);
 
         for (SyncActorPropertyPacket syncActorPropertyPacket : EntityProperty.getEntityPropertyCache()) {
@@ -283,16 +648,16 @@ public class PlayerSessionHolder {
         this.player.sendPacketImmediately(gameRulesChangedPacket);
 
         server.addOnlinePlayer(this.player);
+        this.releasePlayerSlot(server);
         server.onPlayerCompleteLoginSequence(this.player);
 
-        this.session.getPeer().getCodecHelper().setBlockDefinitions(new RuntimeBlockDefinitionRegistry());
-        this.session.getPeer().getCodecHelper().setCameraPresetDefinitions(DefaultCameraPresets.getDefinitions());
+        this.runInOutboundOrder(() -> {
+            this.session.getPeer().getCodecHelper().setBlockDefinitions(new RuntimeBlockDefinitionRegistry());
+            this.session.getPeer().getCodecHelper().setCameraPresetDefinitions(DefaultCameraPresets.getDefinitions());
+        });
 
-        this.session.sendPacketImmediately(Registries.BIOME.getBiomeDefinitionListPacket());
-
-        final AvailableActorIdentifiersPacket availableActorIdentifiersPacket = new AvailableActorIdentifiersPacket();
-        availableActorIdentifiersPacket.setActorInfoList(Registries.ENTITY.getTag());
-        this.session.sendPacketImmediately(availableActorIdentifiersPacket);
+        this.sendEncoded(StaticPacket.BIOME_DEFINITIONS);
+        this.sendEncoded(StaticPacket.ACTOR_IDENTIFIERS);
 
         final PlayerFogPacket playerFogPacket = new PlayerFogPacket();
         playerFogPacket.getFogStack().addAll(this.player.getFogStack());
@@ -330,7 +695,7 @@ public class PlayerSessionHolder {
         this.session.sendPacketImmediately(Registries.TRIM.buildPacket());
 
         this.player.syncInventory();
-        this.player.sendPacketImmediately(Registries.RECIPE.getCraftingPacket());
+        this.sendEncoded(StaticPacket.CRAFTING_DATA);
 
         this.player.setCanClimb(true);
         this.player.setMovementSpeed(this.player.getMovementSpeed());
@@ -426,36 +791,218 @@ public class PlayerSessionHolder {
     }
 
     private void sendItemRegistry() {
-        final ItemRegistryPacket itemRegistryPacket = new ItemRegistryPacket();
-        final List<ItemDefinition> itemDefinitions = new ObjectArrayList<>();
+        final ItemRegistryCache cache = itemRegistryCache();
+        this.runInOutboundOrder(() -> this.session.getPeer().getCodecHelper().setItemDefinitions(cache.definitions()));
+        this.sendEncoded(StaticPacket.ITEM_REGISTRY);
+    }
 
-        for (ItemRuntimeIdRegistry.ItemData data : ItemRuntimeIdRegistry.getITEMDATA()) {
-            CompoundTag tag = new CompoundTag();
-            if (ItemRegistry.getItemComponents().containsKey(data.identifier())) {
-                NbtMap itemTag = ItemRegistry.getItemComponents().getCompound(data.identifier());
-                tag.putCompound("components", CompoundTag.fromNetwork(itemTag.getCompound("components")));
-            } else if (Registries.ITEM.getCustomItemDefinition().containsKey(data.identifier())) {
-                tag = Registries.ITEM.getCustomItemDefinition().get(data.identifier()).nbt();
-            }
-            final NbtMap components = tag.toNetwork();
-            itemDefinitions.add(
-                new SimpleItemDefinition(
-                    data.identifier(),
-                    data.runtimeId(),
-                    ItemVersion.from(data.version()),
-                    data.componentBased(),
-                    components
-                )
-            );
+    /**
+     * The packets of the login sequence that are the same for every player, each with the
+     * {@link EncodedPacketCache} it is sent from and what identifies its current content there, see
+     * {@link EncodedPacketCache#get}. Sending and encoding ahead of time, see
+     * {@link #warmEncodedPackets()}, both go through the same constant, so they always agree on the
+     * content, and sending one allocates nothing beyond the packet that goes out.
+     */
+    private enum StaticPacket {
+        VOXEL_SHAPES(true, VoxelShapeRegistry::getPACKET),
+        JIGSAW_STRUCTURES(true, Registries.STRUCTURE::getJigsawStructureData),
+        ITEM_REGISTRY(true, PlayerSessionHolder::itemRegistryCache, () -> 0L, () -> null, PlayerSessionHolder::itemRegistryPacket),
+        BIOME_DEFINITIONS(false, () -> Registries.BIOME, Registries.BIOME::getBiomeDefinitionListFingerprint, () -> null,
+            Registries.BIOME::getBiomeDefinitionListPacket),
+        ACTOR_IDENTIFIERS(false, Registries.ENTITY::getTag, () -> 0L, () -> null, PlayerSessionHolder::actorIdentifiersPacket),
+        CRAFTING_DATA(true, Registries.RECIPE::getCraftingPacket, () -> 0L, PlayerSessionHolder::itemRegistryCache,
+            Registries.RECIPE::getCraftingPacket),
+        CREATIVE_CONTENT(true, () -> Registries.CREATIVE, PlayerSessionHolder::creativeContentFingerprint,
+            PlayerSessionHolder::itemRegistryCache, PlayerSessionHolder::creativeContentPacket);
+
+        private final EncodedPacketCache cache = new EncodedPacketCache(NetworkConstants.CODEC);
+        /** Whether the packet goes through the player, firing {@link PacketSendEvent}, when it is sent the regular way. */
+        private final boolean fireEvent;
+        private final Supplier<?> key;
+        private final LongSupplier stamp;
+        private final Supplier<?> dependency;
+        private final Supplier<? extends BedrockPacket> packet;
+
+        /** For a packet that is its own key, kept until a registry replaces it. */
+        StaticPacket(boolean fireEvent, Supplier<? extends BedrockPacket> packet) {
+            this(fireEvent, packet, () -> 0L, () -> null, packet);
         }
-        itemRegistryPacket.getItemData().addAll(itemDefinitions);
 
-        final DefinitionRegistry<ItemDefinition> itemDefinitionRegistry = new SimpleDefinitionRegistry.Builder<ItemDefinition>()
-            .addAll(itemDefinitions)
-            .build();
-        this.session.getPeer().getCodecHelper().setItemDefinitions(itemDefinitionRegistry);
+        StaticPacket(boolean fireEvent, Supplier<?> key, LongSupplier stamp, Supplier<?> dependency,
+                     Supplier<? extends BedrockPacket> packet) {
+            this.fireEvent = fireEvent;
+            this.key = key;
+            this.stamp = stamp;
+            this.dependency = dependency;
+            this.packet = packet;
+        }
 
-        this.player.sendPacketImmediately(itemRegistryPacket);
+        BedrockPacket encoded() {
+            return this.cache.get(this.key.get(), this.stamp.getAsLong(), this.dependency.get(), this.packet,
+                PlayerSessionHolder::prepareEncodingHelper);
+        }
+    }
+
+    private static ItemRegistryPacket itemRegistryPacket() {
+        final ItemRegistryPacket packet = new ItemRegistryPacket();
+        packet.getItemData().addAll(itemRegistryCache().itemDefinitions());
+        return packet;
+    }
+
+    private static AvailableActorIdentifiersPacket actorIdentifiersPacket() {
+        final AvailableActorIdentifiersPacket packet = new AvailableActorIdentifiersPacket();
+        packet.setActorInfoList(Registries.ENTITY.getTag());
+        return packet;
+    }
+
+    private static long creativeContentFingerprint() {
+        return EncodedPacketCache.identityFingerprint(Registries.CREATIVE.getCreativeGroups(), Registries.CREATIVE.getCreativeItemData());
+    }
+
+    private static CreativeContentPacket creativeContentPacket() {
+        final CreativeContentPacket packet = new CreativeContentPacket();
+        packet.getGroups().addAll(Registries.CREATIVE.getCreativeGroups());
+        packet.getEntries().addAll(Registries.CREATIVE.getCreativeItemData());
+        return packet;
+    }
+
+    /**
+     * Encodes every packet of the login sequence that is the same for all players, so the first
+     * players to join do not pay for it. Meant to run once the registries are complete, after the
+     * plugins have been enabled; anything registered later is encoded again when first sent.
+     * Safe to call from any thread, and concurrently with logins.
+     */
+    @ApiStatus.Internal
+    public static void warmEncodedPackets() {
+        for (StaticPacket packet : StaticPacket.values()) {
+            try {
+                if (packet.key.get() != null) {
+                    ReferenceCountUtil.release(packet.encoded());
+                }
+            } catch (Exception e) {
+                log.warn("Could not encode the {} login packet ahead of time", packet, e);
+            }
+        }
+    }
+
+    /**
+     * Sends a packet that is the same for every player, from its {@link EncodedPacketCache} when
+     * nothing can change it on the way out, and the regular way otherwise.
+     */
+    private void sendEncoded(StaticPacket packet) {
+        if (trySendEncoded(this.player, packet)) {
+            return;
+        }
+        if (packet.fireEvent) {
+            this.player.sendPacketImmediately(packet.packet.get());
+        } else {
+            this.session.sendPacketImmediately(packet.packet.get());
+        }
+    }
+
+    /**
+     * Whether packets for {@code player} may come from an {@link EncodedPacketCache}: it is no
+     * plugin's subclass of {@link Player}, whose send methods may do more than send; no plugin
+     * listens to {@link PacketSendEvent}, which could change a packet on its way out; and its
+     * session speaks the codec the caches encode with.
+     */
+    static boolean canSendEncoded(Player player) {
+        return player.getClass() == Player.class && PacketSendEvent.getHandlers().isEmpty()
+            && player.getSession().getCodec() == NetworkConstants.CODEC;
+    }
+
+    private static boolean trySendEncoded(Player player, StaticPacket packet) {
+        if (!canSendEncoded(player) || packet.key.get() == null) {
+            return false;
+        }
+        if (player.getSession().isConnected()) {
+            player.getSession().sendPacketImmediately(packet.encoded());
+        }
+        return true;
+    }
+
+    /**
+     * Sends the creative inventory content from its {@link EncodedPacketCache}, encoding it again
+     * whenever its groups or entries change.
+     *
+     * @return {@code false} when the content has to be sent the regular way instead, see
+     * {@link Player#syncCreativeContent()}
+     */
+    @ApiStatus.Internal
+    public static boolean trySendCreativeContent(Player player) {
+        return trySendEncoded(player, StaticPacket.CREATIVE_CONTENT);
+    }
+
+    private static void prepareEncodingHelper(BedrockCodecHelper helper) {
+        helper.setItemDefinitions(itemRegistryCache().definitions());
+        helper.setBlockDefinitions(new RuntimeBlockDefinitionRegistry());
+        helper.setCameraPresetDefinitions(DefaultCameraPresets.getDefinitions());
+        if (Server.getInstance().getSettings().debugSettings().disableEncodingLimits()) {
+            helper.setEncodingSettings(EncodingSettings.UNLIMITED);
+        }
+    }
+
+    /**
+     * Applies a codec helper change at the current point of the outbound stream, so packets sent
+     * before it are still encoded without it. See {@link HoldableServerSession#runInOrder}.
+     * <p>
+     * Only a {@link HoldableServerSession} keeps that order when called off the session's event
+     * loop. Every transport PowerNukkitX binds creates one; a session of another kind gets the
+     * change applied right away.
+     */
+    private void runInOutboundOrder(Runnable action) {
+        if (this.session instanceof HoldableServerSession holdable) {
+            holdable.runInOrder(action);
+        } else {
+            action.run();
+        }
+    }
+
+    private static ItemRegistryCache itemRegistryCache() {
+        ItemRegistryCache cache = itemRegistryCache;
+        if (cache != null && cache.matches()) {
+            return cache;
+        }
+        synchronized (PlayerSessionHolder.class) {
+            cache = itemRegistryCache;
+            if (cache != null && cache.matches()) {
+                return cache;
+            }
+            final long itemDataChanges = ItemRuntimeIdRegistry.getItemDataChanges();
+            final long customItemChanges = Registries.ITEM.getCustomItemDefinitionChanges();
+            final NbtMap itemComponents = ItemRegistry.getItemComponents();
+            final List<ItemDefinition> itemDefinitions = new ObjectArrayList<>();
+
+            for (ItemRuntimeIdRegistry.ItemData data : ItemRuntimeIdRegistry.getITEMDATA()) {
+                CompoundTag tag = new CompoundTag();
+                if (itemComponents.containsKey(data.identifier())) {
+                    NbtMap itemTag = itemComponents.getCompound(data.identifier());
+                    tag.putCompound("components", CompoundTag.fromNetwork(itemTag.getCompound("components")));
+                } else if (Registries.ITEM.getCustomItemDefinition().containsKey(data.identifier())) {
+                    tag = Registries.ITEM.getCustomItemDefinition().get(data.identifier()).nbt();
+                }
+                final NbtMap components = tag.toNetwork();
+                itemDefinitions.add(
+                    new SimpleItemDefinition(
+                        data.identifier(),
+                        data.runtimeId(),
+                        ItemVersion.from(data.version()),
+                        data.componentBased(),
+                        components
+                    )
+                );
+            }
+
+            // Shared by every session: the definitions and the registry are only read once built
+            final DefinitionRegistry<ItemDefinition> itemDefinitionRegistry = new SimpleDefinitionRegistry.Builder<ItemDefinition>()
+                .addAll(itemDefinitions)
+                .build();
+
+            cache = new ItemRegistryCache(itemDataChanges, customItemChanges, itemComponents,
+                List.copyOf(itemDefinitions), itemDefinitionRegistry);
+            itemRegistryCache = cache;
+            return cache;
+        }
     }
 
     public void doPlayerCreation() {
@@ -468,6 +1015,7 @@ public class PlayerSessionHolder {
         }
         this.playerHandle = new PlayerHandle(this.player);
         this.player.setPlayerHandle(this.playerHandle);
+        this.player.setPreloadedPlayerData(this.preloadedPlayerData);
         if (this.session.getPacketHandler() instanceof NetworkPacketHandler networkPacketHandler) {
             this.player.setInboundProcessor(networkPacketHandler::processInbound);
         }

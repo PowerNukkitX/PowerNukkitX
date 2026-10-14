@@ -39,6 +39,7 @@ import org.cloudburstmc.nbt.NbtType;
 import org.cloudburstmc.nbt.NbtUtils;
 import org.cloudburstmc.protocol.bedrock.data.GameType;
 
+import com.google.common.util.concurrent.Uninterruptibles;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufOutputStream;
 import io.netty.buffer.ByteBufUtil;
@@ -63,9 +64,15 @@ import java.nio.file.StandardCopyOption;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.Executor;
+import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.ThreadLocalRandom;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.concurrent.atomic.AtomicReferenceArray;
+import java.util.function.Consumer;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -76,6 +83,7 @@ public class LevelDBProvider implements LevelProvider {
     static final Map<String, LevelDBStorage> CACHE = new ConcurrentHashMap<>();
     private static final int LEVEL_DAT_VERSION = 10;
     private static final int BIOME_STATE_SAMPLE_ATTEMPTS = 10;
+    private static final int CHUNKS_PER_SAVE_HELPER = 8;
     private final ThreadLocal<WeakReference<IChunk>> lastChunk = new ThreadLocal<>();
     protected final Long2ObjectNonBlockingMap<IChunk> chunks = new Long2ObjectNonBlockingMap<>();
     private final ConcurrentHashMap<Long, CompletableFuture<IChunk>> loadingChunks = new ConcurrentHashMap<>();
@@ -610,7 +618,8 @@ public class LevelDBProvider implements LevelProvider {
         if (chunk == null) {
             throw new ChunkException("Invalid Chunk Set");
         }
-        final Chunk cacheChunk = chunk instanceof Chunk concrete && !this.level.isAntiXrayEnabled() ? concrete : null;
+        final boolean antiXray = this.level != null && this.level.isAntiXrayEnabled();
+        final Chunk cacheChunk = chunk instanceof Chunk concrete && !antiXray ? concrete : null;
         if (cacheChunk != null) {
             final Chunk.NetworkPayload cached = cacheChunk.getNetworkPayload();
             if (cached != null) {
@@ -636,7 +645,7 @@ public class LevelDBProvider implements LevelProvider {
                 final Chunk.SectionNetworkPayload[] sectionPayloads =
                         cacheChunk == null ? null : new Chunk.SectionNetworkPayload[sections.length];
                 //write block
-                if (level != null && level.isAntiXrayEnabled()) {
+                if (antiXray) {
                     for (int i = 0; i < total; i++) {
                         if (sections[i] == null) sections[i] = new ChunkSection((byte) (i + minSectionY), unsafeChunk.getBiomeSections()[i]);
                         sections[i].writeObfuscatedToBuf(level, byteBuf);
@@ -981,6 +990,15 @@ public class LevelDBProvider implements LevelProvider {
 
     @Override
     public void saveChunks(Collection<IChunk> chunks) {
+        saveChunks(chunks, true, null);
+    }
+
+    @Override
+    public void saveChunks(Collection<IChunk> chunks, @Nullable Executor helpers) {
+        saveChunks(chunks, false, helpers);
+    }
+
+    private void saveChunks(Collection<IChunk> chunks, boolean parallel, @Nullable Executor helpers) {
         List<IChunk> changedChunks = chunks.stream()
                 .filter(IChunk::hasChanged)
                 .filter(chunk -> chunk.getGenerationState() == ChunkGenerationState.COMPLETE)
@@ -996,7 +1014,7 @@ public class LevelDBProvider implements LevelProvider {
             Map<IChunk, Long> scheduledTickVersions = new ConcurrentHashMap<>();
             Map<IChunk, Long> randomTickVersions = new ConcurrentHashMap<>();
 
-            CompletableFuture.runAsync(() -> changedChunks.parallelStream().forEach(chunk -> {
+            Consumer<IChunk> serializer = chunk -> {
                 BiomeState biomeState = chunk.getBiomeState();
                 if (biomeState.hasStorageChanges()) {
                     biomeStateVersions.put(chunk, biomeState.getStorageChangeVersion());
@@ -1018,7 +1036,13 @@ public class LevelDBProvider implements LevelProvider {
                 }
 
                 LevelDBChunkSerializer.INSTANCE.serialize(helper, chunk);
-            }), Server.getInstance().getComputeThreadPool()).join();
+            };
+            if (parallel) {
+                CompletableFuture.runAsync(() -> changedChunks.parallelStream().forEach(serializer),
+                    Server.getInstance().getComputeThreadPool()).join();
+            } else {
+                serializeWithHelpers(changedChunks, serializer, helpers);
+            }
 
             helper.write(batch);
             helper.close();
@@ -1045,6 +1069,55 @@ public class LevelDBProvider implements LevelProvider {
             }
         } catch (IOException e) {
             throw new UncheckedIOException(e);
+        }
+    }
+
+    /**
+     * Serializes every chunk, on the calling thread and on whatever {@code helpers} threads are idle.
+     * The caller only waits for chunks a helper has already claimed, see
+     * {@link LevelProvider#saveChunks(Collection, Executor)}.
+     */
+    static void serializeWithHelpers(List<IChunk> chunks, Consumer<IChunk> serializer, @Nullable Executor helpers) {
+        final int size = chunks.size();
+        final AtomicInteger next = new AtomicInteger();
+        final CountDownLatch serialized = new CountDownLatch(size);
+        final AtomicReference<Throwable> failure = new AtomicReference<>();
+        final Runnable worker = () -> {
+            int index;
+            while ((index = next.getAndIncrement()) < size) {
+                try {
+                    serializer.accept(chunks.get(index));
+                } catch (Throwable t) {
+                    failure.compareAndSet(null, t);
+                } finally {
+                    serialized.countDown();
+                }
+            }
+        };
+
+        if (helpers != null) {
+            int helperCount = Math.min(Runtime.getRuntime().availableProcessors(), size / CHUNKS_PER_SAVE_HELPER);
+            if (helpers instanceof ThreadPoolExecutor pool) {
+                helperCount = Math.min(helperCount, pool.getMaximumPoolSize() - pool.getActiveCount());
+            }
+            for (int i = 0; i < helperCount; i++) {
+                try {
+                    helpers.execute(worker);
+                } catch (RejectedExecutionException e) {
+                    break;
+                }
+            }
+        }
+        worker.run();
+        Uninterruptibles.awaitUninterruptibly(serialized);
+
+        final Throwable thrown = failure.get();
+        if (thrown instanceof RuntimeException runtime) {
+            throw runtime;
+        } else if (thrown instanceof Error error) {
+            throw error;
+        } else if (thrown != null) {
+            throw new IllegalStateException(thrown);
         }
     }
 

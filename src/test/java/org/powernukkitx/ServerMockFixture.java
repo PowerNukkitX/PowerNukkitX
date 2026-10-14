@@ -15,11 +15,11 @@ import org.powernukkitx.level.DimensionEnum;
 import org.powernukkitx.level.Level;
 import org.powernukkitx.level.format.LevelConfig;
 import org.powernukkitx.level.format.leveldb.LevelDBProvider;
-import org.powernukkitx.level.format.leveldb.LevelDBTestFixtureUtil;
 import org.powernukkitx.network.Network;
 import org.powernukkitx.permission.BanList;
 import org.powernukkitx.plugin.JavaPluginLoader;
 import org.powernukkitx.network.positiontracking.PositionTrackingService;
+import org.powernukkitx.network.process.LoginService;
 import org.powernukkitx.registry.Registries;
 import org.powernukkitx.scheduler.ServerScheduler;
 import org.powernukkitx.utils.collection.FreezableArrayManager;
@@ -35,8 +35,13 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.concurrent.ForkJoinPool;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicLong;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doCallRealMethod;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
@@ -170,6 +175,16 @@ public final class ServerMockFixture {
 
         ForkJoinPool pool = new ForkJoinPool(Runtime.getRuntime().availableProcessors());
         doReturn(pool).when(server).getComputeThreadPool();
+        doReturn(new ThreadPoolExecutor(2, 2, 30L, TimeUnit.SECONDS, new LinkedBlockingQueue<>(), r -> {
+            Thread t = new Thread(r, "fixture-chunk-io");
+            t.setDaemon(true);
+            return t;
+        })).when(server).getChunkIoExecutor();
+        doReturn(new LoginService(serverSettings.networkSettings())).when(server).getLoginService();
+        // Persistent actor IDs need a negative high half, as the real allocator hands out; the mock's 0
+        // is refused as soon as a generated chunk stores its actors
+        final AtomicLong nextActorUniqueId = new AtomicLong();
+        doAnswer(invocation -> (-1L << 32) | nextActorUniqueId.incrementAndGet()).when(server).getNewActorUniqueId();
         doReturn(simpleCommandMap).when(server).getCommandMap();
         doReturn(null).when(server).getScoreboardManager();
         try {
@@ -202,7 +217,6 @@ public final class ServerMockFixture {
             FieldUtils.writeDeclaredField(server, "network", network, true);
 
             FileUtils.copyDirectory(new File("src/test/resources/level"), levelDir);
-            LevelDBTestFixtureUtil.canonicalizeCopiedWorld(levelDir.toPath());
         } catch (Exception e) {
             throw new IllegalStateException(e);
         }

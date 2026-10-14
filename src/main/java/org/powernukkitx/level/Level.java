@@ -148,6 +148,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedDeque;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.TimeUnit;
@@ -382,6 +383,8 @@ public class Level implements Metadatable, LiquidUpdateAccess {
     private final Long2ObjectNonBlockingMap<Player> players = new Long2ObjectNonBlockingMap<>();
     @NonComputationAtomic
     private final Long2ObjectNonBlockingMap<Entity> entities = new Long2ObjectNonBlockingMap<>();
+    /** Chunk loads started by {@link #getChunkAsync(int, int, boolean)} that have not finished yet. */
+    private final Long2ObjectNonBlockingMap<CompletableFuture<IChunk>> pendingChunkLoads = new Long2ObjectNonBlockingMap<>();
     @NonComputationAtomic
     private final Long2ObjectNonBlockingMap<Entity> entitiesByUniqueId = new Long2ObjectNonBlockingMap<>();
     private final ConcurrentHashMap<Long, ConcurrentLinkedQueue<PendingActorLink>> pendingActorLinks = new ConcurrentHashMap<>();
@@ -648,6 +651,8 @@ public class Level implements Metadatable, LiquidUpdateAccess {
                     try {
                         if (!this.players.isEmpty() || this.hasTickingAreas()) {
                             this.doTick(loop);
+                        } else {
+                            this.scheduler.mainThreadHeartbeat(loop.getTick());
                         }
                     } catch (Throwable t) {
                         log.error("Error in base-tick for level {}", this.getName(), t);
@@ -6433,13 +6438,45 @@ public class Level implements Metadatable, LiquidUpdateAccess {
                 return CompletableFuture.completedFuture(loaded);
             }
         }
-        return CompletableFuture.supplyAsync(() -> {
-            IChunk chunk = this.requireProvider().getLoadedChunk(index);
-            if (chunk == null) {
-                chunk = this.forceLoadChunk(index, chunkX, chunkZ, create);
-            }
-            return chunk;
-        }, this.getScheduler().getAsyncTaskThreadPool());
+        if (create) {
+            return CompletableFuture.supplyAsync(() -> this.loadChunkOffThread(index, chunkX, chunkZ, true),
+                this.server.getChunkIoExecutor());
+        }
+
+        // Every requester of a chunk shares one load, so players joining around the same spot do not
+        // each queue a read of it
+        final CompletableFuture<IChunk> pending = this.pendingChunkLoads.get(index);
+        if (pending != null) {
+            return pending.copy();
+        }
+        final CompletableFuture<IChunk> load = new CompletableFuture<>();
+        final CompletableFuture<IChunk> existing = this.pendingChunkLoads.putIfAbsent(index, load);
+        if (existing != null) {
+            return existing.copy();
+        }
+        try {
+            this.server.getChunkIoExecutor().execute(() -> {
+                try {
+                    load.complete(this.loadChunkOffThread(index, chunkX, chunkZ, false));
+                } catch (Throwable t) {
+                    load.completeExceptionally(t);
+                } finally {
+                    this.pendingChunkLoads.remove(index, load);
+                }
+            });
+        } catch (RejectedExecutionException e) {
+            this.pendingChunkLoads.remove(index, load);
+            load.completeExceptionally(e);
+        }
+        return load.copy();
+    }
+
+    private IChunk loadChunkOffThread(long index, int chunkX, int chunkZ, boolean create) {
+        IChunk chunk = this.requireProvider().getLoadedChunk(index);
+        if (chunk == null) {
+            chunk = this.forceLoadChunk(index, chunkX, chunkZ, create);
+        }
+        return chunk;
     }
 
 
@@ -7192,7 +7229,9 @@ public class Level implements Metadatable, LiquidUpdateAccess {
                             }
                         }
                     }
-                    requireProvider().saveChunks(chunksToSave);
+                    // Serialized on this thread: waiting on the compute pool would tie the tick to
+                    // world generation, which keeps that pool busy while players join
+                    requireProvider().saveChunks(chunksToSave, this.server.getChunkIoExecutor());
                 }
 
                 for (int i = 0; i < size; i++) {

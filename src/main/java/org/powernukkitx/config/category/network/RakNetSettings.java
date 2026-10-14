@@ -22,4 +22,8 @@ public class RakNetSettings extends OkaeriConfig {
     int maxQueuedBytes = 67108864;
     @Comment("pnx.settings.network.raknet.cookiemode")
     String cookieMode = "ACTIVE";
+    @Comment("pnx.settings.network.raknet.listenerchannels")
+    int listenerChannels = 1;
+    @Comment("pnx.settings.network.raknet.socketbuffersize")
+    int socketBufferSize = 4194304;
 }

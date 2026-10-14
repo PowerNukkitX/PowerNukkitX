@@ -169,6 +169,7 @@ import org.powernukkitx.nbt.tag.StringTag;
 import org.powernukkitx.nbt.tag.Tag;
 import org.powernukkitx.network.primitiveshape.PrimitiveShapes;
 import org.powernukkitx.network.process.PacketHandler;
+import org.powernukkitx.network.process.PlayerSessionHolder;
 import org.powernukkitx.network.process.auth.ClientChainData;
 import org.powernukkitx.permission.PermissibleBase;
 import org.powernukkitx.permission.Permission;
@@ -194,7 +195,6 @@ import org.powernukkitx.utils.DummyBossBar;
 import org.powernukkitx.utils.Identifier;
 import org.powernukkitx.utils.ItemHelper;
 import org.powernukkitx.utils.PortalHelper;
-import org.powernukkitx.utils.SkinConverter;
 import org.powernukkitx.utils.TextFormat;
 import org.powernukkitx.utils.Utils;
 
@@ -342,6 +342,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
      * drained in arrival order at the start of {@link #onUpdate}. See {@link #handlePacket}.
      */
     protected final Queue<BedrockPacket> inboundPackets = PlatformDependent.newMpscQueue();
+    private @Nullable Server.PreloadedPlayerData preloadedPlayerData;
     private Consumer<BedrockPacket> inboundProcessor;
     protected volatile String pendingClose;
     private final AtomicReference<Locale> locale = new AtomicReference<>(null);
@@ -1240,6 +1241,17 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     }
 
     /**
+     * Hands over player data read off the level thread before this player was created, so
+     * {@link #processLogin()} does not read storage itself. Ignored when it is stale by then.
+     *
+     * @param preloaded the preloaded data, or {@code null} to read storage during login
+     */
+    @ApiStatus.Internal
+    public void setPreloadedPlayerData(@Nullable Server.PreloadedPlayerData preloaded) {
+        this.preloadedPlayerData = preloaded;
+    }
+
+    /**
      * Installs the dispatcher used to handle this player's inbound packets. Set once by the network
      * layer; lets {@link #drainInboundPackets} run a packet through the full handle path without the
      * player owning that logic.
@@ -1531,7 +1543,19 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
             this.customDirty = oldPlayer.customDirty;
             oldPlayer.close("disconnectionScreen.loggedinOtherLocation");
         } else {
-            Server.PlayerDataRecord playerData = this.server.getOfflinePlayerDataRecord(this.uuid, true);
+            final Server.PreloadedPlayerData preloaded = this.preloadedPlayerData;
+            this.preloadedPlayerData = null;
+
+            Server.PlayerDataRecord playerData;
+            if (preloaded != null && preloaded.uuid().equals(this.uuid)) {
+                final Server.PlayerDataRecord resolved = this.server.resolvePreloadedPlayerData(preloaded);
+                playerData = resolved != null ? resolved : this.server.createPlayerData(this.uuid);
+            } else {
+                // A save of an earlier session may still be queued, and reading before it lands would
+                // bring back the state from before it
+                this.server.awaitPlayerDataWrites(this.uuid);
+                playerData = this.server.getOfflinePlayerDataRecord(this.uuid, true);
+            }
 
             if (playerData == null) {
                 nbt = null;
@@ -2289,7 +2313,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         if (data == null) return;
 
         final SetActorDataPacket packet = new SetActorDataPacket();
-        packet.setActorData(this.getActorDataMap());
+        packet.setActorData(this.snapshotActorDataMap());
         packet.setTargetRuntimeID(this.runtimeId());
         packet.setSyncedProperties(data);
 
@@ -2607,7 +2631,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         if (this.spawned) {
             var skinPacket = new PlayerSkinPacket();
             skinPacket.setUuid(this.getUniqueId());
-            skinPacket.setSerializedSkin(SkinConverter.toSerializedSkin(serializedSkin, skin.isTrusted()));
+            skinPacket.setSerializedSkin(skin.toSerializedSkin());
             skinPacket.setLocalizedNewSkinName(serializedSkin.getSkinId());
             skinPacket.setLocalizedOldSkinName("");
             Server.broadcastPacket(Server.getInstance().getOnlinePlayers().values(), skinPacket);
@@ -4779,7 +4803,8 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         this.removeAllWindows(false);
 
         if (ev != null && ev.getAutoSave() && this.nbt != null) {
-            this.save();
+            // Written on the player data thread, which orders it before a rejoin's read
+            this.save(true);
         }
         super.close();
 
@@ -7381,9 +7406,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
      * @return the XUID
      */
     public String getXUID() {
-        String xuid = this.info.identityClaims.extraData.xuid;
-        var proxy = this.server.getProxyAuthProvider();
-        return proxy != null ? proxy.getXuid(this.info.clientChainData, xuid) : xuid;
+        return Server.resolveXuid(this.info, this.server.getProxyAuthProvider());
     }
 
     /**
@@ -7760,6 +7783,9 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     }
 
     public void syncCreativeContent() {
+        if (this.isConnected() && PlayerSessionHolder.trySendCreativeContent(this)) {
+            return;
+        }
         final CreativeContentPacket packet = new CreativeContentPacket();
         packet.getGroups().addAll(Registries.CREATIVE.getCreativeGroups());
         packet.getEntries().addAll(Registries.CREATIVE.getCreativeItemData());

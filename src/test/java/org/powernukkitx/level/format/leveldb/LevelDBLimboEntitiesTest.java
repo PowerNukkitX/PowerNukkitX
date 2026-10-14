@@ -1,24 +1,23 @@
 package org.powernukkitx.level.format.leveldb;
 
-import org.cloudburstmc.nbt.NbtMap;
-import org.cloudburstmc.nbt.NbtUtils;
 import org.iq80.leveldb.WriteBatch;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 import org.mockito.MockedStatic;
 import org.mockito.Mockito;
+import org.powernukkitx.ServerMockFixture;
 import org.powernukkitx.entity.Entity;
 import org.powernukkitx.level.DimensionData;
 import org.powernukkitx.level.DimensionEnum;
+import org.powernukkitx.level.Level;
 import org.powernukkitx.level.format.IChunk;
 import org.powernukkitx.level.format.LevelProvider;
-import org.powernukkitx.level.util.LevelDBKeyUtil;
 import org.powernukkitx.nbt.tag.CompoundTag;
 import org.powernukkitx.nbt.tag.FloatTag;
 import org.powernukkitx.nbt.tag.ListTag;
 import org.powernukkitx.nbt.tag.Tag;
 
-import java.io.ByteArrayInputStream;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.util.List;
@@ -28,6 +27,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
@@ -46,6 +46,12 @@ class LevelDBLimboEntitiesTest {
     private static final int TARGET_X = 2;
     private static final int TARGET_Z = -1;
 
+    @BeforeAll
+    static void boot() {
+        // Opening LevelDB storage reads the server settings
+        ServerMockFixture.boot();
+    }
+
     @Test
     void initializesCanonicalEmptyListsAndPreservesEndData(@TempDir Path tempDir) throws Exception {
         LevelDBStorage storage = new LevelDBStorage(1, tempDir.resolve("world").toString());
@@ -62,7 +68,7 @@ class LevelDBLimboEntitiesTest {
             CompoundTag overworld = storage.readGlobalCompound(OVERWORLD_KEY);
             assertNotNull(overworld);
             ListTag<?> overworldLimbo = overworld.getCompound("data").getList("LimboEntities");
-            assertEquals(Tag.TAG_Compound, overworldLimbo.type);
+            assertEquals(Tag.TAG_End, overworldLimbo.type);
             assertEquals(0, overworldLimbo.size());
 
             CompoundTag theEnd = storage.readGlobalCompound(THE_END_KEY);
@@ -71,8 +77,62 @@ class LevelDBLimboEntitiesTest {
             assertTrue(endData.containsCompound("DragonFight"));
             assertEquals(1, endData.getCompound("DragonFight").getByte("DragonKilled"));
             ListTag<?> endLimbo = endData.getList("LimboEntities");
-            assertEquals(Tag.TAG_Compound, endLimbo.type);
+            assertEquals(Tag.TAG_End, endLimbo.type);
             assertEquals(0, endLimbo.size());
+        } finally {
+            storage.close();
+        }
+    }
+
+    @Test
+    void loadsEmptyEndListWithoutRewritingIt(@TempDir Path tempDir) throws Exception {
+        LevelDBStorage storage = new LevelDBStorage(1, tempDir.resolve("world").toString());
+        try {
+            CompoundTag root = new CompoundTag().putCompound("data", new CompoundTag()
+                    .putList("LimboEntities", new ListTag<CompoundTag>(Tag.TAG_End)));
+            storage.writeGlobalCompound(OVERWORLD_KEY, root);
+            byte[] stored = storage.getDb().get(OVERWORLD_KEY);
+
+            LevelDBLimboEntities limbo = new LevelDBLimboEntities(storage);
+            limbo.initializeGeneratedDimension(OVERWORLD);
+            limbo.loadDimension(OVERWORLD);
+
+            assertArrayEquals(stored, storage.getDb().get(OVERWORLD_KEY));
+        } finally {
+            storage.close();
+        }
+    }
+
+    @Test
+    void savesEmptyListAsEndList(@TempDir Path tempDir) throws Exception {
+        LevelDBStorage storage = new LevelDBStorage(1, tempDir.resolve("world").toString());
+        try {
+            CompoundTag root = new CompoundTag().putCompound("data", new CompoundTag()
+                    .putList("LimboEntities", new ListTag<CompoundTag>(Tag.TAG_Compound)));
+            storage.writeGlobalCompound(OVERWORLD_KEY, root);
+
+            LevelDBLimboEntities limbo = new LevelDBLimboEntities(storage);
+            limbo.loadDimension(OVERWORLD);
+            limbo.saveDimension(OVERWORLD);
+
+            ListTag<?> buckets = storage.readGlobalCompound(OVERWORLD_KEY).getCompound("data").getList("LimboEntities");
+            assertEquals(Tag.TAG_End, buckets.type);
+            assertEquals(0, buckets.size());
+        } finally {
+            storage.close();
+        }
+    }
+
+    @Test
+    void rejectsNonEmptyListOfAnotherType(@TempDir Path tempDir) throws Exception {
+        LevelDBStorage storage = new LevelDBStorage(1, tempDir.resolve("world").toString());
+        try {
+            CompoundTag root = new CompoundTag().putCompound("data", new CompoundTag()
+                    .putList("LimboEntities", new ListTag<FloatTag>().add(new FloatTag(1f))));
+            storage.writeGlobalCompound(OVERWORLD_KEY, root);
+
+            LevelDBLimboEntities limbo = new LevelDBLimboEntities(storage);
+            assertThrows(IllegalStateException.class, () -> limbo.loadDimension(OVERWORLD));
         } finally {
             storage.close();
         }
@@ -84,12 +144,10 @@ class LevelDBLimboEntitiesTest {
         try {
             CompoundTag actor = createActor();
             LevelDBLimboEntities limbo = deferActor(storage, actor);
-            long actorStorageKey = LevelDBActorStorage.getActorStorageKey(ACTOR_ID);
 
-            byte[] sourceDigest = storage.getDb().get(LevelDBActorStorage.getDigestKey(SOURCE_X, SOURCE_Z, OVERWORLD));
-            assertNotNull(sourceDigest);
-            assertEquals(0, LevelDBActorStorage.readDigest(sourceDigest).size());
-            assertNull(storage.getDb().get(LevelDBActorStorage.getActorKey(actorStorageKey)));
+            // Deferring only records the actor; it reaches storage with the level data, while the
+            // source chunk drops it from its digest when that chunk is saved
+            limbo.saveDimension(OVERWORLD);
 
             CompoundTag root = storage.readGlobalCompound(OVERWORLD_KEY);
             ListTag<CompoundTag> buckets = root.getCompound("data").getList("LimboEntities", CompoundTag.class);
@@ -122,6 +180,7 @@ class LevelDBLimboEntitiesTest {
                         .thenReturn(closedEntity);
                 limbo.consumeChunk(target);
             }
+            limbo.saveDimension(OVERWORLD);
 
             CompoundTag root = storage.readGlobalCompound(OVERWORLD_KEY);
             ListTag<CompoundTag> buckets = root.getCompound("data").getList("LimboEntities", CompoundTag.class);
@@ -155,23 +214,12 @@ class LevelDBLimboEntitiesTest {
                         });
                 limbo.consumeChunk(target);
             }
+            limbo.saveDimension(OVERWORLD);
 
             CompoundTag root = storage.readGlobalCompound(OVERWORLD_KEY);
             assertEquals(0, root.getCompound("data").getList("LimboEntities", CompoundTag.class).size());
-
-            long actorStorageKey = LevelDBActorStorage.getActorStorageKey(ACTOR_ID);
-            byte[] targetDigest = storage.getDb().get(LevelDBActorStorage.getDigestKey(TARGET_X, TARGET_Z, OVERWORLD));
-            assertNotNull(targetDigest);
-            assertEquals(List.of(actorStorageKey), LevelDBActorStorage.readDigest(targetDigest));
-
-            byte[] actorBytes = storage.getDb().get(LevelDBActorStorage.getActorKey(actorStorageKey));
-            assertNotNull(actorBytes);
-            CompoundTag persistedActor = readLittleEndianCompound(actorBytes);
-            assertEquals(ACTOR_ID, persistedActor.getLong("UniqueID"));
-            assertFalse(persistedActor.contains("LimboVersion"));
-
-            byte[] digestVersion = storage.getDb().get(LevelDBKeyUtil.ACTOR_DIGEST_VERSION.getKey(TARGET_X, TARGET_Z, OVERWORLD));
-            assertArrayEquals(new byte[]{0}, digestVersion);
+            // The materialized actor is owned by the target chunk now and is written with it
+            Mockito.verify(target).setChanged();
         } finally {
             storage.close();
         }
@@ -211,15 +259,10 @@ class LevelDBLimboEntitiesTest {
 
         IChunk chunk = Mockito.mock(IChunk.class);
         Mockito.when(chunk.getProvider()).thenReturn(provider);
+        // No entity is loaded yet, so materializing never finds a duplicate
+        Mockito.when(chunk.getLevel()).thenReturn(Mockito.mock(Level.class));
         Mockito.when(chunk.getX()).thenReturn(x);
         Mockito.when(chunk.getZ()).thenReturn(z);
         return chunk;
-    }
-
-    private static CompoundTag readLittleEndianCompound(byte[] bytes) throws Exception {
-        try (ByteArrayInputStream input = new ByteArrayInputStream(bytes);
-             var reader = NbtUtils.createReaderLE(input)) {
-            return CompoundTag.fromNetwork((NbtMap) reader.readTag());
-        }
     }
 }

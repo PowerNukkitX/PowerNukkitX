@@ -317,7 +317,7 @@ public final class WorldStorageMigrationExecutor {
             }
 
             if (!isCanonicalLimboEntities(data)) {
-                data.putList("LimboEntities", new ListTag<CompoundTag>(Tag.TAG_Compound));
+                data.putList("LimboEntities", new ListTag<CompoundTag>(Tag.TAG_End));
                 changed = true;
             }
 
@@ -334,7 +334,7 @@ public final class WorldStorageMigrationExecutor {
         }
 
         ListTag<?> buckets = data.getList("LimboEntities");
-        if (buckets.type != Tag.TAG_Compound) {
+        if (buckets.type != Tag.TAG_Compound && buckets.size() != 0) {
             return false;
         }
 
@@ -347,7 +347,7 @@ public final class WorldStorageMigrationExecutor {
             }
 
             ListTag<?> entityTags = bucket.getList("EntityTagList");
-            if (entityTags.type != Tag.TAG_Compound
+            if ((entityTags.type != Tag.TAG_Compound && entityTags.size() != 0)
                     || !chunks.add(Level.chunkHash(bucket.getInt("ChunkX"), bucket.getInt("ChunkZ")))) {
                 return false;
             }
