@@ -27,11 +27,13 @@ import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.cloudburstmc.netty.channel.nethernet.NetherNetChannelFactory;
 import org.cloudburstmc.netty.channel.nethernet.config.NetherChannelOption;
-import org.cloudburstmc.netty.channel.nethernet.signaling.NetherNetHTTPSignaling;
-import org.cloudburstmc.netty.channel.nethernet.signaling.NetherNetServerSignaling.PongData;
+import org.cloudburstmc.netty.channel.nethernet.signaling.NetherNetHTTPServerSignaling;
+import org.cloudburstmc.netty.channel.nethernet.signaling.IceServerInfo;
+import org.cloudburstmc.netty.channel.nethernet.signaling.JoinRefusal;
+import org.cloudburstmc.netty.channel.nethernet.signaling.PongData;
 import org.cloudburstmc.netty.channel.nethernet.signaling.NetherNetSignaling;
 import org.cloudburstmc.netty.util.nethernet.NetherNetLogging;
-import org.cloudburstmc.netty.util.nethernet.ServerIdentity;
+import org.cloudburstmc.netty.util.nethernet.OperatorIdentity;
 import org.cloudburstmc.netty.util.nethernet.TokenTrust;
 import org.cloudburstmc.netty.util.nethernet.TrustedProxies;
 import org.cloudburstmc.netty.channel.raknet.RakChannelFactory;
@@ -107,7 +109,7 @@ public class Network implements NetworkInterface, SignalingService {
     @Getter
     private final NetworkSettings.TransportType transport;
     private final EventLoopGroup eventLoopGroup;
-    private final @Nullable NetherNetHTTPSignaling signaling;
+    private final @Nullable NetherNetHTTPServerSignaling signaling;
     private final @Nullable Channel channel;
     /** Every bound RakNet listener; {@link #channel} is the first of them. Empty on NetherNet. */
     private final List<Channel> rakChannels;
@@ -427,13 +429,13 @@ public class Network implements NetworkInterface, SignalingService {
         }
     }
 
-    private NetherNetHTTPSignaling buildSignaling(NetherNetSettings settings, InetSocketAddress address, int icePort,
+    private NetherNetHTTPServerSignaling buildSignaling(NetherNetSettings settings, InetSocketAddress address, int icePort,
                                                   boolean iceOnListenerPort, boolean serveHttp) {
         try {
-            ServerIdentity identity = ServerIdentityProvider.identity(this.server);
+            OperatorIdentity identity = ServerIdentityProvider.identity(this.server);
             log.info("NetherNet identifies this operator to players as {}", ServerIdentityProvider.domain(this.server));
 
-            return new NetherNetHTTPSignaling.Builder()
+            return new NetherNetHTTPServerSignaling.Builder()
                 .setIdentity(identity)
                 .setServeHttp(serveHttp)
                 .setTrustedProxies(TrustedProxies.parse(settings.trustedProxies()))
@@ -444,7 +446,7 @@ public class Network implements NetworkInterface, SignalingService {
                 .setIceOnLocalPort(icePort <= 0 && iceOnListenerPort)
                 .setTokenTrust(TokenTrust.ANY)
                 .setMotdProvider((host, client) -> Network.this.advertisement())
-                .setPlayerFilter((host, player) -> Network.this.acceptsConnections())
+                .setPlayerFilter((host, player) -> Network.this.acceptsConnections() ? null : JoinRefusal.FULL)
                 .build();
         } catch (Exception e) {
             throw new IllegalStateException("Failed to configure NetherNet signalling", e);
@@ -523,12 +525,12 @@ public class Network implements NetworkInterface, SignalingService {
      * The configured STUN and TURN servers, as one entry carrying every URL. Credentials belong in
      * the URL, which is the only place the configuration has to put them.
      */
-    private static List<NetherNetSignaling.IceServerInfo> iceServers(NetherNetSettings settings) {
+    private static List<IceServerInfo> iceServers(NetherNetSettings settings) {
         List<String> urls = settings.iceServers();
         if (urls.isEmpty()) {
             return List.of();
         }
-        return List.of(new NetherNetSignaling.IceServerInfo.Builder().setUrls(List.copyOf(urls)).build());
+        return List.of(new IceServerInfo.Builder().setUrls(List.copyOf(urls)).build());
     }
 
     /**
@@ -791,7 +793,7 @@ public class Network implements NetworkInterface, SignalingService {
 
     @Override
     public CompletableFuture<String> acceptOffer(String networkId, String offer, InetSocketAddress clientAddress) {
-        NetherNetHTTPSignaling signaling = this.signaling;
+        NetherNetHTTPServerSignaling signaling = this.signaling;
         if (signaling == null) {
             return CompletableFuture.failedFuture(new IllegalStateException("NetherNet is not bound"));
         }

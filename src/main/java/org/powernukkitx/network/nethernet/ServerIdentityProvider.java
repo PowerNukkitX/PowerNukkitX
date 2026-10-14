@@ -2,7 +2,7 @@ package org.powernukkitx.network.nethernet;
 
 import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
-import org.cloudburstmc.netty.util.nethernet.ServerIdentity;
+import org.cloudburstmc.netty.util.nethernet.OperatorIdentity;
 import org.powernukkitx.Server;
 import org.powernukkitx.utils.TextFormat;
 
@@ -22,10 +22,10 @@ import java.nio.file.Path;
 @UtilityClass
 public class ServerIdentityProvider {
 
-    private volatile ServerIdentity identity;
+    private volatile OperatorIdentity identity;
 
-    public ServerIdentity identity(Server server) throws Exception {
-        ServerIdentity current = identity;
+    public OperatorIdentity identity(Server server) throws Exception {
+        OperatorIdentity current = identity;
         if (current != null) {
             return current;
         }
@@ -38,7 +38,7 @@ public class ServerIdentityProvider {
         }
     }
 
-    private ServerIdentity load(Server server) throws Exception {
+    private OperatorIdentity load(Server server) throws Exception {
         String configured = server.getSettings().networkSettings().netherNetSettings().identityFile();
         File pem = Path.of(server.getDataPath()).resolve(configured).toFile();
         File parent = pem.getParentFile();
@@ -47,7 +47,7 @@ public class ServerIdentityProvider {
         }
 
         boolean existed = pem.isFile();
-        ServerIdentity loaded = ServerIdentity.fromPemOrCreate(pem, domain(server));
+        OperatorIdentity loaded = OperatorIdentity.fromPemOrCreate(pem, domain(server));
         if (!existed) {
             log.info("Generated a NetherNet identity at {}. Share this file across a fleet to be trusted as one "
                 + "operator, and keep it: replacing it re-prompts every player", pem);

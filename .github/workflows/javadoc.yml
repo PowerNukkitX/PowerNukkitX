@@ -5,10 +5,20 @@ on:
     branches:
       - stable
   workflow_dispatch:
+    inputs:
+      cleanup_only:
+        description: Skip the Javadoc build and only delete old github-pages deployments
+        type: boolean
+        default: false
+
+concurrency:
+  group: github-pages
+  cancel-in-progress: false
 
 jobs:
   build-and-deploy:
     name: Build and Deploy Javadoc
+    if: ${{ !inputs.cleanup_only }}
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -38,3 +48,41 @@ jobs:
           path: build/docs/javadoc
 
       - uses: actions/deploy-pages@v5
+
+  cleanup-deployments:
+    name: Delete old github-pages deployments
+    needs: build-and-deploy
+    if: ${{ !cancelled() && (needs.build-and-deploy.result == 'success' || inputs.cleanup_only) }}
+    runs-on: ubuntu-latest
+    permissions:
+      deployments: write
+    env:
+      GH_TOKEN: ${{ github.token }}
+      MAX_DELETIONS: 300
+
+    steps:
+      - name: Delete all but the latest deployment
+        run: |
+          api="repos/${GITHUB_REPOSITORY}/deployments"
+          mapfile -t ids < <(gh api --paginate "${api}?environment=github-pages&per_page=100" --jq '.[].id')
+          if (( ${#ids[@]} <= 1 )); then
+            echo "Nothing to delete (${#ids[@]} deployment(s))."
+            exit 0
+          fi
+          echo "Found ${#ids[@]} github-pages deployments, keeping ${ids[0]}."
+
+          deleted=0
+          for id in "${ids[@]:1}"; do
+            if (( deleted >= MAX_DELETIONS )); then
+              echo "::notice::Reached MAX_DELETIONS (${MAX_DELETIONS}); $(( ${#ids[@]} - 1 - deleted )) old deployment(s) left for the next run."
+              break
+            fi
+            if ! gh api -X POST "${api}/${id}/statuses" -f state=inactive --silent \
+              || ! gh api -X DELETE "${api}/${id}" --silent; then
+              echo "::warning::Failed to delete deployment ${id} (possibly rate limited); stopping after ${deleted} deletion(s)."
+              break
+            fi
+            deleted=$(( deleted + 1 ))
+            sleep 0.5
+          done
+          echo "Deleted ${deleted} deployment(s)."
