@@ -135,6 +135,7 @@
   "pnx.settings.gameplay.itemDespawnTicks": "How long a dropped item lives before it despawns, in ticks (20 ticks = 1 second). Lower values keep fewer item entities alive and directly cut level worker time",
   "pnx.settings.gameplay.itemMergeInterval": "How often, in ticks, a dropped item looks for nearby stacks to merge with. Lower values collapse item piles faster at the cost of more frequent lookups",
   "pnx.settings.gameplay.itemMergeRadius": "How far, in blocks, a dropped item looks for stacks to merge with",
+  "pnx.settings.gameplay.itemRestingScanInterval": "How many ticks a resting dropped item waits between scans of the blocks around it (fire, lava, water, collisions). 1 scans every tick, like vanilla. Higher values save work on large item piles but make reactions up to that many ticks late",
   "pnx.settings.gameplay.enableExplosionBlockDamage": "Whether explosions destroy blocks. Disabling keeps explosion knockback and entity damage but never breaks blocks (stronger than the mobgriefing gamerule; also affects TNT)",
   "pnx.settings.gameplay.enableBlockGravity": "Whether gravity-affected blocks (sand, gravel, concrete powder etc.) fall. Disabling keeps them floating in place",
   "pnx.settings.gameplay.enableHunger": "Whether player hunger depletes. Disabling freezes the food level (no starvation, no sprint-jump drain)",

@@ -36,12 +36,6 @@ public class EntityItem extends Entity {
         return ITEM;
     }
 
-    /**
-     * How often a resting item rescans the blocks it touches. Scanning the surrounding blocks is by
-     * far the most expensive part of ticking large item piles, and an item that sits still on the
-     * ground touches the same blocks every tick.
-     */
-    private static final int RESTING_SCAN_INTERVAL = 5;
     private static final double RESTING_MOTION_EPSILON = 0.00001;
 
     private static final int FLUID_NONE = 0;
@@ -216,7 +210,7 @@ public class EntityItem extends Entity {
      */
     private void updateWorldScanBudget() {
         if (isResting()) {
-            if (++this.restingTicks < RESTING_SCAN_INTERVAL) {
+            if (++this.restingTicks < this.server.getSettings().gameplaySettings().itemRestingScanInterval()) {
                 this.scanWorldThisTick = false;
                 return;
             }
