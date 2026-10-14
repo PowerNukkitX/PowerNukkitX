@@ -17,6 +17,7 @@ import org.powernukkitx.item.tools.copper.ItemCopperSword;
 import org.powernukkitx.nbt.tag.CompoundTag;
 import org.powernukkitx.plugin.Plugin;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
+import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 import it.unimi.dsi.fastutil.objects.ObjectSet;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
@@ -837,8 +838,12 @@ public final class ItemRegistry implements ItemID, IRegistry<String, Item, Class
         }
     }
 
+    /**
+     * @return a snapshot of every registered item identifier, vanilla and custom; changes to the
+     * returned set do not affect the registry
+     */
     public ObjectSet<String> getAll() {
-        ObjectSet<String> ids = CACHE_CONSTRUCTORS.keySet();
+        ObjectSet<String> ids = new ObjectOpenHashSet<>(CACHE_CONSTRUCTORS.keySet());
         ids.addAll(CUSTOM_ITEM_DEFINITIONS.keySet());
         return ids;
     }
