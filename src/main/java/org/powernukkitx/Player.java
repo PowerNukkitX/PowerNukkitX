@@ -6952,6 +6952,11 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         BLOCK
     }
 
+    /**
+     * Sends permitted, registered client commands using their registered labels.
+     * Aliases of the same command do not create duplicate entries. No packet is sent
+     * when no valid command data is available. Call on the main server loop.
+     */
     public void syncAvailableCommands() {
         AvailableCommandsPacket pk = new AvailableCommandsPacket();
         Map<String, CommandDataVersions> data = new HashMap<>();
@@ -6968,7 +6973,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
             if (!command.testPermissionSilent(this.getPlayer()) || !command.isRegistered() || command.isServerSideOnly()) {
                 continue;
             }
-            if (!distinct.add(command)){
+            if (!distinct.add(command)) {
                 continue;
             }
             ++count;
@@ -6980,7 +6985,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
 
             if (!filtered.isEmpty()) {
                 final List<CommandData> commandData = new ObjectArrayList<>();
-                for (Entry<String, CommandDataVersions> entry : filtered.entrySet()){
+                for (Entry<String, CommandDataVersions> entry : filtered.entrySet()) {
                     commandData.addAll(entry.getValue().toNetwork(entry.getKey()));
                 }
 

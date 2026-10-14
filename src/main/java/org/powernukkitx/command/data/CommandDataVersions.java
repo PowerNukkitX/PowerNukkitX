@@ -2,6 +2,8 @@ package org.powernukkitx.command.data;
 
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import org.cloudburstmc.protocol.bedrock.data.command.CommandData;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -40,11 +42,23 @@ public class CommandDataVersions {
     //size 1
     public List<NukkitCommandData> versions = new ArrayList<>();
 
-    public List<CommandData> toNetwork() {
-       return toNetwork(null);
+    /**
+     * Converts each version using its original command name without changing the source data.
+     *
+     * @return the converted versions, or an empty list when there are none
+     */
+    public @NotNull List<CommandData> toNetwork() {
+        return toNetwork(null);
     }
 
-    public List<CommandData> toNetwork(String nameOverride) {
+    /**
+     * Converts each version with a registered label without changing the source data.
+     * The caller must prevent concurrent modification of {@link #versions} and its contents.
+     *
+     * @param nameOverride the name sent to the client, or null to keep each original name
+     * @return the converted versions, or an empty list when there are none
+     */
+    public @NotNull List<CommandData> toNetwork(@Nullable String nameOverride) {
         final List<CommandData> list = new ObjectArrayList<>();
         for (NukkitCommandData version : this.versions) {
             list.add(nameOverride == null ? version.toNetwork() : version.toNetwork(nameOverride));
