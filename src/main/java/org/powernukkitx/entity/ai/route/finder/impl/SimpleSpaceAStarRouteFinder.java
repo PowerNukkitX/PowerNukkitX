@@ -24,9 +24,6 @@ public class SimpleSpaceAStarRouteFinder extends SimpleFlatAStarRouteFinder {
 
     public SimpleSpaceAStarRouteFinder(IPosEvaluator blockEvaluator, EntityIntelligent entity) {
         super(blockEvaluator, entity);
-        // 3D A* expands 26 neighbours per node instead of 8, so the default depth of 100 costs
-        // roughly three times as much per search as it does for the flat finder.
-        setMaxSearchDepth(40);
     }
 
     @Override
