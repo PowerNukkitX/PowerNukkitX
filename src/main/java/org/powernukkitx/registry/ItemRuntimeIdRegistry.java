@@ -14,6 +14,7 @@ import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
+import org.jetbrains.annotations.ApiStatus;
 import org.cloudburstmc.protocol.bedrock.codec.BedrockCodecHelper;
 import org.cloudburstmc.protocol.common.util.VarInts;
 
@@ -23,6 +24,7 @@ import java.io.InputStreamReader;
 import java.io.UncheckedIOException;
 import java.util.HashMap;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicLong;
 
 /**
  * @author Cool_Loong
@@ -41,6 +43,7 @@ public class ItemRuntimeIdRegistry implements IRegistry<String, Integer, Integer
     private static final Int2ObjectOpenHashMap<String> ID2NAME = new Int2ObjectOpenHashMap<>();
     @Getter
     private static final ObjectOpenHashSet<ItemData> ITEMDATA = new ObjectOpenHashSet<>();
+    private static final AtomicLong ITEM_DATA_CHANGES = new AtomicLong();
 
     private static ByteBuf itemPalette;
 
@@ -158,6 +161,7 @@ public class ItemRuntimeIdRegistry implements IRegistry<String, Integer, Integer
         for (int i = 0; i < dataSize; i++) {
             ITEMDATA.add(new ItemData(in.readUTF(), in.readInt(), in.readInt(), in.readBoolean()));
         }
+        ITEM_DATA_CHANGES.incrementAndGet();
         int palLen = in.readInt();
         itemPalette = Unpooled.buffer();
         itemPalette.readBytes(palLen);
@@ -191,6 +195,7 @@ public class ItemRuntimeIdRegistry implements IRegistry<String, Integer, Integer
             ID2NAME.put(entry.runtimeId(), entry.identifier);
             int version = ItemVersionResolver.resolveItemVersion(entry.isComponent, ItemVersionResolver.isBlock(entry.identifier));
             ITEMDATA.add(new ItemData(entry.identifier, entry.runtimeId, version, entry.isComponent));
+            ITEM_DATA_CHANGES.incrementAndGet();
         } else {
             throw new RegisterException("The item: " + entry.identifier + " runtime id has been registered!");
         }
@@ -221,8 +226,20 @@ public class ItemRuntimeIdRegistry implements IRegistry<String, Integer, Integer
     public void register1(ItemData entry) {
         if (!ITEMDATA.contains(entry)) {
             ITEMDATA.add(entry);
+            ITEM_DATA_CHANGES.incrementAndGet();
             register0(entry.identifier, entry.runtimeId);
         }
+    }
+
+    /**
+     * Changes whenever an item is added to {@link #getITEMDATA()}, so anything built from the
+     * item data can tell it is outdated without comparing the items.
+     *
+     * @return a counter that only ever grows
+     */
+    @ApiStatus.Internal
+    public static long getItemDataChanges() {
+        return ITEM_DATA_CHANGES.get();
     }
 
     public record RuntimeEntry(String identifier, int runtimeId, boolean isComponent) {

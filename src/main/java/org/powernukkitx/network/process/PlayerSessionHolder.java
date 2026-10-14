@@ -145,11 +145,11 @@ public class PlayerSessionHolder {
      * registered after it was built. Only the immutable definitions are shared; every client gets a
      * packet of its own, since plugins may change a packet while it is sent.
      */
-    private record ItemRegistryCache(int itemDataCount, int customItemCount, NbtMap itemComponents,
+    private record ItemRegistryCache(long itemDataChanges, long customItemChanges, NbtMap itemComponents,
                                      List<ItemDefinition> itemDefinitions, DefinitionRegistry<ItemDefinition> definitions) {
         boolean matches() {
-            return this.itemDataCount == ItemRuntimeIdRegistry.getITEMDATA().size()
-                && this.customItemCount == Registries.ITEM.getCustomItemDefinition().size()
+            return this.itemDataChanges == ItemRuntimeIdRegistry.getItemDataChanges()
+                && this.customItemChanges == Registries.ITEM.getCustomItemDefinitionChanges()
                 && this.itemComponents == ItemRegistry.getItemComponents();
         }
     }
@@ -442,8 +442,19 @@ public class PlayerSessionHolder {
                     return null;
                 })
             : CompletableFuture.completedFuture(null);
-        spawnChunk.thenRun(() -> level.getScheduler().scheduleTask(InternalPlugin.INSTANCE,
-            () -> this.spawnWithinBudget(server, level, () -> this.completeSpawn(server, uuid, preloaded))));
+        spawnChunk.thenRun(() -> this.scheduleSpawn(server, uuid, preloaded, level));
+    }
+
+    /**
+     * Hands the creation of the player to the thread of {@code level}, or of the default level when
+     * {@code level} was unloaded meanwhile: an unloaded level never runs its tasks again, which
+     * would leave the login waiting until the client gives up. The player then joins the default
+     * level, as it does whenever its stored level is not loaded.
+     */
+    private void scheduleSpawn(Server server, UUID uuid, Server.PreloadedPlayerData preloaded, Level level) {
+        final Level target = level.isClosing() || server.getLevel(level.getId()) != level ? server.getDefaultLevel() : level;
+        target.getScheduler().scheduleTask(InternalPlugin.INSTANCE,
+            () -> this.spawnWithinBudget(server, target, () -> this.completeSpawn(server, uuid, preloaded, target)));
     }
 
     /**
@@ -497,14 +508,26 @@ public class PlayerSessionHolder {
         if (!this.isSpawning()) {
             final Player created = this.player;
             if (created != null) {
-                created.getLevel().getScheduler().scheduleTask(InternalPlugin.INSTANCE, this::drainSpawnBacklog);
+                this.scheduleDrain(created.getLevel());
             } else {
                 this.spawnBacklog.clear();
             }
         }
     }
 
-    private void drainSpawnBacklog() {
+    private void scheduleDrain(Level level) {
+        level.getScheduler().scheduleTask(InternalPlugin.INSTANCE, () -> this.drainSpawnBacklog(level));
+    }
+
+    /**
+     * Handles the packets held back while the player was created, on the thread of {@code owner}.
+     * When the player is in another level, or moves to one while a packet is handled, the rest is
+     * handed to the thread of that level instead, so packets are always handled by the thread
+     * that ticks the player.
+     *
+     * @param owner the level whose thread this runs on
+     */
+    private void drainSpawnBacklog(Level owner) {
         final Player created = this.player;
         if (created == null || !created.isConnected()
                 || !(this.session.getPacketHandler() instanceof NetworkPacketHandler handler)) {
@@ -513,6 +536,11 @@ public class PlayerSessionHolder {
         }
         BedrockPacket packet;
         while ((packet = this.spawnBacklog.peek()) != null) {
+            final Level current = created.getLevel();
+            if (current != owner) {
+                this.scheduleDrain(current);
+                return;
+            }
             try {
                 handler.processInbound(packet);
             } catch (Exception e) {
@@ -528,7 +556,7 @@ public class PlayerSessionHolder {
      * can spawn. A disconnect that happened meanwhile is handled here, because the network thread
      * leaves a session in {@link SessionState#SPAWNING} alone.
      */
-    private void completeSpawn(Server server, UUID uuid, Server.PreloadedPlayerData preloaded) {
+    private void completeSpawn(Server server, UUID uuid, Server.PreloadedPlayerData preloaded, Level owner) {
         if (!this.session.isConnected()) {
             this.endPlayerDataPreload(server, uuid);
             return;
@@ -563,7 +591,7 @@ public class PlayerSessionHolder {
         }
 
         try {
-            this.drainSpawnBacklog();
+            this.drainSpawnBacklog(owner);
         } finally {
             this.setState(SessionState.CHUNKS);
         }
@@ -571,7 +599,7 @@ public class PlayerSessionHolder {
         if (created != null && !this.session.isConnected()) {
             created.close("Disconnected");
         }
-        this.drainSpawnBacklog();
+        this.drainSpawnBacklog(owner);
     }
 
     public void sendBeforeSpawn(Server server) {
@@ -940,8 +968,8 @@ public class PlayerSessionHolder {
             if (cache != null && cache.matches()) {
                 return cache;
             }
-            final int itemDataCount = ItemRuntimeIdRegistry.getITEMDATA().size();
-            final int customItemCount = Registries.ITEM.getCustomItemDefinition().size();
+            final long itemDataChanges = ItemRuntimeIdRegistry.getItemDataChanges();
+            final long customItemChanges = Registries.ITEM.getCustomItemDefinitionChanges();
             final NbtMap itemComponents = ItemRegistry.getItemComponents();
             final List<ItemDefinition> itemDefinitions = new ObjectArrayList<>();
 
@@ -970,7 +998,7 @@ public class PlayerSessionHolder {
                 .addAll(itemDefinitions)
                 .build();
 
-            cache = new ItemRegistryCache(itemDataCount, customItemCount, itemComponents,
+            cache = new ItemRegistryCache(itemDataChanges, customItemChanges, itemComponents,
                 List.copyOf(itemDefinitions), itemDefinitionRegistry);
             itemRegistryCache = cache;
             return cache;
