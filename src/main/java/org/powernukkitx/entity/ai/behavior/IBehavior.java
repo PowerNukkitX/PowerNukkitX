@@ -45,7 +45,7 @@ public interface IBehavior extends IBehaviorExecutor, IBehaviorEvaluator {
      * @return whether the evaluator is re-checked on every tick
      */
     default boolean shouldReevaluate() {
-        return true;
+        return false;
     }
 
     /**
