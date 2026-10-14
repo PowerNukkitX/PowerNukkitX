@@ -1,6 +1,15 @@
 package org.powernukkitx.item;
 
+import org.powernukkitx.item.definition.ItemDefinition;
+
 public class ItemWoodenPickaxe extends ItemTool {
+    public static final ItemDefinition DEFINITION = TOOL.toBuilder()
+            .attackDamage(2)
+            .maxDurability(ItemTool.DURABILITY_WOODEN)
+            .pickaxe(true)
+            .tier(ItemTool.TIER_WOODEN)
+            .build();
+
     public ItemWoodenPickaxe() {
         this(0, 1);
     }
@@ -10,26 +19,6 @@ public class ItemWoodenPickaxe extends ItemTool {
     }
 
     public ItemWoodenPickaxe(Integer meta, int count) {
-        super(WOODEN_PICKAXE, meta, count, "Wooden Pickaxe");
-    }
-
-    @Override
-    public int getMaxDurability() {
-        return ItemTool.DURABILITY_WOODEN;
-    }
-
-    @Override
-    public boolean isPickaxe() {
-        return true;
-    }
-
-    @Override
-    public int getTier() {
-        return ItemTool.TIER_WOODEN;
-    }
-
-    @Override
-    public int getAttackDamage() {
-        return 2;
+        super(WOODEN_PICKAXE, meta, count, "Wooden Pickaxe", DEFINITION);
     }
 }

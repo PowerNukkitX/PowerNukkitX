@@ -3,12 +3,17 @@ package org.powernukkitx.item;
 import org.powernukkitx.Player;
 import org.powernukkitx.entity.effect.Effect;
 import org.powernukkitx.entity.effect.EffectType;
+import org.powernukkitx.item.definition.ItemDefinition;
 
 /**
  * @author Snake1999
  * @since 2016/1/14
  */
 public class ItemRottenFlesh extends ItemFood {
+    public static final ItemDefinition DEFINITION = FOOD.toBuilder()
+            .nutrition(4)
+            .saturation(0.8f)
+            .build();
 
     public ItemRottenFlesh() {
         this(0, 1);
@@ -19,17 +24,7 @@ public class ItemRottenFlesh extends ItemFood {
     }
 
     public ItemRottenFlesh(Integer meta, int count) {
-        super(ROTTEN_FLESH, meta, count, "Rotten Flesh");
-    }
-
-    @Override
-    public int getNutrition() {
-        return 4;
-    }
-
-    @Override
-    public float getSaturation() {
-        return 0.8F;
+        super(ROTTEN_FLESH, meta, count, "Rotten Flesh", DEFINITION);
     }
 
     @Override

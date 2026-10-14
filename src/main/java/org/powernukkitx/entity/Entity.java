@@ -72,6 +72,7 @@ import org.powernukkitx.nbt.tag.CompoundTag;
 import org.powernukkitx.nbt.tag.FloatTag;
 import org.powernukkitx.nbt.tag.ListTag;
 import org.powernukkitx.nbt.tag.StringTag;
+import org.powernukkitx.network.SharedPacket;
 import org.powernukkitx.plugin.Plugin;
 import org.powernukkitx.registry.EntityRegistry;
 import org.powernukkitx.registry.Registries;
@@ -1677,7 +1678,7 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
             }
         }
 
-        addActorPacket.setActorData(this.actorDataMap);
+        addActorPacket.setActorData(this.snapshotActorDataMap());
 
         int controlSeat = getControllingSeatIndex();
         for (int i = 0; i < this.passengers.size(); i++) {
@@ -1731,7 +1732,7 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
 
     public void sendData(Player player, ActorDataMap data) {
         final SetActorDataPacket packet = new SetActorDataPacket();
-        packet.setActorData(data == null ? this.actorDataMap : data);
+        packet.setActorData(data == null || data == this.actorDataMap ? this.snapshotActorDataMap() : data);
         packet.setTargetRuntimeID(this.runtimeId());
         PropertySyncData syncData = this.propertySyncData();
         packet.getSyncedProperties().getFloatProperties().addAll(syncData.getFloatProperties());
@@ -1746,20 +1747,21 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
 
     public void sendData(Player[] players, ActorDataMap data) {
         final SetActorDataPacket packet = new SetActorDataPacket();
-        packet.setActorData(data == null ? this.actorDataMap : data);
+        packet.setActorData(data == null || data == this.actorDataMap ? this.snapshotActorDataMap() : data);
         packet.setTargetRuntimeID(this.runtimeId());
         PropertySyncData syncData = this.propertySyncData();
         packet.getSyncedProperties().getFloatProperties().addAll(syncData.getFloatProperties());
         packet.getSyncedProperties().getIntProperties().addAll(syncData.getIntProperties());
 
+        final BedrockPacket shared = SharedPacket.forBroadcast(packet, players.length);
         for (Player player : players) {
             if (player == this) {
                 continue;
             }
-            player.sendPacket(packet);
+            player.sendPacket(player.getClass() == Player.class ? shared : packet);
         }
         if (this instanceof Player player) {
-            player.sendPacket(packet);
+            player.sendPacket(player.getClass() == Player.class ? shared : packet);
         }
     }
 
@@ -6456,6 +6458,24 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
 
     public ActorDataMap getActorDataMap() {
         return this.actorDataMap;
+    }
+
+    /**
+     * A copy of this entity's data for a packet. Packets are encoded on the network thread after
+     * they are sent, while the entity keeps changing its data on its level thread, so a packet that
+     * holds the live {@link #getActorDataMap() map} can see it change halfway through encoding and
+     * fail to encode.
+     *
+     * @return a copy, flags included, that no longer changes with the entity
+     */
+    public ActorDataMap snapshotActorDataMap() {
+        final ActorDataMap copy = new ActorDataMap();
+        copy.putAll(this.actorDataMap);
+        final EnumSet<ActorFlags> flags = this.actorDataMap.getFlags();
+        if (flags != null) {
+            copy.putFlags(EnumSet.copyOf(flags));
+        }
+        return copy;
     }
 
     @Nullable

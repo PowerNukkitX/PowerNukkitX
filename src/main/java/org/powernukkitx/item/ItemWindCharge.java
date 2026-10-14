@@ -3,10 +3,14 @@ package org.powernukkitx.item;
 import org.powernukkitx.Player;
 import org.powernukkitx.entity.Entity;
 import org.powernukkitx.entity.projectile.EntityWindCharge;
+import org.powernukkitx.item.definition.ItemDefinition;
 
 import static org.powernukkitx.entity.EntityID.WIND_CHARGE_PROJECTILE;
 
 public class ItemWindCharge extends ProjectileItem {
+    public static final ItemDefinition DEFINITION = ProjectileItem.DEFINITION.toBuilder()
+            .maxStackSize(64)
+            .build();
 
     public ItemWindCharge() {
         this(0, 1);
@@ -17,12 +21,7 @@ public class ItemWindCharge extends ProjectileItem {
     }
 
     public ItemWindCharge(Integer meta, int count) {
-        super(WIND_CHARGE, 0, count, "Wind Charge");
-    }
-
-    @Override
-    public int getMaxStackSize() {
-        return 64;
+        super(WIND_CHARGE, 0, count, "Wind Charge", DEFINITION);
     }
 
     @Override

@@ -1,9 +1,15 @@
 package org.powernukkitx.item;
 
 import org.powernukkitx.entity.effect.PotionType;
+import org.powernukkitx.item.definition.ItemDefinition;
 import org.powernukkitx.nbt.tag.CompoundTag;
 
 public class ItemSplashPotion extends ProjectileItem {
+    public static final ItemDefinition DEFINITION = ProjectileItem.DEFINITION.toBuilder()
+            .canBeActivated(true)
+            .maxStackSize(1)
+            .build();
+
     public ItemSplashPotion() {
         this(0, 1);
     }
@@ -13,7 +19,7 @@ public class ItemSplashPotion extends ProjectileItem {
     }
 
     public ItemSplashPotion(Integer meta, int count) {
-        super(SPLASH_POTION, meta, count, "Splash Potion");
+        super(SPLASH_POTION, meta, count, "Splash Potion", DEFINITION);
         updateName();
     }
 
@@ -30,16 +36,6 @@ public class ItemSplashPotion extends ProjectileItem {
         } else {
             name = ItemPotion.buildName(potion, "Splash Potion", true);
         }
-    }
-
-    @Override
-    public int getMaxStackSize() {
-        return 1;
-    }
-
-    @Override
-    public boolean canBeActivated() {
-        return true;
     }
 
     @Override

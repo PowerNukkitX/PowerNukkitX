@@ -35,6 +35,7 @@ public final class InitialSubChunkLighter {
     private final int minSectionY;
     private final int maxSectionY;
     private final IChunk[][] chunks = new IChunk[NEIGHBORHOOD_SIZE][NEIGHBORHOOD_SIZE];
+    private final boolean[][] skipSky = new boolean[NEIGHBORHOOD_SIZE][NEIGHBORHOOD_SIZE];
     private final Slot[] slots = new Slot[SLOT_TABLE_SIZE];
     private final IntWorkQueue[] skySourceQueues = createQueues();
     private final IntWorkQueue[] skyPropagationQueues = createQueues();
@@ -46,9 +47,24 @@ public final class InitialSubChunkLighter {
     private int blockPendingMask;
 
     /**
-     * Creates a lighter centered on the supplied chunk.
+     * Creates a lighter centered on the supplied chunk that spreads sky light into every loaded
+     * neighbour.
      */
     public InitialSubChunkLighter(Chunk centerChunk) {
+        this(centerChunk, false);
+    }
+
+    /**
+     * Creates a lighter centered on the supplied chunk.
+     *
+     * @param skipUnlitNeighbors whether to leave out sky light spreading into neighbouring chunks
+     *                           that have not been lit yet. Their own initial lighting replaces
+     *                           their sky light and takes the light of this chunk from its border,
+     *                           so spreading into them is work thrown away. Only safe while those
+     *                           neighbours stay unlit until this chunk is done, see
+     *                           {@link #skippedNeighborStartedLighting()}.
+     */
+    public InitialSubChunkLighter(Chunk centerChunk, boolean skipUnlitNeighbors) {
         this.minHeight = centerChunk.getDimensionData().getMinHeight();
         this.minSectionY = centerChunk.getDimensionData().getMinSectionY();
         this.maxSectionY = centerChunk.getDimensionData().getMaxSectionY();
@@ -61,6 +77,8 @@ public final class InitialSubChunkLighter {
                     chunks[subChunkX][subChunkZ] = centerChunk;
                 } else {
                     chunks[subChunkX][subChunkZ] = provider.getLoadedChunk(chunkX, chunkZ);
+                    skipSky[subChunkX][subChunkZ] = skipUnlitNeighbors && chunks[subChunkX][subChunkZ] instanceof Chunk neighbor
+                            && neighbor.getLightingState() == ChunkLightingState.NEEDS_LIGHTING;
                 }
             }
         }
@@ -72,6 +90,23 @@ public final class InitialSubChunkLighter {
                 }
             }
         }
+    }
+
+    /**
+     * Whether a neighbour that sky light was not spread into has started its own initial lighting
+     * since this lighter was created. That lighting may have taken the border of this chunk before
+     * this chunk was done, in which case the sections have to be lit again without skipping.
+     */
+    public boolean skippedNeighborStartedLighting() {
+        for (int subChunkX = 0; subChunkX < NEIGHBORHOOD_SIZE; subChunkX++) {
+            for (int subChunkZ = 0; subChunkZ < NEIGHBORHOOD_SIZE; subChunkZ++) {
+                if (skipSky[subChunkX][subChunkZ]
+                        && ((Chunk) chunks[subChunkX][subChunkZ]).getLightingState() != ChunkLightingState.NEEDS_LIGHTING) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
     /**
@@ -101,11 +136,11 @@ public final class InitialSubChunkLighter {
                     IChunk chunk = chunks[subChunkX][subChunkZ];
                     Slot slot = slots[slotIndex(subChunkX, subChunkY, subChunkZ)];
                     if (!validY || chunk == null) {
-                        slot.bind(null, sectionY, null);
+                        slot.bind(null, sectionY, null, false);
                         continue;
                     }
 
-                    slot.bind(chunk, sectionY, chunk.getSection(sectionY));
+                    slot.bind(chunk, sectionY, chunk.getSection(sectionY), skipSky[subChunkX][subChunkZ]);
                 }
             }
         }
@@ -397,7 +432,7 @@ public final class InitialSubChunkLighter {
             int toDoWord,
             long toDoMask) {
         Slot slot = slots[slotIndex(neighborIndex)];
-        if (slot == null || !slot.available) return;
+        if (slot == null || !slot.available || slot.skipSky) return;
 
         int cellIndex = SubChunkLightIndex.cellIndex(neighborIndex);
         int current = slot.getSkyLight(cellIndex);
@@ -597,8 +632,10 @@ public final class InitialSubChunkLighter {
         private boolean blockLoaded;
         private boolean dirtySky;
         private boolean dirtyBlock;
-        private void bind(IChunk chunk, int sectionY, ChunkSection section) {
+        private boolean skipSky;
+        private void bind(IChunk chunk, int sectionY, ChunkSection section, boolean skipSky) {
             this.chunk = chunk;
+            this.skipSky = skipSky;
             this.sectionY = sectionY;
             this.section = section;
             this.available = chunk != null;

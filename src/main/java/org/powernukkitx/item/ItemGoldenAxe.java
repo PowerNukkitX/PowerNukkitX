@@ -1,6 +1,16 @@
 package org.powernukkitx.item;
 
+import org.powernukkitx.item.definition.ItemDefinition;
+
 public class ItemGoldenAxe extends ItemTool {
+    public static final ItemDefinition DEFINITION = TOOL.toBuilder()
+            .attackDamage(3)
+            .axe(true)
+            .canBreakShield(true)
+            .maxDurability(ItemTool.DURABILITY_GOLD)
+            .tier(ItemTool.TIER_GOLD)
+            .build();
+
     public ItemGoldenAxe() {
         this(0, 1);
     }
@@ -10,31 +20,6 @@ public class ItemGoldenAxe extends ItemTool {
     }
 
     public ItemGoldenAxe(Integer meta, int count) {
-        super(GOLDEN_AXE, meta, count, "Golden Axe");
-    }
-
-    @Override
-    public int getMaxDurability() {
-        return ItemTool.DURABILITY_GOLD;
-    }
-
-    @Override
-    public boolean isAxe() {
-        return true;
-    }
-
-    @Override
-    public int getTier() {
-        return ItemTool.TIER_GOLD;
-    }
-
-    @Override
-    public int getAttackDamage() {
-        return 3;
-    }
-
-    @Override
-    public boolean canBreakShield() {
-        return true;
+        super(GOLDEN_AXE, meta, count, "Golden Axe", DEFINITION);
     }
 }

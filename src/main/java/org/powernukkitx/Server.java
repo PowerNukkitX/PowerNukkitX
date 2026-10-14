@@ -1,6 +1,7 @@
 package org.powernukkitx;
 
 import com.google.common.base.Preconditions;
+import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import eu.okaeri.configs.ConfigManager;
 import it.unimi.dsi.fastutil.longs.LongArrayList;
 import it.unimi.dsi.fastutil.longs.LongList;
@@ -68,6 +69,7 @@ import org.powernukkitx.level.DimensionEnum;
 import org.powernukkitx.level.GameRule;
 import org.powernukkitx.level.Level;
 import org.powernukkitx.level.Position;
+import org.powernukkitx.level.format.Chunk;
 import org.powernukkitx.level.format.IChunk;
 import org.powernukkitx.level.format.LevelConfig;
 import org.powernukkitx.level.format.LevelProvider;
@@ -94,7 +96,11 @@ import org.powernukkitx.nbt.tag.Tag;
 import org.powernukkitx.network.Network;
 import org.powernukkitx.network.NetworkConstants;
 import org.powernukkitx.network.NetworkInterface;
+import org.powernukkitx.network.SharedPacket;
+import org.powernukkitx.network.process.LoginService;
 import org.powernukkitx.network.process.NetworkState;
+import org.powernukkitx.network.process.PlayerListEncoder;
+import org.powernukkitx.network.process.PlayerSessionHolder;
 import org.powernukkitx.network.process.auth.ProxyAuthProvider;
 import org.powernukkitx.permission.BanEntry;
 import org.powernukkitx.permission.BanList;
@@ -143,13 +149,19 @@ import java.util.*;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.ForkJoinWorkerThread;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
+import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.Function;
 
 /**
@@ -183,6 +195,8 @@ import java.util.function.Function;
 public class Server {
     public static final String BROADCAST_CHANNEL_ADMINISTRATIVE = "nukkit.broadcast.admin";
     public static final String BROADCAST_CHANNEL_USERS = "nukkit.broadcast.user";
+    private static final int PLAYER_LIST_ENTRIES_PER_PACKET = 16;
+    private static final long PLAYER_DATA_WRITE_WAIT_MILLIS = 10_000L;
     private static Server instance = null;
 
     private BanList banByName;
@@ -223,6 +237,8 @@ public class Server {
      * other computing tasks
      */
     public final ForkJoinPool computeThreadPool;
+    private final ThreadPoolExecutor chunkIoExecutor;
+    private final LoginService loginService;
     private final ScheduledExecutorService levelTickExecutor;
     private final ScheduledExecutorService chunkPublisherExecutor;
     private final ChunkPublisherBudgetController chunkPublisherBudgetController;
@@ -297,8 +313,77 @@ public class Server {
     private ActorUniqueIdManager actorUniqueIdManager;
     private DynamicProperties dynamicProperties;
 
-    record PlayerDataRecord(CompoundTag nbt, CompoundTag pnxExtra, CompoundTag custom) {
+    /**
+     * @param nbt the player data, {@code null} only in a preloaded record whose stored data is
+     *            corrupted
+     */
+    record PlayerDataRecord(@Nullable CompoundTag nbt, CompoundTag pnxExtra, CompoundTag custom) {
     }
+
+    /**
+     * Player data read ahead of the player being created, see {@link #preloadPlayerData(UUID)}.
+     *
+     * @param uuid       the player the data belongs to
+     * @param record     the stored data, or {@code null} when the player has none yet; its
+     *                   {@code nbt} is {@code null} when the stored data is corrupted
+     * @param writeCount the number of saves requested for this player when the data was read
+     */
+    @ApiStatus.Internal
+    public record PreloadedPlayerData(UUID uuid, @Nullable PlayerDataRecord record, long writeCount) {
+        /**
+         * @return the name of the level the player was last in, or {@code null} when unknown
+         */
+        public @Nullable String levelName() {
+            return this.record != null && this.record.pnxExtra().containsString("Level")
+                ? this.record.pnxExtra().getString("Level") : null;
+        }
+
+        /**
+         * @return the stored position of the player, or {@code null} when unknown
+         */
+        public @Nullable Vector3 position() {
+            if (this.record == null || this.record.nbt() == null || !this.record.nbt().containsList("Pos")) {
+                return null;
+            }
+            ListTag<FloatTag> pos = this.record.nbt().getList("Pos", FloatTag.class);
+            return pos.size() == 3 ? new Vector3(pos.get(0).data, pos.get(1).data, pos.get(2).data) : null;
+        }
+    }
+
+    /**
+     * Save requests and completed writes of one player, used to tell whether preloaded data is
+     * current. An entry only exists while a save is outstanding or a login is preloading the
+     * player, so the counters never restart while somebody compares against them. Changed only
+     * inside {@link ConcurrentHashMap#compute}.
+     */
+    private static final class PlayerDataWrites {
+        final AtomicLong requested = new AtomicLong();
+        final AtomicLong completed = new AtomicLong();
+        int preloads;
+        volatile @Nullable CompletableFuture<Void> lastAsyncWrite;
+        volatile RequestedPlayerData latest = RequestedPlayerData.NONE;
+
+        boolean idle() {
+            return this.requested.get() == this.completed.get() && this.preloads == 0;
+        }
+    }
+
+    /**
+     * The newest data saves were requested with, part by part, each with the request count it was
+     * requested at. A save that leaves out a sidecar keeps the one requested before.
+     */
+    private record RequestedPlayerData(@Nullable CompoundTag nbt, long nbtAt, @Nullable CompoundTag pnxExtra,
+                                       long pnxExtraAt, @Nullable CompoundTag custom, long customAt) {
+        static final RequestedPlayerData NONE = new RequestedPlayerData(null, 0L, null, 0L, null, 0L);
+
+        RequestedPlayerData with(long at, CompoundTag nbt, @Nullable CompoundTag pnxExtra, @Nullable CompoundTag custom) {
+            return new RequestedPlayerData(nbt, at,
+                pnxExtra != null ? pnxExtra : this.pnxExtra, pnxExtra != null ? at : this.pnxExtraAt,
+                custom != null ? custom : this.custom, custom != null ? at : this.customAt);
+        }
+    }
+
+    private final ConcurrentHashMap<UUID, PlayerDataWrites> playerDataWrites = new ConcurrentHashMap<>();
     private ProxyAuthProvider proxyAuthProvider;
     private FreezableArrayManager freezableArrayManager;
     public boolean enabledNetworkEncryption;
@@ -400,12 +485,23 @@ public class Server {
             }
         }
         this.settings.save();
+        Chunk.setNetworkPayloadBudgetMb(this.settings.chunkSettings().payloadCacheMemoryMb());
         while (updateConfiguration()) {
             /* repeat until all configuration updates are applied */
         }
 
         // A minimum of 1 is enforced to prevent invalid recursion values.
         this.computeThreadPool = new ForkJoinPool(Math.min(0x7fff, Runtime.getRuntime().availableProcessors()), new ComputeThreadPoolThreadFactory(), null, false);
+
+        int chunkIoThreads = this.settings.chunkSettings().chunkIoThreads();
+        if (chunkIoThreads <= 0) {
+            chunkIoThreads = Math.max(2, Runtime.getRuntime().availableProcessors() / 2);
+        }
+        this.chunkIoExecutor = new ThreadPoolExecutor(chunkIoThreads, chunkIoThreads, 30L, TimeUnit.SECONDS,
+            new LinkedBlockingQueue<>(),
+            new ThreadFactoryBuilder().setNameFormat("Chunk IO #%d").setDaemon(true).build());
+        this.chunkIoExecutor.allowCoreThreadTimeOut(true);
+        this.loginService = new LoginService(this.settings.networkSettings());
 
         int levelWorkerThreads = this.settings.levelSettings().levelWorkerThreads();
         if (levelWorkerThreads <= 0) {
@@ -957,7 +1053,16 @@ public class Server {
         }
         this.enablePlugins(PluginLoadOrder.POSTWORLD);
         CreativeGroupsRegistry.register();
+        this.warmLoginPackets();
         this.network.setState(NetworkState.STARTED);
+    }
+
+    /**
+     * Encodes the login packets that are the same for every player in the background, once the
+     * plugins are enabled and the registries complete, see {@link PlayerSessionHolder#warmEncodedPackets()}.
+     */
+    private void warmLoginPackets() {
+        CompletableFuture.runAsync(PlayerSessionHolder::warmEncodedPackets, this.computeThreadPool);
     }
 
     /**
@@ -1063,6 +1168,7 @@ public class Server {
         try {
             this.levelTickExecutor.shutdown();
             this.chunkPublisherExecutor.shutdown();
+            this.chunkIoExecutor.shutdown();
             this.chunkPublisherBudgetController.shutdown();
         } catch (Throwable e) {
             log.error("Exception while shutting down level tick executors", e);
@@ -1078,6 +1184,8 @@ public class Server {
         try {
             log.debug("Stopping network interfaces");
             network.shutdown();
+            // Player saves are written on the login service, so they have to land before the database closes
+            this.loginService.shutdown();
             serverDataDB.close();
         } catch (Throwable e) {
             log.error("Exception while stopping network interfaces", e);
@@ -1112,6 +1220,8 @@ public class Server {
     }
 
     public void start() {
+        this.loginService.warmUp();
+        this.warmLoginPackets();
         for (BanEntry entry : this.getIPBans().getEntires().values()) {
             try {
                 this.network.blockAddress(InetAddress.getByName(entry.getName()));
@@ -1698,8 +1808,9 @@ public class Server {
      * @see #broadcastPacket(Player[], BedrockPacket)
      */
     public static void broadcastPacket(Collection<Player> players, BedrockPacket packet) {
+        final BedrockPacket shared = SharedPacket.forBroadcast(packet, players.size());
         for (Player player : players) {
-            player.sendPacket(packet);
+            player.sendPacket(player.getClass() == Player.class ? shared : packet);
         }
     }
 
@@ -1710,8 +1821,9 @@ public class Server {
      * @param packet  The data packet
      */
     public static void broadcastPacket(Player[] players, BedrockPacket packet) {
+        final BedrockPacket shared = SharedPacket.forBroadcast(packet, players.length);
         for (Player player : players) {
-            player.sendPacket(packet);
+            player.sendPacket(player.getClass() == Player.class ? shared : packet);
         }
     }
 
@@ -1889,6 +2001,7 @@ public class Server {
         boolean removed = this.playerList.remove(player.getUniqueId(), player);
         this.playerListByUniqueId.remove(player.uniqueIdLong(), player);
 
+        PlayerListEncoder.forget(player.getUniqueId());
         if (removed) {
             this.sendSleepingPlayersStatus(this.playerList.values());
 
@@ -1956,7 +2069,7 @@ public class Server {
         entry.setXblXUID(xboxUserId);
         entry.setPlatformOnlineID("");
         entry.setBuildPlatform(BuildPlatform.UNKNOWN);
-        entry.setSerializedSkin(SkinConverter.toSerializedSkin(skin.getSkin(), skin.isTrusted()));
+        entry.setSerializedSkin(skin.toSerializedSkin());
         entry.setPlayerColor(color.getRGB());
 
         pk.getEntries().add(entry);
@@ -2015,20 +2128,19 @@ public class Server {
      * @param player The player
      */
     public void sendFullPlayerListData(Player player) {
-        final PlayerListPacket pk = new PlayerListPacket();
+        if (PlayerListEncoder.trySend(player, this.playerList.values(), PLAYER_LIST_ENTRIES_PER_PACKET)) {
+            return;
+        }
+        PlayerListPacket pk = new PlayerListPacket();
 
         for (Player value : this.playerList.values()) {
-            final PlayerListAddEntry entry = new PlayerListAddEntry();
-            entry.setUuid(value.getUniqueId());
-            entry.setActorUniqueID(value.uniqueIdLong());
-            entry.setPlayerName(value.getName());
-            entry.setXblXUID(value.getXUID());
-            entry.setPlatformOnlineID("");
-            entry.setBuildPlatform(BuildPlatform.UNKNOWN);
-            entry.setSerializedSkin(SkinConverter.toSerializedSkin(value.getSkin().getSkin(), value.getSkin().isTrusted()));
-            entry.setPlayerColor(value.getLocatorBarColor().getRGB());
-
-            pk.getEntries().add(entry);
+            pk.getEntries().add(PlayerListEncoder.addEntry(value));
+            // Every entry carries a whole skin, so a full server would otherwise make one packet
+            // of many megabytes that has to be encoded and acknowledged in one go
+            if (pk.getEntries().size() >= PLAYER_LIST_ENTRIES_PER_PACKET) {
+                player.sendPacketImmediately(pk);
+                pk = new PlayerListPacket();
+            }
         }
         if (!pk.getEntries().isEmpty()) {
             player.sendPacketImmediately(pk);
@@ -2176,6 +2288,18 @@ public class Server {
     }
 
     /**
+     * The XUID a login identifies as, after the {@link ProxyAuthProvider} has had its say.
+     *
+     * @param info  the login of the player
+     * @param proxy the installed proxy authentication provider, or {@code null}
+     * @return the XUID, which may be empty for a login that is not signed by Xbox Live
+     */
+    public static String resolveXuid(Player.PlayerInfo info, @Nullable ProxyAuthProvider proxy) {
+        String xuid = info.getIdentityClaims().extraData.xuid;
+        return proxy != null ? proxy.getXuid(info.getClientChainData(), xuid) : xuid;
+    }
+
+    /**
      * Derives a stable {@link UUID} from a player's XUID (Xbox User ID).
      * <p>
      * The XUID is namespaced with the {@code "pocket-auth-1-xuid:"} prefix and hashed
@@ -2314,143 +2438,159 @@ public class Server {
         }
 
         if (create) {
-            if (this.getSettings().playerSettings().savePlayerData()) {
-                log.info(this.getLanguage().tr("nukkit.data.playerNotFound", uuid));
-            }
-            Position spawn = this.getDefaultLevel().getSafeSpawn();
-
-            ListTag<CompoundTag> inventory = new ListTag<>(Tag.TAG_Compound);
-            for (int slot = 0; slot < 36; slot++) {
-                inventory.add(ItemHelper.write(Item.AIR, slot));
-            }
-
-            ListTag<CompoundTag> armor = new ListTag<>(Tag.TAG_Compound);
-            for (int slot = 0; slot < 5; slot++) {
-                armor.add(ItemHelper.write(Item.AIR));
-            }
-
-            ListTag<CompoundTag> mainhand = new ListTag<CompoundTag>(Tag.TAG_Compound).add(ItemHelper.write(Item.AIR));
-            ListTag<CompoundTag> offhand = new ListTag<CompoundTag>(Tag.TAG_Compound).add(ItemHelper.write(Item.AIR));
-            ListTag<CompoundTag> enderChest = new ListTag<>(Tag.TAG_Compound);
-            for (int slot = 0; slot < 27; slot++) {
-                enderChest.add(ItemHelper.write(Item.AIR, slot));
-            }
-
-            Attribute knockbackResistance = Attribute.getAttribute(Attribute.KNOCKBACK_RESISTANCE)
-                .setMinValue(-2f)
-                .setDefaultMinimum(-2f);
-
-            Attribute attackDamage = Attribute.getAttribute(Attribute.ATTACK_DAMAGE)
-                .setMinValue(1f)
-                .setMaxValue(1f)
-                .setDefaultMinimum(1f)
-                .setDefaultMaximum(1f)
-                .setDefaultValue(1f)
-                .setValue(1f);
-
-            ListTag<CompoundTag> attributes = new ListTag<CompoundTag>(Tag.TAG_Compound)
-                .add(Attribute.toNBT(Attribute.getAttribute(Attribute.HEALTH).setValue(20)))
-                .add(Attribute.toNBT(Attribute.getAttribute(Attribute.FOLLOW_RANGE)))
-                .add(Attribute.toNBT(knockbackResistance))
-                .add(Attribute.toNBT(Attribute.getAttribute(Attribute.MOVEMENT_SPEED)))
-                .add(Attribute.toNBT(Attribute.getAttribute(Attribute.UNDER_WATER_MOVEMENT_SPEED)))
-                .add(Attribute.toNBT(Attribute.getAttribute(Attribute.LAVA_MOVEMENT_SPEED)))
-                .add(Attribute.toNBT(attackDamage))
-                .add(Attribute.toNBT(Attribute.getAttribute(Attribute.ABSORPTION).setValue(0)))
-                .add(Attribute.toNBT(Attribute.getAttribute(Attribute.LUCK)))
-                .add(Attribute.toNBT(Attribute.getAttribute(Attribute.FRICTION_MODIFIER)))
-                .add(Attribute.toNBT(Attribute.getAttribute(Attribute.BOUNCINESS)))
-                .add(Attribute.toNBT(Attribute.getAttribute(Attribute.AIR_DRAG_MODIFIER)))
-                .add(Attribute.toNBT(Attribute.getAttribute(Attribute.FOOD).setValue(20)))
-                .add(Attribute.toNBT(Attribute.getAttribute(Attribute.SATURATION).setValue(5)))
-                .add(Attribute.toNBT(Attribute.getAttribute(Attribute.EXHAUSTION).setValue(0)))
-                .add(Attribute.toNBT(Attribute.getAttribute(Attribute.EXPERIENCE_LEVEL).setDefaultValue(0).setValue(0)))
-                .add(Attribute.toNBT(Attribute.getAttribute(Attribute.EXPERIENCE).setDefaultValue(0).setValue(0)));
-
-            int defaultGamemode = this.getGamemode();
-            boolean creative = defaultGamemode == Player.CREATIVE;
-            boolean spectator = defaultGamemode == Player.SPECTATOR;
-
-            CompoundTag abilities = new CompoundTag()
-                .putByte("attackmobs", 1)
-                .putByte("attackplayers", 1)
-                .putByte("build", 1)
-                .putByte("doorsandswitches", 1)
-                .putFloat("flySpeed", Player.DEFAULT_FLY_SPEED)
-                .putByte("flying", spectator ? 1 : 0)
-                .putByte("instabuild", creative ? 1 : 0)
-                .putByte("invulnerable", 0)
-                .putByte("lightning", 0)
-                .putByte("mayfly", creative || spectator ? 1 : 0)
-                .putByte("mine", 1)
-                .putByte("op", 0)
-                .putByte("opencontainers", 1)
-                .putByte("teleport", 0)
-                .putFloat("verticalFlySpeed", 1f)
-                .putFloat("walkSpeed", Player.DEFAULT_SPEED);
-
-            long now = System.currentTimeMillis() / 1000;
-
-            final CompoundTag pnxExtra = new CompoundTag()
-                .putLong("firstPlayed", now)
-                .putLong("lastPlayed", now)
-                .putString("Level", this.getDefaultLevel().getName())
-                .putCompound("Achievements", new CompoundTag());
-
-            final CompoundTag nbt = new CompoundTag()
-                .putList("Pos", new ListTag<FloatTag>()
-                    .add(new FloatTag((float) spawn.x))
-                    .add(new FloatTag((float) spawn.y))
-                    .add(new FloatTag((float) spawn.z)))
-                .putInt("DimensionId", this.getDefaultLevel().getDimension())
-                .putList("Inventory", inventory)
-                .putList("Armor", armor)
-                .putList("Mainhand", mainhand)
-                .putList("Offhand", offhand)
-                .putList("EnderChestInventory", enderChest)
-                .putInt("SelectedInventorySlot", 0)
-                .putInt("SelectedContainerId", 0)
-                .putList("Attributes", attributes)
-                .putList("definitions", new ListTag<StringTag>(Tag.TAG_String)
-                    .add(new StringTag("+minecraft:player")))
-                .putString("format_version", "1.12.0")
-                .putString("identifier", "minecraft:player")
-                .putList("fogCommandStack", new ListTag<>())
-                .putList("PlayerUIItems", new ListTag<>())
-                .putInt("SpawnX", Integer.MIN_VALUE)
-                .putInt("SpawnY", Integer.MIN_VALUE)
-                .putInt("SpawnZ", Integer.MIN_VALUE)
-                .putInt("SpawnBlockPositionX", Integer.MIN_VALUE)
-                .putInt("SpawnBlockPositionY", Integer.MIN_VALUE)
-                .putInt("SpawnBlockPositionZ", Integer.MIN_VALUE)
-                .putInt("SpawnDimension", 3)
-                .putInt("PlayerGameMode", Player.toStorageGamemode(defaultGamemode))
-                .putInt("PlayerLevel", 0)
-                .putFloat("PlayerLevelProgress", 0)
-                .putInt("EnchantmentSeed", Player.generateEnchantmentSeed())
-                .putList("Motion", new ListTag<FloatTag>()
-                    .add(new FloatTag(0))
-                    .add(new FloatTag(0))
-                    .add(new FloatTag(0)))
-                .putList("Rotation", new ListTag<FloatTag>()
-                    .add(new FloatTag(0))
-                    .add(new FloatTag(0)))
-                .putFloat("FallDistance", 0)
-                .putShort("Fire", 0)
-                .putShort("Air", 300)
-                .putBoolean("OnGround", true)
-                .putBoolean("Invulnerable", false)
-                .putCompound("abilities", abilities)
-                .putInt("permissionsLevel", 0)
-                .putInt("playerPermissionsLevel", Player.PERMISSION_MEMBER);
-
-            this.actorUniqueIdManager.assignPlayer(uuid, nbt);
-            this.saveOfflinePlayerDataInternal(nbt, pnxExtra, new CompoundTag(), uuid);
-            return nbt;
+            final PlayerDataRecord created = this.newPlayerData(uuid);
+            this.saveOfflinePlayerDataInternal(created.nbt(), created.pnxExtra(), created.custom(), uuid);
+            return created.nbt();
         } else {
             log.error("Player {} does not exist and cannot read playerdata", uuid);
             return null;
         }
+    }
+
+    /**
+     * Creates the data of a player that has none stored yet and writes it on the player data
+     * thread, so the caller neither touches storage nor waits for it. The spawn position is taken
+     * from the default level.
+     */
+    PlayerDataRecord createPlayerData(UUID uuid) {
+        final PlayerDataRecord created = this.newPlayerData(uuid);
+        this.queueOfflinePlayerDataWrite(uuid, created.nbt(), created.pnxExtra().copy(), new CompoundTag(), true);
+        return created;
+    }
+
+    private PlayerDataRecord newPlayerData(UUID uuid) {
+        if (this.getSettings().playerSettings().savePlayerData()) {
+            log.info(this.getLanguage().tr("nukkit.data.playerNotFound", uuid));
+        }
+        Position spawn = this.getDefaultLevel().getSafeSpawn();
+
+        ListTag<CompoundTag> inventory = new ListTag<>(Tag.TAG_Compound);
+        for (int slot = 0; slot < 36; slot++) {
+            inventory.add(ItemHelper.write(Item.AIR, slot));
+        }
+
+        ListTag<CompoundTag> armor = new ListTag<>(Tag.TAG_Compound);
+        for (int slot = 0; slot < 5; slot++) {
+            armor.add(ItemHelper.write(Item.AIR));
+        }
+
+        ListTag<CompoundTag> mainhand = new ListTag<CompoundTag>(Tag.TAG_Compound).add(ItemHelper.write(Item.AIR));
+        ListTag<CompoundTag> offhand = new ListTag<CompoundTag>(Tag.TAG_Compound).add(ItemHelper.write(Item.AIR));
+        ListTag<CompoundTag> enderChest = new ListTag<>(Tag.TAG_Compound);
+        for (int slot = 0; slot < 27; slot++) {
+            enderChest.add(ItemHelper.write(Item.AIR, slot));
+        }
+
+        Attribute knockbackResistance = Attribute.getAttribute(Attribute.KNOCKBACK_RESISTANCE)
+            .setMinValue(-2f)
+            .setDefaultMinimum(-2f);
+
+        Attribute attackDamage = Attribute.getAttribute(Attribute.ATTACK_DAMAGE)
+            .setMinValue(1f)
+            .setMaxValue(1f)
+            .setDefaultMinimum(1f)
+            .setDefaultMaximum(1f)
+            .setDefaultValue(1f)
+            .setValue(1f);
+
+        ListTag<CompoundTag> attributes = new ListTag<CompoundTag>(Tag.TAG_Compound)
+            .add(Attribute.toNBT(Attribute.getAttribute(Attribute.HEALTH).setValue(20)))
+            .add(Attribute.toNBT(Attribute.getAttribute(Attribute.FOLLOW_RANGE)))
+            .add(Attribute.toNBT(knockbackResistance))
+            .add(Attribute.toNBT(Attribute.getAttribute(Attribute.MOVEMENT_SPEED)))
+            .add(Attribute.toNBT(Attribute.getAttribute(Attribute.UNDER_WATER_MOVEMENT_SPEED)))
+            .add(Attribute.toNBT(Attribute.getAttribute(Attribute.LAVA_MOVEMENT_SPEED)))
+            .add(Attribute.toNBT(attackDamage))
+            .add(Attribute.toNBT(Attribute.getAttribute(Attribute.ABSORPTION).setValue(0)))
+            .add(Attribute.toNBT(Attribute.getAttribute(Attribute.LUCK)))
+            .add(Attribute.toNBT(Attribute.getAttribute(Attribute.FRICTION_MODIFIER)))
+            .add(Attribute.toNBT(Attribute.getAttribute(Attribute.BOUNCINESS)))
+            .add(Attribute.toNBT(Attribute.getAttribute(Attribute.AIR_DRAG_MODIFIER)))
+            .add(Attribute.toNBT(Attribute.getAttribute(Attribute.FOOD).setValue(20)))
+            .add(Attribute.toNBT(Attribute.getAttribute(Attribute.SATURATION).setValue(5)))
+            .add(Attribute.toNBT(Attribute.getAttribute(Attribute.EXHAUSTION).setValue(0)))
+            .add(Attribute.toNBT(Attribute.getAttribute(Attribute.EXPERIENCE_LEVEL).setDefaultValue(0).setValue(0)))
+            .add(Attribute.toNBT(Attribute.getAttribute(Attribute.EXPERIENCE).setDefaultValue(0).setValue(0)));
+
+        int defaultGamemode = this.getGamemode();
+        boolean creative = defaultGamemode == Player.CREATIVE;
+        boolean spectator = defaultGamemode == Player.SPECTATOR;
+
+        CompoundTag abilities = new CompoundTag()
+            .putByte("attackmobs", 1)
+            .putByte("attackplayers", 1)
+            .putByte("build", 1)
+            .putByte("doorsandswitches", 1)
+            .putFloat("flySpeed", Player.DEFAULT_FLY_SPEED)
+            .putByte("flying", spectator ? 1 : 0)
+            .putByte("instabuild", creative ? 1 : 0)
+            .putByte("invulnerable", 0)
+            .putByte("lightning", 0)
+            .putByte("mayfly", creative || spectator ? 1 : 0)
+            .putByte("mine", 1)
+            .putByte("op", 0)
+            .putByte("opencontainers", 1)
+            .putByte("teleport", 0)
+            .putFloat("verticalFlySpeed", 1f)
+            .putFloat("walkSpeed", Player.DEFAULT_SPEED);
+
+        long now = System.currentTimeMillis() / 1000;
+
+        final CompoundTag pnxExtra = new CompoundTag()
+            .putLong("firstPlayed", now)
+            .putLong("lastPlayed", now)
+            .putString("Level", this.getDefaultLevel().getName())
+            .putCompound("Achievements", new CompoundTag());
+
+        final CompoundTag nbt = new CompoundTag()
+            .putList("Pos", new ListTag<FloatTag>()
+                .add(new FloatTag((float) spawn.x))
+                .add(new FloatTag((float) spawn.y))
+                .add(new FloatTag((float) spawn.z)))
+            .putInt("DimensionId", this.getDefaultLevel().getDimension())
+            .putList("Inventory", inventory)
+            .putList("Armor", armor)
+            .putList("Mainhand", mainhand)
+            .putList("Offhand", offhand)
+            .putList("EnderChestInventory", enderChest)
+            .putInt("SelectedInventorySlot", 0)
+            .putInt("SelectedContainerId", 0)
+            .putList("Attributes", attributes)
+            .putList("definitions", new ListTag<StringTag>(Tag.TAG_String)
+                .add(new StringTag("+minecraft:player")))
+            .putString("format_version", "1.12.0")
+            .putString("identifier", "minecraft:player")
+            .putList("fogCommandStack", new ListTag<>())
+            .putList("PlayerUIItems", new ListTag<>())
+            .putInt("SpawnX", Integer.MIN_VALUE)
+            .putInt("SpawnY", Integer.MIN_VALUE)
+            .putInt("SpawnZ", Integer.MIN_VALUE)
+            .putInt("SpawnBlockPositionX", Integer.MIN_VALUE)
+            .putInt("SpawnBlockPositionY", Integer.MIN_VALUE)
+            .putInt("SpawnBlockPositionZ", Integer.MIN_VALUE)
+            .putInt("SpawnDimension", 3)
+            .putInt("PlayerGameMode", Player.toStorageGamemode(defaultGamemode))
+            .putInt("PlayerLevel", 0)
+            .putFloat("PlayerLevelProgress", 0)
+            .putInt("EnchantmentSeed", Player.generateEnchantmentSeed())
+            .putList("Motion", new ListTag<FloatTag>()
+                .add(new FloatTag(0))
+                .add(new FloatTag(0))
+                .add(new FloatTag(0)))
+            .putList("Rotation", new ListTag<FloatTag>()
+                .add(new FloatTag(0))
+                .add(new FloatTag(0)))
+            .putFloat("FallDistance", 0)
+            .putShort("Fire", 0)
+            .putShort("Air", 300)
+            .putBoolean("OnGround", true)
+            .putBoolean("Invulnerable", false)
+            .putCompound("abilities", abilities)
+            .putInt("permissionsLevel", 0)
+            .putInt("playerPermissionsLevel", Player.PERMISSION_MEMBER);
+
+        this.actorUniqueIdManager.assignPlayer(uuid, nbt);
+        return new PlayerDataRecord(nbt, pnxExtra, new CompoundTag());
     }
 
     private CompoundTag getOfflinePlayerExtraDataInternal(UUID uuid) {
@@ -2510,23 +2650,186 @@ public class Server {
     }
 
     void saveOfflinePlayerData(UUID uuid, CompoundTag tag, CompoundTag pnxExtra, CompoundTag custom, boolean async) {
-        if (this.getSettings().playerSettings().savePlayerData()) {
-            this.getScheduler().scheduleTask(InternalPlugin.INSTANCE, new Task() {
-                final AtomicBoolean hasRun = new AtomicBoolean(false);
+        if (!this.getSettings().playerSettings().savePlayerData()) {
+            return;
+        }
+        this.queueOfflinePlayerDataWrite(uuid, tag, pnxExtra, custom, async);
+    }
 
-                @Override
-                public void onRun(int currentTick) {
-                    this.onCancel();
+    private void queueOfflinePlayerDataWrite(UUID uuid, CompoundTag tag, CompoundTag pnxExtra, CompoundTag custom, boolean async) {
+        final CompletableFuture<Void> written = async ? new CompletableFuture<>() : null;
+        final CompoundTag snapshot = async ? tag.copy() : tag;
+        this.playerDataWrites.compute(uuid, (_, writes) -> {
+            final PlayerDataWrites entry = writes != null ? writes : new PlayerDataWrites();
+            entry.latest = entry.latest.with(entry.requested.incrementAndGet(), snapshot, pnxExtra, custom);
+            if (written != null) {
+                entry.lastAsyncWrite = written;
+            }
+            return entry;
+        });
+
+        if (async) {
+            final Runnable write = () -> {
+                try {
+                    saveOfflinePlayerDataInternal(snapshot, pnxExtra, custom, uuid);
+                } catch (Exception e) {
+                    log.error("Failed to save player data for {}", uuid, e);
+                } finally {
+                    this.completePlayerDataWrite(uuid);
+                    written.complete(null);
                 }
+            };
+            try {
+                this.loginService.executePlayerData(write);
+            } catch (RejectedExecutionException e) {
+                // Shutting down: write on the caller rather than lose the data
+                write.run();
+            }
+            return;
+        }
 
-                @Override
-                public void onCancel() {
-                    if (!hasRun.getAndSet(true)) {
+        this.getScheduler().scheduleTask(InternalPlugin.INSTANCE, new Task() {
+            final AtomicBoolean hasRun = new AtomicBoolean(false);
+
+            @Override
+            public void onRun(int currentTick) {
+                this.onCancel();
+            }
+
+            @Override
+            public void onCancel() {
+                if (!hasRun.getAndSet(true)) {
+                    try {
                         saveOfflinePlayerDataInternal(tag, pnxExtra, custom, uuid);
+                    } finally {
+                        completePlayerDataWrite(uuid);
                     }
                 }
-            }, async);
+            }
+        }, false);
+    }
+
+    private void completePlayerDataWrite(UUID uuid) {
+        this.playerDataWrites.computeIfPresent(uuid, (_, writes) -> {
+            writes.completed.incrementAndGet();
+            return writes.idle() ? null : writes;
+        });
+    }
+
+    /**
+     * Marks that a login is about to preload this player's data, which keeps the save counters
+     * of the player around until {@link #endPlayerDataPreload(UUID)}. Every call must be paired
+     * with exactly one call to that method.
+     */
+    @ApiStatus.Internal
+    public void beginPlayerDataPreload(UUID uuid) {
+        this.playerDataWrites.compute(uuid, (_, writes) -> {
+            final PlayerDataWrites entry = writes != null ? writes : new PlayerDataWrites();
+            entry.preloads++;
+            return entry;
+        });
+    }
+
+    /**
+     * Ends what {@link #beginPlayerDataPreload(UUID)} started.
+     */
+    @ApiStatus.Internal
+    public void endPlayerDataPreload(UUID uuid) {
+        this.playerDataWrites.computeIfPresent(uuid, (_, writes) -> {
+            writes.preloads--;
+            return writes.idle() ? null : writes;
+        });
+    }
+
+    /**
+     * Reads a player's stored data ahead of creating the player. Runs on the player data thread
+     * of the {@link LoginService}, so it is ordered after every save requested before it. The
+     * caller must have called {@link #beginPlayerDataPreload(UUID)} first.
+     * <p>
+     * Unlike {@link #getOfflinePlayerDataRecord(UUID, boolean)} this never creates data, since new
+     * player data needs a safe spawn position from the world.
+     *
+     * @return the data, or {@code null} when a save requested earlier has not been written yet
+     */
+    @ApiStatus.Internal
+    public @Nullable PreloadedPlayerData preloadPlayerData(UUID uuid) {
+        final PlayerDataWrites writes = this.playerDataWrites.get(uuid);
+        final long requested = writes != null ? writes.requested.get() : 0L;
+        if (writes != null && writes.completed.get() != requested) {
+            return null;
         }
+        final PlayerDataRecord record = this.hasOfflinePlayerData(uuid)
+            ? new PlayerDataRecord(this.getOfflinePlayerDataInternal(uuid, false),
+                this.getOfflinePlayerExtraDataInternal(uuid), this.getOfflinePlayerCustomDataInternal(uuid))
+            : null;
+        return new PreloadedPlayerData(uuid, record, requested);
+    }
+
+    /**
+     * The data a joining player is created from: the preloaded data, updated with every save of
+     * that player requested since it was read, such as one from a {@code PlayerLoginEvent}
+     * listener. Never reads storage or waits for a write, so it is safe on a level thread. Must be
+     * called before the preload ends, see {@link #endPlayerDataPreload(UUID)}.
+     *
+     * @return {@code null} when the player has neither stored data nor a save requested
+     */
+    @Nullable PlayerDataRecord resolvePreloadedPlayerData(PreloadedPlayerData preloaded) {
+        final PlayerDataRecord stored = preloaded.record();
+        final PlayerDataWrites writes = this.playerDataWrites.get(preloaded.uuid());
+        if (writes == null || writes.requested.get() == preloaded.writeCount()) {
+            return stored;
+        }
+
+        final long since = preloaded.writeCount();
+        final RequestedPlayerData latest = writes.latest;
+        final CompoundTag nbt;
+        if (latest.nbtAt() > since) {
+            nbt = latest.nbt().copy();
+            this.cleanupOfflinePlayerData(nbt);
+        } else if (stored != null) {
+            nbt = stored.nbt();
+        } else {
+            return null;
+        }
+        final CompoundTag pnxExtra = latest.pnxExtraAt() > since ? latest.pnxExtra().copy()
+            : stored != null ? stored.pnxExtra() : new CompoundTag();
+        final CompoundTag custom = latest.customAt() > since ? latest.custom().copy()
+            : stored != null ? stored.custom() : new CompoundTag();
+        return new PlayerDataRecord(nbt, pnxExtra, custom);
+    }
+
+    /**
+     * Waits for the last save of this player queued on the player data thread, so a read that
+     * follows sees it. Only this player's own write is waited for, not the whole queue. Saves
+     * scheduled on the main thread are not waited for, since the caller may be the main thread
+     * itself.
+     */
+    void awaitPlayerDataWrites(UUID uuid) {
+        final PlayerDataWrites writes = this.playerDataWrites.get(uuid);
+        final CompletableFuture<Void> pending = writes != null ? writes.lastAsyncWrite : null;
+        if (pending == null || pending.isDone()) {
+            return;
+        }
+        try {
+            pending.get(PLAYER_DATA_WRITE_WAIT_MILLIS, TimeUnit.MILLISECONDS);
+        } catch (TimeoutException e) {
+            log.warn("Player data of {} was still being written after {} ms, it may load outdated",
+                uuid, PLAYER_DATA_WRITE_WAIT_MILLIS);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        } catch (ExecutionException e) {
+            log.error("Waiting for the player data of {} failed", uuid, e);
+        }
+    }
+
+    /**
+     * Whether preloaded data is still what storage holds, meaning no save of that player was
+     * requested since it was read. Data whose preload has already ended is never current.
+     */
+    @ApiStatus.Internal
+    public boolean isPreloadCurrent(PreloadedPlayerData preloaded) {
+        final PlayerDataWrites writes = this.playerDataWrites.get(preloaded.uuid());
+        return writes != null && writes.requested.get() == preloaded.writeCount();
     }
 
     private void saveOfflinePlayerDataInternal(CompoundTag tag, CompoundTag pnxExtra, CompoundTag custom, UUID uuid) {
@@ -3607,6 +3910,21 @@ public class Server {
 
     public ForkJoinPool getComputeThreadPool() {
         return computeThreadPool;
+    }
+
+    /**
+     * Executor that loads chunks from storage for {@link Level#getChunkAsync(int, int, boolean)}.
+     * Kept apart from the plugin {@link ServerScheduler#getAsyncTaskThreadPool() async pool}, which
+     * grows a thread per task, and from the compute pool, which world generation saturates.
+     */
+    @ApiStatus.Internal
+    public ThreadPoolExecutor getChunkIoExecutor() {
+        return chunkIoExecutor;
+    }
+
+    @ApiStatus.Internal
+    public LoginService getLoginService() {
+        return loginService;
     }
 
     /**
