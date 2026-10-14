@@ -76,6 +76,9 @@ dependencies {
     annotationProcessor(libs.lombok)
     testCompileOnly(libs.lombok)
     testAnnotationProcessor(libs.lombok)
+    // Generates META-INF/BenchmarkList for src/test/java/jmh; without it the benchmarks compile but
+    // fail at runtime with "Unable to find the resource: /META-INF/BenchmarkList".
+    testAnnotationProcessor(libs.jmh.generator)
 }
 
 configurations.all {
@@ -88,9 +91,19 @@ configurations.all {
 
 tasks.withType<JavaCompile>().configureEach {
     options.encoding = ENCODING
-    options.annotationProcessorPath = configurations.getByName("annotationProcessor")
+    // Only the main compile gets its processor path pinned. Forcing it onto compileTestJava as well
+    // dropped the JMH generator from the test source set, so every benchmark under src/test/java/jmh
+    // compiled but had no generated BenchmarkList to run against.
+    if (name == "compileJava") {
+        options.annotationProcessorPath = configurations.getByName("annotationProcessor")
+    }
     options.compilerArgs.addAll(listOf("-Xmaxerrs", "99000", "-nowarn"))
     options.isWarnings = false
+}
+
+// The test sources also need the JMH generator, which only lives in testAnnotationProcessor
+tasks.named<JavaCompile>("compileTestJava") {
+    options.annotationProcessorPath = configurations.getByName("testAnnotationProcessor")
 }
 
 java {
@@ -211,6 +224,22 @@ tasks.test {
 
 tasks.withType<Test>().configureEach {
     onlyIf { !project.hasProperty("skipTests") }
+}
+
+tasks.register<JavaExec>("jmh") {
+    group = LifecycleBasePlugin.VERIFICATION_GROUP
+    description = "Run a JMH benchmark, e.g. ./gradlew jmh -Pbenchmark=MobAIBenchmark"
+    dependsOn(tasks.testClasses)
+    classpath = sourceSets["test"].runtimeClasspath
+    mainClass = "org.openjdk.jmh.Main"
+    jvmArgs(
+        "--add-opens", "java.base/java.lang=ALL-UNNAMED",
+        "--add-opens", "java.base/java.io=ALL-UNNAMED",
+        "-Xmx2g"
+    )
+    //accepts the benchmark pattern plus any JMH option, e.g. -Pbenchmark="-wi 5 -i 5 MobAIBenchmark"
+    val arguments = providers.gradleProperty("benchmark").getOrElse(".*").split(" ").filter { it.isNotBlank() }
+    argumentProviders.add(CommandLineArgumentProvider { arguments })
 }
 
 tasks.register<DefaultTask>("testFast") {

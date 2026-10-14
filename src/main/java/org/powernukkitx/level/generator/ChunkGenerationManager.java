@@ -1,6 +1,8 @@
 package org.powernukkitx.level.generator;
 
 import com.google.common.base.Preconditions;
+import it.unimi.dsi.fastutil.longs.Long2IntOpenHashMap;
+import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
 import org.powernukkitx.Player;
 import org.powernukkitx.level.ChunkBuildOrderPolicy;
 import org.powernukkitx.level.Level;
@@ -9,6 +11,7 @@ import org.powernukkitx.level.format.IChunk;
 import org.powernukkitx.level.tickingarea.TickingArea;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.EnumMap;
 import java.util.List;
@@ -17,6 +20,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedDeque;
 import java.util.concurrent.ForkJoinPool;
+import java.util.concurrent.ForkJoinWorkerThread;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.locks.ReentrantLock;
@@ -45,6 +49,7 @@ public final class ChunkGenerationManager {
     private final ReentrantLock generationQueueLock = new ReentrantLock();
     private final Map<ChunkGenerationState, ChunkGenerationTask> tasksByState = new EnumMap<>(ChunkGenerationState.class);
     private final ConcurrentHashMap<Long, GenerationDemand> demands = new ConcurrentHashMap<>();
+    private final Long2ObjectOpenHashMap<List<GenerationDemand>> drivenChunks = new Long2ObjectOpenHashMap<>();
     private final ConcurrentHashMap<GenerationRequestKey, GenerationRequest> requests = new ConcurrentHashMap<>();
     private final ConcurrentLinkedDeque<GenerationRequest> pending = new ConcurrentLinkedDeque<>();
 
@@ -106,11 +111,18 @@ public final class ChunkGenerationManager {
 
     /**
      * Requests chunk generation.
+     * <p>
+     * A chunk only completes once the chunks around it have caught up. An unforced request leaves
+     * driving those to whatever already keeps them loaded, such as a player's view, so it may never
+     * complete for a chunk nobody can see. A forced request drives them itself, following the
+     * dependencies stage by stage: whenever a driven chunk waits for a neighbour, that neighbour is
+     * loaded and driven to the state the stage needs and no further. Driven chunks stay loaded until
+     * the chunk is complete.
      *
-     * @param chunkX value for this API
-     * @param chunkZ value for this API
-     * @param force value for this API
-     * @return the requested value
+     * @param chunkX chunk X
+     * @param chunkZ chunk Z
+     * @param force whether to drive the neighbourhood of the chunk so the request completes
+     * @return completes with the chunk once it is complete
      */
     public CompletableFuture<IChunk> request(int chunkX, int chunkZ, boolean force) {
         return requestToState(chunkX, chunkZ, ChunkGenerationState.COMPLETE, force);
@@ -179,6 +191,9 @@ public final class ChunkGenerationManager {
             if (hasReachedTarget(chunk, demand)) {
                 completeDemand(demand, chunk);
             } else {
+                if (force && targetState == ChunkGenerationState.COMPLETE) {
+                    driveDemand(demand);
+                }
                 tryEnqueueStableState(chunk);
                 schedule();
             }
@@ -186,10 +201,164 @@ public final class ChunkGenerationManager {
             failDemand(demand, new IllegalStateException(
                     "Chunk generation manager requires Chunk, got " + loaded.getClass().getName()));
         } else {
+            if (force && targetState == ChunkGenerationState.COMPLETE) {
+                driveDemand(demand);
+            }
             ensureDemandChunkAcquired(demand);
         }
 
         return targetState == ChunkGenerationState.COMPLETE ? demand.completionFuture : demand.terrainFuture;
+    }
+
+    /**
+     * Starts driving a forced complete demand. Without this a chunk that no player can see never
+     * completes, because nothing else drives its neighbours, and whoever waits for it waits forever.
+     * <p>
+     * Skipped on generation workers: a stage that demands another chunk is already inside chunks
+     * that are being driven, and driving from there would spread without bound.
+     */
+    private void driveDemand(GenerationDemand demand) {
+        if (isGenerationWorker() || !retainDriven(demand, demand.chunkHash, ChunkGenerationState.COMPLETE.getNativeId())) {
+            return;
+        }
+        if (demands.get(demand.chunkHash) != demand) {
+            releaseDriven(demand);
+        }
+    }
+
+    /**
+     * Drives the neighbours a driven chunk waits for at its current state, for every demand that
+     * still needs the chunk past that state. A neighbour that is not loaded yet, or not far enough,
+     * is loaded and driven to the state the stage needs.
+     */
+    private void driveDependencies(Chunk chunk) {
+        final int state = chunk.getGenerationState().getNativeId();
+        final GenerationDemand[] owners = demandsDrivingPast(chunk.getIndex(), state);
+        if (owners == null) return;
+
+        for (int dx = -1; dx <= 1; dx++) {
+            for (int dz = -1; dz <= 1; dz++) {
+                if (dx == 0 && dz == 0) continue;
+
+                final int required = requiredNeighborState(chunk.getX(), chunk.getZ(), state, dx, dz);
+                if (required < 0) return;
+
+                final int neighborX = chunk.getX() + dx;
+                final int neighborZ = chunk.getZ() + dz;
+                IChunk loaded = level.getPhysicalChunkIfLoaded(neighborX, neighborZ);
+                if (loaded instanceof Chunk neighbor && !neighbor.isDiscarded()
+                        && neighbor.getGenerationState().getNativeId() >= required) {
+                    continue;
+                }
+
+                for (GenerationDemand owner : owners) {
+                    driveChunk(owner, neighborX, neighborZ, required);
+                }
+            }
+        }
+    }
+
+    private static int requiredNeighborState(int chunkX, int chunkZ, int state, int dx, int dz) {
+        return switch (state) {
+            case 2, 6, 8 -> state;
+            case 4 -> populationNeighborState(chunkX, chunkZ, dx, dz);
+            default -> -1;
+        };
+    }
+
+    /**
+     * Loads a chunk a demand depends on and drives it. A chunk that cannot be loaded fails the
+     * demand, which releases everything it drives: the chunk is never driven for the demand again,
+     * so the demand would otherwise wait forever.
+     */
+    private void driveChunk(GenerationDemand demand, int chunkX, int chunkZ, int targetNativeId) {
+        if (!retainDriven(demand, Level.chunkHash(chunkX, chunkZ), targetNativeId)) return;
+
+        final IChunk acquired;
+        try {
+            acquired = level.acquireGenerationChunk(chunkX, chunkZ);
+        } catch (Throwable throwable) {
+            failDemand(demand, new IllegalStateException("Could not load chunk (" + chunkX + ", " + chunkZ
+                    + ") needed by demanded chunk (" + demand.chunkX + ", " + demand.chunkZ + ")", throwable));
+            return;
+        }
+
+        if (!(acquired instanceof Chunk)) {
+            failDemand(demand, new IllegalStateException("Chunk generation manager requires Chunk, got "
+                    + (acquired == null ? "null" : acquired.getClass().getName())));
+            return;
+        }
+
+        onChunkViewAcquired(acquired);
+    }
+
+    /**
+     * Records that a demand needs a chunk driven to at least the given state, keeping the chunk
+     * loaded the first time.
+     *
+     * @return whether the demand needs the chunk further than before
+     */
+    private boolean retainDriven(GenerationDemand demand, long chunkHash, int targetNativeId) {
+        synchronized (drivenChunks) {
+            if (demand.drivenReleased) return false;
+
+            final int previous = demand.driven.get(chunkHash);
+            if (previous >= targetNativeId) return false;
+
+            demand.driven.put(chunkHash, targetNativeId);
+            if (previous < 0) {
+                drivenChunks.computeIfAbsent(chunkHash, ignored -> new ArrayList<>(1)).add(demand);
+                level.retainGenerationTask(chunkHash);
+            }
+            return true;
+        }
+    }
+
+    private void releaseDriven(GenerationDemand demand) {
+        final long[] released;
+        synchronized (drivenChunks) {
+            if (demand.drivenReleased) return;
+            demand.drivenReleased = true;
+
+            released = demand.driven.keySet().toLongArray();
+            for (long chunkHash : released) {
+                final List<GenerationDemand> owners = drivenChunks.get(chunkHash);
+                if (owners != null && owners.remove(demand) && owners.isEmpty()) {
+                    drivenChunks.remove(chunkHash);
+                }
+            }
+            demand.driven.clear();
+        }
+
+        for (long chunkHash : released) {
+            level.releaseGenerationTask(chunkHash);
+        }
+    }
+
+    private GenerationDemand[] demandsDrivingPast(long chunkHash, int state) {
+        synchronized (drivenChunks) {
+            final List<GenerationDemand> owners = drivenChunks.get(chunkHash);
+            if (owners == null) return null;
+
+            GenerationDemand[] driving = null;
+            int count = 0;
+            for (GenerationDemand owner : owners) {
+                if (owner.driven.get(chunkHash) <= state) continue;
+                if (driving == null) driving = new GenerationDemand[owners.size()];
+                driving[count++] = owner;
+            }
+            return driving == null || count == driving.length ? driving : Arrays.copyOf(driving, count);
+        }
+    }
+
+    private boolean isDriven(long chunkHash) {
+        synchronized (drivenChunks) {
+            return drivenChunks.containsKey(chunkHash);
+        }
+    }
+
+    private boolean isGenerationWorker() {
+        return Thread.currentThread() instanceof ForkJoinWorkerThread worker && worker.getPool() == executor;
     }
 
     private static boolean hasReachedTarget(Chunk chunk, ChunkGenerationState targetState) {
@@ -465,7 +634,10 @@ public final class ChunkGenerationManager {
 
         ChunkGenerationState state = chunk.getGenerationState();
         if (state.isActive() || !tasksByState.containsKey(state)) return;
-        if (!dependenciesSatisfied(chunk, state)) return;
+        if (!dependenciesSatisfied(chunk, state)) {
+            driveDependencies(chunk);
+            return;
+        }
         enqueueStableState(chunk);
     }
 
@@ -610,6 +782,7 @@ public final class ChunkGenerationManager {
         final List<ChunkBuildOrderPolicy.RegionSource> regionSources = snapshotRegionSources();
         final List<Candidate> candidates = new ArrayList<>();
         final List<GenerationRequest> deferred = new ArrayList<>();
+        List<Chunk> blocked = null;
 
         GenerationRequest request;
         while ((request = pollPending()) != null) {
@@ -635,13 +808,11 @@ public final class ChunkGenerationManager {
                 continue;
             }
 
-            if (!dependenciesSatisfied(chunk, request.state)) {
+            if (!dependenciesSatisfied(chunk, request.state)
+                    || request.state.getNativeId() >= 2 && !hasPhysicalNeighborhood(request.chunkX, request.chunkZ)) {
                 removeRequest(request);
-                continue;
-            }
-
-            if (request.state.getNativeId() >= 2 && !hasPhysicalNeighborhood(request.chunkX, request.chunkZ)) {
-                removeRequest(request);
+                if (blocked == null) blocked = new ArrayList<>();
+                blocked.add(chunk);
                 continue;
             }
 
@@ -673,6 +844,12 @@ public final class ChunkGenerationManager {
             enqueue(deferredRequest);
         }
 
+        if (blocked != null) {
+            for (Chunk chunk : blocked) {
+                driveDependencies(chunk);
+            }
+        }
+
         if (inFlight.get() == 0 && !pending.isEmpty()) {
             schedulerRequested.set(true);
         }
@@ -699,7 +876,8 @@ public final class ChunkGenerationManager {
 
     private boolean isCurrentChunk(Chunk chunk) {
         return isSameChunkIdentity(chunk)
-                && (level.isChunkViewRetained(chunk.getIndex()) || demands.containsKey(chunk.getIndex()));
+                && (level.isChunkViewRetained(chunk.getIndex()) || demands.containsKey(chunk.getIndex())
+                || isDriven(chunk.getIndex()));
     }
 
     private boolean launch(Candidate candidate) {
@@ -909,19 +1087,45 @@ public final class ChunkGenerationManager {
     private void completeDemand(GenerationDemand demand, Chunk chunk) {
         if (!demands.remove(demand.chunkHash, demand)) return;
         completeReachedWaiters(demand, chunk);
+        releaseDriven(demand);
     }
 
     private void failDemand(long chunkHash, Throwable throwable) {
         GenerationDemand demand = demands.remove(chunkHash);
-        if (demand == null) return;
+        if (demand != null) {
+            releaseDriven(demand);
+            demand.terrainFuture.completeExceptionally(throwable);
+            demand.completionFuture.completeExceptionally(throwable);
+        }
+        failDemandsDriving(chunkHash, throwable);
+    }
 
-        demand.terrainFuture.completeExceptionally(throwable);
-        demand.completionFuture.completeExceptionally(throwable);
+    /**
+     * Fails every forced demand that drives the failed chunk. Such a demand waits for that chunk to
+     * reach a later stage, which it no longer will, so it would wait forever and keep the chunks it
+     * drives loaded.
+     */
+    private void failDemandsDriving(long chunkHash, Throwable throwable) {
+        final GenerationDemand[] owners;
+        synchronized (drivenChunks) {
+            final List<GenerationDemand> driving = drivenChunks.get(chunkHash);
+            if (driving == null) return;
+            owners = driving.toArray(new GenerationDemand[0]);
+        }
+
+        final int chunkX = Level.getHashX(chunkHash);
+        final int chunkZ = Level.getHashZ(chunkHash);
+        for (GenerationDemand demand : owners) {
+            failDemand(demand, new IllegalStateException(
+                    "Chunk (" + chunkX + ", " + chunkZ + ") needed by demanded chunk (" + demand.chunkX + ", "
+                            + demand.chunkZ + ") failed to generate", throwable));
+        }
     }
 
     private void failDemand(GenerationDemand demand, Throwable throwable) {
         if (!demands.remove(demand.chunkHash, demand)) return;
 
+        releaseDriven(demand);
         demand.terrainFuture.completeExceptionally(throwable);
         demand.completionFuture.completeExceptionally(throwable);
     }
@@ -1038,6 +1242,10 @@ public final class ChunkGenerationManager {
         private final CompletableFuture<IChunk> terrainFuture = new CompletableFuture<>();
         private final CompletableFuture<IChunk> completionFuture = new CompletableFuture<>();
         private final AtomicInteger targetNativeId;
+        /** The state each chunk this demand drives has to reach; guarded by {@code drivenChunks}. */
+        private final Long2IntOpenHashMap driven = new Long2IntOpenHashMap();
+        /** Whether the driven chunks were released; guarded by {@code drivenChunks}. */
+        private boolean drivenReleased;
 
         private GenerationDemand(
                 int chunkX,
@@ -1048,6 +1256,7 @@ public final class ChunkGenerationManager {
             this.chunkZ = chunkZ;
             this.chunkHash = chunkHash;
             this.targetNativeId = new AtomicInteger(targetState.getNativeId());
+            this.driven.defaultReturnValue(-1);
         }
 
         private void upgradeTarget(ChunkGenerationState targetState) {

@@ -21,7 +21,7 @@ import static org.powernukkitx.math.VectorMath.calculateFace;
  * @apiNote Implements BlockConnectable only in PowerNukkit
  */
 
-public abstract class BlockThin extends BlockTransparent implements BlockConnectable {
+public abstract class BlockThin extends BlockTransparent implements BlockConnectable, StateDeriving {
     public static final BlockDefinition DEFINITION = TRANSPARENT.toBuilder()
             .isSolid(false)
             .build();
@@ -91,6 +91,7 @@ public abstract class BlockThin extends BlockTransparent implements BlockConnect
         };
     }
 
+    @Override
     public boolean autoConfigureState() {
         return HorizontalConnections.configure(this);
     }

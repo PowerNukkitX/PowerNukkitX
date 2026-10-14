@@ -367,6 +367,10 @@ public final class PlayerChunkManager {
 
         LongOpenHashSet enqueue = requeueScratch;
         enqueue.clear();
+        // Loads of chunks that are not in memory yet; capped so a joining player cannot queue its
+        // whole view distance of disk reads in one tick. The queue is nearest first.
+        final int maxNewLoads = player.getServer().getSettings().chunkSettings().maxChunkLoadsPerPlayerTick();
+        int newLoads = 0;
 
         while (!chunkSendQueue.isEmpty()) {
             long chunkHash = chunkSendQueue.dequeueLong();
@@ -386,6 +390,12 @@ public final class PlayerChunkManager {
             if (chunkTask == null) {
                 if (!inRadiusChunks.contains(chunkHash)) continue;
 
+                final boolean inMemory = player.getLevel().getChunkIfLoaded(chunkX, chunkZ) != null;
+                if (!inMemory && maxNewLoads > 0 && newLoads >= maxNewLoads) {
+                    enqueue.add(chunkHash);
+                    continue;
+                }
+
                 if (!PlayerPreChunkRequestEvent.getHandlers().isEmpty()) {
                     PlayerPreChunkRequestEvent event = new PlayerPreChunkRequestEvent(player, chunkX, chunkZ, force);
                     Server.getInstance().getPluginManager().callEvent(event);
@@ -394,6 +404,9 @@ public final class PlayerChunkManager {
 
                 chunkTask = player.getLevel().getChunkAsync(chunkX, chunkZ);
                 chunkLoadingQueue.put(chunkHash, chunkTask);
+                if (!inMemory) {
+                    newLoads++;
+                }
             }
 
             if (!chunkTask.isDone()) {

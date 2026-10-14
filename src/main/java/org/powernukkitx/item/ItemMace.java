@@ -1,6 +1,7 @@
 package org.powernukkitx.item;
 
 import org.powernukkitx.entity.Entity;
+import org.powernukkitx.item.definition.ItemDefinition;
 import org.powernukkitx.level.Level;
 import org.powernukkitx.level.Sound;
 import org.powernukkitx.math.NukkitMath;
@@ -8,13 +9,13 @@ import org.powernukkitx.math.Vector3;
 import org.cloudburstmc.protocol.bedrock.data.LevelEvent;
 
 public class ItemMace extends ItemTool {
-    public ItemMace() {
-        super(MACE);
-    }
+    public static final ItemDefinition DEFINITION = TOOL.toBuilder()
+            .mace(true)
+            .maxDurability(501)
+            .build();
 
-    @Override
-    public int getMaxDurability() {
-        return 501;
+    public ItemMace() {
+        super(MACE, DEFINITION);
     }
 
     @Override

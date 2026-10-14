@@ -18,7 +18,7 @@ import static org.powernukkitx.math.VectorMath.calculateFace;
  * @author xtypr
  * @since 2015/12/7
  */
-public abstract class BlockFence extends BlockTransparent implements BlockConnectable {
+public abstract class BlockFence extends BlockTransparent implements BlockConnectable, StateDeriving {
     public static final BlockDefinition DEFINITION = TRANSPARENT.toBuilder()
             .hardness(2)
             .resistance(3)
@@ -71,6 +71,7 @@ public abstract class BlockFence extends BlockTransparent implements BlockConnec
     }
 
 
+    @Override
     public boolean autoConfigureState() {
         return HorizontalConnections.configure(this);
     }

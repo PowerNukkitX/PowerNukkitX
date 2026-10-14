@@ -44,12 +44,8 @@ import org.jetbrains.annotations.Nullable;
  *
  * <p><b>Example usage:</b>
  * <pre>{@code
- * new Behavior(
- *     new BreedingExecutor(16, 100, 0.5f), // 16 block radius, 100 ticks duration
- *     e -> Boolean.TRUE.equals(e.getMemoryStorage().get(CoreMemoryTypes.IS_IN_LOVE)),
- *     2,
- *     1
- * );
+ * .behavior(new BreedingExecutor(16, 100, 0.5f)) // 16 block radius, 100 ticks duration
+ *         .when(e -> Boolean.TRUE.equals(e.getMemoryStorage().get(CoreMemoryTypes.IS_IN_LOVE)))
  * }</pre>
  *
  * @author Curse

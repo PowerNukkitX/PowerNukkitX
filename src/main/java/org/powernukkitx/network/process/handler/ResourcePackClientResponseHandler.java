@@ -85,10 +85,7 @@ public class ResourcePackClientResponseHandler implements PacketHandler<Resource
 
                 holder.getSession().sendPacketImmediately(resourcePackStack);
             }
-            case RESOURCE_PACK_STACK_FINISHED -> {
-                holder.sendBeforeSpawn(server);
-                holder.setState(SessionState.CHUNKS);
-            }
+            case RESOURCE_PACK_STACK_FINISHED -> holder.beginSpawn(server);
         }
     }
 

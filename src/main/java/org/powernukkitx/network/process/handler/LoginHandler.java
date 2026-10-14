@@ -23,6 +23,7 @@ import org.powernukkitx.Server;
 import org.powernukkitx.event.player.PlayerPreLoginEvent;
 import org.powernukkitx.event.player.PlayerLoginFailEvent;
 import org.powernukkitx.network.NetworkConstants;
+import org.powernukkitx.network.process.LoginService;
 import org.powernukkitx.network.process.PacketHandler;
 import org.powernukkitx.network.process.PlayerSessionHolder;
 import org.powernukkitx.network.process.SessionState;
@@ -45,8 +46,9 @@ import java.util.function.Consumer;
  * JWT. A session is pinned to one Netty event loop that also serves every other session on that
  * loop, so doing this inline stalls unrelated players whenever a batch of logins arrives.
  * <p>
- * The work therefore runs on the compute pool in two steps, with the checks that read server
- * state - the pre-login event, player count, whitelist and bans - on the event loop between them.
+ * The work therefore runs on the login validation pool of the {@link LoginService} in two steps,
+ * with the checks that read server state - the pre-login event, player count, whitelist and bans -
+ * on the event loop between them.
  * That ordering is deliberate: it matches the sequence used when this ran inline, so failures are
  * still reported in the same order, and a login the server is going to refuse anyway never pays
  * for the client JWT or the key exchange.
@@ -93,6 +95,17 @@ public class LoginHandler implements PacketHandler<LoginPacket> {
 
         holder.setState(SessionState.AUTHENTICATING);
 
+        // Admitted before any cryptography, so a burst of joins waits its turn instead of piling up
+        final LoginService.Admission admission = holder.admitLogin(server,
+            () -> this.validate(credentials, xboxAuthRequired, holder, server));
+        if (admission == LoginService.Admission.REFUSED) {
+            failLogin(holder, server, DisconnectFailReason.SERVER_FULL, null);
+        } else if (admission == LoginService.Admission.ADMITTED) {
+            this.validate(credentials, xboxAuthRequired, holder, server);
+        }
+    }
+
+    private void validate(Credentials credentials, boolean xboxAuthRequired, PlayerSessionHolder holder, Server server) {
         offLoop(holder, server,
             () -> validateChain(credentials, server, xboxAuthRequired),
             outcome -> applyChain(outcome, credentials, holder, server));
@@ -143,7 +156,7 @@ public class LoginHandler implements PacketHandler<LoginPacket> {
             failLogin(holder, server, DisconnectFailReason.UNKNOWN, event.getKickMessage());
             return;
         }
-        if (server.getOnlinePlayers().size() >= server.getMaxPlayers()) {
+        if (!holder.tryReservePlayerSlot(server)) {
             failLogin(holder, server, DisconnectFailReason.SERVER_FULL, null);
             return;
         }
@@ -235,6 +248,9 @@ public class LoginHandler implements PacketHandler<LoginPacket> {
      */
     private void completeLogin(ClientOutcome client, ChainValidationResult.IdentityClaims identityClaims,
                                boolean signed, PlayerSessionHolder holder, Server server) {
+        // Verification is done, so the slot can go to the next login
+        holder.releaseLogin(server);
+
         final ClientChainData clientChainData = client.clientChainData();
         if (clientChainData == null) {
             failLogin(holder, server, DisconnectFailReason.INVALID_PLATFORM_SKIN, null);
@@ -272,14 +288,14 @@ public class LoginHandler implements PacketHandler<LoginPacket> {
     }
 
     /**
-     * Runs {@code work} on the compute pool and hands its result to {@code then} back on the
-     * session's event loop, so everything touching session or server state stays on one thread.
-     * A session that went away in the meantime is dropped, and a failing step disconnects rather
-     * than leaving the login stuck in {@link SessionState#AUTHENTICATING}.
+     * Runs {@code work} on the login validation pool and hands its result to {@code then} back on
+     * the session's event loop, so everything touching session or server state stays on one thread.
+     * A session that went away in the meantime is dropped, and a failing or refused step
+     * disconnects rather than leaving the login stuck in {@link SessionState#AUTHENTICATING}.
      */
     private <T> void offLoop(PlayerSessionHolder holder, Server server, ThrowingSupplier<T> work, Consumer<T> then) {
         final EventLoop eventLoop = holder.getSession().getPeer().getChannel().eventLoop();
-        server.getComputeThreadPool().execute(() -> {
+        final boolean accepted = server.getLoginService().executeValidation(() -> {
             final T result;
             try {
                 result = work.get();
@@ -298,6 +314,9 @@ public class LoginHandler implements PacketHandler<LoginPacket> {
                 }
             });
         });
+        if (!accepted) {
+            failLogin(holder, server, DisconnectFailReason.SERVER_FULL, null);
+        }
     }
 
     /**
@@ -307,6 +326,8 @@ public class LoginHandler implements PacketHandler<LoginPacket> {
      * @param message an explicit disconnect message, or {@code null} to use the reason's default
      */
     private void failLogin(PlayerSessionHolder holder, Server server, DisconnectFailReason reason, @Nullable String message) {
+        holder.releaseLogin(server);
+        holder.releasePlayerSlot(server);
         final PlayerLoginFailEvent sessionFailEvent = new PlayerLoginFailEvent(holder, reason);
         if (message != null) {
             sessionFailEvent.setDisconnectMessage(message);

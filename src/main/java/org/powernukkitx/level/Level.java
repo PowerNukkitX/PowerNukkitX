@@ -148,6 +148,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedDeque;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.TimeUnit;
@@ -217,6 +218,7 @@ public class Level implements Metadatable, LiquidUpdateAccess {
     // endregion finals - number finals
 
     private static final float[] MOON_BRIGHTNESS_PER_PHASE = {1f, 0.75f, 0.5f, 0.25f, 0f, 0.25f, 0.5f, 0.75f};
+
     private static final Set<String> randomTickBlocks = new HashSet<>(64);  // The blocks that can randomly tick
     private static final ThreadLocal<Entity[]> ENTITY_BUFFER = ThreadLocal.withInitial(() -> new Entity[512]);
 
@@ -382,10 +384,18 @@ public class Level implements Metadatable, LiquidUpdateAccess {
     private final Long2ObjectNonBlockingMap<Player> players = new Long2ObjectNonBlockingMap<>();
     @NonComputationAtomic
     private final Long2ObjectNonBlockingMap<Entity> entities = new Long2ObjectNonBlockingMap<>();
+    /** Chunk loads started by {@link #getChunkAsync(int, int, boolean)} that have not finished yet. */
+    private final Long2ObjectNonBlockingMap<CompletableFuture<IChunk>> pendingChunkLoads = new Long2ObjectNonBlockingMap<>();
     @NonComputationAtomic
     private final Long2ObjectNonBlockingMap<Entity> entitiesByUniqueId = new Long2ObjectNonBlockingMap<>();
     private final ConcurrentHashMap<Long, ConcurrentLinkedQueue<PendingActorLink>> pendingActorLinks = new ConcurrentHashMap<>();
     private final ConcurrentLinkedQueue<BlockEntity> updateBlockEntities = new ConcurrentLinkedQueue<>();
+    /**
+     * Membership index for {@link #updateBlockEntities}. The queue keeps the tick order, but
+     * {@code contains} on it is a linear walk, and scheduling an update ran that walk over every
+     * queued block entity on a level that can hold thousands of them.
+     */
+    private final Set<BlockEntity> updateBlockEntitySet = ConcurrentHashMap.newKeySet();
     /**
      * Server-wide count of chunks that have finished generating, across all levels. Incremented once per completed
      * generation (async and sync paths). Used by {@code /debug genrate} to report chunk generation throughput.
@@ -410,7 +420,8 @@ public class Level implements Metadatable, LiquidUpdateAccess {
     @NonComputationAtomic
     private final LongArraySet unloadingChunks = new LongArraySet();
     private final Long2ObjectNonBlockingMap<Long> unloadQueue = new Long2ObjectNonBlockingMap<>();
-    private final ConcurrentHashMap<Long, TickCachedBlockStore> tickCachedBlocks = new ConcurrentHashMap<>();
+    @NonComputationAtomic
+    private final Long2ObjectNonBlockingMap<TickCachedBlockStore> tickCachedBlocks = new Long2ObjectNonBlockingMap<>();
     private final LongSet highLightChunks = new LongOpenHashSet();
     // Avoid OOM, gc'd references result in whole chunk being sent (possibly higher cpu)
     private final Long2ObjectOpenHashMap<SoftReference<Int2ObjectOpenHashMap<Object>>> changedBlocks = new Long2ObjectOpenHashMap<>();
@@ -431,6 +442,7 @@ public class Level implements Metadatable, LiquidUpdateAccess {
     private final Long2ObjectNonBlockingMap<Int2ObjectNonBlockingMap<ChunkSendRequest>> chunkSendQueue = new Long2ObjectNonBlockingMap<>();
     private final Long2IntMap chunkTickList = new Long2IntOpenHashMap();
     private final CircuitSystem circuitSystem = new CircuitSystem();
+    private final LongSet legacyStateChunks = new LongOpenHashSet();
     private final VibrationManager vibrationManager = new SimpleVibrationManager(this);
     private final VillageManager villageManager = new VillageManager(this);
     public boolean stopTime;
@@ -638,7 +650,9 @@ public class Level implements Metadatable, LiquidUpdateAccess {
         this.clearChunksOnTick = this.server.getSettings().chunkSettings().clearTickList();
         this.chunkTickList.clear();
         this.temporalVector = new Vector3(0, 0, 0);
-        this.scheduler = new ServerScheduler();
+        // Share the server's async pool: a dedicated pool per level would cost WORKERS threads for
+        // every world, none of which is busy enough to justify its own.
+        this.scheduler = new ServerScheduler(this.server.getScheduler().getAsyncTaskThreadPool());
         this.tickRate = 1;
 
         this.skyLightSubtracted = this.calculateSkylightSubtracted(1);
@@ -648,6 +662,8 @@ public class Level implements Metadatable, LiquidUpdateAccess {
                     try {
                         if (!this.players.isEmpty() || this.hasTickingAreas()) {
                             this.doTick(loop);
+                        } else {
+                            this.scheduler.mainThreadHeartbeat(loop.getTick());
                         }
                     } catch (Throwable t) {
                         log.error("Error in base-tick for level {}", this.getName(), t);
@@ -1089,6 +1105,11 @@ public class Level implements Metadatable, LiquidUpdateAccess {
         }
         this.scheduler.close();
         if (levelProvider != null) {
+            if (this.scheduler.hasPendingAsyncTasks()) {
+                // Work that outlived the drain timeout may still read the provider, so it stays open
+                log.error("Level {} keeps its provider open, asynchronous work is still running", getName());
+                return;
+            }
             levelProvider.close();
         }
         this.provider.set(null);
@@ -1836,17 +1857,14 @@ public class Level implements Metadatable, LiquidUpdateAccess {
     }
 
     public void releaseTickCachedBlocks() {
-        if (this.tickCachedBlocks.isEmpty()) {
-            return;
-        }
-        for (Long key : this.tickCachedBlocks.keySet()) {
-            this.tickCachedBlocks.computeIfPresent(key, (ignore, store) -> {
-                if (store.isCachedStoreEmpty()) {
-                    return null;
-                }
+        var iterator = this.tickCachedBlocks.values().iterator();
+        while (iterator.hasNext()) {
+            var store = iterator.next();
+            if (store.isCachedStoreEmpty()) {
+                iterator.remove();
+            } else {
                 store.clearCachedStore();
-                return store;
-            });
+            }
         }
     }
 
@@ -2031,6 +2049,8 @@ public class Level implements Metadatable, LiquidUpdateAccess {
             }
             if (prof) phase[3] = -phaseStart + (phaseStart = System.nanoTime());
 
+            this.deriveLegacyChunkStates();
+
             while (!this.normalUpdateQueue.isEmpty()) {
                 QueuedUpdate queuedUpdate = this.normalUpdateQueue.poll();
                 Block block = getBlock(queuedUpdate.block, queuedUpdate.block.layer);
@@ -2071,7 +2091,9 @@ public class Level implements Metadatable, LiquidUpdateAccess {
                         }), this.scheduler.getAsyncTaskThreadPool()).join();
                 }
                 boolean seenAsyncPrepare = false;
-                for (long id : this.updateEntities.keySetLong()) {
+                var entityIterator = this.updateEntities.fastKeyIterator();
+                while (entityIterator.hasNext()) {
+                    long id = entityIterator.nextLong();
                     Entity entity = this.updateEntities.get(id);
                     if (entity instanceof EntityIntelligent intelligent) {
                         if (intelligent.getBehaviorGroup() == null) {
@@ -2101,8 +2123,12 @@ public class Level implements Metadatable, LiquidUpdateAccess {
             if (prof) phase[5] = -phaseStart + (phaseStart = System.nanoTime());
             this.updateBlockEntities.removeIf(blockEntity -> {
                 synchronized (blockEntity) {
-                    return blockEntity.closed || blockEntity.getLevel() != this || !blockEntity.onUpdate();
+                    if (!blockEntity.closed && blockEntity.getLevel() == this && blockEntity.onUpdate()) {
+                        return false;
+                    }
                 }
+                this.updateBlockEntitySet.remove(blockEntity);
+                return true;
             });
             this.vibrationManager.tick();
             if (prof) phase[6] = -phaseStart + (phaseStart = System.nanoTime());
@@ -2663,6 +2689,10 @@ public class Level implements Metadatable, LiquidUpdateAccess {
         int range = Math.min(3 + chunksPerLoader / 30, this.chunkTickRadius);
         ThreadLocalRandom random = ThreadLocalRandom.current();
 
+        // Resolved once: the selection loop below can run hundreds of attempts per loader per tick,
+        // and this was a call on every one of them.
+        LevelProvider tickProvider = requireProvider();
+
         synchronized (this.loaders) {
             for (ChunkLoader loader : this.loaders.values()) {
                 int chunkX = (int) loader.getX() >> 4;
@@ -2685,7 +2715,7 @@ public class Level implements Metadatable, LiquidUpdateAccess {
                         continue;
                     }
 
-                    if (requireProvider().isChunkLoaded(hash)) {
+                    if (tickProvider.isChunkLoaded(hash)) {
                         this.chunkTickList.put(hash, -1);
                     }
 
@@ -2705,21 +2735,23 @@ public class Level implements Metadatable, LiquidUpdateAccess {
                     boolean tickingAreaChunk =
                             this.tickingAreaChunkHashes != null && this.tickingAreaChunkHashes.contains(index);
 
+                    int chunkX = getHashX(index);
+                    int chunkZ = getHashZ(index);
+
+                    // Neighbour check first. getChunk(..., false) on an unloaded chunk goes to the
+                    // provider and can read LevelDB, which is wasted when the neighbours are missing.
                     if (!tickingAreaChunk && !areNeighboringChunksLoaded(index)) {
                         iter.remove();
                         continue;
                     }
 
-                    int loaders = entry.getIntValue();
-
-                    int chunkX = getHashX(index);
-                    int chunkZ = getHashZ(index);
-
-                    IChunk chunk;
-                    if ((chunk = this.getChunk(chunkX, chunkZ, false)) == null) {
+                    IChunk chunk = this.getChunk(chunkX, chunkZ, false);
+                    if (chunk == null) {
                         iter.remove();
                         continue;
-                    } else if (loaders <= 0) {
+                    }
+
+                    if (entry.getIntValue() <= 0) {
                         iter.remove();
                         if (tickingAreaChunk && !isTickingAreaChunkReady(chunk)) continue;
                     }
@@ -2866,12 +2898,12 @@ public class Level implements Metadatable, LiquidUpdateAccess {
             getServer().getPluginManager().callEvent(event);
             if (event.isCancelled()) return;
         }
-        IChunk chunk = this.getChunk(getHashX(index), getHashZ(index), false);
-        if (chunk == null) {
-            return;
-        }
         if (!(this.tickingAreaChunkHashes != null && this.tickingAreaChunkHashes.contains(index))
                 && !areNeighboringChunksLoaded(index)) {
+            return;
+        }
+        IChunk chunk = this.getChunk(getHashX(index), getHashZ(index), false);
+        if (chunk == null) {
             return;
         }
         resolved.add(chunk);
@@ -3029,10 +3061,15 @@ public class Level implements Metadatable, LiquidUpdateAccess {
 
     public void updateAround(Vector3 pos) {
         Block block = getBlock(pos);
-        for (BlockFace face : BlockFace.values()) {
+        for (BlockFace face : BlockFace.getValues()) {
             final Block side = block.getSideAtLayer(0, face);
             normalUpdateQueue.add(new QueuedUpdate(side, face));
-            normalUpdateQueue.add(new QueuedUpdate(side.getLevelBlockAtLayer(1), face));
+            // Layer 1 is the waterlogging layer and is air nearly everywhere. Queueing an update for
+            // it unconditionally built a Block through the registry's reflective constructor, per
+            // face, per propagation step, for something that would then do nothing.
+            if (getBlockState(side.getFloorX(), side.getFloorY(), side.getFloorZ(), 1, false) != BlockAir.STATE) {
+                normalUpdateQueue.add(new QueuedUpdate(side.getLevelBlockAtLayer(1), face));
+            }
         }
     }
 
@@ -3051,17 +3088,30 @@ public class Level implements Metadatable, LiquidUpdateAccess {
      * @param pos the specified position
      */
     public void neighborChangeAroundImmediately(Vector3 pos) {
-        for (var face : BlockFace.values()) {
-            var neighborBlock = getBlock(pos.getSide(face));
-            neighborBlock.onNeighborChange(face.getOpposite());
+        int px = pos.getFloorX();
+        int py = pos.getFloorY();
+        int pz = pos.getFloorZ();
+        for (var face : BlockFace.getValues()) {
+            // The neighbour is genuinely needed here, but the Vector3 that addressed it was not.
+            getBlock(px + face.getXOffset(), py + face.getYOffset(), pz + face.getZOffset())
+                    .onNeighborChange(face.getOpposite());
         }
     }
 
     public void updateAroundObserver(Vector3 pos) {
-        for (var face : BlockFace.values()) {
-            var neighborBlock = getBlock(pos.getSide(face));
-            if (neighborBlock.getId() == BlockID.OBSERVER)
-                neighborBlock.onNeighborChange(face.getOpposite());
+        int px = pos.getFloorX();
+        int py = pos.getFloorY();
+        int pz = pos.getFloorZ();
+        for (var face : BlockFace.getValues()) {
+            int x = px + face.getXOffset();
+            int y = py + face.getYOffset();
+            int z = pz + face.getZOffset();
+            // Observers are rare, so resolve the state first: the old shape allocated a Vector3 and
+            // a Block per face only to read an identifier off them.
+            if (!BlockID.OBSERVER.equals(getBlockState(x, y, z, 0, false).getIdentifier())) {
+                continue;
+            }
+            getBlock(x, y, z).onNeighborChange(face.getOpposite());
         }
     }
 
@@ -3304,9 +3354,9 @@ public class Level implements Metadatable, LiquidUpdateAccess {
         int minX = NukkitMath.floorDouble(bb.getMinX());
         int minY = NukkitMath.floorDouble(bb.getMinY());
         int minZ = NukkitMath.floorDouble(bb.getMinZ());
-        int maxX = NukkitMath.ceilDouble(bb.getMaxX());
-        int maxY = NukkitMath.ceilDouble(bb.getMaxY());
-        int maxZ = NukkitMath.ceilDouble(bb.getMaxZ());
+        int maxX = NukkitMath.floorDouble(bb.getMaxX());
+        int maxY = NukkitMath.floorDouble(bb.getMaxY());
+        int maxZ = NukkitMath.floorDouble(bb.getMaxZ());
 
         List<Block> collides = new ArrayList<>();
 
@@ -3367,9 +3417,9 @@ public class Level implements Metadatable, LiquidUpdateAccess {
         int minX = NukkitMath.floorDouble(bb.getMinX());
         int minY = NukkitMath.floorDouble(bb.getMinY());
         int minZ = NukkitMath.floorDouble(bb.getMinZ());
-        int maxX = NukkitMath.ceilDouble(bb.getMaxX());
-        int maxY = NukkitMath.ceilDouble(bb.getMaxY());
-        int maxZ = NukkitMath.ceilDouble(bb.getMaxZ());
+        int maxX = NukkitMath.floorDouble(bb.getMaxX());
+        int maxY = NukkitMath.floorDouble(bb.getMaxY());
+        int maxZ = NukkitMath.floorDouble(bb.getMaxZ());
 
         List<Block> collides = new ArrayList<>();
 
@@ -3412,15 +3462,20 @@ public class Level implements Metadatable, LiquidUpdateAccess {
         int minX = NukkitMath.floorDouble(bb.getMinX());
         int minY = NukkitMath.floorDouble(bb.getMinY());
         int minZ = NukkitMath.floorDouble(bb.getMinZ());
-        int maxX = NukkitMath.ceilDouble(bb.getMaxX());
-        int maxY = NukkitMath.ceilDouble(bb.getMaxY());
-        int maxZ = NukkitMath.ceilDouble(bb.getMaxZ());
+        // Block x occupies [x, x+1), so a box ending at 0.8 cannot touch the block at ceil(0.8).
+        // ceil combined with an inclusive bound scanned one extra layer on every axis.
+        int maxX = NukkitMath.floorDouble(bb.getMaxX());
+        int maxY = NukkitMath.floorDouble(bb.getMaxY());
+        int maxZ = NukkitMath.floorDouble(bb.getMaxZ());
 
         List<AxisAlignedBB> collides = new ArrayList<>();
 
         for (int z = minZ; z <= maxZ; ++z) {
             for (int x = minX; x <= maxX; ++x) {
                 for (int y = minY; y <= maxY; ++y) {
+                    // Air always passes through, so resolving the state first skips building a Block
+                    // for the overwhelming majority of positions in an entity's box.
+                    if (getBlockState(x, y, z, 0, false) == BlockAir.STATE) continue;
                     Block block = this.getBlock(this.temporalVector.setComponents(x, y, z), false);
                     if (!block.canPassThrough() && block.collidesWithBB(bb)) {
                         for (AxisAlignedBB collisionBox : block.getCollisionBoxes()) {
@@ -3456,15 +3511,17 @@ public class Level implements Metadatable, LiquidUpdateAccess {
         int minX = NukkitMath.floorDouble(bb.getMinX());
         int minY = NukkitMath.floorDouble(bb.getMinY());
         int minZ = NukkitMath.floorDouble(bb.getMinZ());
-        int maxX = NukkitMath.ceilDouble(bb.getMaxX());
-        int maxY = NukkitMath.ceilDouble(bb.getMaxY());
-        int maxZ = NukkitMath.ceilDouble(bb.getMaxZ());
+        // See getCollisionCubes: ceil over-scanned a whole layer per axis.
+        int maxX = NukkitMath.floorDouble(bb.getMaxX());
+        int maxY = NukkitMath.floorDouble(bb.getMaxY());
+        int maxZ = NukkitMath.floorDouble(bb.getMaxZ());
 
         List<AxisAlignedBB> collides = new ArrayList<>();
 
         for (int z = minZ; z <= maxZ; ++z) {
             for (int x = minX; x <= maxX; ++x) {
                 for (int y = minY; y <= maxY; ++y) {
+                    if (getBlockState(x, y, z, 0, false) == BlockAir.STATE) continue;
                     Block block = this.getBlock(this.temporalVector.setComponents(x, y, z), false);
                     if (!block.canPassThrough() && block.collidesWithBB(bb)) {
                         for (AxisAlignedBB collisionBox : block.getCollisionBoxes()) {
@@ -3637,7 +3694,7 @@ public class Level implements Metadatable, LiquidUpdateAccess {
     public Set<Block> getBlockAround(Vector3 pos) {
         Set<Block> around = new HashSet<>();
         Block block = getBlock(pos);
-        for (BlockFace face : BlockFace.values()) {
+        for (BlockFace face : BlockFace.getValues()) {
             Block side = block.getSideAtLayer(0, face);
             around.add(side);
         }
@@ -3673,8 +3730,25 @@ public class Level implements Metadatable, LiquidUpdateAccess {
     }
 
     public Block getTickCachedBlock(int x, int y, int z, int layer, boolean load) {
-        return tickCachedBlocks.computeIfAbsent(Level.chunkHash(x >> 4, z >> 4), key -> new SimpleTickCachedBlockStore(this))
-                .computeFromCachedStore(x, y, z, layer, () -> getBlock(x, y, z, layer, load));
+        // Deliberately not computeIfAbsent: this runs for every block an entity touches every tick,
+        // and the two capturing lambdas plus the boxed chunk key cost 672 bytes of garbage per
+        // player-sized hitbox scan. The get-then-putIfAbsent shape below allocates nothing on the
+        // hit path and keeps the same one-Block-per-position-per-tick guarantee.
+        final long chunkKey = Level.chunkHash(x >> 4, z >> 4);
+
+        TickCachedBlockStore store = tickCachedBlocks.get(chunkKey);
+        if (store == null) {
+            TickCachedBlockStore created = new SimpleTickCachedBlockStore(this);
+            TickCachedBlockStore previous = tickCachedBlocks.putIfAbsent(chunkKey, created);
+            store = previous != null ? previous : created;
+        }
+
+        Block cached = store.getFromCachedStore(x, y, z, layer);
+        if (cached != null) return cached;
+
+        Block computed = getBlock(x, y, z, layer, load);
+        if (computed == null) return null;
+        return store.putIfAbsentInCachedStore(computed, x, y, z, layer);
     }
 
     public Block getBlock(Vector3 pos) {
@@ -3706,25 +3780,33 @@ public class Level implements Metadatable, LiquidUpdateAccess {
     }
 
     public Block getBlock(int x, int y, int z, int layer, boolean load) {
-        BlockState fullState = BlockAir.STATE;
-        if (isYInRange(y)) {
-            int cx = x >> 4;
-            int cz = z >> 4;
-            IChunk chunk;
-            if (load) {
-                chunk = getChunk(cx, cz);
-            } else {
-                chunk = getChunkIfLoaded(cx, cz);
-            }
-            if (chunk != null) {
-                if (chunk instanceof Chunk concreteChunk && concreteChunk.getGenerationState().isActive()) {
-                    fullState = new UnsafeChunk(concreteChunk).getBlockState(x & 0xF, y, z & 0xF, layer);
-                } else {
-                    fullState = chunk.getBlockState(x & 0xF, y, z & 0xF, layer);
-                }
-            }
+        return Registries.BLOCK.get(getBlockState(x, y, z, layer, load), x, y, z, layer, this);
+    }
+
+    /**
+     * Resolves the block state at a position without materialising a {@link Block}.
+     * <p>
+     * Every {@code Block} comes out of the registry's reflective constructor, so on scans where most
+     * positions turn out to be air - entity collision boxes above all - reading the state first and
+     * only building the block for the few non-air hits removes nearly all of that allocation.
+     *
+     * @return the state, or {@link BlockAir#STATE} when the position is out of range or its chunk is
+     * not available, which is what {@link #getBlock(int, int, int, int, boolean)} resolves to there
+     */
+    public BlockState getBlockState(int x, int y, int z, int layer, boolean load) {
+        if (!isYInRange(y)) {
+            return BlockAir.STATE;
         }
-        return Registries.BLOCK.get(fullState, x, y, z, layer, this);
+        int cx = x >> 4;
+        int cz = z >> 4;
+        IChunk chunk = load ? getChunk(cx, cz) : getChunkIfLoaded(cx, cz);
+        if (chunk == null) {
+            return BlockAir.STATE;
+        }
+        if (chunk instanceof Chunk concreteChunk && concreteChunk.getGenerationState().isActive()) {
+            return new UnsafeChunk(concreteChunk).getBlockState(x & 0xF, y, z & 0xF, layer);
+        }
+        return chunk.getBlockState(x & 0xF, y, z & 0xF, layer);
     }
 
     public String getBlockIdAt(int x, int y, int z) {
@@ -4251,6 +4333,85 @@ public class Level implements Metadatable, LiquidUpdateAccess {
             Position position = block.add(0.5, 0.5, 0.5);
             this.addParticle(new DestroyBlockParticle(position, block));
             this.getVibrationManager().callVibrationEvent(new VibrationEvent(null, position, VibrationType.BLOCK_DESTROY));
+        }
+    }
+
+    /**
+     * Recomputes the states blocks derive from their surroundings in the chunks that were loaded
+     * since the last tick. Worlds written before those states existed hold the default in their
+     * place, which leaves stairs, fences, panes and walls unconnected until something else happens
+     * to update them.
+     */
+    private void deriveLegacyChunkStates() {
+        final long[] pending;
+        synchronized (this.legacyStateChunks) {
+            if (this.legacyStateChunks.isEmpty()) {
+                return;
+            }
+            pending = this.legacyStateChunks.toLongArray();
+            this.legacyStateChunks.clear();
+        }
+
+        for (long hash : pending) {
+            final int chunkX = getHashX(hash);
+            final int chunkZ = getHashZ(hash);
+            // a neighbour that was waiting on this chunk can be finished now, so it is retried too
+            for (int dx = -1; dx <= 1; dx++) {
+                for (int dz = -1; dz <= 1; dz++) {
+                    this.deriveChunkStates(chunkX + dx, chunkZ + dz);
+                }
+            }
+        }
+    }
+
+    private void deriveChunkStates(int chunkX, int chunkZ) {
+        final LevelProvider provider = this.getProvider();
+        if (provider == null) {
+            return;
+        }
+        final IChunk chunk = provider.getLoadedChunk(chunkHash(chunkX, chunkZ));
+        if (chunk == null || !chunk.hasLegacyStates()) {
+            return;
+        }
+        // blocks on the chunk edge derive their state from the chunk next to it, so the chunk is
+        // left alone until everything around it is there to read
+        for (int dx = -1; dx <= 1; dx++) {
+            for (int dz = -1; dz <= 1; dz++) {
+                if (provider.getLoadedChunk(chunkHash(chunkX + dx, chunkZ + dz)) == null) {
+                    return;
+                }
+            }
+        }
+        chunk.markStatesUpgraded();
+
+        final int baseX = chunkX << 4;
+        final int baseZ = chunkZ << 4;
+        for (ChunkSection section : chunk.getSections()) {
+            if (section == null || section.isEmpty()
+                    || !section.blockLayer()[0].anyInPalette(state -> state.toBlock() instanceof StateDeriving)) {
+                continue;
+            }
+            final int baseY = section.y() << 4;
+            for (int x = 0; x < 16; x++) {
+                for (int y = 0; y < 16; y++) {
+                    for (int z = 0; z < 16; z++) {
+                        if (!(section.getBlockState(x, y, z, 0).toBlock() instanceof StateDeriving deriving)) {
+                            continue;
+                        }
+                        final Block block = (Block) deriving;
+                        block.x = baseX + x;
+                        block.y = baseY + y;
+                        block.z = baseZ + z;
+                        block.level = this;
+                        block.layer = 0;
+                        if (deriving.autoConfigureState()) {
+                            // no neighbour update: the state was only ever wrong on disk, but the
+                            // players holding the chunk already got the wrong one and need the fix
+                            this.setBlock(block.getFloorX(), block.getFloorY(), block.getFloorZ(), 0, block, true, false);
+                        }
+                    }
+                }
+            }
         }
     }
 
@@ -5201,6 +5362,36 @@ public class Level implements Metadatable, LiquidUpdateAccess {
         return this.getCollidingEntities(bb, null);
     }
 
+    /** Mutable cursor so the per-column visitor can append into the shared result buffer. */
+    private static final class EntityBuffer {
+        private int index;
+        private ArrayList<Entity> overflow;
+    }
+
+    /**
+     * Visits the entities of one chunk column whose Y could put them inside {@code bb}.
+     * <p>
+     * Chunk granularity alone is far too coarse for these queries: finding what is within a few
+     * blocks of a player used to walk every entity in a 16 x 16 x 384 column, which is exactly the
+     * shape that degrades near item piles and mob farms. Chunk implementations that keep a section
+     * index answer from it; anything else falls back to the full entity map, so the result set is
+     * the same either way.
+     */
+    private void forEachEntityInColumn(int chunkX, int chunkZ, AxisAlignedBB bb, boolean loadChunks,
+                                       java.util.function.Consumer<Entity> action) {
+        IChunk chunk = loadChunks ? this.getChunk(chunkX, chunkZ) : this.getChunkIfLoaded(chunkX, chunkZ);
+        if (chunk == null) {
+            return;
+        }
+        if (chunk instanceof org.powernukkitx.level.format.Chunk concreteChunk) {
+            concreteChunk.forEachEntityInYRange(bb.getMinY(), bb.getMaxY(), action);
+            return;
+        }
+        for (Entity ent : chunk.getEntities().values()) {
+            action.accept(ent);
+        }
+    }
+
     public Entity[] getCollidingEntities(AxisAlignedBB bb, Entity entity) {
         int index = 0;
 
@@ -5208,21 +5399,28 @@ public class Level implements Metadatable, LiquidUpdateAccess {
 
         if (entity == null || entity.canCollide()) {
             int minX = NukkitMath.floorDouble((bb.getMinX() - 2) / 16);
+            // ceil looks like it over scans a column, but entities sit in the chunk of their center,
+            // so a wide one (dragon, scaled mob) one chunk over can still reach into bb
             int maxX = NukkitMath.ceilDouble((bb.getMaxX() + 2) / 16);
             int minZ = NukkitMath.floorDouble((bb.getMinZ() - 2) / 16);
             int maxZ = NukkitMath.ceilDouble((bb.getMaxZ() + 2) / 16);
 
+            EntityBuffer buffer = new EntityBuffer();
+            // One visitor for the whole query, not one per column
+            java.util.function.Consumer<Entity> collect = ent -> {
+                if ((entity == null || (ent != entity && entity.canCollideWith(ent)))
+                        && ent.boundingBox.intersectsWith(bb)) {
+                    buffer.overflow = addEntityToBuffer(buffer.index, buffer.overflow, ent);
+                    buffer.index++;
+                }
+            };
             for (int x = minX; x <= maxX; ++x) {
                 for (int z = minZ; z <= maxZ; ++z) {
-                    for (Entity ent : this.getChunkEntities(x, z, false).values()) {
-                        if ((entity == null || (ent != entity && entity.canCollideWith(ent)))
-                                && ent.boundingBox.intersectsWith(bb)) {
-                            overflow = addEntityToBuffer(index, overflow, ent);
-                            index++;
-                        }
-                    }
+                    forEachEntityInColumn(x, z, bb, false, collect);
                 }
             }
+            index = buffer.index;
+            overflow = buffer.overflow;
         }
 
         return getEntitiesFromBuffer(index, overflow);
@@ -5363,18 +5561,19 @@ public class Level implements Metadatable, LiquidUpdateAccess {
 
         ArrayList<Entity> overflow = null;
 
+        EntityBuffer buffer = new EntityBuffer();
         for (int x = minX; x <= maxX; ++x) {
             for (int z = minZ; z <= maxZ; ++z) {
-                for (Entity ent : this.getChunkEntities(x, z, loadChunks).values()) {
+                forEachEntityInColumn(x, z, bb, loadChunks, ent -> {
                     if (ent != null && ent != entity && ent.boundingBox.intersectsWith(bb)) {
-                        overflow = addEntityToBuffer(index, overflow, ent);
-                        index++;
+                        buffer.overflow = addEntityToBuffer(buffer.index, buffer.overflow, ent);
+                        buffer.index++;
                     }
-                }
+                });
             }
         }
 
-        return getEntitiesFromBuffer(index, overflow);
+        return getEntitiesFromBuffer(buffer.index, buffer.overflow);
     }
 
     public List<Entity> fastNearbyEntities(AxisAlignedBB bb) {
@@ -5617,13 +5816,11 @@ public class Level implements Metadatable, LiquidUpdateAccess {
 
             //move oldChunk to new Chunk
             if (!oldEntities.isEmpty()) {
-                Iterator<Map.Entry<Long, Entity>> iter = oldEntities.entrySet().iterator();
-                while (iter.hasNext()) {
-                    Map.Entry<Long, Entity> entry = iter.next();
-                    Entity entity = entry.getValue();
-                    chunk.addEntity(entity);
-                    iter.remove();
+                // Detach first. Removing from the old chunk after attaching to the new one resets
+                // the section index the new chunk just assigned, and the entity ends up unindexed.
+                for (Entity entity : new ArrayList<>(oldEntities.values())) {
                     oldChunk.removeEntity(entity);
+                    chunk.addEntity(entity);
                     entity.chunk = chunk;
                 }
             }
@@ -6306,17 +6503,16 @@ public class Level implements Metadatable, LiquidUpdateAccess {
     public void scheduleBlockEntityUpdate(BlockEntity entity) {
         Preconditions.checkNotNull(entity, "entity");
         Preconditions.checkArgument(entity.getLevel() == this, "BlockEntity is not in this level");
-        if (!updateBlockEntities.contains(entity)) {
+        if (updateBlockEntitySet.add(entity)) {
             updateBlockEntities.add(entity);
         }
     }
 
     /**
      * Diagnostics: number of block entities currently queued for per-tick updates.
-     * O(n) — intended for commands like /debug mspt, not for hot paths.
      */
     public int getPendingBlockEntityUpdateCount() {
-        return updateBlockEntities.size();
+        return updateBlockEntitySet.size();
     }
 
     /** Diagnostics: total block entities registered in this level. */
@@ -6333,7 +6529,9 @@ public class Level implements Metadatable, LiquidUpdateAccess {
         Preconditions.checkNotNull(entity, "entity");
         Preconditions.checkArgument(entity.getLevel() == this, "BlockEntity is not in this level");
         blockEntities.remove(entity.getId());
-        updateBlockEntities.remove(entity);
+        if (updateBlockEntitySet.remove(entity)) {
+            updateBlockEntities.remove(entity);
+        }
     }
 
     /**
@@ -6433,13 +6631,45 @@ public class Level implements Metadatable, LiquidUpdateAccess {
                 return CompletableFuture.completedFuture(loaded);
             }
         }
-        return CompletableFuture.supplyAsync(() -> {
-            IChunk chunk = this.requireProvider().getLoadedChunk(index);
-            if (chunk == null) {
-                chunk = this.forceLoadChunk(index, chunkX, chunkZ, create);
-            }
-            return chunk;
-        }, this.getScheduler().getAsyncTaskThreadPool());
+        if (create) {
+            return CompletableFuture.supplyAsync(() -> this.loadChunkOffThread(index, chunkX, chunkZ, true),
+                this.server.getChunkIoExecutor());
+        }
+
+        // Every requester of a chunk shares one load, so players joining around the same spot do not
+        // each queue a read of it
+        final CompletableFuture<IChunk> pending = this.pendingChunkLoads.get(index);
+        if (pending != null) {
+            return pending.copy();
+        }
+        final CompletableFuture<IChunk> load = new CompletableFuture<>();
+        final CompletableFuture<IChunk> existing = this.pendingChunkLoads.putIfAbsent(index, load);
+        if (existing != null) {
+            return existing.copy();
+        }
+        try {
+            this.server.getChunkIoExecutor().execute(() -> {
+                try {
+                    load.complete(this.loadChunkOffThread(index, chunkX, chunkZ, false));
+                } catch (Throwable t) {
+                    load.completeExceptionally(t);
+                } finally {
+                    this.pendingChunkLoads.remove(index, load);
+                }
+            });
+        } catch (RejectedExecutionException e) {
+            this.pendingChunkLoads.remove(index, load);
+            load.completeExceptionally(e);
+        }
+        return load.copy();
+    }
+
+    private IChunk loadChunkOffThread(long index, int chunkX, int chunkZ, boolean create) {
+        IChunk chunk = this.requireProvider().getLoadedChunk(index);
+        if (chunk == null) {
+            chunk = this.forceLoadChunk(index, chunkX, chunkZ, create);
+        }
+        return chunk;
     }
 
 
@@ -6507,6 +6737,9 @@ public class Level implements Metadatable, LiquidUpdateAccess {
 
         NeighborAwareChunkUpgrader.tryUpgradeAround(this, x, z);
         this.tickChunkCacheDirty = true;
+        synchronized (this.legacyStateChunks) {
+            this.legacyStateChunks.add(index);
+        }
         this.server.getPluginManager().callEvent(
                 new ChunkLoadEvent(chunk, chunk.getFinalizationState() == ChunkFinalizationState.NEEDS_INSTATICKING));
 
@@ -6651,6 +6884,9 @@ public class Level implements Metadatable, LiquidUpdateAccess {
                 return false;
             }
 
+            // The per-tick block cache is keyed by chunk, so an unloaded chunk would otherwise keep
+            // its entry - and the Block objects it holds - alive until something touched it again.
+            this.tickCachedBlocks.remove(Level.chunkHash(x, z));
             this.circuitSystem.removeChunk(x, z);
             this.tickChunkCacheDirty = true;
             return true;
@@ -7192,7 +7428,9 @@ public class Level implements Metadatable, LiquidUpdateAccess {
                             }
                         }
                     }
-                    requireProvider().saveChunks(chunksToSave);
+                    // Serialized on this thread: waiting on the compute pool would tie the tick to
+                    // world generation, which keeps that pool busy while players join
+                    requireProvider().saveChunks(chunksToSave, this.server.getChunkIoExecutor());
                 }
 
                 for (int i = 0; i < size; i++) {
@@ -7516,10 +7754,16 @@ public class Level implements Metadatable, LiquidUpdateAccess {
     }
 
     public int getStrongPower(Vector3 pos) {
-        if (pos instanceof BlockPistonBase || this.getBlock(pos) instanceof BlockPistonBase) return 0;
+        // The old guard built a Block purely to run an instanceof, and did so even when pos already
+        // was one, because || only short-circuits on a true left side.
+        if (pos instanceof Block block) {
+            if (block instanceof BlockPistonBase) return 0;
+        } else if (this.getBlock(pos) instanceof BlockPistonBase) {
+            return 0;
+        }
 
         int i = 0;
-        for (BlockFace face : BlockFace.values()) {
+        for (BlockFace face : BlockFace.getValues()) {
             i = Math.max(i, this.getStrongPower(temporalVector.setComponentsAdding(pos, face), face));
 
             if (i >= 15) {
@@ -7553,7 +7797,7 @@ public class Level implements Metadatable, LiquidUpdateAccess {
     }
 
     public boolean isBlockPowered(Vector3 pos) {
-        for (BlockFace face : BlockFace.values()) {
+        for (BlockFace face : BlockFace.getValues()) {
             if (this.getRedstonePower(temporalVector.setComponentsAdding(pos, face), face) > 0) {
                 return true;
             }
@@ -7565,7 +7809,7 @@ public class Level implements Metadatable, LiquidUpdateAccess {
     public int isBlockIndirectlyGettingPowered(Vector3 pos) {
         int power = 0;
 
-        for (BlockFace face : BlockFace.values()) {
+        for (BlockFace face : BlockFace.getValues()) {
             int blockPower = this.getRedstonePower(temporalVector.setComponentsAdding(pos, face), face);
 
             if (blockPower >= 15) {

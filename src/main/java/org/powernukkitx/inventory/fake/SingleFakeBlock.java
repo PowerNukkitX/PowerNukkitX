@@ -47,8 +47,8 @@ public class SingleFakeBlock implements FakeBlock {
 
     @Override
     public void create(Player player, String titleName) {
-        createAndGetLastPositions(player).addAll(this.getPlacePositions(player));
-        HashSet<Vector3> lastPositions = this.lastPositions.get(player);
+        HashSet<Vector3> lastPositions = createAndGetLastPositions(player);
+        lastPositions.addAll(this.getPlacePositions(player));
         HashSet<Vector3> additional = new HashSet<>();
         lastPositions.forEach(position -> {
 
@@ -91,8 +91,7 @@ public class SingleFakeBlock implements FakeBlock {
     }
 
     public HashSet<Vector3> createAndGetLastPositions(Player player) {
-        if (!lastPositions.containsKey(player)) lastPositions.put(player, new HashSet<>());
-        return lastPositions.get(player);
+        return lastPositions.computeIfAbsent(player, p -> new HashSet<>());
     }
 
     public HashSet<Vector3> getLastPositions(Player player) {

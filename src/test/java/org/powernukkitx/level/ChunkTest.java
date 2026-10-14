@@ -1,6 +1,7 @@
 package org.powernukkitx.level;
 
 import org.powernukkitx.GameMockExtension;
+import org.powernukkitx.block.BlockAir;
 import org.powernukkitx.block.BlockDiamondOre;
 import org.powernukkitx.block.BlockGoldOre;
 import org.powernukkitx.entity.Entity;
@@ -9,10 +10,13 @@ import org.powernukkitx.entity.item.EntityItem;
 import org.powernukkitx.item.Item;
 import org.powernukkitx.item.ItemID;
 import org.powernukkitx.level.biome.BiomeID;
+import org.powernukkitx.level.format.Chunk;
 import org.powernukkitx.level.format.ChunkSection;
 import org.powernukkitx.level.format.IChunk;
 import org.powernukkitx.level.format.LevelProvider;
 import org.powernukkitx.level.format.UnsafeChunk;
+import org.powernukkitx.level.format.bitarray.BitArrayVersion;
+import org.powernukkitx.level.format.palette.BlockPalette;
 import org.powernukkitx.math.Vector3;
 import org.powernukkitx.utils.ItemHelper;
 import lombok.SneakyThrows;
@@ -21,6 +25,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
 import java.time.Duration;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Random;
@@ -233,5 +238,32 @@ public class ChunkTest {
     void test_SectionIsEmpty() {
         ChunkSection chunkSection = new ChunkSection((byte) 0);
         assertTrue(chunkSection.isEmpty());
+    }
+
+    @Test
+    void testEntityYRangeFollowsChunkMove(LevelProvider levelDBProvider) {
+        IChunk from = levelDBProvider.getChunk(0, 0, true);
+        IChunk to = levelDBProvider.getChunk(1, 0, true);
+        EntityItem item = (EntityItem) Entity.createEntity(Entity.ITEM, from,
+                Entity.getDefaultNBT(new Vector3(0, 100, 0), new Vector3(0, 0, 0), 0, 0)
+                        .putCompound("Item", ItemHelper.write(Item.get(ItemID.GOLD_INGOT))));
+        from.addEntity(item);
+        from.removeEntity(item);
+        to.addEntity(item);
+
+        List<Entity> nearby = new ArrayList<>();
+        ((Chunk) to).forEachEntityInYRange(99, 101, nearby::add);
+        Assertions.assertTrue(nearby.contains(item));
+
+        List<Entity> far = new ArrayList<>();
+        ((Chunk) to).forEachEntityInYRange(0, 10, far::add);
+        Assertions.assertFalse(far.contains(item));
+    }
+
+    @Test
+    void testBlockPaletteEmptyMeansAirOnly() {
+        // A solid V0 palette, the shape a section has when it is read back from disk
+        Assertions.assertFalse(new BlockPalette(BlockGoldOre.PROPERTIES.getDefaultState(), BitArrayVersion.V0).isEmpty());
+        Assertions.assertTrue(new BlockPalette(BlockAir.STATE, BitArrayVersion.V0).isEmpty());
     }
 }

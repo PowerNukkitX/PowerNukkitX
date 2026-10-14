@@ -16,6 +16,7 @@ import org.cloudburstmc.netty.signaling.ServerStatus;
 import org.cloudburstmc.netty.signaling.provider.NativeProviderHostFactory;
 import org.cloudburstmc.netty.signaling.provider.ProviderHostFactory;
 import org.cloudburstmc.netty.signaling.provider.ProviderRuntimeConfiguration;
+import org.cloudburstmc.netty.signaling.ProviderDiagnostic;
 import org.cloudburstmc.netty.signaling.provider.ProviderShutdown;
 import org.powernukkitx.Server;
 import org.powernukkitx.config.category.network.NetherNetSettings;
@@ -96,7 +97,7 @@ public class NetherNetProvider implements AutoCloseable {
             host.warnings().forEach(log::warn);
 
             this.client = new ProviderClient(runtime.clientConfiguration(), store, transport, this::status,
-                () -> this.health(runtime.capacity()), log::warn);
+                () -> this.health(runtime.capacity()), NetherNetProvider::diagnostic);
             // The client owns the store and the transport from here
             store = null;
             transport = null;
@@ -187,5 +188,13 @@ public class NetherNetProvider implements AutoCloseable {
      */
     private boolean accepting() {
         return this.players() < this.server.getMaxPlayers();
+    }
+
+    private static void diagnostic(ProviderDiagnostic diagnostic) {
+        switch (diagnostic.level()) {
+            case DEBUG -> log.debug(diagnostic.message());
+            case INFO -> log.info(diagnostic.message());
+            case WARN -> log.warn(diagnostic.message());
+        }
     }
 }

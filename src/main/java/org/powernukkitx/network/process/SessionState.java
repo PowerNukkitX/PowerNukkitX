@@ -8,6 +8,10 @@ public enum SessionState {
     AUTHENTICATING,
     ENCRYPTION,
     RESOURCE_PACK,
+    /**
+     * The player is being created off the network thread, see {@link PlayerSessionHolder#beginSpawn}.
+     */
+    SPAWNING,
     BEFORE_SPAWN,
     CHUNKS
 }

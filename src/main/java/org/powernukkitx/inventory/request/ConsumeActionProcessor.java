@@ -15,10 +15,8 @@ import org.cloudburstmc.protocol.bedrock.data.inventory.itemstack.response.ItemS
 import org.cloudburstmc.protocol.bedrock.data.inventory.itemstack.response.ItemStackResponseSlotInfo;
 
 import java.util.List;
-import java.util.Set;
 
 import static org.powernukkitx.inventory.request.CraftRecipeActionProcessor.ENCH_RECIPE_KEY;
-import static org.powernukkitx.inventory.request.CraftRecipeActionProcessor.GRID_CONSUMED_KEY;
 
 /**
  * Allay Project 2023/12/1
@@ -27,25 +25,6 @@ import static org.powernukkitx.inventory.request.CraftRecipeActionProcessor.GRID
  */
 @Slf4j
 public class ConsumeActionProcessor implements ItemStackRequestActionProcessor<ConsumeAction> {
-
-    private static final Set<ContainerEnumName> SERVER_CONSUMED_CONTAINERS = Set.of(
-        ContainerEnumName.ANVIL_INPUT_CONTAINER,
-        ContainerEnumName.ANVIL_MATERIAL_CONTAINER,
-        ContainerEnumName.GRINDSTONE_INPUT_CONTAINER,
-        ContainerEnumName.GRINDSTONE_ADDITIONAL_CONTAINER,
-        ContainerEnumName.CARTOGRAPHY_INPUT_CONTAINER,
-        ContainerEnumName.CARTOGRAPHY_ADDITIONAL_CONTAINER,
-        ContainerEnumName.SMITHING_TABLE_INPUT_CONTAINER,
-        ContainerEnumName.SMITHING_TABLE_MATERIAL_CONTAINER,
-        ContainerEnumName.SMITHING_TABLE_TEMPLATE_CONTAINER,
-        ContainerEnumName.LOOM_INPUT_CONTAINER,
-        ContainerEnumName.LOOM_DYE_CONTAINER,
-        ContainerEnumName.LOOM_MATERIAL_CONTAINER,
-        ContainerEnumName.ENCHANTING_INPUT_CONTAINER,
-        ContainerEnumName.ENCHANTING_MATERIAL_CONTAINER,
-        ContainerEnumName.TRADE2_INGREDIENT1_CONTAINER,
-        ContainerEnumName.TRADE2_INGREDIENT2_CONTAINER
-    );
 
     @Override
     public ActionResponse handle(ConsumeAction action, Player player, ItemStackRequestContext context) {
@@ -59,14 +38,23 @@ public class ConsumeActionProcessor implements ItemStackRequestActionProcessor<C
         Integer dynamicId = containerName.getDynamicID();
         Inventory sourceContainer = NetworkMapping.getInventory(player, containerName.getContainerName(), dynamicId);
         int slot = sourceContainer.fromNetworkSlot(action.getSource().getSlot());
+        if (slot < 0 || slot >= sourceContainer.getSize()) {
+            log.warn("consume action points at slot {} which is outside of {}", slot, sourceContainer.getClass().getSimpleName());
+
+            return context.error();
+        }
         Item item = sourceContainer.getItem(slot);
-        ContainerEnumName sourceContainerType = containerName.getContainerName();
-        boolean serverConsumed = SERVER_CONSUMED_CONTAINERS.contains(sourceContainerType)
-            || (sourceContainerType == ContainerEnumName.CRAFTING_INPUT_CONTAINER && Boolean.TRUE.equals(context.get(GRID_CONSUMED_KEY)));
-        if (serverConsumed) {
+        ContainerEnumName sourceSlotType = resolveSlotType(sourceContainer, slot);
+        if (sourceSlotType == null) {
+            log.warn("unknown slot type for slot {} in inventory {}", slot, sourceContainer.getClass().getSimpleName());
+
+            return context.error();
+        }
+        // Only slots a station processor declared as taken in this very request are skipped.
+        if (context.isServerConsumed(sourceSlotType)) {
             return context.success(List.of(
                 new ItemStackResponseContainerInfo(
-                    sourceContainer.getContainerEnumName(slot),
+                    sourceSlotType,
                     Lists.newArrayList(
                         new ItemStackResponseSlotInfo(
                             sourceContainer.toNetworkSlot(slot),
@@ -108,18 +96,13 @@ public class ConsumeActionProcessor implements ItemStackRequestActionProcessor<C
         }
 
         Boolean isEnchRecipe = context.get(ENCH_RECIPE_KEY);
-        if (isEnchRecipe != null && isEnchRecipe && containerName.getContainerName() == ContainerEnumName.ENCHANTING_INPUT_CONTAINER) {
+        if (isEnchRecipe != null && isEnchRecipe && sourceSlotType == ContainerEnumName.ENCHANTING_INPUT_CONTAINER) {
             return null;
-        }
-
-        ContainerEnumName containerEnumName = sourceContainer.getContainerEnumName(slot);
-        if (containerEnumName == null) {
-            throw new IllegalStateException("Unknown slot type for slot " + slot + " in inventory " + sourceContainer.getClass().getSimpleName());
         }
 
         return context.success(List.of(
             new ItemStackResponseContainerInfo(
-                containerEnumName,
+                sourceSlotType,
                 Lists.newArrayList(
                     new ItemStackResponseSlotInfo(
                         sourceContainer.toNetworkSlot(slot),

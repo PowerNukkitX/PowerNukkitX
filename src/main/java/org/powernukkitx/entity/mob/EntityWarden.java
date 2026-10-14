@@ -6,8 +6,7 @@ import org.powernukkitx.block.BlockID;
 import org.powernukkitx.entity.Entity;
 import org.powernukkitx.entity.EntityCreature;
 import org.powernukkitx.entity.EntityWalkable;
-import org.powernukkitx.entity.ai.behavior.Behavior;
-import org.powernukkitx.entity.ai.behaviorgroup.BehaviorGroup;
+import org.powernukkitx.entity.ai.EntityAI;
 import org.powernukkitx.entity.ai.behaviorgroup.IBehaviorGroup;
 import org.powernukkitx.entity.ai.controller.FluctuateController;
 import org.powernukkitx.entity.ai.controller.LookController;
@@ -97,80 +96,76 @@ public class EntityWarden extends EntityMob implements EntityWalkable, Vibration
     public IBehaviorGroup requireBehaviorGroup() {
         WardenRangedAttackExecutor sonicBoom = new WardenRangedAttackExecutor((int) (1.7 * 20), (int) (3.0 * 20));
         WardenSniffExecutor sniff = new WardenSniffExecutor((int) (4.16 * 20), 5 * 20, 10 * 20, 35);
-        return BehaviorGroup.builder(this)
-                .coreBehaviors(
-                        new Behavior((entity) -> {
-                            // Refresh and play sound
-                            int anger = this.getAngerLevel();
-                            if (anger >= ANGER_ANGRY_THRESHOLD)
-                                this.setAmbientSoundEvent(Sound.MOB_WARDEN_ANGRY);
-                            else if (anger >= ANGER_AGITATED_THRESHOLD)
-                                this.setAmbientSoundEvent(Sound.MOB_WARDEN_AGITATED);
-                            else
-                                this.setAmbientSoundEvent(Sound.MOB_WARDEN_IDLE);
-                            return false;
-                        }, (entity) -> true, 1, 1, 20),
-                        new Behavior((entity) -> {
-                            this.tickNuisances();
-                            return false;
-                        }, (entity) -> true, 1, 1, 20),
-                        new Behavior((entity) -> {
-                            // Apply Darkness to nearby players
-                            for (var player : entity.level.getPlayers().values()) {
-                                if (!player.isIgnoredByEntities() && entity.distanceSquared(player) <= DARKNESS_RANGE * DARKNESS_RANGE) {
-                                    player.addEffect(Effect.get(EffectType.DARKNESS).setDuration(DARKNESS_DURATION_TICKS));
+        return EntityAI.of(this)
+                .coreBehavior((entity) -> {
+                    // Refresh and play sound
+                    int anger = this.getAngerLevel();
+                    if (anger >= ANGER_ANGRY_THRESHOLD)
+                        this.setAmbientSoundEvent(Sound.MOB_WARDEN_ANGRY);
+                    else if (anger >= ANGER_AGITATED_THRESHOLD)
+                        this.setAmbientSoundEvent(Sound.MOB_WARDEN_AGITATED);
+                    else
+                        this.setAmbientSoundEvent(Sound.MOB_WARDEN_IDLE);
+                    return false;
+                })
+                        .period(20)
+                .coreBehavior((entity) -> {
+                    this.tickNuisances();
+                    return false;
+                })
+                        .period(20)
+                .coreBehavior((entity) -> {
+                    // Apply Darkness to nearby players
+                    for (var player : entity.level.getPlayers().values()) {
+                        if (!player.isIgnoredByEntities() && entity.distanceSquared(player) <= DARKNESS_RANGE * DARKNESS_RANGE) {
+                            player.addEffect(Effect.get(EffectType.DARKNESS).setDuration(DARKNESS_DURATION_TICKS));
+                        }
+                    }
+                    return false;
+                })
+                        .period(120)
+                .coreBehavior((entity) -> {
+                    // Calculate Heartbeat Interval
+                    this.setDataProperty(ActorDataTypes.HEARTBEAT_INTERVAL_TICKS, this.calHeartBeatDelay());
+                    return false;
+                })
+                        .period(20)
+                .behavior(new WardenEmergingAnimationExecutor(EMERGING_DURATION_TICKS))
+                        .when(entity -> this.isEmerging())
+                .behavior(new WardenDiggingExecutor(DIG_DURATION_TICKS))
+                        .when(entity -> this.canStartDigging())
+                        .evaluateOnce()
+                .behavior(new WardenViolentAnimationExecutor((int) (4.2 * 20)))
+                        .when(entity -> this.hasRoarTarget())
+                .behavior(sonicBoom)
+                        .when(entity -> sonicBoom.canRun(entity)
+                                && this.getMemoryStorage().get(CoreMemoryTypes.ROUTE_UNREACHABLE_TIME) > 20 //1s
+                                && this.getMemoryStorage().notEmpty(CoreMemoryTypes.ATTACK_TARGET)
+                                && isInRangedAttackRange(this.getMemoryStorage().get(CoreMemoryTypes.ATTACK_TARGET)))
+                .behavior(new WardenMeleeAttackExecutor(CoreMemoryTypes.ATTACK_TARGET,
+                        switch (this.getServer().getDifficulty()) {
+                            case 1 -> 16;
+                            case 2 -> 30;
+                            case 3 -> 45;
+                            default -> 0;
+                        }, 0.36f))
+                        .when(entity -> {
+                            if (entity.getMemoryStorage().isEmpty(CoreMemoryTypes.ATTACK_TARGET)) {
+                                return false;
+                            } else {
+                                Entity e = entity.getMemoryStorage().get(CoreMemoryTypes.ATTACK_TARGET);
+                                if (e instanceof Player player) {
+                                    return !player.isIgnoredByEntities();
                                 }
+                                return true;
                             }
-                            return false;
-                        }, (entity) -> true, 1, 1, 120),
-                        new Behavior((entity) -> {
-                            // Calculate Heartbeat Interval
-                            this.setDataProperty(ActorDataTypes.HEARTBEAT_INTERVAL_TICKS, this.calHeartBeatDelay());
-                            return false;
-                        }, (entity) -> true, 1, 1, 20))
-                .behaviors(
-                        new Behavior(new WardenEmergingAnimationExecutor(EMERGING_DURATION_TICKS), entity -> this.isEmerging(), 8),
-                        new Behavior(new WardenDiggingExecutor(DIG_DURATION_TICKS), entity -> this.canStartDigging(), 7, 1, 1, false),
-                        new Behavior(
-                                new WardenViolentAnimationExecutor((int) (4.2 * 20)),
-                                entity -> this.hasRoarTarget(), 6
-                        ),
-                        new Behavior(
-                                sonicBoom,
-                                (entity) -> sonicBoom.canRun(entity)
-                                        && this.getMemoryStorage().get(CoreMemoryTypes.ROUTE_UNREACHABLE_TIME) > 20 //1s
-                                        && this.getMemoryStorage().notEmpty(CoreMemoryTypes.ATTACK_TARGET)
-                                        && isInRangedAttackRange(this.getMemoryStorage().get(CoreMemoryTypes.ATTACK_TARGET))
-                                , 5, 1, 1
-                        ),
-                        new Behavior(
-                                new WardenMeleeAttackExecutor(CoreMemoryTypes.ATTACK_TARGET,
-                                        switch (this.getServer().getDifficulty()) {
-                                            case 1 -> 16;
-                                            case 2 -> 30;
-                                            case 3 -> 45;
-                                            default -> 0;
-                                        }, 0.36f),
-                                entity -> {
-                                    if (entity.getMemoryStorage().isEmpty(CoreMemoryTypes.ATTACK_TARGET)) {
-                                        return false;
-                                    } else {
-                                        Entity e = entity.getMemoryStorage().get(CoreMemoryTypes.ATTACK_TARGET);
-                                        if (e instanceof Player player) {
-                                            return !player.isIgnoredByEntities();
-                                        }
-                                        return true;
-                                    }
-                                }, 4, 1
-                        ),
-                        new Behavior(
-                                new WardenInvestigateSuspiciousLocationExecutor(0.21f, 1.5),
-                                entity -> this.hasSuspiciousLocation()
-                                        && this.getMemoryStorage().isEmpty(CoreMemoryTypes.ATTACK_TARGET), 3
-                        ),
-                        new Behavior(sniff, entity -> sniff.canRun(entity), 2, 1, 1),
-                        new Behavior(new FlatRandomRoamExecutor(0.15f, 12, 100, true, -1, true, 10), (entity -> true), 1)
-                )
+                        })
+                .behavior(new WardenInvestigateSuspiciousLocationExecutor(0.21f, 1.5))
+                        .when(entity -> this.hasSuspiciousLocation()
+                                && this.getMemoryStorage().isEmpty(CoreMemoryTypes.ATTACK_TARGET))
+                .behavior(sniff)
+                        .when(entity -> sniff.canRun(entity))
+                .behavior(new FlatRandomRoamExecutor(0.15f, 12, 100, true, -1, true, 10))
                 .sensors(new RouteUnreachableTimeSensor(CoreMemoryTypes.ROUTE_UNREACHABLE_TIME))
                 .controllers(new WalkController(), new LookController(true, true), new FluctuateController())
                 .routeFinder(new SimpleFlatAStarRouteFinder(new WalkingPosEvaluator(), this))

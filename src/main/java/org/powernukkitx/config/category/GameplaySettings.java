@@ -78,6 +78,14 @@ public class GameplaySettings extends OkaeriConfig {
     boolean enableItemDrops = true;
     @Comment("pnx.settings.gameplay.enableXpOrbs")
     boolean enableXpOrbs = true;
+    @Comment("pnx.settings.gameplay.itemDespawnTicks")
+    int itemDespawnTicks = 6000;
+    @Comment("pnx.settings.gameplay.itemMergeInterval")
+    int itemMergeInterval = 25;
+    @Comment("pnx.settings.gameplay.itemMergeRadius")
+    double itemMergeRadius = 1.0d;
+    @Comment("pnx.settings.gameplay.itemRestingScanInterval")
+    int itemRestingScanInterval = 1;
     @Comment("pnx.settings.gameplay.enableExplosionBlockDamage")
     boolean enableExplosionBlockDamage = true;
     @Comment("pnx.settings.gameplay.enableBlockGravity")

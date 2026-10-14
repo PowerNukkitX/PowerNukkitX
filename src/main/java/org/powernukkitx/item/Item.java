@@ -12,6 +12,7 @@ import org.powernukkitx.event.player.PlayerItemConsumeEvent;
 import org.powernukkitx.inventory.HumanInventory;
 import org.powernukkitx.item.customitem.CustomItem;
 import org.powernukkitx.item.customitem.CustomItemDefinition;
+import org.powernukkitx.item.definition.ItemDefinition;
 import org.powernukkitx.item.enchantment.Enchantment;
 import org.powernukkitx.item.utils.ItemArmorType;
 import org.powernukkitx.level.Level;
@@ -50,7 +51,6 @@ import org.powernukkitx.nbt.tag.StringTag;
 import org.powernukkitx.nbt.tag.Tag;
 import org.cloudburstmc.nbt.NbtMap;
 import org.cloudburstmc.nbt.NbtUtils;
-import org.cloudburstmc.protocol.bedrock.data.definitions.ItemDefinition;
 import org.cloudburstmc.protocol.bedrock.data.definitions.SimpleItemDefinition;
 import org.cloudburstmc.protocol.bedrock.data.inventory.ItemData;
 import org.cloudburstmc.protocol.bedrock.data.inventory.ItemUseMethod;
@@ -80,6 +80,55 @@ import static org.powernukkitx.utils.Utils.dynamic;
  */
 @Slf4j
 public abstract class Item implements Cloneable, ItemID {
+    public static final ItemDefinition DEFAULT_DEFINITION = ItemDefinition.builder()
+            .applyEnchantments(true)
+            .armor(false)
+            .armorPoints(0)
+            .attackDamage(1)
+            .axe(false)
+            .boots(false)
+            .bow(false)
+            .canBeActivated(false)
+            .canBreakShield(false)
+            .canTakeDamage(false)
+            .chestplate(false)
+            .consumable(false)
+            .crossbow(false)
+            .damageChanceMax(100)
+            .damageChanceMin(100)
+            .edible(false)
+            .enchantAbility(0)
+            .fertilizer(false)
+            .helmet(false)
+            .hoe(false)
+            .knockbackResistance(0f)
+            .lavaResistant(false)
+            .leggings(false)
+            .mace(false)
+            .maxDurability(-1)
+            .maxStackSize(64)
+            .movementModifier(1f)
+            .noDamageOnAttack(false)
+            .noDamageOnBreak(false)
+            .nutrition(0)
+            .pickaxe(false)
+            .requiresHunger(true)
+            .saturation(0f)
+            .shears(false)
+            .shield(false)
+            .shouldDespawn(true)
+            .shovel(false)
+            .spear(false)
+            .sword(false)
+            .tier(0)
+            .tool(false)
+            .toughness(0)
+            .trident(false)
+            .unbreakable(false)
+            .useDuration(0f)
+            .usingTicks(0)
+            .build();
+
     public static final Item AIR = new ConstAirItem();
     public static final Item[] EMPTY_ARRAY = new Item[0];
 
@@ -91,6 +140,7 @@ public abstract class Item implements Cloneable, ItemID {
     public int count;
     protected Integer netId = null;
     protected Block block = null;
+    protected ItemDefinition definition;
     protected boolean hasMeta = true;
     private boolean recipeBlockDefinitionOverridden = false;
     private Integer recipeBlockRuntimeId = null;
@@ -141,20 +191,37 @@ public abstract class Item implements Cloneable, ItemID {
         this(id, 0);
     }
 
+    public Item(@NotNull String id, @Nullable ItemDefinition definition) {
+        this(id, 0, 1, (String) null, true, definition);
+    }
+
     public Item(@NotNull String id, int meta) {
         this(id, meta, 1);
     }
 
+    public Item(@NotNull String id, int meta, @Nullable ItemDefinition definition) {
+        this(id, meta, 1, (String) null, true, definition);
+    }
+
     public Item(@NotNull String id, int meta, int count) {
-        this(id, meta, count, null);
+        this(id, meta, count, (String) null);
     }
 
     public Item(@NotNull String id, int meta, int count, @Nullable String name) {
         this(id, meta, count, name, true);
     }
 
+    public Item(@NotNull String id, int meta, int count, @Nullable String name, @Nullable ItemDefinition definition) {
+        this(id, meta, count, name, true, definition);
+    }
+
     public Item(@NotNull String id, int meta, int count, @Nullable String name, boolean autoAssignStackNetworkId) {
+        this(id, meta, count, name, autoAssignStackNetworkId, DEFAULT_DEFINITION);
+    }
+
+    public Item(@NotNull String id, int meta, int count, @Nullable String name, boolean autoAssignStackNetworkId, @Nullable ItemDefinition definition) {
         this.id = id.intern();
+        this.definition = resolveDefinition(definition);
         this.identifier = new Identifier(id);
         this.count = count;
         if (name != null) {
@@ -167,7 +234,12 @@ public abstract class Item implements Cloneable, ItemID {
     }
 
     protected Item(@NotNull Block block, int meta, int count, @Nullable String name, boolean autoAssignStackNetworkId) {
+        this(block, meta, count, name, autoAssignStackNetworkId, DEFAULT_DEFINITION);
+    }
+
+    protected Item(@NotNull Block block, int meta, int count, @Nullable String name, boolean autoAssignStackNetworkId, @Nullable ItemDefinition definition) {
         this.id = block.getItemId().intern();
+        this.definition = resolveDefinition(definition);
         this.identifier = new Identifier(id);
         this.count = count;
         if (name != null) {
@@ -184,6 +256,27 @@ public abstract class Item implements Cloneable, ItemID {
     public void internalAdjust() {
     }
 
+    private ItemDefinition resolveDefinition(@Nullable ItemDefinition definition) {
+        ItemDefinition resolved = definition == null ? DEFAULT_DEFINITION : definition;
+        if (this instanceof CustomItem && !(resolved instanceof CustomItemDefinition)) {
+            CustomItemDefinition custom = ItemRegistry.getCustomItemDefinitionByIdStatic(this.id);
+            if (custom != null) {
+                return custom;
+            }
+        }
+        return resolved;
+    }
+
+    /**
+     * @return the definition backing this item's property getters. For a registered custom item this is its
+     * {@link CustomItemDefinition}, resolved once when the item is constructed. Its components were applied on top
+     * of the item class definition when it was built, so later edits to the component NBT are not reflected here.
+     */
+    @NotNull
+    public ItemDefinition definition() {
+        return this.definition;
+    }
+
     public void setMeta(int meta) {
         this.meta = meta;
     }
@@ -193,7 +286,7 @@ public abstract class Item implements Cloneable, ItemID {
     }
 
     public boolean canBeActivated() {
-        return false;
+        return this.definition.isCanBeActivated();
     }
 
     public static Item get(String id) {
@@ -321,7 +414,7 @@ public abstract class Item implements Cloneable, ItemID {
      * Whether the item can be enchanted
      */
     public boolean applyEnchantments() {
-        return true;
+        return this.definition.isApplyEnchantments();
     }
 
     public boolean hasEnchantments() {
@@ -1119,7 +1212,8 @@ public abstract class Item implements Cloneable, ItemID {
     @InternalApi
     public Item setNbtBytes(byte[] tags) {
         this.tags = tags;
-        this.cachedNBT = parseCompoundTag(tags);
+        // Decoding is deferred to getNbt()
+        this.cachedNBT = null;
         return this;
     }
 
@@ -1300,6 +1394,13 @@ public abstract class Item implements Cloneable, ItemID {
         return id;
     }
 
+    /**
+     * @return the alias identifiers for this item, or an empty array if it has none
+     */
+    public String[] getAliases() {
+        return EmptyArrays.EMPTY_STRINGS;
+    }
+
     public final Identifier getIdentifier() {
         return identifier;
     }
@@ -1474,7 +1575,7 @@ public abstract class Item implements Cloneable, ItemID {
      * @return {@code true} if it can act like a bone meal
      */
     public boolean isFertilizer() {
-        return false;
+        return this.definition.isFertilizer();
     }
 
 
@@ -1579,13 +1680,11 @@ public abstract class Item implements Cloneable, ItemID {
     @Override
     public Item clone() {
         try {
-            byte[] tags = EmptyArrays.EMPTY_BYTES;
-            if (this.hasNbt()) {
-                tags = this.tags.clone();
-            }
             Item item = (Item) super.clone();
-            item.setNbtBytes(tags);
-
+            item.tags = this.hasNbt() ? this.tags.clone() : EmptyArrays.EMPTY_BYTES;
+            // The clone stays unparsed and getNbt() decodes on demand. hasNbt() above still parses
+            // the source tag if nobody has read it yet.
+            item.cachedNBT = null;
             return item;
         } catch (CloneNotSupportedException e) {
             return null;
@@ -1778,20 +1877,19 @@ public abstract class Item implements Cloneable, ItemID {
      * Define if item can take damage
      */
     public boolean canTakeDamage() {
-        CustomItemDefinition def = getCustomDefinition();
-        if (def != null) return def.canTakeDamage();
-        return false;
+        return this.definition.isCanTakeDamage();
     }
 
     /**
      * Define the maximum number of items to be stacked
      */
     public int getMaxStackSize() {
-        CompoundTag c = getCustomItemComponent("minecraft:max_stack_size");
-        if (c != null) {
-            return c.getByte("value") & 0xFF;
+        int size = this.definition.getMaxStackSize();
+        if (block == null || size != DEFAULT_DEFINITION.getMaxStackSize()
+                || this.definition instanceof CustomItemDefinition custom && custom.hasComponent("minecraft:max_stack_size")) {
+            return size;
         }
-        return block == null ? 64 : block.getItemMaxStackSize();
+        return block.getItemMaxStackSize();
     }
 
 
@@ -1818,9 +1916,7 @@ public abstract class Item implements Cloneable, ItemID {
      * Define the maximum durability value of the item
      */
     public int getMaxDurability() {
-        CustomItemDefinition def = getCustomDefinition();
-        if (def != null) return def.maxDurability();
-        return -1;
+        return this.definition.getMaxDurability();
     }
 
     /**
@@ -1829,9 +1925,7 @@ public abstract class Item implements Cloneable, ItemID {
      * getDamageChanceMin() and getDamageChanceMax()
      */
     public int getDamageChanceMin() {
-        CustomItemDefinition def = getCustomDefinition();
-        if (def != null) return def.damageChanceMin();
-        return 100;
+        return this.definition.getDamageChanceMin();
     }
 
     /**
@@ -1840,51 +1934,45 @@ public abstract class Item implements Cloneable, ItemID {
      * getDamageChanceMin() and getDamageChanceMax()
      */
     public int getDamageChanceMax() {
-        CustomItemDefinition def = getCustomDefinition();
-        if (def != null) return def.damageChanceMax();
-        return 100;
+        return this.definition.getDamageChanceMax();
     }
 
     public float getUseDuration() {
-        CompoundTag c = getCustomItemComponent("minecraft:use_modifiers");
-        if (c != null) {
-            return c.getFloat("use_duration");
-        }
-        return 0f;
+        return this.definition.getUseDuration();
     }
 
 
     public int getUsingTicks() {
+        int ticks = this.definition.getUsingTicks();
+        if (ticks > 0) {
+            return ticks;
+        }
         return Math.max(0, (int) Math.ceil(getUseDuration() * 20f));
     }
 
     public float getMovimentModifier() {
-        CompoundTag c = getCustomItemComponent("minecraft:use_modifiers");
-        if (c != null) {
-            return c.getFloat("movement_modifier");
-        }
-        return 1f;
+        return this.definition.getMovementModifier();
     }
 
     /**
      * Define if the item is Unbreakable
      */
     public boolean isUnbreakable() {
-        return false;
+        return this.definition.isUnbreakable();
     }
 
     /**
      * Define the item Tier level
      */
     public int getTier() {
-        return 0;
+        return this.definition.getTier();
     }
 
     /**
      * Define the enchantment of an item
      */
     public int getEnchantAbility() {
-        return 0;
+        return this.definition.getEnchantAbility();
     }
 
     /**
@@ -1893,7 +1981,7 @@ public abstract class Item implements Cloneable, ItemID {
      * @since 1.4.0.0-PN
      */
     public boolean isLavaResistant() {
-        return false;
+        return this.definition.isLavaResistant();
     }
 
     /**
@@ -1924,7 +2012,7 @@ public abstract class Item implements Cloneable, ItemID {
      * @return whether the item should take damage when used to attack entities
      */
     public boolean noDamageOnAttack() {
-        return false;
+        return this.definition.isNoDamageOnAttack();
     }
 
     /**
@@ -1933,18 +2021,14 @@ public abstract class Item implements Cloneable, ItemID {
      * @return whether the item should take damage when used to break blocks
      */
     public boolean noDamageOnBreak() {
-        return false;
+        return this.definition.isNoDamageOnBreak();
     }
 
     /**
      * Define if item never despawns
      */
     public boolean shouldDespawn() {
-        CompoundTag p = getCustomItemProperties();
-        if (p != null && p.contains("should_despawn")) {
-            return p.getBoolean("should_despawn");
-        }
-        return true;
+        return this.definition.isShouldDespawn();
     }
 
 
@@ -1957,22 +2041,14 @@ public abstract class Item implements Cloneable, ItemID {
      * @return true if the item can be consumed, otherwise {@link #isEdible()}
      */
     public boolean isConsumable() {
-        return this.isEdible();
+        return this.definition.isConsumable() || this.isEdible();
     }
 
     public boolean isEdible() {
-        CustomItemDefinition def = getCustomDefinition();
-        if (def != null) {
-            return def.isEdible();
-        }
-        return false;
+        return this.definition.isEdible();
     }
 
     public int getNutrition() {
-        CompoundTag c = getCustomItemComponent("minecraft:food");
-        if (c != null) {
-            return c.getInt("nutrition");
-        }
         return getFoodRestore();
     }
 
@@ -1981,15 +2057,14 @@ public abstract class Item implements Cloneable, ItemID {
      */
     @Deprecated
     public int getFoodRestore() {
-        return 0;
+        return this.definition.getNutrition();
     }
 
     public float getSaturation() {
+        // derived from getNutrition() so a plugin overriding it still gets matching saturation
         CompoundTag c = getCustomItemComponent("minecraft:food");
         if (c != null) {
-            int itemNutrition = getNutrition();
-            float itemSaturationModifier = c.getFloat("saturation_modifier");
-            return (itemNutrition * itemSaturationModifier * 2f);
+            return getNutrition() * c.getFloat("saturation_modifier") * 2f;
         }
         return getSaturationRestore();
     }
@@ -1999,7 +2074,7 @@ public abstract class Item implements Cloneable, ItemID {
      */
     @Deprecated
     public float getSaturationRestore() {
-        return 0;
+        return this.definition.getSaturation();
     }
 
     public float getSaturationModifier() {
@@ -2011,10 +2086,6 @@ public abstract class Item implements Cloneable, ItemID {
     }
 
     public boolean canAlwaysEat() {
-        CompoundTag c = getCustomItemComponent("minecraft:food");
-        if (c != null) {
-            return c.getBoolean("can_always_eat");
-        }
         return !isRequiresHunger();
     }
 
@@ -2023,7 +2094,7 @@ public abstract class Item implements Cloneable, ItemID {
      */
     @Deprecated
     public boolean isRequiresHunger() {
-        return true;
+        return this.definition.isRequiresHunger();
     }
 
 
@@ -2120,7 +2191,7 @@ public abstract class Item implements Cloneable, ItemID {
     }
 
     public boolean isArmor() {
-        return isWearable();
+        return this.definition.isArmor() || isWearable();
     }
 
     public @NotNull ItemArmorType getWearableType() {
@@ -2140,45 +2211,35 @@ public abstract class Item implements Cloneable, ItemID {
      * Define if the item is a Helmet
      */
     public boolean isHelmet() {
-        CustomItemDefinition def = getCustomDefinition();
-        if (def != null) return def.isHelmet();
-        return false;
+        return this.definition.isHelmet();
     }
 
     /**
      * Define if the item is a Chestplate
      */
     public boolean isChestplate() {
-        CustomItemDefinition def = getCustomDefinition();
-        if (def != null) return def.isChestplate();
-        return false;
+        return this.definition.isChestplate();
     }
 
     /**
      * Define if the item is a Leggings
      */
     public boolean isLeggings() {
-        CustomItemDefinition def = getCustomDefinition();
-        if (def != null) return def.isLeggings();
-        return false;
+        return this.definition.isLeggings();
     }
 
     /**
      * Define if the item is a Boots
      */
     public boolean isBoots() {
-        CustomItemDefinition def = getCustomDefinition();
-        if (def != null) return def.isBoots();
-        return false;
+        return this.definition.isBoots();
     }
 
     /**
      * Define the Armor value of an item
      */
     public int getArmorPoints() {
-        CustomItemDefinition def = getCustomDefinition();
-        if (def != null) return def.wearableProtection();
-        return 0;
+        return this.definition.getArmorPoints();
     }
 
     /**
@@ -2193,7 +2254,7 @@ public abstract class Item implements Cloneable, ItemID {
      * Define the Armor Toughness of an item
      */
     public int getToughness() {
-        return 0;
+        return this.definition.getToughness();
     }
 
     public boolean wearableOnClickAir(Player player, Vector3 directionVector) {
@@ -2261,7 +2322,7 @@ public abstract class Item implements Cloneable, ItemID {
      * @return armor knockback resistance
      */
     public float getKnockbackResistance() {
-        return 0.0f;
+        return this.definition.getKnockbackResistance();
     }
 
 
@@ -2273,26 +2334,18 @@ public abstract class Item implements Cloneable, ItemID {
      * Define if this item is a tool
      */
     public boolean isTool() {
-        CustomItemDefinition def = getCustomDefinition();
-        if (def != null) {
-            return isPickaxe() || isAxe() || isShovel() || isHoe() || isSword() || isShears();
+        if (this.definition.isTool()) {
+            return true;
         }
-        return false;
+        // custom items may only override the predicates, so ask them instead of trusting the flag alone
+        return this.definition instanceof CustomItemDefinition && (isPickaxe() || isAxe() || isShovel() || isHoe() || isSword() || isShears());
     }
 
     /**
      * Define the attackdamage of an item
      */
     public int getAttackDamage() {
-        CompoundTag c = getCustomItemComponent("minecraft:damage");
-        if (c != null && c.contains("value")) {
-            return c.getByte("value") & 0xFF;
-        }
-        CompoundTag p = getCustomItemProperties();
-        if (p != null && p.contains("damage")) {
-            return p.getInt("damage");
-        }
-        return 1;
+        return this.definition.getAttackDamage();
     }
 
     public int getAttackDamage(Entity entity) {
@@ -2303,120 +2356,91 @@ public abstract class Item implements Cloneable, ItemID {
      * Define if the item is a Sword
      */
     public boolean isSword() {
-        CustomItemDefinition def = getCustomDefinition();
-        if (def != null) return def.isSword();
-        return false;
+        return this.definition.isSword();
     }
 
     /**
      * Define if the item is a Spear
      */
     public boolean isSpear() {
-        CustomItemDefinition def = getCustomDefinition();
-        if (def != null) return def.isSpear();
-        return false;
+        return this.definition.isSpear();
     }
 
     /**
      * Defines if the item is an Axe
      */
     public boolean isAxe() {
-        CustomItemDefinition def = getCustomDefinition();
-        if (def != null) return def.isAxe();
-        return false;
+        return this.definition.isAxe();
     }
 
     /**
      * Define if the item is a Pickaxe
      */
     public boolean isPickaxe() {
-        CustomItemDefinition def = getCustomDefinition();
-        if (def != null) return def.isPickaxe();
-        return false;
+        return this.definition.isPickaxe();
     }
 
     /**
      * Define if the item is a Shovel
      */
     public boolean isShovel() {
-        CustomItemDefinition def = getCustomDefinition();
-        if (def != null) return def.isShovel();
-        return false;
+        return this.definition.isShovel();
     }
 
     /**
      * Define if the item is a Hoe
      */
     public boolean isHoe() {
-        CustomItemDefinition def = getCustomDefinition();
-        if (def != null) return def.isHoe();
-        return false;
+        return this.definition.isHoe();
     }
 
     /**
      * Define if the item is a Shield
      */
     public boolean isShield() {
-        CustomItemDefinition def = getCustomDefinition();
-        if (def != null) return def.isShield();
-        if (this instanceof ItemShield) return true;
-        return false;
+        return this.definition.isShield();
     }
 
     /**
      * Define if the item is a Bow
      */
     public boolean isBow() {
-        CustomItemDefinition def = getCustomDefinition();
-        if (def != null) return def.isBow();
-        if (this instanceof ItemBow) return true;
-        return false;
+        return this.definition.isBow();
     }
 
     /**
      * Define if the item is a Crossbow
      */
     public boolean isCrossbow() {
-        CustomItemDefinition def = getCustomDefinition();
-        if (def != null) return def.isCrossbow();
-        if (this instanceof ItemCrossbow) return true;
-        return false;
+        return this.definition.isCrossbow();
     }
 
     /**
      * Define if the item is a Trident
      */
     public boolean isTrident() {
-        CustomItemDefinition def = getCustomDefinition();
-        if (def != null) return def.isTrident();
-        if (this instanceof ItemTrident) return true;
-        return false;
+        return this.definition.isTrident();
     }
 
     /**
      * Define if the item is a Mace
      */
     public boolean isMace() {
-        CustomItemDefinition def = getCustomDefinition();
-        if (def != null) return def.isMace();
-        if (this instanceof ItemMace) return true;
-        return false;
+        return this.definition.isMace();
     }
 
     /**
      * Define if the item is a Shears
      */
     public boolean isShears() {
-        CustomItemDefinition def = getCustomDefinition();
-        if (def != null) return def.isShears();
-        return false;
+        return this.definition.isShears();
     }
 
     /**
      * Define if the item can break the shield
      */
     public boolean canBreakShield() {
-        return false;
+        return this.definition.isCanBreakShield();
     }
 
     /**
@@ -2662,8 +2686,8 @@ public abstract class Item implements Cloneable, ItemID {
         if (itemData == null || itemData.isNull() || itemData.getDefinition() == null) {
             return Item.AIR;
         }
-        final ItemDefinition definition = itemData.getDefinition();
-        final Item item = Item.get(definition.getIdentifier(), itemData.getDamage(), itemData.getCount());
+        final org.cloudburstmc.protocol.bedrock.data.definitions.ItemDefinition networkDefinition = itemData.getDefinition();
+        final Item item = Item.get(networkDefinition.getIdentifier(), itemData.getDamage(), itemData.getCount());
         item.setNbt(itemData.getTag() == null ? null : CompoundTag.fromNetwork(itemData.getTag()));
         final List<String> canPlaceOn = Arrays.stream(itemData.getCanPlace()).toList();
         final List<String> canDestroyOn = Arrays.stream(itemData.getCanBreak()).toList();
@@ -2685,7 +2709,7 @@ public abstract class Item implements Cloneable, ItemID {
         return item;
     }
 
-    public ItemDefinition getItemDefinition() {
+    public org.cloudburstmc.protocol.bedrock.data.definitions.ItemDefinition getItemDefinition() {
         return new SimpleItemDefinition(
                 this.identifier.toString(),
                 this.getRuntimeId(),
