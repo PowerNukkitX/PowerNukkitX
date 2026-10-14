@@ -497,6 +497,8 @@ public class BehaviorGroup implements IBehaviorGroup {
 
         Vector3 current = entity.getMoveTarget();
         if (current == null) return true;
+        // A search still running is rewriting the route the checks below read, so ask for a fresh one
+        if (routeFindingTask != null && !routeFindingTask.getFinished()) return true;
 
         //An active entity used to repath on every cycle unconditionally. A moving target drifts by
         //fractions of a block per tick, and rerunning A* for that produces the same path, so only
