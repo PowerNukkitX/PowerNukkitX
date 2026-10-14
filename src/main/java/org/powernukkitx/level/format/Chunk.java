@@ -57,7 +57,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.atomic.AtomicReferenceArray;
 import java.util.concurrent.atomic.AtomicReference;
-import java.util.concurrent.atomic.AtomicReferenceArray;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.StampedLock;
 import java.util.function.BiPredicate;
@@ -116,6 +115,7 @@ public class Chunk implements IChunk {
      * It only ever grows, which costs a few extra empty buckets but never misses an entity.
      */
     private volatile double maxIndexedEntityHeight;
+    private final Object maxIndexedEntityHeightLock = new Object();
     /**
      * How many entities are currently placed in {@link #entitySections}. If this ever drifts from
      * {@link #entityCount} the index is incomplete, and queries fall back to the full entity map
@@ -1093,8 +1093,8 @@ public class Chunk implements IChunk {
             synchronized (this.entities) {
                 if (this.entities.remove(entity.runtimeId()) != null) {
                     this.entityCount.decrementAndGet();
+                    unindexEntitySection(entity);
                 }
-                unindexEntitySection(entity);
                 if (!(entity instanceof Player) && this.isInit) {
                     this.setChangedForSave();
                 }
@@ -1171,7 +1171,12 @@ public class Chunk implements IChunk {
         if (bb == null) return;
         double reach = bb.getMaxY() - entity.y;
         if (reach > this.maxIndexedEntityHeight) {
-            this.maxIndexedEntityHeight = reach;
+            // Two threads can get here at once, and a plain write could drop the larger value
+            synchronized (this.maxIndexedEntityHeightLock) {
+                if (reach > this.maxIndexedEntityHeight) {
+                    this.maxIndexedEntityHeight = reach;
+                }
+            }
         }
     }
 
