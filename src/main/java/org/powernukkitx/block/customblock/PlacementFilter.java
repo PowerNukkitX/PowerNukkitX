@@ -3,7 +3,6 @@ package org.powernukkitx.block.customblock;
 import org.powernukkitx.block.Block;
 import org.powernukkitx.block.property.type.BlockPropertyType;
 import org.powernukkitx.math.BlockFace;
-import org.powernukkitx.molang.MolangContext;
 import org.powernukkitx.molang.MolangExpression;
 
 import org.jetbrains.annotations.NotNull;
@@ -110,36 +109,7 @@ public record PlacementFilter(@NotNull List<Condition> conditions) {
 
         @Override
         public boolean matches(@NotNull Block block) {
-            return expression.evaluateAsBoolean(new TagContext(block));
-        }
-    }
-
-    /**
-     * Answers {@code query.any_tag} and {@code query.all_tags} from a block's tags.
-     */
-    private record TagContext(Block block) implements MolangContext {
-
-        @Override
-        public @Nullable Object query(@NotNull String name, @NotNull Object[] arguments) {
-            return switch (name) {
-                case "any_tag" -> {
-                    for (Object tag : arguments) {
-                        if (block.hasTag(String.valueOf(tag))) {
-                            yield true;
-                        }
-                    }
-                    yield false;
-                }
-                case "all_tags" -> {
-                    for (Object tag : arguments) {
-                        if (!block.hasTag(String.valueOf(tag))) {
-                            yield false;
-                        }
-                    }
-                    yield arguments.length > 0;
-                }
-                default -> null;
-            };
+            return expression.evaluateAsBoolean(new TagQueryContext(block::hasTag));
         }
     }
 

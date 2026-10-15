@@ -1,6 +1,7 @@
 package org.powernukkitx.block;
 
 import org.powernukkitx.Player;
+import org.powernukkitx.block.customblock.BlockDataDriven;
 import org.powernukkitx.block.customblock.CustomBlock;
 import org.powernukkitx.block.customblock.CustomBlockComponentBehavior;
 import org.powernukkitx.block.customblock.CustomBlockDefinition;
@@ -445,6 +446,11 @@ public abstract class Block extends Position implements Metadatable, AxisAligned
      */
     public boolean hasFreeSpaceAbove() {
         Block above = this.up();
+
+        if (above instanceof BlockDataDriven dataDriven
+                && dataDriven.getChestObstruction() != BlockDataDriven.ChestObstruction.SHAPE) {
+            return dataDriven.getChestObstruction() == BlockDataDriven.ChestObstruction.NEVER;
+        }
 
         if (above instanceof BlockSlab slab) {
             return slab.isOnTop();

@@ -2,12 +2,14 @@ package org.powernukkitx.addons.parser;
 
 import org.powernukkitx.addons.AddonFeatureTracker;
 import org.powernukkitx.block.BlockProperties;
+import org.powernukkitx.block.PrecipitationBehavior;
 import org.powernukkitx.block.customblock.BlockDataDriven;
 import org.powernukkitx.block.customblock.CustomBlockDefinition;
 import org.powernukkitx.block.customblock.PlacementFilter;
 import org.powernukkitx.block.customblock.data.CollisionBox;
 import org.powernukkitx.block.customblock.data.CraftingTable;
 import org.powernukkitx.block.customblock.data.Geometry;
+import org.powernukkitx.block.customblock.data.Movable;
 import org.powernukkitx.block.customblock.data.Transformation;
 import org.powernukkitx.block.property.type.BlockPropertyType;
 import org.powernukkitx.block.property.type.BooleanPropertyType;
@@ -147,18 +149,17 @@ public final class BehaviorBlockParser {
             JsonArray permutations = blockJson.getAsJsonArray("permutations");
             Set<String> baseTags = collectTags(components);
             BlockProperties properties = buildProperties(packName, identifier, baseTags,
-                    description.getAsJsonObject("states"), description.getAsJsonObject("traits"));
+                    description.getAsJsonObject("states"), description.getAsJsonObject("traits"),
+                    precipitation(packName, components));
             if (properties == null) {
                 return null;
             }
             List<Permutation> translated = translatePermutations(packName, permutations);
             CustomBlockDefinition definition = buildDefinition(packName, identifier, properties, description,
                     components, translated, baseTags);
-            PlacementFilter placementFilter = components == null ? null
-                    : parsePlacementFilter(packName, components.get("minecraft:placement_filter"));
             BlockDataDriven.Spec spec = BlockDataDriven.Spec.of(properties, definition, baseTags, collectTagRules(permutations),
-                    lootTableOf(components), collectLootRules(permutations), permutationRules(translated), placementFilter,
-                    traitPlacement(description.getAsJsonObject("traits")));
+                    lootTableOf(components), collectLootRules(permutations), permutationRules(translated),
+                    behavior(packName, components, description.getAsJsonObject("traits")));
             return new ParsedBlock(identifier, spec);
         } catch (RuntimeException e) {
             log.error("Behavior pack '{}': could not parse block {}", packName, identifier, e);
@@ -167,7 +168,8 @@ public final class BehaviorBlockParser {
     }
 
     private @Nullable BlockProperties buildProperties(String packName, String identifier, Set<String> baseTags,
-                                                      @Nullable JsonObject states, @Nullable JsonObject traits) {
+                                                      @Nullable JsonObject states, @Nullable JsonObject traits,
+                                                      @Nullable PrecipitationBehavior precipitation) {
         List<BlockPropertyType<?>> types = new ArrayList<>();
         if (states != null) {
             for (Map.Entry<String, JsonElement> state : states.entrySet()) {
@@ -189,7 +191,223 @@ public final class BehaviorBlockParser {
                 return null;
             }
         }
-        return new BlockProperties(identifier, baseTags, types.toArray(new BlockPropertyType<?>[0]));
+        BlockPropertyType<?>[] typeArray = types.toArray(new BlockPropertyType<?>[0]);
+        return precipitation == null
+                ? new BlockProperties(identifier, baseTags, typeArray)
+                : new BlockProperties(identifier, baseTags, precipitation, typeArray);
+    }
+
+    private @Nullable PrecipitationBehavior precipitation(String packName, @Nullable JsonObject components) {
+        JsonElement element = components == null ? null : components.get("minecraft:precipitation_interactions");
+        if (element == null || !element.isJsonObject()) {
+            return null;
+        }
+        String behavior = optString(element.getAsJsonObject(), "precipitation_behavior");
+        return switch (behavior) {
+            case "none" -> PrecipitationBehavior.NONE;
+            case "obstruct_rain" -> PrecipitationBehavior.OBSTRUCT_RAIN;
+            case "obstruct_rain_accumulate_snow", "" -> PrecipitationBehavior.OBSTRUCT_RAIN_ACCUMULATE_SNOW;
+            case "snowlogging", "snow_log_no_collision" -> PrecipitationBehavior.SNOWLOGGING;
+            default -> {
+                tracker.reportUnsupported(packName, "block-precipitation-behavior", behavior);
+                yield null;
+            }
+        };
+    }
+
+    /**
+     * Reads the components that change what the block does on the server whatever its state.
+     */
+    private BlockDataDriven.Behavior behavior(String packName, @Nullable JsonObject components, @Nullable JsonObject traits) {
+        if (components == null) {
+            components = new JsonObject();
+        }
+        BlockDataDriven.SupportShape support = null;
+        JsonElement supportElement = components.get("minecraft:support");
+        if (supportElement != null && supportElement.isJsonObject()) {
+            support = switch (optString(supportElement.getAsJsonObject(), "shape")) {
+                case "fence" -> BlockDataDriven.SupportShape.FENCE;
+                case "stair" -> BlockDataDriven.SupportShape.STAIR;
+                default -> null;
+            };
+        }
+        BlockDataDriven.ChestObstruction chestObstruction = BlockDataDriven.ChestObstruction.SHAPE;
+        JsonElement obstruction = components.get("minecraft:chest_obstruction");
+        if (obstruction != null && obstruction.isJsonObject()) {
+            chestObstruction = switch (optString(obstruction.getAsJsonObject(), "obstruction_rule")) {
+                case "always" -> BlockDataDriven.ChestObstruction.ALWAYS;
+                case "never" -> BlockDataDriven.ChestObstruction.NEVER;
+                default -> BlockDataDriven.ChestObstruction.SHAPE;
+            };
+        }
+        Boolean conductor = null;
+        JsonElement conductivity = components.get("minecraft:redstone_conductivity");
+        if (conductivity != null && conductivity.isJsonObject()) {
+            conductor = asBoolean(conductivity.getAsJsonObject().get("redstone_conductor"), false);
+        }
+        return new BlockDataDriven.Behavior(
+                parsePlacementFilter(packName, components.get("minecraft:placement_filter")),
+                traitPlacement(traits),
+                itemSpeeds(components.get("minecraft:destructible_by_mining")),
+                support,
+                chestObstruction,
+                components.has("minecraft:flower_pottable"),
+                conductor,
+                connectionRule(components.get("minecraft:connection_rule")),
+                redstoneProducer(components.get("minecraft:redstone_producer")),
+                multiBlock(traits),
+                traitStates(traits, "minecraft:connection").contains("minecraft:cardinal_connections"),
+                cornerWith(packName, traits));
+    }
+
+    private static List<String> traitStates(@Nullable JsonObject traits, String trait) {
+        JsonObject definition = traits == null ? null : traits.getAsJsonObject(trait);
+        return definition == null ? List.of() : asStringList(definition.get("enabled_states"));
+    }
+
+    private static @Nullable BlockDataDriven.MultiBlock multiBlock(@Nullable JsonObject traits) {
+        JsonObject multiBlock = traits == null ? null : traits.getAsJsonObject("minecraft:multi_block");
+        if (multiBlock == null || !asStringList(multiBlock.get("enabled_states")).contains("minecraft:multi_block_part")) {
+            return null;
+        }
+        Set<BlockFace> direction = faces(multiBlock.get("direction"));
+        return new BlockDataDriven.MultiBlock(multiBlockParts(multiBlock),
+                direction.isEmpty() ? BlockFace.UP : direction.iterator().next());
+    }
+
+    private static int multiBlockParts(JsonObject multiBlock) {
+        return Math.clamp(asInt(multiBlock.get("parts"), 2), 2, 4);
+    }
+
+    /**
+     * @return the blocks {@code blocks_to_corner_with} names, empty to corner with the same block, or null when
+     * the block does not form corners
+     */
+    private @Nullable List<PlacementFilter.BlockMatcher> cornerWith(String packName, @Nullable JsonObject traits) {
+        if (!traitStates(traits, "minecraft:placement_direction").contains("minecraft:corner_and_cardinal_direction")) {
+            return null;
+        }
+        List<PlacementFilter.BlockMatcher> matchers = new ArrayList<>();
+        JsonElement cornerWith = traits.getAsJsonObject("minecraft:placement_direction").get("blocks_to_corner_with");
+        if (cornerWith != null && cornerWith.isJsonArray()) {
+            for (JsonElement entry : cornerWith.getAsJsonArray()) {
+                PlacementFilter.BlockMatcher matcher = blockMatcher(entry);
+                if (matcher != null) {
+                    matchers.add(matcher);
+                } else {
+                    tracker.reportUnsupported(packName, "block-corner-filter", entry.toString());
+                }
+            }
+        }
+        return matchers;
+    }
+
+    private static List<BlockDataDriven.ItemSpeed> itemSpeeds(@Nullable JsonElement destructible) {
+        List<BlockDataDriven.ItemSpeed> speeds = new ArrayList<>();
+        JsonElement entries = destructible != null && destructible.isJsonObject()
+                ? destructible.getAsJsonObject().get("item_specific_speeds") : null;
+        if (entries == null || !entries.isJsonArray()) {
+            return speeds;
+        }
+        for (JsonElement entry : entries.getAsJsonArray()) {
+            if (!entry.isJsonObject()) {
+                continue;
+            }
+            JsonObject speed = entry.getAsJsonObject();
+            float seconds = asFloat(speed.get("destroy_speed"), 0f);
+            JsonElement item = speed.get("item");
+            if (item != null && item.isJsonPrimitive()) {
+                speeds.add(BlockDataDriven.ItemSpeed.ofItem(namespaced(item.getAsString()), seconds));
+            } else if (item != null && item.isJsonObject() && item.getAsJsonObject().has("tags")) {
+                speeds.add(BlockDataDriven.ItemSpeed.ofTags(MolangExpression.compile(optString(item.getAsJsonObject(), "tags")), seconds));
+            }
+        }
+        return speeds;
+    }
+
+    private static @Nullable BlockDataDriven.ConnectionRule connectionRule(@Nullable JsonElement element) {
+        if (element == null || !element.isJsonObject()) {
+            return null;
+        }
+        JsonObject rule = element.getAsJsonObject();
+        BlockDataDriven.ConnectionSource accepts = switch (optString(rule, "accepts_connections_from")) {
+            case "none" -> BlockDataDriven.ConnectionSource.NONE;
+            case "only_fences" -> BlockDataDriven.ConnectionSource.ONLY_FENCES;
+            default -> BlockDataDriven.ConnectionSource.ALL;
+        };
+        Set<BlockFace> directions = rule.has("enabled_directions")
+                ? faces(rule.get("enabled_directions"))
+                : EnumSet.of(BlockFace.NORTH, BlockFace.SOUTH, BlockFace.EAST, BlockFace.WEST);
+        return new BlockDataDriven.ConnectionRule(accepts, directions);
+    }
+
+    private static @Nullable BlockDataDriven.RedstoneProducer redstoneProducer(@Nullable JsonElement element) {
+        if (element == null || !element.isJsonObject()) {
+            return null;
+        }
+        JsonObject producer = element.getAsJsonObject();
+        Set<BlockFace> connected = producer.has("connected_faces")
+                ? faces(producer.get("connected_faces"))
+                : EnumSet.allOf(BlockFace.class);
+        Set<BlockFace> strong = faces(producer.get("strongly_powered_face"));
+        return new BlockDataDriven.RedstoneProducer(Math.clamp(asInt(producer.get("power"), 0), 0, 15),
+                strong.isEmpty() ? null : strong.iterator().next(), connected,
+                asBoolean(producer.get("transform_relative"), false));
+    }
+
+    private static Set<BlockFace> faces(@Nullable JsonElement element) {
+        Set<BlockFace> faces = EnumSet.noneOf(BlockFace.class);
+        for (String face : asStringList(element)) {
+            for (BlockFace candidate : BlockFace.values()) {
+                if (candidate.getName().equalsIgnoreCase(face)) {
+                    faces.add(candidate);
+                }
+            }
+        }
+        return faces;
+    }
+
+    private static Movable movable(JsonElement value) {
+        if (!value.isJsonObject()) {
+            return Movable.DEFAULT;
+        }
+        JsonObject movable = value.getAsJsonObject();
+        Movable.MovementType type = switch (optString(movable, "movement_type")) {
+            case "push" -> Movable.MovementType.PUSH;
+            case "popped" -> Movable.MovementType.POPPED;
+            case "immovable" -> Movable.MovementType.IMMOVABLE;
+            default -> Movable.MovementType.PUSH_PULL;
+        };
+        Movable.StickyType sticky = "same".equals(optString(movable, "sticky")) ? Movable.StickyType.SAME : Movable.StickyType.NONE;
+        return new Movable(type, sticky);
+    }
+
+    /**
+     * Water is the only liquid Bedrock lets blocks react to. A block that holds water is waterlogged; one
+     * the water flows through without breaking it shares its space with the water, as waterlogged blocks do.
+     * {@code broken} drops the block's loot like {@code popped}, because the liquid engine breaks blocks one
+     * way only.
+     */
+    private static void applyLiquidDetection(CustomBlockDefinition.Builder builder, JsonElement value) {
+        JsonElement rules = value.isJsonObject() ? value.getAsJsonObject().get("detection_rules") : null;
+        if (rules == null || !rules.isJsonArray()) {
+            return;
+        }
+        for (JsonElement ruleElement : rules.getAsJsonArray()) {
+            if (!ruleElement.isJsonObject()) {
+                continue;
+            }
+            JsonObject rule = ruleElement.getAsJsonObject();
+            String liquid = optString(rule, "liquid_type");
+            if (!liquid.isEmpty() && !"water".equals(liquid)) {
+                continue;
+            }
+            String touches = optString(rule, "on_liquid_touches");
+            boolean containsLiquid = asBoolean(rule.get("can_contain_liquid"), false);
+            builder.canBeFlowedInto("broken".equals(touches) || "popped".equals(touches));
+            builder.waterloggingLevel("no_reaction".equals(touches) ? 2 : containsLiquid ? 1 : 0);
+            return;
+        }
     }
 
     /**
@@ -204,7 +422,16 @@ public final class BehaviorBlockParser {
         }
         for (Map.Entry<String, JsonElement> trait : traits.entrySet()) {
             String traitName = trait.getKey();
-            if (!traitName.equals("minecraft:placement_direction") && !traitName.equals("minecraft:placement_position")) {
+            if (traitName.equals("minecraft:multi_block")) {
+                if (trait.getValue().isJsonObject()
+                        && asStringList(trait.getValue().getAsJsonObject().get("enabled_states")).contains("minecraft:multi_block_part")) {
+                    int parts = multiBlockParts(trait.getValue().getAsJsonObject());
+                    types.add(IntPropertyType.of("minecraft:multi_block_part", 0, parts - 1, 0));
+                }
+                continue;
+            }
+            if (!traitName.equals("minecraft:placement_direction") && !traitName.equals("minecraft:placement_position")
+                    && !traitName.equals("minecraft:connection")) {
                 tracker.reportUnsupported(packName, "block-trait", traitName);
                 continue;
             }
@@ -220,6 +447,17 @@ public final class BehaviorBlockParser {
                 switch (stateElement.getAsString()) {
                     case "minecraft:cardinal_direction" -> types.add(StringEnumPropertyType.of(
                             "minecraft:cardinal_direction", List.of("south", "west", "north", "east"), "south"));
+                    case "minecraft:corner_and_cardinal_direction" -> {
+                        types.add(StringEnumPropertyType.of(
+                                "minecraft:cardinal_direction", List.of("south", "west", "north", "east"), "south"));
+                        types.add(StringEnumPropertyType.of("minecraft:corner",
+                                List.of("none", "inner_left", "inner_right", "outer_left", "outer_right"), "none"));
+                    }
+                    case "minecraft:cardinal_connections" -> {
+                        for (String direction : List.of("north", "south", "east", "west")) {
+                            types.add(BooleanPropertyType.of("minecraft:connection_" + direction, false));
+                        }
+                    }
                     case "minecraft:facing_direction" -> types.add(StringEnumPropertyType.of(
                             "minecraft:facing_direction", List.of("down", "up", "north", "south", "east", "west"), "down"));
                     case "minecraft:block_face" -> types.add(StringEnumPropertyType.of(
@@ -246,7 +484,8 @@ public final class BehaviorBlockParser {
         List<String> directionStates = direction == null ? List.of() : asStringList(direction.get("enabled_states"));
         List<String> positionStates = position == null ? List.of() : asStringList(position.get("enabled_states"));
         return new BlockDataDriven.TraitPlacement(
-                directionStates.contains("minecraft:cardinal_direction"),
+                directionStates.contains("minecraft:cardinal_direction")
+                        || directionStates.contains("minecraft:corner_and_cardinal_direction"),
                 directionStates.contains("minecraft:facing_direction"),
                 direction == null ? 0 : (int) asFloat(direction.get("y_rotation_offset"), 0f),
                 positionStates.contains("minecraft:block_face"),
@@ -350,7 +589,7 @@ public final class BehaviorBlockParser {
             case "minecraft:destructible_by_mining" -> builder.destructibleByMining(miningSeconds(value));
             case "minecraft:destructible_by_explosion" -> builder.destructibleByExplosion(explosionResistance(value));
             case "minecraft:friction" -> builder.friction(Math.min(asDouble(value, 0.4), 0.9));
-            case "minecraft:light_dampening" -> builder.lightDampening(asInt(value, 15));
+            case "minecraft:light_dampening", "minecraft:block_light_absorption" -> builder.lightDampening(asInt(value, 15));
             case "minecraft:light_emission" -> builder.lightEmission(asInt(value, 0));
             case "minecraft:display_name" -> {
                 String name = value.isJsonObject() ? optString(value.getAsJsonObject(), "value") : asStringOrEmpty(value);
@@ -407,7 +646,18 @@ public final class BehaviorBlockParser {
             }
             case "minecraft:unit_cube" -> raw.putCompound(key, new CompoundTag());
             case "minecraft:flammable" -> applyFlammable(builder, value);
-            case "minecraft:loot", "minecraft:placement_filter" -> {
+            case "minecraft:movable" -> builder.movable(movable(value));
+            case "minecraft:replaceable" -> {
+                builder.canBeReplaced(true);
+                raw.putCompound(key, new CompoundTag());
+            }
+            case "minecraft:liquid_detection" -> applyLiquidDetection(builder, value);
+            case "minecraft:block_light_emission" -> builder.lightEmission(Math.round(Math.clamp(asFloat(value, 0f), 0f, 1f) * 15));
+            case "minecraft:destroy_time" -> builder.destructibleByMining(asFloat(value, 0f));
+            case "minecraft:explosion_resistance" -> builder.destructibleByExplosion((int) asFloat(value, 0f));
+            case "minecraft:loot", "minecraft:placement_filter", "minecraft:precipitation_interactions",
+                 "minecraft:redstone_conductivity", "minecraft:redstone_producer", "minecraft:support",
+                 "minecraft:chest_obstruction", "minecraft:flower_pottable", "minecraft:connection_rule" -> {
             }
             default -> tracker.reportUnsupported(packName, "block-component", key);
         }
@@ -603,7 +853,8 @@ public final class BehaviorBlockParser {
      * gameplay values the server applies while its condition holds.
      */
     private record Permutation(String condition, CompoundTag components,
-                               List<Consumer<CustomBlockDefinition.Builder>> serverValues) {
+                               List<Consumer<CustomBlockDefinition.Builder>> serverValues,
+                               BlockDataDriven.@Nullable RedstoneProducer redstoneProducer) {
     }
 
     private List<Permutation> translatePermutations(String packName, @Nullable JsonArray permutations) {
@@ -619,14 +870,17 @@ public final class BehaviorBlockParser {
             JsonObject components = permutation.getAsJsonObject("components");
             CompoundTag clientComponents = new CompoundTag(new LinkedHashMap<>());
             List<Consumer<CustomBlockDefinition.Builder>> serverValues = new ArrayList<>();
+            BlockDataDriven.RedstoneProducer producer = null;
             if (components != null) {
                 for (Map.Entry<String, JsonElement> entry : components.entrySet()) {
-                    if (!entry.getKey().startsWith("tag:")) {
+                    if (entry.getKey().equals("minecraft:redstone_producer")) {
+                        producer = redstoneProducer(entry.getValue());
+                    } else if (!entry.getKey().startsWith("tag:")) {
                         translatePermutationComponent(packName, clientComponents, serverValues, entry.getKey(), entry.getValue());
                     }
                 }
             }
-            translated.add(new Permutation(optString(permutation, "condition"), clientComponents, serverValues));
+            translated.add(new Permutation(optString(permutation, "condition"), clientComponents, serverValues, producer));
         }
         return translated;
     }
@@ -650,9 +904,10 @@ public final class BehaviorBlockParser {
     private static List<BlockDataDriven.PermutationRule> permutationRules(List<Permutation> permutations) {
         List<BlockDataDriven.PermutationRule> rules = new ArrayList<>();
         for (Permutation permutation : permutations) {
-            if (!permutation.components().isEmpty() || !permutation.serverValues().isEmpty()) {
+            if (!permutation.components().isEmpty() || !permutation.serverValues().isEmpty()
+                    || permutation.redstoneProducer() != null) {
                 rules.add(new BlockDataDriven.PermutationRule(MolangExpression.compile(permutation.condition()),
-                        permutation.components(), permutation.serverValues()));
+                        permutation.components(), permutation.serverValues(), permutation.redstoneProducer()));
             }
         }
         return rules;
@@ -717,6 +972,15 @@ public final class BehaviorBlockParser {
                 }
             }
             case "minecraft:flammable" -> serverValues.add(builder -> applyFlammable(builder, value));
+            case "minecraft:movable" -> {
+                Movable movable = movable(value);
+                serverValues.add(builder -> builder.movable(movable));
+            }
+            case "minecraft:replaceable" -> {
+                target.putCompound(key, new CompoundTag());
+                serverValues.add(builder -> builder.canBeReplaced(true));
+            }
+            case "minecraft:liquid_detection" -> serverValues.add(builder -> applyLiquidDetection(builder, value));
             case "minecraft:loot" -> {
             }
             default -> tracker.reportUnsupported(packName, "block-permutation-component", key);

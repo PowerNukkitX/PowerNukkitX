@@ -319,15 +319,15 @@ class BehaviorBlockParserTest {
                         + "\"block_filter\": [\"minecraft:stone\", { \"name\": \"dirt\" }] } ] } }",
                 "[]"));
 
-        PlacementFilter filter = spec.placementFilter();
+        PlacementFilter filter = spec.behavior().placementFilter();
         assertNotNull(filter);
         assertTrue(filter.allowsPlacement(Block.get(BlockID.STONE), BlockFace.UP));
         assertTrue(filter.allowsPlacement(Block.get(BlockID.DIRT), BlockFace.UP));
         assertFalse(filter.allowsPlacement(Block.get(BlockID.STONE), BlockFace.NORTH));
         assertFalse(filter.allowsPlacement(Block.get(BlockID.OAK_PLANKS), BlockFace.UP));
-        assertTrue(spec.traitPlacement().cardinalDirection());
-        assertEquals(180, spec.traitPlacement().yRotationOffset());
-        assertTrue(spec.traitPlacement().verticalHalf());
+        assertTrue(spec.behavior().traitPlacement().cardinalDirection());
+        assertEquals(180, spec.behavior().traitPlacement().yRotationOffset());
+        assertTrue(spec.behavior().traitPlacement().verticalHalf());
         assertTrue(tracker.isEmpty());
     }
 }

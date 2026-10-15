@@ -3,6 +3,8 @@ package org.powernukkitx.block.customblock;
 import org.powernukkitx.Player;
 import org.powernukkitx.block.Block;
 import org.powernukkitx.block.BlockProperties;
+import org.powernukkitx.block.BlockFlowerPot;
+import org.powernukkitx.block.BlockID;
 import org.powernukkitx.block.BlockState;
 import org.powernukkitx.block.property.type.BlockPropertyType;
 import org.powernukkitx.item.Item;
@@ -27,15 +29,18 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Arrays;
 import java.util.BitSet;
+import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.Consumer;
+import java.util.function.Predicate;
 
 /**
  * A block that exists only as data, with no class of its own.
@@ -51,7 +56,7 @@ import java.util.function.Consumer;
  * {@link Block} getters stay plain field reads and {@link #hasTag(String)}, {@link #getDrops(Item)}
  * and the collision queries cost one map lookup at most.
  */
-public class BlockDataDriven extends Block implements CustomBlock {
+public class BlockDataDriven extends Block implements CustomBlock, BlockFlowerPot.FlowerPotBlock {
 
     /**
      * Tags a block carries only in some of its states, as a behaviour pack expresses them: a
@@ -86,9 +91,12 @@ public class BlockDataDriven extends Block implements CustomBlock {
      *                     transformations are read from them
      * @param serverValues applied, in order, to a builder seeded from the base definition, to set the
      *                     gameplay values the permutation changes
+     * @param redstoneProducer the redstone signal the block produces while the condition holds, or null to
+     *                         keep the block's own
      */
     public record PermutationRule(@NotNull MolangExpression condition, @NotNull CompoundTag components,
-                                  @NotNull List<Consumer<CustomBlockDefinition.Builder>> serverValues) {
+                                  @NotNull List<Consumer<CustomBlockDefinition.Builder>> serverValues,
+                                  @Nullable RedstoneProducer redstoneProducer) {
 
         public PermutationRule {
             serverValues = List.copyOf(serverValues);
@@ -103,7 +111,8 @@ public class BlockDataDriven extends Block implements CustomBlock {
      *                          placing player faces
      * @param facingDirection   sets {@code minecraft:facing_direction} to the direction the placing player
      *                          faces, up and down included
-     * @param yRotationOffset   degrees, a multiple of 90, the horizontal directions are turned clockwise by
+     * @param yRotationOffset   degrees, a multiple of 90, the horizontal directions are turned
+     *                          counter-clockwise by, so 90 stores {@code east} for a player facing south
      * @param blockFace         sets {@code minecraft:block_face} to the face the block was placed against
      * @param verticalHalf      sets {@code minecraft:vertical_half} to the half of the clicked block face
      */
@@ -114,21 +123,156 @@ public class BlockDataDriven extends Block implements CustomBlock {
     }
 
     /**
+     * The support shape {@code minecraft:support} gives a block, which decides what can attach to it.
+     */
+    public enum SupportShape {
+        /** Supports attachments on its top only, like a vanilla fence. */
+        FENCE,
+        /** Full on the half its {@code minecraft:vertical_half} names and on its back, like vanilla stairs. */
+        STAIR
+    }
+
+    /**
+     * How a block directly above a chest affects whether the chest opens, from {@code minecraft:chest_obstruction}.
+     */
+    public enum ChestObstruction {
+        /** The chest never opens. */
+        ALWAYS,
+        /** The chest always opens. */
+        NEVER,
+        /** The block's collision box decides, as for vanilla blocks. */
+        SHAPE
+    }
+
+    /**
+     * Which blocks may connect to a block, from {@code minecraft:connection_rule}.
+     */
+    public enum ConnectionSource {
+        ALL,
+        /** Fences only, so walls and panes do not connect. */
+        ONLY_FENCES,
+        NONE
+    }
+
+    /**
+     * @param accepts    which blocks may connect
+     * @param directions the block's own sides connections are accepted on
+     */
+    public record ConnectionRule(@NotNull ConnectionSource accepts, @NotNull Set<BlockFace> directions) {
+
+        public ConnectionRule {
+            directions = directions.isEmpty() ? EnumSet.noneOf(BlockFace.class) : EnumSet.copyOf(directions);
+        }
+    }
+
+    /**
+     * The redstone signal a block produces, from {@code minecraft:redstone_producer}. Faces are the block's
+     * own, before its transformation.
+     *
+     * @param power               the signal strength, 0 to 15
+     * @param stronglyPoweredFace the face whose neighbour is strongly powered, or null for none
+     * @param connectedFaces      the faces that power their neighbour
+     * @param transformRelative   whether the faces turn with the block's {@code minecraft:transformation}
+     */
+    public record RedstoneProducer(int power, @Nullable BlockFace stronglyPoweredFace,
+                                   @NotNull Set<BlockFace> connectedFaces, boolean transformRelative) {
+
+        public RedstoneProducer {
+            connectedFaces = connectedFaces.isEmpty() ? EnumSet.noneOf(BlockFace.class) : EnumSet.copyOf(connectedFaces);
+        }
+    }
+
+    /**
+     * A destroy time that replaces the block's own while it is mined with a matching item, from
+     * {@code minecraft:destructible_by_mining}'s {@code item_specific_speeds}.
+     *
+     * @param item    which items the time applies to
+     * @param seconds the destroy time, used where the block's {@code seconds_to_destroy} would be
+     */
+    public record ItemSpeed(@NotNull Predicate<Item> item, float seconds) {
+
+        /**
+         * @param identifier the item identifier the time applies to
+         */
+        public static ItemSpeed ofItem(@NotNull String identifier, float seconds) {
+            return new ItemSpeed(item -> identifier.equals(item.getId()), seconds);
+        }
+
+        /**
+         * @param tags a Molang expression over the item's tags, such as {@code q.any_tag('minecraft:is_pickaxe')}
+         */
+        public static ItemSpeed ofTags(@NotNull MolangExpression tags, float seconds) {
+            return new ItemSpeed(item -> tags.evaluateAsBoolean(new TagQueryContext(item::hasTag)), seconds);
+        }
+    }
+
+    /**
+     * A block made of several parts that act as one, from the {@code minecraft:multi_block} trait. Part 0
+     * is where the block was placed; the others follow it in {@code direction}.
+     *
+     * @param parts     how many parts, 2 to 4
+     * @param direction where the parts extend, unless the block's {@code minecraft:cardinal_direction}
+     *                  overrides a horizontal direction
+     */
+    public record MultiBlock(int parts, @NotNull BlockFace direction) {
+    }
+
+    /**
+     * What a block does on the server whatever its state.
+     *
+     * @param placementFilter   where the block may be placed, or null for anywhere
+     * @param traitPlacement    the states the block's traits set when it is placed
+     * @param itemSpeeds        destroy times for particular items, checked in order
+     * @param support           the support shape, or null for a full cube
+     * @param chestObstruction  how the block affects a chest below it
+     * @param flowerPottable    whether the block can be put in a flower pot
+     * @param redstoneConductor whether redstone powers the block, or null to decide by its shape as vanilla does
+     * @param connectionRule    which blocks may connect to it, or null for the vanilla rules
+     * @param redstoneProducer  the redstone signal it produces in states no permutation changes, or null for none
+     * @param multiBlock        the parts the block is made of, or null for a single block
+     * @param cardinalConnections whether the {@code minecraft:connection} trait keeps its
+     *                          {@code minecraft:connection_*} states up to date
+     * @param cornerWith        the blocks the {@code minecraft:corner} state forms corners with, empty for blocks
+     *                          of the same identifier, or null when the block does not form corners
+     */
+    public record Behavior(@Nullable PlacementFilter placementFilter, @NotNull TraitPlacement traitPlacement,
+                           @NotNull List<ItemSpeed> itemSpeeds, @Nullable SupportShape support,
+                           @NotNull ChestObstruction chestObstruction, boolean flowerPottable,
+                           @Nullable Boolean redstoneConductor, @Nullable ConnectionRule connectionRule,
+                           @Nullable RedstoneProducer redstoneProducer, @Nullable MultiBlock multiBlock,
+                           boolean cardinalConnections, @Nullable List<PlacementFilter.BlockMatcher> cornerWith) {
+
+        public static final Behavior DEFAULT = new Behavior(null, TraitPlacement.NONE, List.of(), null,
+                ChestObstruction.SHAPE, false, null, null, null, null, false, null);
+
+        public Behavior {
+            itemSpeeds = List.copyOf(itemSpeeds);
+            cornerWith = cornerWith == null ? null : List.copyOf(cornerWith);
+        }
+    }
+
+    /**
      * The server's view of one state, shared by every state the same permutations apply to.
      *
-     * @param definition     the definition backing the property getters in this state
-     * @param collisionBoxes the collision boxes in block units relative to the block's corner, after
-     *                       its transformation, as {@code [minX, minY, minZ, maxX, maxY, maxZ]}; empty
-     *                       when collision is disabled, null when the block declares no collision box
-     *                       and collides as a full cube
-     * @param bounds         the union of {@code collisionBoxes}, or null when there are none
+     * @param definition       the definition backing the property getters in this state
+     * @param collisionBoxes   the collision boxes in block units relative to the block's corner, after
+     *                         its transformation, as {@code [minX, minY, minZ, maxX, maxY, maxZ]}; empty
+     *                         when collision is disabled, null when the block declares no collision box
+     *                         and collides as a full cube
+     * @param bounds           the union of {@code collisionBoxes}, or null when there are none
+     * @param redstoneProducer the redstone signal produced in this state, or null for none
+     * @param quarterTurnsY    the quarter turns about the vertical axis the state's transformation applies
      */
     public record StateData(@NotNull CustomBlockDefinition definition, float @Nullable [][] collisionBoxes,
-                            float @Nullable [] bounds) {
+                            float @Nullable [] bounds, @Nullable RedstoneProducer redstoneProducer,
+                            int quarterTurnsY) {
 
-        static StateData of(CustomBlockDefinition definition) {
-            float[][] boxes = readCollisionBoxes(definition.getComponents());
-            return new StateData(definition, boxes, boxes == null ? null : union(boxes));
+        static StateData of(CustomBlockDefinition definition, @Nullable RedstoneProducer redstoneProducer) {
+            CompoundTag components = definition.getComponents();
+            float[][] boxes = readCollisionBoxes(components);
+            int turns = components.contains("minecraft:transformation")
+                    ? components.getCompound("minecraft:transformation").getInt("RY") : 0;
+            return new StateData(definition, boxes, boxes == null ? null : union(boxes), redstoneProducer, turns);
         }
     }
 
@@ -146,8 +290,7 @@ public class BlockDataDriven extends Block implements CustomBlock {
      * @param baseState        the server's view of every state no permutation changes
      * @param stateData        the server's view of each state some permutation changes, keyed by block
      *                         state hash
-     * @param placementFilter  where the block may be placed, or null for anywhere
-     * @param traitPlacement   the states the block's traits set when it is placed
+     * @param behavior         what the block does whatever its state
      */
     public record Spec(
             @NotNull BlockProperties properties,
@@ -158,8 +301,7 @@ public class BlockDataDriven extends Block implements CustomBlock {
             @NotNull Int2ObjectMap<String> lootTableByState,
             @NotNull StateData baseState,
             @NotNull Int2ObjectMap<StateData> stateData,
-            @Nullable PlacementFilter placementFilter,
-            @NotNull TraitPlacement traitPlacement
+            @NotNull Behavior behavior
     ) {
 
         public Spec {
@@ -187,19 +329,17 @@ public class BlockDataDriven extends Block implements CustomBlock {
          * @param lootTable        the block's own loot table path, or null to drop itself
          * @param lootRules        state-conditional loot tables; empty when the block has none
          * @param permutationRules state-conditional gameplay values; empty when the block has none
-         * @param placementFilter  where the block may be placed, or null for anywhere
-         * @param traitPlacement   the states the block's traits set when it is placed
+         * @param behavior         what the block does whatever its state
          */
         public static @NotNull Spec of(@NotNull BlockProperties properties, @NotNull CustomBlockDefinition definition,
                                        @NotNull Set<String> baseTags, @NotNull List<TagRule> tagRules,
                                        @Nullable String lootTable, @NotNull List<LootRule> lootRules,
                                        @NotNull List<PermutationRule> permutationRules,
-                                       @Nullable PlacementFilter placementFilter,
-                                       @NotNull TraitPlacement traitPlacement) {
-            StateData baseState = StateData.of(definition);
+                                       @NotNull Behavior behavior) {
+            StateData baseState = StateData.of(definition, behavior.redstoneProducer());
             if (tagRules.isEmpty() && lootRules.isEmpty() && permutationRules.isEmpty()) {
                 return new Spec(properties, definition, baseTags, Int2ObjectMaps.emptyMap(), lootTable,
-                        Int2ObjectMaps.emptyMap(), baseState, Int2ObjectMaps.emptyMap(), placementFilter, traitPlacement);
+                        Int2ObjectMaps.emptyMap(), baseState, Int2ObjectMaps.emptyMap(), behavior);
             }
             Map<Set<String>, Set<String>> sharedTags = new HashMap<>();
             Map<BitSet, StateData> sharedStates = new HashMap<>();
@@ -236,14 +376,26 @@ public class BlockDataDriven extends Block implements CustomBlock {
                 }
                 if (!matched.isEmpty()) {
                     dataByState.put(state.blockStateHash(), sharedStates.computeIfAbsent(matched,
-                            key -> StateData.of(stateDefinition(properties, definition, permutationRules, key))));
+                            key -> StateData.of(stateDefinition(properties, definition, permutationRules, key),
+                                    producer(permutationRules, key, behavior.redstoneProducer()))));
                 }
             }
             tagsByState.trim();
             lootByState.trim();
             dataByState.trim();
             return new Spec(properties, definition, baseTags, tagsByState, lootTable, lootByState, baseState,
-                    dataByState, placementFilter, traitPlacement);
+                    dataByState, behavior);
+        }
+
+        private static @Nullable RedstoneProducer producer(List<PermutationRule> rules, BitSet matched,
+                                                           @Nullable RedstoneProducer base) {
+            RedstoneProducer producer = base;
+            for (int i = matched.nextSetBit(0); i >= 0; i = matched.nextSetBit(i + 1)) {
+                if (rules.get(i).redstoneProducer() != null) {
+                    producer = rules.get(i).redstoneProducer();
+                }
+            }
+            return producer;
         }
 
         private static CustomBlockDefinition stateDefinition(BlockProperties properties, CustomBlockDefinition base,
@@ -439,18 +591,162 @@ public class BlockDataDriven extends Block implements CustomBlock {
     @Override
     public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face,
                          double fx, double fy, double fz, @Nullable Player player) {
-        PlacementFilter filter = spec.placementFilter();
+        PlacementFilter filter = spec.behavior().placementFilter();
         if (filter != null && !filter.allowsPlacement(target, face)) {
             return false;
         }
         applyTraits(face, fy, player);
-        return super.place(item, block, target, face, fx, fy, fz, player);
+        updateNeighbourStates();
+        MultiBlock multiBlock = spec.behavior().multiBlock();
+        if (multiBlock == null) {
+            return super.place(item, block, target, face, fx, fy, fz, player);
+        }
+        BlockFace direction = multiBlockDirection(multiBlock);
+        for (int part = 1; part < multiBlock.parts(); part++) {
+            if (!getSide(direction, part).canBeReplaced()) {
+                return false;
+            }
+        }
+        if (!super.place(item, block, target, face, fx, fy, fz, player)) {
+            return false;
+        }
+        for (int part = 1; part < multiBlock.parts(); part++) {
+            Block partBlock = this.clone();
+            partBlock.setPropertyValue(stateType(MULTI_BLOCK_PART).tryCreateValue(part));
+            getLevel().setBlock(getSide(direction, part), partBlock, true, true);
+        }
+        return true;
+    }
+
+    private static final String MULTI_BLOCK_PART = "minecraft:multi_block_part";
+
+    /**
+     * {@inheritDoc}
+     * <p>
+     * Breaking one part of a multi-block removes the other parts without dropping them, so the block drops
+     * once.
+     */
+    @Override
+    public boolean onBreak(Item item) {
+        MultiBlock multiBlock = spec.behavior().multiBlock();
+        if (multiBlock != null && getPropertyValue(MULTI_BLOCK_PART) instanceof Integer brokenPart) {
+            BlockFace direction = multiBlockDirection(multiBlock);
+            for (int part = 0; part < multiBlock.parts(); part++) {
+                if (part == brokenPart) {
+                    continue;
+                }
+                int offset = part - brokenPart;
+                Block other = offset > 0 ? getSide(direction, offset) : getSide(direction.getOpposite(), -offset);
+                if (getId().equals(other.getId()) && Integer.valueOf(part).equals(other.getPropertyValue(MULTI_BLOCK_PART))) {
+                    getLevel().setBlock(other, Block.get(BlockID.AIR), true, true);
+                }
+            }
+        }
+        return super.onBreak(item);
+    }
+
+    private BlockFace multiBlockDirection(MultiBlock multiBlock) {
+        if (multiBlock.direction().getAxis() != BlockFace.Axis.Y
+                && getPropertyValue("minecraft:cardinal_direction") instanceof String cardinal) {
+            BlockFace facing = horizontalFace(cardinal);
+            if (facing != null) {
+                return facing;
+            }
+        }
+        return multiBlock.direction();
+    }
+
+    private static @Nullable BlockFace horizontalFace(String name) {
+        return switch (name) {
+            case "north" -> BlockFace.NORTH;
+            case "south" -> BlockFace.SOUTH;
+            case "east" -> BlockFace.EAST;
+            case "west" -> BlockFace.WEST;
+            default -> null;
+        };
+    }
+
+    /**
+     * Recomputes the states that follow the neighbours: the {@code minecraft:connection} trait's connections
+     * and the {@code minecraft:corner} shape.
+     *
+     * @return whether a state changed
+     */
+    private boolean updateNeighbourStates() {
+        Behavior behavior = spec.behavior();
+        if (!behavior.cardinalConnections() && behavior.cornerWith() == null) {
+            return false;
+        }
+        BlockState before = this.blockstate;
+        if (behavior.cardinalConnections()) {
+            for (BlockFace face : BlockFace.Plane.HORIZONTAL) {
+                setTraitState("minecraft:connection_" + face.getName(), connectsTo(getSide(face), face));
+            }
+        }
+        if (behavior.cornerWith() != null) {
+            setTraitState("minecraft:corner", cornerShape());
+        }
+        return before != this.blockstate;
+    }
+
+    private boolean connectsTo(Block neighbour, BlockFace face) {
+        if (neighbour instanceof BlockDataDriven dataDriven) {
+            if (!dataDriven.acceptsConnectionFrom(this, false)) {
+                return false;
+            }
+            if (dataDriven.spec.behavior().cardinalConnections()) {
+                return true;
+            }
+        }
+        return getId().equals(neighbour.getId()) || (neighbour.isSolid(face.getOpposite()) && !neighbour.isTransparent());
+    }
+
+    /**
+     * The shape vanilla stairs take: an outer corner when the block behind faces across this one, an inner
+     * corner when the block in front does, unless a matching block beside it continues the line.
+     */
+    private String cornerShape() {
+        BlockFace facing = horizontalFace(String.valueOf(getPropertyValue("minecraft:cardinal_direction")));
+        if (facing == null) {
+            return "none";
+        }
+        Object half = getPropertyValue("minecraft:vertical_half");
+        Block behind = getSide(facing);
+        BlockFace behindFacing = cornerFacing(behind, half);
+        if (behindFacing != null && behindFacing.getAxis() != facing.getAxis() && canTakeShape(behindFacing.getOpposite(), facing, half)) {
+            return behindFacing == facing.rotateYCCW() ? "outer_left" : "outer_right";
+        }
+        Block front = getSide(facing.getOpposite());
+        BlockFace frontFacing = cornerFacing(front, half);
+        if (frontFacing != null && frontFacing.getAxis() != facing.getAxis() && canTakeShape(frontFacing, facing, half)) {
+            return frontFacing == facing.rotateYCCW() ? "inner_left" : "inner_right";
+        }
+        return "none";
+    }
+
+    private boolean canTakeShape(BlockFace side, BlockFace facing, @Nullable Object half) {
+        BlockFace sideFacing = cornerFacing(getSide(side), half);
+        return sideFacing != facing;
+    }
+
+    /**
+     * @return the facing of a neighbour this block forms corners with when it sits on the same half, else null
+     */
+    private @Nullable BlockFace cornerFacing(Block neighbour, @Nullable Object half) {
+        List<PlacementFilter.BlockMatcher> cornerWith = spec.behavior().cornerWith();
+        boolean matches = cornerWith == null || cornerWith.isEmpty()
+                ? getId().equals(neighbour.getId())
+                : cornerWith.stream().anyMatch(matcher -> matcher.matches(neighbour));
+        if (!matches || !Objects.equals(half, neighbour.getPropertyValue("minecraft:vertical_half"))) {
+            return null;
+        }
+        return horizontalFace(String.valueOf(neighbour.getPropertyValue("minecraft:cardinal_direction")));
     }
 
     private static final String[] HORIZONTAL_CLOCKWISE = {"north", "east", "south", "west"};
 
     private void applyTraits(BlockFace face, double fy, @Nullable Player player) {
-        TraitPlacement traits = spec.traitPlacement();
+        TraitPlacement traits = spec.behavior().traitPlacement();
         if (player != null && traits.cardinalDirection()) {
             setTraitState("minecraft:cardinal_direction", turn(player.getHorizontalFacing(), traits.yRotationOffset()));
         }
@@ -474,23 +770,35 @@ public class BlockDataDriven extends Block implements CustomBlock {
         }
     }
 
-    private static String turn(BlockFace horizontal, int degrees) {
+    /**
+     * Turns a horizontal facing counter-clockwise by a {@code y_rotation_offset}.
+     *
+     * @return the turned direction's state value, such as {@code east}
+     */
+    static String turn(BlockFace horizontal, int degrees) {
         int index = switch (horizontal) {
             case EAST -> 1;
             case SOUTH -> 2;
             case WEST -> 3;
             default -> 0;
         };
-        return HORIZONTAL_CLOCKWISE[Math.floorMod(index + Math.floorDiv(degrees, 90), 4)];
+        return HORIZONTAL_CLOCKWISE[Math.floorMod(index - Math.floorDiv(degrees, 90), 4)];
     }
 
-    private void setTraitState(String name, String value) {
+    private void setTraitState(String name, Object value) {
+        BlockPropertyType<?> type = stateType(name);
+        if (type != null) {
+            setPropertyValue(type.tryCreateValue(value));
+        }
+    }
+
+    private @Nullable BlockPropertyType<?> stateType(String name) {
         for (BlockPropertyType<?> type : spec.properties().getPropertyTypeSet()) {
             if (type.getName().equals(name)) {
-                setPropertyValue(type.tryCreateValue(value));
-                return;
+                return type;
             }
         }
+        return null;
     }
 
     /**
@@ -500,9 +808,13 @@ public class BlockDataDriven extends Block implements CustomBlock {
      */
     @Override
     public int onUpdate(int type) {
-        PlacementFilter filter = spec.placementFilter();
+        PlacementFilter filter = spec.behavior().placementFilter();
         if (type == Level.BLOCK_UPDATE_NORMAL && filter != null && !filter.isSupported(this)) {
             this.getLevel().useBreakOn(this);
+            return Level.BLOCK_UPDATE_NORMAL;
+        }
+        if (type == Level.BLOCK_UPDATE_NORMAL && updateNeighbourStates()) {
+            this.getLevel().setBlock(this, this, true, true);
             return Level.BLOCK_UPDATE_NORMAL;
         }
         return super.onUpdate(type);
@@ -541,6 +853,9 @@ public class BlockDataDriven extends Block implements CustomBlock {
 
     @Override
     public boolean isSolid(BlockFace side) {
+        if (spec.behavior().support() == SupportShape.STAIR) {
+            return isStairSideFull(side);
+        }
         if (stateData.collisionBoxes() == null) {
             return super.isSolid(side);
         }
@@ -553,6 +868,149 @@ public class BlockDataDriven extends Block implements CustomBlock {
             case DOWN -> bounds[1] <= 0.001f;
             default -> true;
         };
+    }
+
+    /**
+     * A stair is full on the half its {@code minecraft:vertical_half} names and on the side it faces.
+     */
+    private boolean isStairSideFull(BlockFace side) {
+        boolean top = "top".equals(getPropertyValue("minecraft:vertical_half"));
+        if (side == BlockFace.DOWN || side == BlockFace.UP) {
+            return (side == BlockFace.UP) == top;
+        }
+        Object facing = getPropertyValue("minecraft:cardinal_direction");
+        if (facing == null) {
+            facing = getPropertyValue("minecraft:facing_direction");
+        }
+        return side.getName().equalsIgnoreCase(String.valueOf(facing));
+    }
+
+    /**
+     * @return the support shape the block declares, or null when it supports attachments as a full cube
+     */
+    public @Nullable SupportShape getSupportShape() {
+        return spec.behavior().support();
+    }
+
+    /**
+     * @return how the block affects a chest directly below it
+     */
+    public @NotNull ChestObstruction getChestObstruction() {
+        return spec.behavior().chestObstruction();
+    }
+
+    /**
+     * Checks the block's {@code minecraft:connection_rule} for a neighbour that connects to blocks around it.
+     *
+     * @param neighbour the block connecting, next to this one
+     * @param fence     whether the neighbour is a fence
+     * @return false when the rule forbids the connection; true when it allows it or the block has no rule,
+     * in which case the neighbour's own rules decide
+     */
+    public boolean acceptsConnectionFrom(@NotNull Block neighbour, boolean fence) {
+        ConnectionRule rule = spec.behavior().connectionRule();
+        if (rule == null) {
+            return true;
+        }
+        if (rule.accepts() == ConnectionSource.NONE || (rule.accepts() == ConnectionSource.ONLY_FENCES && !fence)) {
+            return false;
+        }
+        for (BlockFace face : rule.directions()) {
+            if (neighbour.getFloorX() == getFloorX() + face.getXOffset()
+                    && neighbour.getFloorY() == getFloorY() + face.getYOffset()
+                    && neighbour.getFloorZ() == getFloorZ() + face.getZOffset()) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * {@inheritDoc}
+     * <p>
+     * Only blocks declaring {@code minecraft:flower_pottable} go in a flower pot.
+     */
+    @Override
+    public boolean isPotBlockState() {
+        return spec.behavior().flowerPottable();
+    }
+
+    @Override
+    public boolean isNormalBlock() {
+        Boolean conductor = spec.behavior().redstoneConductor();
+        return conductor != null ? conductor : super.isNormalBlock();
+    }
+
+    @Override
+    public boolean isPowerSource() {
+        return stateData.redstoneProducer() != null || super.isPowerSource();
+    }
+
+    /**
+     * {@inheritDoc}
+     * <p>
+     * The block's {@code minecraft:redstone_producer} powers the neighbours on its connected faces.
+     */
+    @Override
+    public int getWeakPower(BlockFace side) {
+        RedstoneProducer producer = stateData.redstoneProducer();
+        if (producer == null) {
+            return 0;
+        }
+        return producer.connectedFaces().contains(ownFace(producer, side.getOpposite())) ? producer.power() : 0;
+    }
+
+    /**
+     * {@inheritDoc}
+     * <p>
+     * The block's {@code minecraft:redstone_producer} strongly powers the neighbour on its strongly powered face.
+     */
+    @Override
+    public int getStrongPower(BlockFace side) {
+        RedstoneProducer producer = stateData.redstoneProducer();
+        if (producer == null || producer.stronglyPoweredFace() == null) {
+            return 0;
+        }
+        return producer.stronglyPoweredFace() == ownFace(producer, side.getOpposite()) ? producer.power() : 0;
+    }
+
+    private static final BlockFace[] HORIZONTAL_COUNTER_CLOCKWISE = {BlockFace.NORTH, BlockFace.WEST, BlockFace.SOUTH, BlockFace.EAST};
+
+    /**
+     * Turns a face in the world into the block's own face, undoing the state's transformation when the
+     * producer's faces turn with it.
+     */
+    private BlockFace ownFace(RedstoneProducer producer, BlockFace worldFace) {
+        if (!producer.transformRelative() || stateData.quarterTurnsY() == 0 || worldFace.getAxis() == BlockFace.Axis.Y) {
+            return worldFace;
+        }
+        int index = switch (worldFace) {
+            case WEST -> 1;
+            case SOUTH -> 2;
+            case EAST -> 3;
+            default -> 0;
+        };
+        return HORIZONTAL_COUNTER_CLOCKWISE[Math.floorMod(index - stateData.quarterTurnsY(), 4)];
+    }
+
+    /**
+     * {@inheritDoc}
+     * <p>
+     * An {@code item_specific_speeds} entry matching the item replaces the block's destroy time.
+     */
+    @Override
+    public double calculateBreakTimeNotInAir(@NotNull Item item, @Nullable Player player) {
+        double seconds = super.calculateBreakTimeNotInAir(item, player);
+        double hardness = getHardness();
+        if (hardness <= 0) {
+            return seconds;
+        }
+        for (ItemSpeed speed : spec.behavior().itemSpeeds()) {
+            if (speed.item().test(item)) {
+                return seconds * speed.seconds() / hardness;
+            }
+        }
+        return seconds;
     }
 
     private AxisAlignedBB offset(float[] box) {

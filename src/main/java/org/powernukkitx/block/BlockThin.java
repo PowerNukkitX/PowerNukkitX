@@ -1,5 +1,6 @@
 package org.powernukkitx.block;
 
+import org.powernukkitx.block.customblock.BlockDataDriven;
 import org.powernukkitx.block.definition.BlockDefinition;
 
 import org.powernukkitx.Player;
@@ -73,6 +74,9 @@ public abstract class BlockThin extends BlockTransparent implements BlockConnect
 
     @Override
     public boolean canConnect(Block block) {
+        if (block instanceof BlockDataDriven dataDriven && !dataDriven.acceptsConnectionFrom(this, false)) {
+            return false;
+        }
         return switch (block.getId()) {
             case GLASS_PANE, BLACK_STAINED_GLASS_PANE, BLUE_STAINED_GLASS_PANE, BROWN_STAINED_GLASS_PANE,
                  CYAN_STAINED_GLASS_PANE, GRAY_STAINED_GLASS_PANE, GREEN_STAINED_GLASS_PANE,
