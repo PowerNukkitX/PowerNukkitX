@@ -2698,4 +2698,7 @@ public interface BlockID {
     String CINNABAR_STAIRS = "minecraft:cinnabar_stairs";
     String CINNABAR_BRICK_STAIRS = "minecraft:cinnabar_brick_stairs";
     String POLISHED_CINNABAR_STAIRS = "minecraft:polished_cinnabar_stairs";
+    String DISC_PRESS = "minecraft:disc_press";
+    String ICE_CRYSTAL = "minecraft:ice_crystal";
+    String ICICLE = "minecraft:icicle";
 }

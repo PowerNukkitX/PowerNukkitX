@@ -9,6 +9,8 @@ import org.cloudburstmc.protocol.bedrock.netty.codec.packet.BedrockPacketCodec;
 import org.cloudburstmc.protocol.bedrock.netty.codec.packet.BedrockPacketCodec_v3;
 import org.cloudburstmc.protocol.bedrock.netty.initializer.BedrockChannelInitializer;
 import org.cloudburstmc.protocol.bedrock.netty.initializer.BedrockServerInitializer;
+import org.jetbrains.annotations.Nullable;
+import org.powernukkitx.network.NetworkConstants;
 
 /**
  * Builds the Bedrock pipeline on top of a NetherNet data channel.
@@ -29,10 +31,20 @@ public abstract class NetherNetServerInitializer extends BedrockServerInitialize
 
     private final int codecVersion;
     private final boolean packetTrace;
+    private final @Nullable GameOutcomeReporter outcomes;
 
     protected NetherNetServerInitializer(int codecVersion, boolean packetTrace) {
+        this(codecVersion, packetTrace, null);
+    }
+
+    /**
+     * @param outcomes reports game outcomes to the NXS provider, or null when no provider admits
+     *                 players through this initializer
+     */
+    protected NetherNetServerInitializer(int codecVersion, boolean packetTrace, @Nullable GameOutcomeReporter outcomes) {
         this.codecVersion = codecVersion;
         this.packetTrace = packetTrace;
+        this.outcomes = outcomes;
     }
 
     @Override
@@ -49,6 +61,14 @@ public abstract class NetherNetServerInitializer extends BedrockServerInitialize
     @Override
     protected void initPacketCodec(Channel channel) {
         channel.pipeline().addLast(BedrockPacketCodec.NAME, new BedrockPacketCodec_v3(this.packetTrace));
+    }
+
+    @Override
+    protected void postInitChannel(Channel channel) {
+        if (this.outcomes != null) {
+            channel.pipeline().addBefore(BedrockPeer.NAME, GameOutcomeReporter.HANDLER_NAME,
+                this.outcomes.observer(protocol -> protocol == NetworkConstants.CODEC.getProtocolVersion()));
+        }
     }
 
     @Override

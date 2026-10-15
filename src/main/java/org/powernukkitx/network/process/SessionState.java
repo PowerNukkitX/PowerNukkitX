@@ -6,7 +6,6 @@ public enum SessionState {
     REQUESTED_NETWORK_SETTINGS,
     LOGIN,
     AUTHENTICATING,
-    ENCRYPTION,
     RESOURCE_PACK,
     BEFORE_SPAWN,
     CHUNKS

@@ -10,6 +10,7 @@ import org.cloudburstmc.protocol.bedrock.netty.codec.batch.BedrockBatchEncoder;
 import org.cloudburstmc.protocol.bedrock.netty.codec.compression.CompressionCodec;
 import org.cloudburstmc.protocol.bedrock.netty.codec.packet.BedrockPacketCodec;
 import org.junit.jupiter.api.Test;
+import org.powernukkitx.network.nethernet.GameOutcomeReporter;
 import org.powernukkitx.network.nethernet.NetherNetServerInitializer;
 
 import java.util.List;
@@ -21,8 +22,12 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 class NetherNetPipelineTest {
 
     private static Channel initialized() {
+        return initialized(null);
+    }
+
+    private static Channel initialized(GameOutcomeReporter outcomes) {
         EmbeddedChannel channel = new EmbeddedChannel();
-        channel.pipeline().addLast(new NetherNetServerInitializer(11, false) {
+        channel.pipeline().addLast(new NetherNetServerInitializer(11, false, outcomes) {
             @Override
             protected void initSession(BedrockServerSession session) {
             }
@@ -50,5 +55,14 @@ class NetherNetPipelineTest {
     void compressionSitsAheadOfBatching() {
         List<String> names = initialized().pipeline().names();
         assertEquals(true, names.indexOf(CompressionCodec.NAME) < names.indexOf(BedrockBatchDecoder.NAME));
+    }
+
+    @Test
+    void reportsOutcomesOnlyWhenTheProviderAsks() {
+        assertNull(initialized().pipeline().get(GameOutcomeReporter.HANDLER_NAME));
+
+        List<String> names = initialized(new GameOutcomeReporter((ticket, outcome, reason) -> true)).pipeline().names();
+        // It has to see decoded packets on the way in and the peer's writes on the way out
+        assertEquals(names.indexOf(BedrockPeer.NAME) - 1, names.indexOf(GameOutcomeReporter.HANDLER_NAME));
     }
 }

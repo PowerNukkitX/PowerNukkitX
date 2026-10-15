@@ -276,4 +276,8 @@ public interface EntityID {
   String CAMEL_HUSK = "minecraft:camel_husk";
 
   String SULFUR_CUBE = "minecraft:sulfur_cube";
+
+  String FROSTBITE = "minecraft:frostbite";
+
+  String ICE_BALL = "minecraft:ice_ball";
 }
