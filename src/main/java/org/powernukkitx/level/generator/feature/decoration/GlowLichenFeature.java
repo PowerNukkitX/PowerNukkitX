@@ -1,9 +1,9 @@
 package org.powernukkitx.level.generator.feature.decoration;
 
 import org.powernukkitx.block.Block;
+import org.powernukkitx.block.BlockAir;
 import org.powernukkitx.block.BlockGlowLichen;
 import org.powernukkitx.block.BlockID;
-import org.powernukkitx.block.BlockLiquid;
 import org.powernukkitx.block.BlockState;
 import org.powernukkitx.block.property.CommonBlockProperties;
 import org.powernukkitx.level.Level;
@@ -52,7 +52,7 @@ public class GlowLichenFeature extends CountGenerateFeature {
         int z = (chunk.getZ() << 4) + random.nextInt(14) + 1;
         int y = random.nextInt(minY, maxY);
 
-        if (y > getOceanFloorHeight(manager, x, z, minY, maxY) + MAX_SURFACE_RELATIVE_Y) {
+        if (y > getOceanFloorHeight(chunk, x, z, minY, maxY) + MAX_SURFACE_RELATIVE_Y) {
             return;
         }
 
@@ -87,26 +87,36 @@ public class GlowLichenFeature extends CountGenerateFeature {
         queueObject(chunk, manager);
     }
 
-    private int getOceanFloorHeight(BlockManager manager, int x, int z, int minY, int maxY) {
-        for (int y = maxY; y >= minY; y--) {
-            Block block = manager.getBlockIfCachedOrLoaded(x, y, z);
-            if (!block.isAir() && !(block instanceof BlockLiquid)) {
-                return y;
+    private int getOceanFloorHeight(IChunk chunk, int x, int z, int minY, int maxY) {
+        int localX = x & 0x0f;
+        int localZ = z & 0x0f;
+        return chunk.readBlockStates(reader -> {
+            for (int y = maxY; y >= minY; y--) {
+                BlockState state = reader.getBlockState(localX, y, localZ);
+                if (state != BlockAir.STATE && !isLiquid(state)) {
+                    return y;
+                }
             }
-        }
-        return minY;
+            return minY;
+        });
+    }
+
+    private static boolean isLiquid(BlockState state) {
+        String id = state.getIdentifier();
+        return id.equals(BlockID.WATER) || id.equals(BlockID.FLOWING_WATER)
+                || id.equals(BlockID.LAVA) || id.equals(BlockID.FLOWING_LAVA);
     }
 
     private BlockFace placeAt(BlockManager manager, int x, int y, int z, RandomSourceProvider random, BlockFace preferredFace) {
-        Block block = manager.getBlockIfCachedOrLoaded(x, y, z);
-        if (!block.isAir() && !block.getId().equals(BlockID.GLOW_LICHEN)) {
+        BlockState current = manager.getBlockStateIfCachedOrLoaded(x, y, z);
+        String currentId = current.getIdentifier();
+        if (current != BlockAir.STATE && !currentId.equals(BlockID.GLOW_LICHEN)) {
             return null;
         }
 
-        int currentBits = 0;
-        if (block instanceof BlockGlowLichen) {
-            currentBits = block.getPropertyValue(CommonBlockProperties.MULTI_FACE_DIRECTION_BITS);
-        }
+        int currentBits = currentId.equals(BlockID.GLOW_LICHEN)
+                ? current.getPropertyValue(CommonBlockProperties.MULTI_FACE_DIRECTION_BITS)
+                : 0;
 
         BlockFace[] faces = BlockFace.values();
         int startIndex = preferredFace == null ? random.nextInt(faces.length - 1) : preferredFace.getIndex();

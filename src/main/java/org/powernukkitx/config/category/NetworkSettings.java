@@ -33,10 +33,15 @@ public class NetworkSettings extends OkaeriConfig {
     @Comment("pnx.settings.network.transport")
     String transport = "raknet";
 
+    @Comment("pnx.settings.network.upstreambandwidth")
+    @CustomKey("upstream-bandwidth")
+    int upstreamBandwidth = 1000;
     @Comment("pnx.settings.network.queryplugins")
     boolean queryPlugins = true;
     @Comment("pnx.settings.network.compressionlevel")
     int compressionLevel = 4;
+    @Comment("pnx.settings.network.compressionthreshold")
+    int compressionThreshold = 1;
     @Comment("pnx.settings.network.zlibprovider")
     int zlibProvider = 3;
     @Comment("pnx.settings.network.snappy")
@@ -51,6 +56,14 @@ public class NetworkSettings extends OkaeriConfig {
     boolean networkEncryption = true;
     @Comment("pnx.settings.network.logintime")
     boolean checkLoginTime = false;
+    @Comment("pnx.settings.network.maxpendinglogins")
+    int maxPendingLogins = 0;
+    @Comment("pnx.settings.network.maxpendingloginsperaddress")
+    int maxPendingLoginsPerAddress = 4;
+    @Comment("pnx.settings.network.maxqueuedlogins")
+    int maxQueuedLogins = 0;
+    @Comment("pnx.settings.network.loginthreads")
+    int loginThreads = 0;
 
     @Comment("pnx.settings.network.raknet")
     @CustomKey("raknet")

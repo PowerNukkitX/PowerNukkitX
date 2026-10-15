@@ -1,6 +1,8 @@
 package org.powernukkitx.inventory.request;
 
 import org.powernukkitx.Player;
+import org.powernukkitx.inventory.Inventory;
+import org.cloudburstmc.protocol.bedrock.data.inventory.ContainerEnumName;
 import org.cloudburstmc.protocol.bedrock.data.inventory.itemstack.request.action.ItemStackRequestAction;
 import org.cloudburstmc.protocol.bedrock.data.inventory.itemstack.request.action.ItemStackRequestActionType;
 
@@ -18,5 +20,18 @@ public interface ItemStackRequestActionProcessor<T extends ItemStackRequestActio
         // This usually happens when an ItemStackRequest contains multiple actions that share the same source/destination container.
         // After the ID is checked in the first action, the subsequent actions don't need to check it again.
         return clientSNID > 0 && expectedSNID != clientSNID;
+    }
+
+    /**
+     * The slot type as the resolved inventory reports it. The container name the client sends is not
+     * usable for this: around forty of them map to whatever window happens to be open.
+     */
+    @Nullable
+    default ContainerEnumName resolveSlotType(Inventory inventory, int slot) {
+        try {
+            return inventory.getContainerEnumName(slot);
+        } catch (IllegalStateException e) {
+            return null;
+        }
     }
 }

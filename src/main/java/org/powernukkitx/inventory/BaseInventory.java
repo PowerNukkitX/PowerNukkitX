@@ -77,7 +77,10 @@ public abstract class BaseInventory implements Inventory {
     @Override
     public Item getItem(int index) {
         synchronized (this.slots) {
-            return this.slots.containsKey(index) ? this.slots.get(index).clone() : Item.AIR;
+            // One probe, not two. The clone stays: callers are allowed to mutate what they get back,
+            // and getUnclonedItem() is there for the ones that do not need to.
+            Item item = this.slots.get(index);
+            return item != null ? item.clone() : Item.AIR;
         }
     }
 
@@ -134,6 +137,16 @@ public abstract class BaseInventory implements Inventory {
     public void setItemInternal(int index, Item item) {
         synchronized (this.slots) {
             this.slots.put(index, item);
+        }
+    }
+
+    /**
+     * Returns the raw stored item without invoking inventory access behavior.
+     */
+    @ApiStatus.Internal
+    public Item getItemInternal(int index) {
+        synchronized (this.slots) {
+            return this.slots.getOrDefault(index, Item.AIR);
         }
     }
 
@@ -683,8 +696,6 @@ public abstract class BaseInventory implements Inventory {
     }
 
     public boolean isValidSlot(int index) {
-        synchronized (this.slots) {
-            return index >= 0 && index < this.slots.size();
-        }
+        return index >= 0 && index < this.size;
     }
 }

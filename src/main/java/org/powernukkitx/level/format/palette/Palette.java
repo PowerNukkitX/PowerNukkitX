@@ -30,16 +30,36 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.TreeMap;
+import java.util.function.Predicate;
 import java.util.function.Supplier;
 
 @Slf4j
 public class Palette<V> {
     protected static final byte COPY_LAST_FLAG_HEADER = (byte) (0x7F << 1) | 1;
     private static final int INDEX_MAP_THRESHOLD = 16;
+    protected static final int MAX_VARINT_BYTES = 5;
+
+    private static final int EMPTY_UNKNOWN = -1;
+    private static final int EMPTY_NO = 0;
+    private static final int EMPTY_YES = 1;
 
     protected final List<V> palette;
     protected Object2IntOpenHashMap<V> paletteIndex;
     protected BitArray bitArray;
+    /**
+     * Cached result of {@link #isEmpty()}. The scan walks every word of the bit array and runs once
+     * per section per tick from the chunk ticker, so the answer is remembered until a write can
+     * change it.
+     */
+    private int emptyState = EMPTY_UNKNOWN;
+    private V lastPaletteValue;
+    private int lastPaletteIndex = -1;
+    /**
+     * Set while reading a palette holding an entry older than the current block state version. Any
+     * state added to a block since that entry was written was defaulted by the updater, which is
+     * wrong for the states a block derives from its surroundings.
+     */
+    private boolean legacyStates;
 
     public Palette(V first) {
         this(first, BitArrayVersion.V2);
@@ -49,15 +69,20 @@ public class Palette<V> {
         this.bitArray = version.createArray(ChunkSection.SIZE);
         this.palette = new ArrayList<>(16);
         this.addToPalette(first);
+        this.lastPaletteValue = first;
+        this.lastPaletteIndex = 0;
     }
 
     public Palette(V first, List<V> palette, BitArrayVersion version) {
         this.bitArray = version.createArray(ChunkSection.SIZE);
         this.palette = palette;
         this.addToPalette(first);
+        this.lastPaletteValue = first;
+        this.lastPaletteIndex = 0;
     }
 
     protected void addToPalette(V value) {
+        this.emptyState = EMPTY_UNKNOWN;
         if (this.paletteIndex != null) {
             if (!this.paletteIndex.containsKey(value)) {
                 this.paletteIndex.put(value, this.palette.size());
@@ -72,8 +97,11 @@ public class Palette<V> {
     }
 
     protected void clearPalette() {
+        this.emptyState = EMPTY_UNKNOWN;
         this.palette.clear();
         this.paletteIndex = null;
+        this.lastPaletteValue = null;
+        this.lastPaletteIndex = -1;
     }
 
     private void buildPaletteIndex() {
@@ -96,14 +124,43 @@ public class Palette<V> {
         }
     }
 
+    public boolean hasLegacyStates() {
+        return this.legacyStates;
+    }
+
+    /**
+     * Runs the predicate over the palette entries rather than over every block, so a section holding
+     * none of the wanted blocks is skipped without reading any of them.
+     */
+    public boolean anyInPalette(Predicate<V> predicate) {
+        for (V value : this.palette) {
+            if (predicate.test(value)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     public V get(int index) {
         final int i = this.bitArray.get(index);
         return i >= palette.size() ? this.palette.getFirst() : this.palette.get(i);
     }
 
     public void set(int index, V value) {
-        final int paletteIndex = this.paletteIndexFor(value);
+        final int paletteIndex;
+        if (this.lastPaletteIndex >= 0 && this.lastPaletteValue == value) {
+            paletteIndex = this.lastPaletteIndex;
+        } else {
+            paletteIndex = this.paletteIndexFor(value);
+            this.lastPaletteValue = value;
+            this.lastPaletteIndex = paletteIndex;
+        }
+
+        if (this.bitArray.version() == BitArrayVersion.V0) return;
         this.bitArray.set(index, paletteIndex);
+        // Writing entry 0 can only ever leave the section empty or not depending on the other
+        // entries, so that case falls back to a rescan; anything else makes it definitely not empty.
+        this.emptyState = paletteIndex == 0 ? EMPTY_UNKNOWN : EMPTY_NO;
     }
 
     /**
@@ -113,7 +170,24 @@ public class Palette<V> {
      * @param serializer the serializer
      */
     public void writeToNetwork(ByteBuf byteBuf, RuntimeDataSerializer<V> serializer) {
+        if (this.bitArray.version() == BitArrayVersion.V0) {
+            byteBuf.writeByte(getPaletteHeader(BitArrayVersion.V0, true));
+            VarInts.writeInt(byteBuf, serializer.serialize(this.palette.getFirst()));
+            return;
+        }
         writeWords(byteBuf, serializer);
+    }
+
+    /**
+     * Writes the palette to the network, copying the previous palette when identical.
+     *
+     * @param byteBuf byte buffer
+     * @param serializer value serializer
+     * @param last previous palette
+     */
+    public void writeToNetwork(ByteBuf byteBuf, RuntimeDataSerializer<V> serializer, Palette<V> last) {
+        if (writeLast(byteBuf, last)) return;
+        writeToNetwork(byteBuf, serializer);
     }
 
     public void readFromNetwork(ByteBuf byteBuf, RuntimeDataDeserializer<V> deserializer) {
@@ -132,14 +206,30 @@ public class Palette<V> {
     }
 
     protected boolean writeLast(ByteBuf byteBuf, Palette<V> last) {
-        if (last != null && last.palette.equals(this.palette)) {
+        if (last != null && last.equals(this)) {
             byteBuf.writeByte(COPY_LAST_FLAG_HEADER);
             return true;
         }
         return false;
     }
 
+    /**
+     * Grows {@code byteBuf} once to fit this palette instead of letting the per-value writes grow it.
+     * <p>
+     * A section palette is written as a few thousand individual {@code writeIntLE} calls. Every one
+     * that does not fit reallocates the buffer and copies everything written so far, making
+     * serialisation quadratic in its own size: writing 8192 ints measured 8.2 us against a default
+     * sized buffer and 2.2 us against a presized one.
+     *
+     * @param bytesPerEntry upper bound on the encoded size of one palette entry
+     */
+    protected void ensureWordCapacity(ByteBuf byteBuf, int bytesPerEntry) {
+        byteBuf.ensureWritable(1 + this.bitArray.words().length * Integer.BYTES
+                + MAX_VARINT_BYTES + this.palette.size() * bytesPerEntry);
+    }
+
     protected void writeWords(ByteBuf byteBuf, RuntimeDataSerializer<V> serializer) {
+        ensureWordCapacity(byteBuf, MAX_VARINT_BYTES);
         byteBuf.writeByte(getPaletteHeader(this.bitArray.version(), true));
         for (int word : this.bitArray.words()) byteBuf.writeIntLE(word);
         this.bitArray.writeSizeToNetwork(byteBuf, this.palette.size());
@@ -149,6 +239,7 @@ public class Palette<V> {
     }
 
     public void writeToStoragePersistent(ByteBuf byteBuf, PersistentDataSerializer<V> serializer) {
+        ensureWordCapacity(byteBuf, Integer.BYTES);
         byteBuf.writeByte(Palette.getPaletteHeader(this.bitArray.version(), false));
         for (int word : this.bitArray.words()) byteBuf.writeIntLE(word);
         byteBuf.writeIntLE(this.palette.size());
@@ -198,6 +289,7 @@ public class Palette<V> {
         if (writeLast(byteBuf, last)) return;
         if (writeEmpty(byteBuf, serializer)) return;
 
+        ensureWordCapacity(byteBuf, Integer.BYTES);
         byteBuf.writeByte(Palette.getPaletteHeader(this.bitArray.version(), true));
         for (int word : this.bitArray.words()) byteBuf.writeIntLE(word);
         byteBuf.writeIntLE(this.palette.size());
@@ -217,8 +309,6 @@ public class Palette<V> {
             this.bitArray = version.createArray(ChunkSection.SIZE, null);
             this.clearPalette();
             this.addToPalette(deserializer.deserialize(byteBuf.readIntLE()));
-
-            this.onResize(BitArrayVersion.V2);
             return;
         }
 
@@ -228,8 +318,25 @@ public class Palette<V> {
         for (int i = 0; i < paletteSize; i++) this.addToPalette(deserializer.deserialize(byteBuf.readIntLE()));
     }
 
+    /**
+     * Palette entries below {@link #INDEX_MAP_THRESHOLD} are searched linearly. Every value that
+     * reaches a palette comes from the registry as a canonical instance, so a reference compare
+     * settles nearly all of them without touching equals; the equals call is kept as a fallback for
+     * anything built outside the registry.
+     */
+    @SuppressWarnings("PMD.CompareObjectsWithEquals")
+    private int indexOf(V value) {
+        final List<V> entries = this.palette;
+        final int size = entries.size();
+        for (int i = 0; i < size; i++) {
+            final V entry = entries.get(i);
+            if (entry == value || value.equals(entry)) return i;
+        }
+        return -1;
+    }
+
     public int paletteIndexFor(V value) {
-        int index = this.paletteIndex != null ? this.paletteIndex.getInt(value) : this.palette.indexOf(value);
+        int index = this.paletteIndex != null ? this.paletteIndex.getInt(value) : indexOf(value);
         if (index != -1) return index;
 
         index = this.palette.size();
@@ -250,13 +357,20 @@ public class Palette<V> {
     }
 
     public boolean isEmpty() {
+        if (this.emptyState != EMPTY_UNKNOWN) {
+            return this.emptyState == EMPTY_YES;
+        }
+        boolean empty = false;
         if (this.palette.size() == 1) {
+            empty = true;
             for (int word : this.bitArray.words())
                 if (word != 0L) {
-                    return false;
+                    empty = false;
+                    break;
                 }
-            return true;
-        } else return false;
+        }
+        this.emptyState = empty ? EMPTY_YES : EMPTY_NO;
+        return empty;
     }
 
     @SuppressWarnings("unchecked")
@@ -266,6 +380,9 @@ public class Palette<V> {
              final NBTInputStream nbtInputStream = NbtUtils.createReaderLE(inputStream)) {
             NbtMap blockTag = (NbtMap) nbtInputStream.readTag();
             final int storedVersion = blockTag.getInt("version");
+            if (storedVersion != 0 && storedVersion < NetworkConstants.BLOCK_STATE_VERSION_NO_REVISION) {
+                this.legacyStates = true;
+            }
             final NbtMapBuilder builder = blockTag.toBuilder();
             builder.remove("version");
             blockTag = builder.build();
@@ -353,18 +470,49 @@ public class Palette<V> {
     }
 
     protected void onResize(BitArrayVersion version) {
-        final BitArray newBitArray = version.createArray(ChunkSection.SIZE);
-        for (int i = 0; i < ChunkSection.SIZE; i++)
-            newBitArray.set(i, this.bitArray.get(i));
+        final BitArray source = this.bitArray;
+        final BitArrayVersion sourceVersion = source.version();
+        if (sourceVersion == BitArrayVersion.V0) {
+            this.bitArray = version.createArray(ChunkSection.SIZE);
+            return;
+        }
 
-        this.bitArray = newBitArray;
+        final int[] sourceWords = source.words();
+        final int[] targetWords = new int[version.getWordsForSize(ChunkSection.SIZE)];
+        final int sourceEntriesPerWord = sourceVersion.entriesPerWord;
+        final int sourceBits = sourceVersion.bits;
+        final int sourceMask = sourceVersion.maxEntryValue;
+        final int targetEntriesPerWord = version.entriesPerWord;
+        final int targetBits = version.bits;
+
+        int sourceIndex = 0;
+        int targetWordIndex = 0;
+        int targetEntryIndex = 0;
+
+        for (int sourceWord : sourceWords) {
+            int entries = Math.min(sourceEntriesPerWord, ChunkSection.SIZE - sourceIndex);
+            for (int sourceEntryIndex = 0; sourceEntryIndex < entries; sourceEntryIndex++, sourceIndex++) {
+                int value = sourceWord >>> (sourceEntryIndex * sourceBits) & sourceMask;
+                targetWords[targetWordIndex] |= value << (targetEntryIndex * targetBits);
+
+                if (++targetEntryIndex == targetEntriesPerWord) {
+                    targetEntryIndex = 0;
+                    targetWordIndex++;
+                }
+            }
+        }
+
+        this.bitArray = version.createArray(ChunkSection.SIZE, targetWords);
     }
 
     public void copyTo(Palette<V> palette) {
+        palette.emptyState = this.emptyState;
         palette.bitArray = this.bitArray.copy();
         palette.palette.clear();
         palette.palette.addAll(this.palette);
         palette.rebuildPaletteIndex();
+        palette.lastPaletteValue = null;
+        palette.lastPaletteIndex = -1;
     }
 
     protected static boolean hasCopyLastFlag(short header) {

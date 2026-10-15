@@ -33,6 +33,7 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import lombok.extern.slf4j.Slf4j;
 import org.cloudburstmc.protocol.bedrock.data.TrimMaterial;
 import org.cloudburstmc.protocol.bedrock.data.TrimPattern;
+import org.cloudburstmc.protocol.bedrock.data.inventory.ContainerEnumName;
 import org.cloudburstmc.protocol.bedrock.data.inventory.EnchantmentInstance;
 import org.cloudburstmc.protocol.bedrock.data.inventory.ItemEnchantOption;
 import org.cloudburstmc.protocol.bedrock.data.inventory.itemstack.request.action.CraftRecipeAction;
@@ -42,6 +43,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 /**
  * Allay Project 2023/12/1
@@ -52,8 +54,14 @@ import java.util.Optional;
 public class CraftRecipeActionProcessor implements ItemStackRequestActionProcessor<CraftRecipeAction> {
     public static final String RECIPE_DATA_KEY = "recipe";
     public static final String ENCH_RECIPE_KEY = "ench_recipe";
+    /**
+     * @deprecated use {@link ItemStackRequestContext#isServerConsumed} with
+     * {@link ContainerEnumName#CRAFTING_INPUT_CONTAINER}. Still set for plugins that read it.
+     */
+    @Deprecated
     public static final String GRID_CONSUMED_KEY = "grid_consumed";
     static final String MULTI_RESULT_KEY = "multi_result";
+    static final UUID REPAIR_ITEM_RECIPE_ID = UUID.fromString("00000000-0000-0000-0000-000000000001");
 
     private Item computeMultiRecipeResult(Item[][] data) {
         ItemShield shield = null;
@@ -79,6 +87,38 @@ public class CraftRecipeActionProcessor implements ItemStackRequestActionProcess
             return result;
         }
         return null;
+    }
+
+    static Item computeRepairRecipeResult(Item[][] data) {
+        Item first = null;
+        Item second = null;
+        for (Item[] row : data) {
+            for (Item ingredient : row) {
+                if (ingredient == null || ingredient.isNull()) continue;
+                if (first == null) {
+                    first = ingredient;
+                } else if (second == null) {
+                    second = ingredient;
+                } else {
+                    return null;
+                }
+            }
+        }
+        if (first == null || second == null || first.getCount() != 1 || second.getCount() != 1
+                || !first.getId().equals(second.getId()) || !first.canTakeDamage()
+                || first.getMaxDurability() <= 0 || first.getMaxDurability() != second.getMaxDurability()) {
+            return null;
+        }
+
+        int maxDurability = first.getMaxDurability();
+        int remainingDurability = maxDurability - first.getDamage()
+                + maxDurability - second.getDamage()
+                + maxDurability * 5 / 100;
+        int resultingDamage = Math.max(maxDurability - remainingDurability + 1, 0);
+        Item result = first.clone().clearNamedTag();
+        result.setCount(1);
+        result.setDamage(resultingDamage);
+        return result;
     }
 
     public boolean checkTrade(CompoundTag recipeInput, Item input, int subtract) {
@@ -111,6 +151,7 @@ public class CraftRecipeActionProcessor implements ItemStackRequestActionProcess
                 return context.error();
             }
             final ItemEnchantOption enchantOptionData = enchantOptionWithEntry.getOption();
+            context.markServerConsumed(ContainerEnumName.ENCHANTING_INPUT_CONTAINER, ContainerEnumName.ENCHANTING_MATERIAL_CONTAINER);
             Item first = inventory.getItem(0);
             if (first.isNull()) {
                 log.error("Can't find enchant input!");
@@ -149,6 +190,7 @@ public class CraftRecipeActionProcessor implements ItemStackRequestActionProcess
                 log.error("Can't find trade recipe from netId {}", action.getRecipeNetId());
                 return context.error();
             }
+            context.markServerConsumed(ContainerEnumName.TRADE2_INGREDIENT1_CONTAINER, ContainerEnumName.TRADE2_INGREDIENT2_CONTAINER);
             if (action.getNumberOfRequestedCrafts() < 1) {
                 log.error("Invalid number of requested crafts {}", action.getNumberOfRequestedCrafts());
                 return context.error();
@@ -260,8 +302,15 @@ public class CraftRecipeActionProcessor implements ItemStackRequestActionProcess
         } else {
             Inventory craftInventory = (Inventory) craft;
             Item multiResult = null;
-            if (recipe instanceof MultiRecipe && recipe.getResults().isEmpty()) {
-                multiResult = computeMultiRecipeResult(data);
+            if (recipe instanceof MultiRecipe multiRecipe && recipe.getResults().isEmpty()) {
+                if (REPAIR_ITEM_RECIPE_ID.equals(multiRecipe.getId())) {
+                    multiResult = computeRepairRecipeResult(data);
+                    if (multiResult == null || multiResult.isNull()) {
+                        return context.error();
+                    }
+                } else {
+                    multiResult = computeMultiRecipeResult(data);
+                }
             }
             if (recipe instanceof ShapelessRecipe shapelessRecipe) {
                 if (!consumeShapelessRecipe(shapelessRecipe, craftInventory, numberOfRequestedCrafts)) {
@@ -276,6 +325,7 @@ public class CraftRecipeActionProcessor implements ItemStackRequestActionProcess
                     return context.error();
                 }
             }
+            context.markServerConsumed(ContainerEnumName.CRAFTING_INPUT_CONTAINER);
             context.put(GRID_CONSUMED_KEY, true);
             player.getRecipeBook().unlock(recipe);
             if (recipe instanceof MultiRecipe && recipe.getResults().isEmpty()) {
@@ -307,6 +357,7 @@ public class CraftRecipeActionProcessor implements ItemStackRequestActionProcess
     }
 
     public ActionResponse handleSmithingUpgrade(SmithingTransformRecipe recipe, Player player, ItemStackRequestContext context) {
+        context.markServerConsumed(ContainerEnumName.SMITHING_TABLE_INPUT_CONTAINER, ContainerEnumName.SMITHING_TABLE_MATERIAL_CONTAINER, ContainerEnumName.SMITHING_TABLE_TEMPLATE_CONTAINER);
         Optional<Inventory> topWindow = player.getTopWindow();
         if (topWindow.isEmpty()) {
             log.error("the player's haven't open any inventory!");
@@ -350,6 +401,7 @@ public class CraftRecipeActionProcessor implements ItemStackRequestActionProcess
     }
 
     public ActionResponse handleSmithingTrim(Player player, ItemStackRequestContext context) {
+        context.markServerConsumed(ContainerEnumName.SMITHING_TABLE_INPUT_CONTAINER, ContainerEnumName.SMITHING_TABLE_MATERIAL_CONTAINER, ContainerEnumName.SMITHING_TABLE_TEMPLATE_CONTAINER);
         Optional<Inventory> topWindow = player.getTopWindow();
         if (topWindow.isEmpty()) {
             log.error("the player's haven't open any inventory!");

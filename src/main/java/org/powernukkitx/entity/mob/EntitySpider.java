@@ -5,8 +5,7 @@ import org.powernukkitx.block.Block;
 import org.powernukkitx.entity.Entity;
 import org.powernukkitx.entity.EntityArthropod;
 import org.powernukkitx.entity.EntityWalkable;
-import org.powernukkitx.entity.ai.behavior.Behavior;
-import org.powernukkitx.entity.ai.behaviorgroup.BehaviorGroup;
+import org.powernukkitx.entity.ai.EntityAI;
 import org.powernukkitx.entity.ai.behaviorgroup.IBehaviorGroup;
 import org.powernukkitx.entity.ai.controller.ClimbController;
 import org.powernukkitx.entity.ai.controller.LookController;
@@ -20,9 +19,10 @@ import org.powernukkitx.entity.ai.executor.PlaySoundExecutor;
 import org.powernukkitx.entity.ai.memory.CoreMemoryTypes;
 import org.powernukkitx.entity.ai.route.finder.impl.SimpleFlatAStarRouteFinder;
 import org.powernukkitx.entity.ai.route.posevaluator.WalkingPosEvaluator;
+import org.powernukkitx.entity.ai.sensor.ISensor;
 import org.powernukkitx.entity.ai.sensor.NearestEntitySensor;
-import org.powernukkitx.entity.ai.sensor.NearestPlayerSensor;
 import org.powernukkitx.entity.ai.sensor.NearestTargetEntitySensor;
+import org.powernukkitx.entity.components.AttackComponent;
 import org.powernukkitx.entity.components.HealthComponent;
 import org.powernukkitx.entity.components.MovementComponent;
 import org.powernukkitx.entity.components.RideableComponent;
@@ -34,6 +34,7 @@ import org.powernukkitx.level.Sound;
 import org.powernukkitx.level.format.IChunk;
 import org.powernukkitx.math.Vector3f;
 import org.powernukkitx.nbt.tag.CompoundTag;
+import org.powernukkitx.nbt.tag.ListTag;
 import org.powernukkitx.registry.Registries;
 import org.powernukkitx.tags.BiomeTags;
 import org.powernukkitx.utils.ItemHelper;
@@ -177,6 +178,11 @@ public class EntitySpider extends EntityMob implements EntityWalkable, EntityArt
     }
 
     @Override
+    public AttackComponent getComponentAttack() {
+        return AttackComponent.value(2f);
+    }
+
+    @Override
     public String getOriginalName() {
         return "Spider";
     }
@@ -293,11 +299,11 @@ public class EntitySpider extends EntityMob implements EntityWalkable, EntityArt
         switch (this.jockeyType) {
             case SKELETON_JOCKEY, STRAY_JOCKEY, BOGGED_JOCKEY, PARCHED_JOCKEY -> {
                 Item bow = Item.get(Item.BOW, 0, 1);
-                nbt.put("Mainhand", ItemHelper.write(bow));
+                nbt.putList("Mainhand", new ListTag<CompoundTag>().add(ItemHelper.write(bow)));
             }
             case WITHER_SKELETON_JOCKEY -> {
                 Item sword = Item.get(Item.STONE_SWORD, 0, 1);
-                nbt.put("Mainhand", ItemHelper.write(sword));
+                nbt.putList("Mainhand", new ListTag<CompoundTag>().add(ItemHelper.write(sword)));
             }
             default -> {}
         }
@@ -306,6 +312,7 @@ public class EntitySpider extends EntityMob implements EntityWalkable, EntityArt
         if (rider == null) return null;
         return rider;
     }
+
     private boolean isUnderground() {
         if (this.level == null) return false;
 
@@ -314,7 +321,7 @@ public class EntitySpider extends EntityMob implements EntityWalkable, EntityArt
 
         int highest = b.getLevel().getHeightMap(b.getFloorX(), b.getFloorZ());
         return highest > b.getFloorY() && b.canPassThrough()
-                && b.getLevel().getBlock(b.getFloorX(), highest, b.getFloorZ()).isSolid();
+                && b.getLevel().getBlock(b.getFloorX(), highest - 1, b.getFloorZ()).isSolid();
     }
 
     private @Nullable Set<String> getSpawnBiomeTags() {
@@ -412,20 +419,22 @@ public class EntitySpider extends EntityMob implements EntityWalkable, EntityArt
 
     @Override
     public IBehaviorGroup requireBehaviorGroup() {
-        return BehaviorGroup.builder(this)
-                .behaviors(
-                        new Behavior(new PlaySoundExecutor(Sound.MOB_SPIDER_SAY), new RandomSoundEvaluator(), 6, 1),
-                        new Behavior(new FleeFromTargetExecutor(CoreMemoryTypes.NEAREST_SHARED_ENTITY, 0.3f, true, 9), new EntityCheckEvaluator(CoreMemoryTypes.NEAREST_SHARED_ENTITY), 5, 1),
-                        new Behavior(new MeleeAttackExecutor(CoreMemoryTypes.ATTACK_TARGET, 0.3f, 40, true, 30), new EntityCheckEvaluator(CoreMemoryTypes.ATTACK_TARGET), 4, 1),
-                        new Behavior(new MeleeAttackExecutor(CoreMemoryTypes.NEAREST_SUITABLE_ATTACK_TARGET, 0.3f, 40, true, 30), all(
-                            new EntityCheckEvaluator(CoreMemoryTypes.NEAREST_SUITABLE_ATTACK_TARGET),
-                            entity -> getLevel().getFullLight(this) <= 11
-                            ), 3, 1),
-                        new Behavior(new FlatRandomRoamExecutor(0.3f, 12, 100, false, -1, true, 10), none(), 1, 1)
-                )
+        return EntityAI.of(this)
+                .behavior(new PlaySoundExecutor(Sound.MOB_SPIDER_SAY))
+                        .when(new RandomSoundEvaluator())
+                .behavior(new FleeFromTargetExecutor(CoreMemoryTypes.NEAREST_SHARED_ENTITY, 0.3f, true, 9))
+                        .when(new EntityCheckEvaluator(CoreMemoryTypes.NEAREST_SHARED_ENTITY))
+                .behavior(new MeleeAttackExecutor(CoreMemoryTypes.ATTACK_TARGET, 0.3f, 40, true, 30))
+                        .when(new EntityCheckEvaluator(CoreMemoryTypes.ATTACK_TARGET))
+                .behavior(new MeleeAttackExecutor(CoreMemoryTypes.NEAREST_SUITABLE_ATTACK_TARGET, 0.3f, 40, true, 30))
+                        .when(all(
+                        new EntityCheckEvaluator(CoreMemoryTypes.NEAREST_SUITABLE_ATTACK_TARGET),
+                        entity -> getLevel().getFullLight(this) <= 11
+                        ))
+                .behavior(new FlatRandomRoamExecutor(0.3f, 12, 100, false, -1, true, 10))
                 .sensors(
                         new NearestTargetEntitySensor<>(0, 16, 20, List.of(CoreMemoryTypes.NEAREST_SUITABLE_ATTACK_TARGET), this::attackTarget),
-                        new NearestEntitySensor(EntityArmadillo.class, CoreMemoryTypes.NEAREST_SHARED_ENTITY, 42, 0)
+                        new NearestEntitySensor(EntityArmadillo.class, CoreMemoryTypes.NEAREST_SHARED_ENTITY, 42, 0, ISensor.DEFAULT_TARGETING_PERIOD)
                 )
                 .controllers(
                         new WalkController(),

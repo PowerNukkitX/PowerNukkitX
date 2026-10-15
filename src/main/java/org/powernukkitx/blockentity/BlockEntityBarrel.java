@@ -7,10 +7,14 @@ import org.powernukkitx.nbt.tag.CompoundTag;
 
 
 public class BlockEntityBarrel extends BlockEntitySpawnableContainer{
-
-
     public BlockEntityBarrel(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
+    }
+
+    @Override
+    public void saveNBT() {
+        super.saveNBT();
+        this.nbt.putByte("Findable", this.nbt.getByte("Findable"));
     }
 
     @Override

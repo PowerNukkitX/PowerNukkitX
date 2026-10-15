@@ -1,10 +1,16 @@
 package org.powernukkitx.block;
 
+import org.powernukkitx.block.definition.BlockDefinition;
+
 import org.powernukkitx.block.property.CommonBlockProperties;
 import org.jetbrains.annotations.NotNull;
 
 public class BlockWarpedPressurePlate extends BlockWoodenPressurePlate {
     public static final BlockProperties PROPERTIES = new BlockProperties(WARPED_PRESSURE_PLATE, CommonBlockProperties.REDSTONE_SIGNAL);
+    public static final BlockDefinition DEFINITION = BlockWoodenPressurePlate.DEFINITION.toBuilder()
+            .burnChance(-1)
+            .burnAbility(0)
+            .build();
 
     @Override
     @NotNull public BlockProperties getProperties() {
@@ -16,7 +22,7 @@ public class BlockWarpedPressurePlate extends BlockWoodenPressurePlate {
     }
 
     public BlockWarpedPressurePlate(BlockState blockstate) {
-        super(blockstate);
+        super(blockstate, DEFINITION);
     }
 
     @Override
@@ -24,13 +30,5 @@ public class BlockWarpedPressurePlate extends BlockWoodenPressurePlate {
         return "Warped Pressure Plate";
     }
 
-    @Override
-    public int getBurnChance() {
-        return -1;
+    
     }
-
-    @Override
-    public int getBurnAbility() {
-        return 0;
-    }
-}

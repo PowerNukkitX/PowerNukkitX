@@ -6,26 +6,22 @@ import org.powernukkitx.level.Position;
 import org.powernukkitx.level.format.IChunk;
 import org.powernukkitx.level.vibration.VibrationEvent;
 import org.powernukkitx.level.vibration.VibrationListener;
+import org.powernukkitx.level.vibration.VibrationType;
 import org.powernukkitx.nbt.tag.CompoundTag;
 
 public class BlockEntityCalibratedSculkSensor extends BlockEntity implements VibrationListener {
-
-    protected int lastActiveTime = getLevel().getTick();
-    protected VibrationEvent lastVibrationEvent;
-
-    protected int power = 0;
-
-    protected int comparatorPower = 0;
-
-    protected boolean waitForVibration = false;
-
-
     public BlockEntityCalibratedSculkSensor(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
 
+    protected int lastActiveTime = getLevel().getTick();
+    protected VibrationEvent lastVibrationEvent;
+    protected int power = 0;
+    protected int comparatorPower = 0;
+
     @Override
     protected void initBlockEntity() {
+        super.initBlockEntity();
         this.level.getVibrationManager().addListener(this);
     }
 
@@ -56,10 +52,11 @@ public class BlockEntityCalibratedSculkSensor extends BlockEntity implements Vib
 
     @Override
     public boolean onVibrationOccur(VibrationEvent event) {
-        if (this.isBlockEntityValid() && level.getServer().getSettings().gameplaySettings().enableRedstone() && !(this.level.getBlock(event.source()) instanceof BlockCalibratedSculkSensor)) {
-            boolean canBeActive = (getLevel().getTick() - lastActiveTime) > 40 && !waitForVibration;
-            if (canBeActive) waitForVibration = true;
-            return canBeActive;
+        if (this.isBlockEntityValid() && level.getServer().getSettings().gameplaySettings().enableRedstone() && event.type().isVibration() && !(this.level.getBlock(event.source()) instanceof BlockCalibratedSculkSensor)) {
+            var block = (BlockCalibratedSculkSensor) getBlock();
+            if (!block.isInactive()) return false;
+            int inputStrength = block.getInputStrength();
+            return inputStrength == 0 || event.type().frequency == inputStrength;
         } else {
             return false;
         }
@@ -70,14 +67,15 @@ public class BlockEntityCalibratedSculkSensor extends BlockEntity implements Vib
         if (this.level != null && this.isBlockEntityValid() && level.getServer().getSettings().gameplaySettings().enableRedstone()) {
             this.lastVibrationEvent = event;
             this.updateLastActiveTime();
-            waitForVibration = false;
 
             calPower();
 
             var block = (BlockCalibratedSculkSensor) this.getBlock();
             block.setPhase(1);
             block.updateAroundRedstone();
-            level.scheduleUpdate(block, 41);
+            level.scheduleUpdate(block, 10);
+            level.getVibrationManager().callVibrationEvent(new VibrationEvent(
+                    event.initiator(), getListenerVector(), VibrationType.SCULK_SENSOR_TENDRILS_CLICKING, event.sourceUniqueId(), event.projectileOwnerUniqueId()));
         }
     }
 
@@ -97,9 +95,22 @@ public class BlockEntityCalibratedSculkSensor extends BlockEntity implements Vib
         return comparatorPower;
     }
 
+    /**
+     * Clears both direct and comparator redstone power.
+     */
+    public void clearPower() {
+        power = 0;
+        comparatorPower = 0;
+    }
+
     @Override
     public double getListenRange() {
-        return 8;
+        return 16;
+    }
+
+    @Override
+    public boolean canReceiveOnlyIfAdjacentChunksAreTicking() {
+        return true;
     }
 
     protected void updateLastActiveTime() {
@@ -114,6 +125,6 @@ public class BlockEntityCalibratedSculkSensor extends BlockEntity implements Vib
             return;
         }
         comparatorPower = event.type().frequency;
-        power = Math.max(1, 15 - (int) Math.floor(event.source().distance(this.add(0.5, 0.5, 0.5)) * 1.875));
+        power = Math.max(1, 15 - (int) Math.floor(event.source().distance(getListenerVector()) / getListenRange() * 15));
     }
 }

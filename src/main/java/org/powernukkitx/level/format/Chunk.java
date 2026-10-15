@@ -1,6 +1,7 @@
 package org.powernukkitx.level.format;
 
 import org.powernukkitx.Player;
+import org.powernukkitx.level.format.palette.BlockPalette;
 import org.powernukkitx.Server;
 import org.powernukkitx.block.Block;
 import org.powernukkitx.block.BlockAir;
@@ -10,55 +11,117 @@ import org.powernukkitx.block.BlockState;
 import org.powernukkitx.blockentity.BlockEntity;
 import org.powernukkitx.entity.Entity;
 import org.powernukkitx.entity.EntityFlyable;
+import org.powernukkitx.entity.mob.EntityPillager;
 import org.powernukkitx.level.DimensionData;
 import org.powernukkitx.level.Level;
 import org.powernukkitx.level.biome.BiomeID;
 import org.powernukkitx.level.entity.spawners.SpawnRule;
+import org.powernukkitx.level.generator.ChunkGenerationState;
 import org.powernukkitx.level.generator.densityfunction.DensityCommon;
+import org.powernukkitx.level.lighting.ChunkLightingState;
+import org.powernukkitx.level.format.bitarray.BitArrayVersion;
+import org.powernukkitx.level.format.palette.Palette;
+import org.powernukkitx.level.structure.AabbVolumes;
+import org.powernukkitx.level.structure.spawn.SpawnCategory;
+import org.powernukkitx.level.structure.spawn.SpawnOverrideState;
+import org.powernukkitx.level.structure.spawn.StructureSpawnHandler;
+import org.powernukkitx.level.structure.spawn.StructureSpawnerData;
+import org.powernukkitx.level.structure.spawn.StructureSpawnerEntry;
+import org.powernukkitx.math.AxisAlignedBB;
 import org.powernukkitx.math.BlockVector3;
+import org.powernukkitx.math.NukkitMath;
 import org.powernukkitx.math.Vector3;
 import org.powernukkitx.nbt.tag.CompoundTag;
-import org.powernukkitx.nbt.tag.ListTag;
-import org.powernukkitx.nbt.tag.NumberTag;
-import org.powernukkitx.nbt.tag.Tag;
 import org.powernukkitx.registry.Registries;
 import org.powernukkitx.scheduler.BlockUpdateScheduler;
+import org.powernukkitx.scheduler.GenerationBlockUpdateQueue;
+import org.powernukkitx.scheduler.RandomBlockUpdateScheduler;
 import org.powernukkitx.utils.Utils;
 import org.powernukkitx.utils.collection.nb.Long2ObjectNonBlockingMap;
+import org.powernukkitx.network.process.cache.ClientBlobCacheManager;
 import com.google.common.base.Preconditions;
-import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
-import it.unimi.dsi.fastutil.ints.IntSet;
-import lombok.extern.slf4j.Slf4j;
-import org.jetbrains.annotations.ApiStatus;
 
+import io.netty.buffer.ByteBuf;
+import io.netty.buffer.ByteBufUtil;
+import io.netty.buffer.PooledByteBufAllocator;
+import org.jetbrains.annotations.ApiStatus;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
+import java.util.concurrent.atomic.AtomicReferenceArray;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.StampedLock;
 import java.util.function.BiPredicate;
 import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * @author Cool_Loong
  */
 @Slf4j
 public class Chunk implements IChunk {
+    private static final StructureSpawnHandler STRUCTURE_SPAWN_HANDLER = new StructureSpawnHandler(Registries.STRUCTURE_SPAWN_OVERRIDE);
+    private static final String ILLAGER_CAPTAIN_EVENT = "minecraft:spawn_as_illager_captain";
+
     private volatile int x;
     private volatile int z;
     private volatile long hash;
-    protected final AtomicReference<ChunkState> chunkState;
+    protected final AtomicReference<ChunkFinalizationState> finalizationState;
+    protected final AtomicReference<ChunkGenerationState> generationState;
+    protected final AtomicReference<ChunkLightingState> lightingState;
     protected final ChunkSection[] sections;
-    protected final short[] heightMap;//256 size Values start at 0 and are 0-384 for the Overworld range
+    protected final Palette<Integer>[] biomeSections;
+    protected final short[] heightMap; // 256 size Values start at 0 and are 0-384 for the Overworld range
+    protected final short[] renderHeightMap;
+    protected final short[] rainHeightMap;
     protected final AtomicLong changes;
+    /**
+     * Set by every edit the network payload carries outside block data, cleared when a payload is
+     * built. Block edits are covered by per-section versions instead, see {@link NetworkPayload}.
+     */
+    private final AtomicBoolean networkPayloadStale = new AtomicBoolean(true);
+    private final AtomicReference<NetworkPayload> networkPayload = new AtomicReference<>();
+    private volatile boolean holdsNetworkPayloads;
+    private volatile long networkPayloadLastUse;
+    private static final AtomicLong NETWORK_PAYLOAD_BYTES = new AtomicLong();
+    private static volatile long networkPayloadBudget = Runtime.getRuntime().maxMemory() / 10;
+    private static final long NETWORK_PAYLOAD_IDLE_NANOS = TimeUnit.SECONDS.toNanos(60);
+    private final AtomicReferenceArray<SectionNetworkPayload> sectionNetworkPayloads;
+    /** Fits a section of up to 16 bits per block without regrowing the scratch buffer. */
+    private static final int SECTION_PAYLOAD_INITIAL_CAPACITY = 8192;
 
     protected final Long2ObjectNonBlockingMap<Entity> entities;
+    /**
+     * The same entities bucketed by 16-block Y section, so height-bounded queries do not have to
+     * walk the whole column. Fixed length - one bucket per section of this dimension - so the array
+     * itself is never reallocated, and buckets are created on first use because most chunks never
+     * hold an entity in most of their sections.
+     */
+    protected final AtomicReferenceArray<Long2ObjectNonBlockingMap<Entity>> entitySections;
+    /**
+     * Tallest entity currently indexed here. A query starts this far below its own range because
+     * entities are bucketed by their feet, so a tall entity standing lower still has to be visited.
+     * It only ever grows, which costs a few extra empty buckets but never misses an entity.
+     */
+    private volatile double maxIndexedEntityHeight;
+    private final Object maxIndexedEntityHeightLock = new Object();
+    /**
+     * How many entities are currently placed in {@link #entitySections}. If this ever drifts from
+     * {@link #entityCount} the index is incomplete, and queries fall back to the full entity map
+     * rather than returning a short answer.
+     */
+    protected final AtomicInteger indexedEntityCount = new AtomicInteger();
     /**
      * Live entity count. The non-blocking map computes size()/isEmpty() by summing a
      * striped counter, which is too slow for the per-chunk-per-tick emptiness checks
@@ -67,99 +130,127 @@ public class Chunk implements IChunk {
     protected final AtomicInteger entityCount = new AtomicInteger();
     protected final Long2ObjectNonBlockingMap<BlockEntity> tiles;//block entity id -> block entity
     protected final Long2ObjectNonBlockingMap<BlockEntity> tileList;//block entity position hash index -> block entity
+    private static final int SNOW_RANDOM_INITIAL = 42184323;
+    private static final int SNOW_RANDOM_ADDEND = 1013904223;
+
     protected final BlockUpdateScheduler blockUpdateScheduler;
+    protected final GenerationBlockUpdateQueue generationBlockUpdateQueue;
+    protected final RandomBlockUpdateScheduler randomBlockUpdateScheduler;
+    private final AtomicInteger snowRandomValue = new AtomicInteger(SNOW_RANDOM_INITIAL);
     //delay load block entity and entity
     protected CompoundTag extraData;
+    protected AabbVolumes aabbVolumes;
+    protected BiomeState biomeState;
+    protected LevelChunkMetaData levelChunkMetaData;
     private volatile DensityCommon.ChunkCache densityChunkCache;
     protected final StampedLock blockLock;
     protected final StampedLock heightAndBiomeLock;
     protected final StampedLock lightLock;
     protected final LevelProvider provider;
     protected volatile boolean isInit;
+    private volatile boolean available;
+    private volatile boolean discarded;
+    private volatile boolean storageResolved = true;
+    private volatile boolean statesUpgraded;
     protected boolean isInitializing;
     protected List<CompoundTag> blockEntityNBT;
     protected List<CompoundTag> entityNBT;
 
-    private static final IntSet BORDER_BLOCK_STATE_HASHES = new IntOpenHashSet();
-    private static volatile boolean BORDER_BLOCK_STATE_HASHES_INITIALIZED = false;
-    private long borderColumnsLow;
-    private long borderColumnsMidLow;
-    private long borderColumnsMidHigh;
-    private long borderColumnsHigh;
-    private boolean borderBlockColumnsInitialized;
+    private final boolean[] borderBlockMap;
 
-    private static void ensureBorderBlockStateHashes() {
-        if (BORDER_BLOCK_STATE_HASHES_INITIALIZED) {
-            return;
+    @SuppressWarnings("unchecked")
+    private static Palette<Integer>[] createBiomeSections(int sectionCount) {
+        Palette<Integer>[] biomeSections = (Palette<Integer>[]) new Palette<?>[sectionCount];
+
+        for (int i = 0; i < sectionCount; i++) {
+            biomeSections[i] = new Palette<>(BiomeID.PLAINS, BitArrayVersion.V0);
         }
 
-        synchronized (BORDER_BLOCK_STATE_HASHES) {
-            if (BORDER_BLOCK_STATE_HASHES_INITIALIZED) {
-                return;
-            }
-
-            for (BlockState state : Registries.BLOCKSTATE.getAllState()) {
-                if (BlockID.BORDER_BLOCK.equals(state.getIdentifier())) {
-                    BORDER_BLOCK_STATE_HASHES.add(state.blockStateHash());
-                }
-            }
-
-            BORDER_BLOCK_STATE_HASHES_INITIALIZED = true;
-        }
+        return biomeSections;
     }
 
-    private Chunk(
-            final int chunkX,
-            final int chunkZ,
-            final LevelProvider levelProvider
-    ) {
-        this.chunkState = new AtomicReference<>(ChunkState.NEW);
+    private Chunk(final int chunkX, final int chunkZ, final LevelProvider levelProvider) {
+        this.finalizationState = new AtomicReference<>(ChunkFinalizationState.NEEDS_INSTATICKING);
+        this.generationState = new AtomicReference<>(ChunkGenerationState.NEEDS_GENERATION);
+        this.lightingState = new AtomicReference<>(ChunkLightingState.NEEDS_LIGHTING);
+
         this.x = chunkX;
         setZ(chunkZ);
         this.provider = levelProvider;
         this.sections = new ChunkSection[levelProvider.getDimensionData().getChunkSectionCount()];
+        this.biomeSections = createBiomeSections(levelProvider.getDimensionData().getChunkSectionCount());
         this.heightMap = new short[256];
+        this.renderHeightMap = new short[256];
+        this.rainHeightMap = ChunkRainHeightMap.create();
         this.entities = new Long2ObjectNonBlockingMap<>();
+        this.entitySections = newEntitySections(levelProvider);
         this.tiles = new Long2ObjectNonBlockingMap<>();
         this.tileList = new Long2ObjectNonBlockingMap<>();
-        this.blockUpdateScheduler = new BlockUpdateScheduler(this, levelProvider.getLevel().getCurrentTick());
+        this.blockUpdateScheduler = new BlockUpdateScheduler(this, levelProvider.getCurrentTick());
+        this.generationBlockUpdateQueue = new GenerationBlockUpdateQueue(this);
+        this.randomBlockUpdateScheduler = new RandomBlockUpdateScheduler(this, 0);
         this.entityNBT = new ArrayList<>();
         this.blockEntityNBT = new ArrayList<>();
         this.extraData = new CompoundTag();
+        this.aabbVolumes = AabbVolumes.empty();
+        this.biomeState = new BiomeState();
+        this.levelChunkMetaData = LevelChunkMetaData.uninitialized();
+        this.borderBlockMap = new boolean[256];
         this.changes = new AtomicLong();
         this.blockLock = new StampedLock();
         this.heightAndBiomeLock = new StampedLock();
         this.lightLock = new StampedLock();
+        this.sectionNetworkPayloads = new AtomicReferenceArray<>(this.sections.length);
     }
 
     private Chunk(
-            final ChunkState state,
+            final ChunkFinalizationState finalizationState,
             final int chunkX,
             final int chunkZ,
             final LevelProvider levelProvider,
             final ChunkSection[] sections,
+            final Palette<Integer>[] biomeSections,
             final short[] heightMap,
             final List<CompoundTag> entityNBT,
             final List<CompoundTag> blockEntityNBT,
-            final CompoundTag extraData
+            final CompoundTag extraData,
+            final AabbVolumes aabbVolumes,
+            final BiomeState biomeState,
+            final LevelChunkMetaData levelChunkMetaData,
+            final boolean[] borderBlockMap
     ) {
-        this.chunkState = new AtomicReference<>(state);
+        this.finalizationState = new AtomicReference<>(finalizationState);
+        this.generationState = new AtomicReference<>(ChunkGenerationState.NEEDS_GENERATION);
+        this.lightingState = new AtomicReference<>(ChunkLightingState.NEEDS_LIGHTING);
         this.x = chunkX;
         setZ(chunkZ);
         this.provider = levelProvider;
         this.sections = sections;
+        this.biomeSections = biomeSections;
         this.heightMap = heightMap;
+        this.renderHeightMap = new short[256];
+        this.rainHeightMap = ChunkRainHeightMap.create();
         this.entities = new Long2ObjectNonBlockingMap<>();
+        this.entitySections = newEntitySections(levelProvider);
         this.tiles = new Long2ObjectNonBlockingMap<>();
         this.tileList = new Long2ObjectNonBlockingMap<>();
-        this.blockUpdateScheduler = new BlockUpdateScheduler(this, levelProvider.getLevel().getCurrentTick());
+        this.blockUpdateScheduler = new BlockUpdateScheduler(this, levelProvider.getCurrentTick());
+        this.generationBlockUpdateQueue = new GenerationBlockUpdateQueue(this);
+        this.randomBlockUpdateScheduler = new RandomBlockUpdateScheduler(this, 0);
         this.entityNBT = entityNBT;
         this.blockEntityNBT = blockEntityNBT;
         this.extraData = extraData;
+        this.aabbVolumes = aabbVolumes;
+        this.biomeState = biomeState;
+        this.levelChunkMetaData = levelChunkMetaData;
+        this.borderBlockMap = borderBlockMap;
         this.changes = new AtomicLong();
         this.blockLock = new StampedLock();
         this.heightAndBiomeLock = new StampedLock();
         this.lightLock = new StampedLock();
+        this.sectionNetworkPayloads = new AtomicReferenceArray<>(this.sections.length);
+
+        new UnsafeChunk(this).recalculateRenderHeightMap();
     }
 
     @Override
@@ -183,7 +274,11 @@ public class Chunk implements IChunk {
     }
 
     public void releaseDensityChunkCache() {
+        DensityCommon.ChunkCache cache = this.densityChunkCache;
         this.densityChunkCache = null;
+        if (cache != null) {
+            cache.clear();
+        }
     }
 
     @Override
@@ -205,15 +300,265 @@ public class Chunk implements IChunk {
         return this.sections[fY - getDimensionData().getMinSectionY()];
     }
 
+    /**
+     * Returns or creates the section required by the lighting pipeline.
+     *
+     * @param fY section Y
+     * @return chunk section, or {@code null} when outside the dimension range
+     */
+    @ApiStatus.Internal
+    public ChunkSection getOrCreateSectionForLighting(int fY) {
+        long blockStamp = blockLock.writeLock();
+        long biomeStamp = heightAndBiomeLock.readLock();
+
+        try {
+            int index = fY - getDimensionData().getMinSectionY();
+
+            if (index < 0 || index >= sections.length) return null;
+
+            ChunkSection section = sections[index];
+
+            if (section == null) {
+                section = new ChunkSection((byte) fY, biomeSections[index]);
+                sections[index] = section;
+            }
+
+            return section;
+        } finally {
+            heightAndBiomeLock.unlockRead(biomeStamp);
+            blockLock.unlockWrite(blockStamp);
+        }
+    }
+
+    @Override
+    @ApiStatus.Internal
+    public ChunkGenerationState getGenerationState() {
+        return generationState.get();
+    }
+
+    /**
+     * Atomically transitions the transient generation state.
+     *
+     * @param expected expected current state
+     * @param state replacement state
+     * @return whether the state was changed
+     */
+    @ApiStatus.Internal
+    public boolean compareAndSetGenerationState(ChunkGenerationState expected, ChunkGenerationState state) {
+        return generationState.compareAndSet(expected, state);
+    }
+
+    /**
+     * Returns whether persisted chunk data has been resolved.
+     *
+     * @return whether storage resolution has completed
+     */
+    @ApiStatus.Internal
+    public boolean isStorageResolved() {
+        return storageResolved;
+    }
+
+    /**
+     * Marks this chunk as awaiting persisted-data resolution.
+     */
+    @ApiStatus.Internal
+    public void markStoragePending() {
+        Preconditions.checkState(!this.isInit, "Cannot mark an initialized chunk as storage-pending");
+        this.storageResolved = false;
+    }
+
+    /**
+     * Marks persisted-data resolution as complete.
+     */
+    @ApiStatus.Internal
+    public void markStorageResolved() {
+        this.storageResolved = true;
+    }
+
+    /**
+     * Applies persisted data from a detached chunk while preserving this chunk's runtime identity and generation state.
+     *
+     * @param source loaded persisted chunk
+     */
+    @ApiStatus.Internal
+    public void applyPersistentData(Chunk source) {
+        Preconditions.checkNotNull(source);
+        Preconditions.checkArgument(source != this, "Source chunk must be detached");
+        Preconditions.checkArgument(source.provider == this.provider, "Chunk provider does not match");
+        Preconditions.checkArgument(source.x == this.x && source.z == this.z, "Chunk position does not match");
+        Preconditions.checkState(!this.isInit, "Cannot hydrate an initialized chunk");
+        Preconditions.checkState(!this.storageResolved, "Chunk storage is already resolved");
+
+        Preconditions.checkState(source.sections.length == this.sections.length, "Chunk section count does not match");
+        Preconditions.checkState(
+                source.biomeSections.length == this.biomeSections.length,
+                "Chunk biome section count does not match"
+        );
+
+        long blockStamp = blockLock.writeLock();
+        long heightAndBiomeStamp = heightAndBiomeLock.writeLock();
+        long lightStamp = lightLock.writeLock();
+
+        try {
+            System.arraycopy(source.sections, 0, this.sections, 0, this.sections.length);
+            System.arraycopy(source.biomeSections, 0, this.biomeSections, 0, this.biomeSections.length);
+            System.arraycopy(source.heightMap, 0, this.heightMap, 0, this.heightMap.length);
+            System.arraycopy(source.renderHeightMap, 0, this.renderHeightMap, 0, this.renderHeightMap.length);
+            System.arraycopy(source.rainHeightMap, 0, this.rainHeightMap, 0, this.rainHeightMap.length);
+            System.arraycopy(source.borderBlockMap, 0, this.borderBlockMap, 0, this.borderBlockMap.length);
+
+            this.finalizationState.set(source.finalizationState.get());
+            this.lightingState.set(source.lightingState.get());
+            this.entityNBT = source.entityNBT;
+            this.blockEntityNBT = source.blockEntityNBT;
+            this.extraData = source.extraData;
+            this.aabbVolumes = source.aabbVolumes;
+            this.biomeState = source.biomeState;
+            this.levelChunkMetaData = source.levelChunkMetaData;
+            this.densityChunkCache = null;
+
+            Level level = this.getLevel();
+            source.blockUpdateScheduler.forEachPending((x, y, z, blockState, targetTick) -> {
+                Block block = Block.get(blockState, level, x, y, z, 0);
+                this.blockUpdateScheduler.addLoaded(block, x, y, z, targetTick, 0, true);
+            });
+
+            this.randomBlockUpdateScheduler.setLastTick(source.randomBlockUpdateScheduler.getLastTick());
+            source.randomBlockUpdateScheduler.forEachPending((x, y, z, blockState, targetTick) -> {
+                Block block = Block.get(blockState, level, x, y, z, 0);
+                this.randomBlockUpdateScheduler.addLoaded(block, x, y, z, targetTick, 0, true);
+            });
+
+            this.changes.set(0);
+            this.storageResolved = true;
+        } finally {
+            lightLock.unlockWrite(lightStamp);
+            heightAndBiomeLock.unlockWrite(heightAndBiomeStamp);
+            blockLock.unlockWrite(blockStamp);
+        }
+    }
+
+    /**
+     * Returns whether transient generation has completed.
+     *
+     * @return whether generation is complete
+     */
+    @ApiStatus.Internal
+    public boolean isGenerationComplete() {
+        return generationState.get() == ChunkGenerationState.COMPLETE;
+    }
+
+    /**
+     * Returns whether this chunk is admitted to the active runtime lifecycle.
+     *
+     * @return whether the chunk is available
+     */
+    @ApiStatus.Internal
+    public boolean isAvailable() {
+        return available && !discarded;
+    }
+
+    /**
+     * Updates this chunk's runtime availability.
+     *
+     * @param available availability state
+     */
+    @ApiStatus.Internal
+    public synchronized void setAvailable(boolean available) {
+        if (available && discarded) return;
+        this.available = available;
+    }
+
+    /**
+     * Returns whether this chunk has entered unload processing.
+     *
+     * @return whether the chunk is being discarded
+     */
+    @ApiStatus.Internal
+    public boolean isDiscarded() {
+        return discarded;
+    }
+
+    /**
+     * Returns the transient lighting state.
+     *
+     * @return lighting state
+     */
+    @ApiStatus.Internal
+    public ChunkLightingState getLightingState() {
+        return lightingState.get();
+    }
+
+    /**
+     * Atomically transitions the transient lighting state.
+     *
+     * @param expected expected current state
+     * @param state replacement state
+     * @return whether the state was changed
+     */
+    @ApiStatus.Internal
+    public boolean compareAndSetLightingState(ChunkLightingState expected, ChunkLightingState state) {
+        return lightingState.compareAndSet(expected, state);
+    }
+
+    /**
+     * Returns whether the chunk is waiting for lighting.
+     *
+     * @return whether lighting is required
+     */
+    @ApiStatus.Internal
+    public boolean needsLighting() {
+        return lightingState.get() == ChunkLightingState.NEEDS_LIGHTING;
+    }
+
+    /**
+     * Returns whether the chunk is currently being lit.
+     *
+     * @return whether lighting is in progress
+     */
+    @ApiStatus.Internal
+    public boolean isLighting() {
+        return lightingState.get() == ChunkLightingState.LIGHTING;
+    }
+
+    /**
+     * Returns whether lighting computation has finished.
+     *
+     * @return whether lighting computation is finished
+     */
+    @ApiStatus.Internal
+    public boolean isLightingFinished() {
+        return lightingState.get() == ChunkLightingState.LIGHTING_FINISHED;
+    }
+
+    /**
+     * Returns whether lighting is fully loaded and ready for use.
+     *
+     * @return whether lighting is ready
+     */
+    @ApiStatus.Internal
+    public boolean isLightingReady() {
+        return lightingState.get() == ChunkLightingState.LOADED;
+    }
+
     @Override
     public void setSection(int fY, ChunkSection section) {
-        long stamp = blockLock.writeLock();
+        long blockStamp = blockLock.writeLock();
+        long biomeStamp = heightAndBiomeLock.writeLock();
         try {
-            this.sections[fY - getDimensionData().getMinSectionY()] = section;
-            invalidateBorderBlockColumns();
+            int index = fY - getDimensionData().getMinSectionY();
+            this.sections[index] = section;
+            dropSectionNetworkPayload(index);
+
+            if (section != null) {
+                this.biomeSections[index] = section.biomes();
+            }
+
+            ChunkRainHeightMap.invalidateAll(this);
             setChanged();
         } finally {
-            blockLock.unlockWrite(stamp);
+            heightAndBiomeLock.unlockWrite(biomeStamp);
+            blockLock.unlockWrite(blockStamp);
         }
     }
 
@@ -226,6 +571,41 @@ public class Chunk implements IChunk {
         } finally {
             blockLock.unlockRead(stamp);
         }
+    }
+
+    @Override
+    @ApiStatus.Internal
+    public Palette<Integer>[] getBiomeSections() {
+        long stamp = heightAndBiomeLock.readLock();
+        try {
+            return this.biomeSections;
+        } finally {
+            heightAndBiomeLock.unlockRead(stamp);
+        }
+    }
+
+    @Override
+    public boolean hasLegacyStates() {
+        if (this.statesUpgraded) {
+            return false;
+        }
+        long stamp = blockLock.readLock();
+        try {
+            for (ChunkSection section : this.sections) {
+                if (section != null && section.hasLegacyStates()) {
+                    return true;
+                }
+            }
+        } finally {
+            blockLock.unlockRead(stamp);
+        }
+        this.statesUpgraded = true;
+        return false;
+    }
+
+    @Override
+    public void markStatesUpgraded() {
+        this.statesUpgraded = true;
     }
 
     @Override
@@ -271,9 +651,7 @@ public class Chunk implements IChunk {
         try {
             for (; ; stamp = blockLock.readLock()) {
                 if (stamp == 0L) continue;
-                ChunkSection sectionInternal = getSectionInternal(y >> 4);
-                if (sectionInternal == null) return BlockAir.STATE;
-                BlockState result = sectionInternal.getBlockState(x, y & 0x0f, z, layer);
+                BlockState result = getBlockStateInternal(x, y, z, layer);
                 if (!blockLock.validate(stamp)) continue;
                 return result;
             }
@@ -282,35 +660,146 @@ public class Chunk implements IChunk {
         }
     }
 
+    private BlockState getBlockStateInternal(int x, int y, int z, int layer) {
+        ChunkSection sectionInternal = getSectionInternal(y >> 4);
+        return sectionInternal == null ? BlockAir.STATE : sectionInternal.getBlockState(x, y & 0x0f, z, layer);
+    }
+
+    @Override
+    @ApiStatus.Internal
+    public <T> T readBlockStates(Function<BlockStateReader, T> action) {
+        long stamp = blockLock.readLock();
+        try {
+            return action.apply(this::getBlockStateInternal);
+        } finally {
+            blockLock.unlockRead(stamp);
+        }
+    }
+
+    /**
+     * Returns packed combined block-light properties for a block position.
+     *
+     * @param x local X
+     * @param y world Y
+     * @param z local Z
+     * @return packed light properties
+     */
+    @ApiStatus.Internal
+    public int getCombinedLightProperties(int x, int y, int z) {
+        long stamp = blockLock.tryOptimisticRead();
+
+        try {
+            for (; ; stamp = blockLock.readLock()) {
+                if (stamp == 0L) continue;
+
+                ChunkSection sectionInternal = getSectionInternal(y >> 4);
+
+                if (sectionInternal == null) {
+                    if (!blockLock.validate(stamp)) continue;
+                    return 0;
+                }
+
+                int result = sectionInternal.getCombinedLightProperties(x, y & 0x0f, z);
+                if (!blockLock.validate(stamp)) continue;
+
+                return result;
+            }
+        } finally {
+            if (StampedLock.isReadLockStamp(stamp)) {
+                blockLock.unlockRead(stamp);
+            }
+        }
+    }
+
     @Override
     public BlockState getAndSetBlockState(int x, int y, int z, BlockState blockstate, int layer) {
-        long stamp = blockLock.writeLock();
-        try {
-            setChanged();
+        long blockStamp = blockLock.writeLock();
+        long heightAndBiomeStamp = 0L;
 
-            BlockState oldState = getOrCreateSection(y >> 4).getAndSetBlockState(x, y & 0x0f, z, blockstate, layer);
-            updateBorderBlockColumnCache(x, y, z, oldState, blockstate);
+        try {
+            setChangedForSave();
+            ChunkSection section = getOrCreateSection(y >> 4);
+            int localY = y & 0x0f;
+            BlockState oldState = section.getBlockState(x, localY, z, layer);
+            int oldHeightMask = 0;
+            int newHeightMask = 0;
+
+            /*
+             * Terrain generation owns its heightmap while the chunk is still NEEDS_INSTATICKING.
+             * Once GeneratedStage has run, population/runtime mutations keep the cached heightmaps incrementally synchronized.
+             */
+            if (oldState != blockstate && finalizationState.get() != ChunkFinalizationState.NEEDS_INSTATICKING) {
+                long heightMasks = ChunkHeightMap.cellMasksWithStateChange(section, x, localY, z, layer, oldState, blockstate);
+                oldHeightMask = (int) (heightMasks >>> 32);
+                newHeightMask = (int) heightMasks;
+
+                if (oldHeightMask != newHeightMask) {
+                    heightAndBiomeStamp = heightAndBiomeLock.writeLock();
+                }
+            }
+
+            section.setBlockState(x, localY, z, blockstate, layer, oldState);
+
+            if (oldState != blockstate) {
+                ChunkRainHeightMap.invalidateAfterBlockChange(this, x, y, z);
+            }
+
+            if (heightAndBiomeStamp != 0L) {
+                ChunkHeightMap.updateAfterMaskChange(this, x, y, z, oldHeightMask, newHeightMask);
+            }
+
+            updateBorderBlockMap(x, z, oldState, blockstate);
 
             return oldState;
         } finally {
-            blockLock.unlockWrite(stamp);
+            if (heightAndBiomeStamp != 0L) {
+                heightAndBiomeLock.unlockWrite(heightAndBiomeStamp);
+            }
+
+            blockLock.unlockWrite(blockStamp);
             removeInvalidTile(x, y, z);
         }
     }
 
     @Override
     public void setBlockState(int x, int y, int z, BlockState blockstate, int layer) {
-        long stamp = blockLock.writeLock();
+        long blockStamp = blockLock.writeLock();
+        long heightAndBiomeStamp = 0L;
+
         try {
-            setChanged();
-
+            setChangedForSave();
             ChunkSection section = getOrCreateSection(y >> 4);
-            BlockState oldState = section.getBlockState(x, y & 0x0f, z, layer);
+            int localY = y & 0x0f;
+            BlockState oldState = section.getBlockState(x, localY, z, layer);
+            int oldHeightMask = 0;
+            int newHeightMask = 0;
 
-            section.setBlockState(x, y & 0x0f, z, blockstate, layer);
-            updateBorderBlockColumnCache(x, y, z, oldState, blockstate);
+            if (oldState != blockstate && finalizationState.get() != ChunkFinalizationState.NEEDS_INSTATICKING) {
+                oldHeightMask = ChunkHeightMap.cellMask(section, x, localY, z);
+                newHeightMask = ChunkHeightMap.cellMaskWithState(section, x, localY, z, layer, blockstate);
+
+                if (oldHeightMask != newHeightMask) {
+                    heightAndBiomeStamp = heightAndBiomeLock.writeLock();
+                }
+            }
+
+            section.setBlockState(x, localY, z, blockstate, layer, oldState);
+
+            if (oldState != blockstate) {
+                ChunkRainHeightMap.invalidateAfterBlockChange(this, x, y, z);
+            }
+
+            if (heightAndBiomeStamp != 0L) {
+                ChunkHeightMap.updateAfterMaskChange(this, x, y, z, oldHeightMask, newHeightMask);
+            }
+
+            updateBorderBlockMap(x, z, oldState, blockstate);
         } finally {
-            blockLock.unlockWrite(stamp);
+            if (heightAndBiomeStamp != 0L) {
+                heightAndBiomeLock.unlockWrite(heightAndBiomeStamp);
+            }
+
+            blockLock.unlockWrite(blockStamp);
             removeInvalidTile(x, y, z);
         }
     }
@@ -318,25 +807,42 @@ public class Chunk implements IChunk {
     @Override
     public int getBlockSkyLight(int x, int y, int z) {
         long stamp = lightLock.tryOptimisticRead();
+
         try {
             for (; ; stamp = lightLock.readLock()) {
                 if (stamp == 0L) continue;
+
                 ChunkSection sectionInternal = getSectionInternal(y >> 4);
-                if (sectionInternal == null) return 0;
-                int result = sectionInternal.getBlockSkyLight(x, y & 0x0f, z);
+
+                if (sectionInternal != null) {
+                    int result = sectionInternal.getBlockSkyLight(x, y & 0x0f, z);
+                    if (!lightLock.validate(stamp)) continue;
+                    return result;
+                }
+
                 if (!lightLock.validate(stamp)) continue;
-                return result;
+
+                break;
             }
         } finally {
-            if (StampedLock.isReadLockStamp(stamp)) lightLock.unlockRead(stamp);
+            if (StampedLock.isReadLockStamp(stamp)) {
+                lightLock.unlockRead(stamp);
+            }
         }
+
+        if (!isOverWorld()) return 0;
+
+        int minHeight = getDimensionData().getMinHeight();
+        int height = getHeightMap(x, z);
+
+        return height == minHeight || y >= height ? 15 : 0;
     }
 
     @Override
     public void setBlockSkyLight(int x, int y, int z, int level) {
         long stamp = lightLock.writeLock();
         try {
-            setChanged();
+            setChangedForSave();
             getOrCreateSection(y >> 4).setBlockSkyLight(x, y & 0x0f, z, (byte) level);
         } finally {
             lightLock.unlockWrite(stamp);
@@ -364,10 +870,20 @@ public class Chunk implements IChunk {
     public void setBlockLight(int x, int y, int z, int level) {
         long stamp = lightLock.writeLock();
         try {
-            setChanged();
+            setChangedForSave();
             getOrCreateSection(y >> 4).setBlockLight(x, y & 0x0f, z, (byte) level);
         } finally {
             lightLock.unlockWrite(stamp);
+        }
+    }
+
+    @Override
+    public int getRainHeight(int x, int z) {
+        long stamp = blockLock.writeLock();
+        try {
+            return ChunkRainHeightMap.get(this, x, z);
+        } finally {
+            blockLock.unlockWrite(stamp);
         }
     }
 
@@ -399,41 +915,81 @@ public class Chunk implements IChunk {
     }
 
     @Override
-    public void recalculateHeightMap() {
-        batchProcess(UnsafeChunk::recalculateHeightMap);
-    }
-
-    @Override
-    public int recalculateHeightMapColumn(int x, int z) {
-        long stamp1 = blockLock.writeLock();
-        long stamp2 = heightAndBiomeLock.writeLock();
+    public int getRenderHeightMap(int x, int z) {
+        long stamp = heightAndBiomeLock.tryOptimisticRead();
         try {
-            UnsafeChunk unsafeChunk = new UnsafeChunk(this);
-            int max = unsafeChunk.getHighestBlockAt(x, z);
-            int y;
-            for (y = max; y >= getDimensionData().getMinHeight(); --y) {
-                BlockState blockState = unsafeChunk.getBlockState(x, y, z);
-                int packed = BlockLightProperties.packed(blockState);
-                if (BlockLightProperties.lightFilter(packed) > 1 || BlockLightProperties.diffusesSkyLight(packed)) {
-                    break;
-                }
+            for (; ; stamp = heightAndBiomeLock.readLock()) {
+                if (stamp == 0L) continue;
+                int result = this.renderHeightMap[(z << 4) | x] + getDimensionData().getMinHeight();
+                if (!heightAndBiomeLock.validate(stamp)) continue;
+                return result;
             }
-            unsafeChunk.setHeightMap(x, z, y);
-            return y;
         } finally {
-            heightAndBiomeLock.unlockWrite(stamp2);
-            blockLock.unlockWrite(stamp1);
+            if (StampedLock.isReadLockStamp(stamp)) heightAndBiomeLock.unlockRead(stamp);
         }
     }
 
     @Override
+    public void setRenderHeightMap(int x, int z, int value) {
+        long stamp = heightAndBiomeLock.writeLock();
+        try {
+            this.renderHeightMap[(z << 4) | x] = (short) (value - getDimensionData().getMinHeight());
+        } finally {
+            heightAndBiomeLock.unlockWrite(stamp);
+        }
+    }
+
+    @Override
+    public void recalculateHeightMap() {
+        long blockStamp = blockLock.readLock();
+        long heightAndBiomeStamp = heightAndBiomeLock.writeLock();
+
+        try {
+            ChunkHeightMap.recalculateAll(this);
+        } finally {
+            heightAndBiomeLock.unlockWrite(heightAndBiomeStamp);
+            blockLock.unlockRead(blockStamp);
+        }
+    }
+
+    @Override
+    public int recalculateHeightMapColumn(int x, int z) {
+        long blockStamp = blockLock.readLock();
+        long heightAndBiomeStamp = heightAndBiomeLock.writeLock();
+
+        try {
+            return ChunkHeightMap.recalculateColumn(this, x, z);
+        } finally {
+            heightAndBiomeLock.unlockWrite(heightAndBiomeStamp);
+            blockLock.unlockRead(blockStamp);
+        }
+    }
+
+    @Deprecated(since = "3.1.0", forRemoval = true)
+    @Override
     public void populateSkyLight() {
         batchProcess(unsafe -> {
+            final int maxHeight = getDimensionData().getMaxHeight();
+            final int minHeight = getDimensionData().getMinHeight();
+
+            // Fast path for a chunk with nothing in it, which is every chunk of a void or empty
+            // world. Sky light is a uniform 15 there, so the whole nibble array can be filled in one
+            // Arrays.fill per section instead of 16x16x(height) individual nibble writes - each of
+            // which otherwise goes through the freezable-array read/modify/write and reheats it.
+            if (isEmptyExceptAir(unsafe)) {
+                int minSectionY = getDimensionData().getMinSectionY();
+                for (int i = 0; i < getDimensionData().getChunkSectionCount(); i++) {
+                    ChunkSection section = unsafe.getOrCreateSection(minSectionY + i);
+                    if (section != null) section.skyLights().fill((byte) 15);
+                }
+                return;
+            }
+
             // basic light calculation; properties are read from the shared precomputed table (no per-cell Block alloc)
             for (int z = 0; z < 16; ++z) {
                 for (int x = 0; x < 16; ++x) { // iterating over all columns in chunk
                     int level = 15;
-                    for (int y = getDimensionData().getMaxHeight(); y >= getDimensionData().getMinHeight(); y--) {
+                    for (int y = maxHeight; y >= minHeight; y--) {
                         BlockState state = unsafe.getBlockState(x, y, z);
                         int packed = BlockLightProperties.packed(state);
                         if (!BlockLightProperties.isTransparent(packed)) {
@@ -449,6 +1005,20 @@ public class Chunk implements IChunk {
                 }
             }
         });
+    }
+
+    /**
+     * Whether every section of this chunk holds nothing but air on both layers, so sky light does
+     * not need to be traced column by column.
+     */
+    private static boolean isEmptyExceptAir(UnsafeChunk unsafe) {
+        for (ChunkSection section : unsafe.getSections()) {
+            if (section == null) continue;
+            for (BlockPalette layer : section.blockLayer()) {
+                if (!layer.isEmpty()) return false;
+            }
+        }
+        return true;
     }
 
     public void batchProcess(Consumer<UnsafeChunk> unsafeChunkConsumer) {
@@ -473,9 +1043,13 @@ public class Chunk implements IChunk {
         try {
             for (; ; stamp = heightAndBiomeLock.readLock()) {
                 if (stamp == 0L) continue;
-                ChunkSection sectionInternal = getSectionInternal(y >> 4);
-                if (sectionInternal == null) return BiomeID.PLAINS;
-                int result = sectionInternal.getBiomeId(x, y & 0x0f, z);
+
+                int sectionIndex = (y >> 4) - getDimensionData().getMinSectionY();
+                if (sectionIndex < 0 || sectionIndex >= biomeSections.length) {
+                    return BiomeID.PLAINS;
+                }
+
+                int result = biomeSections[sectionIndex].get(IChunk.index(x, y & 0x0f, z));
                 if (!heightAndBiomeLock.validate(stamp)) continue;
                 return result;
             }
@@ -488,8 +1062,12 @@ public class Chunk implements IChunk {
     public void setBiomeId(int x, int y, int z, int biomeId) {
         long stamp = heightAndBiomeLock.writeLock();
         try {
+            int sectionIndex = (y >> 4) - getDimensionData().getMinSectionY();
+            if (sectionIndex < 0 || sectionIndex >= biomeSections.length) return;
+
             setChanged();
-            getOrCreateSection(y >> 4).setBiomeId(x, y & 0x0f, z, biomeId);
+            biomeSections[sectionIndex].set(IChunk.index(x, y & 0x0f, z), ChunkSection.boxBiomeId(biomeId));
+            biomeState.updateBiome(biomeId);
         } finally {
             heightAndBiomeLock.unlockWrite(stamp);
         }
@@ -497,27 +1075,29 @@ public class Chunk implements IChunk {
 
     @Override
     public boolean isLightPopulated() {
-        return extraData.contains("LightPopulated") && extraData.getBoolean("LightPopulated");
+        return isLightingReady();
     }
 
+    @Deprecated(since = "3.1.0", forRemoval = true)
     @Override
     public void setLightPopulated(boolean value) {
-        extraData.putBoolean("LightPopulated", value);
+        lightingState.set(value ? ChunkLightingState.LOADED : ChunkLightingState.NEEDS_LIGHTING);
     }
 
+    @Deprecated(since = "3.1.0", forRemoval = true)
     @Override
     public void setLightPopulated() {
-        extraData.putBoolean("LightPopulated", true);
+        setLightPopulated(true);
     }
 
     @Override
-    public ChunkState getChunkState() {
-        return this.chunkState.get();
+    public ChunkFinalizationState getFinalizationState() {
+        return this.finalizationState.get();
     }
 
     @Override
-    public void setChunkState(ChunkState chunkState) {
-        this.chunkState.set(chunkState);
+    public void setFinalizationState(ChunkFinalizationState finalizationState) {
+        this.finalizationState.set(finalizationState);
     }
 
     @Override
@@ -525,8 +1105,9 @@ public class Chunk implements IChunk {
         if (this.entities.put(entity.runtimeId(), entity) == null) {
             this.entityCount.incrementAndGet();
         }
+        reindexEntitySection(entity);
         if (!(entity instanceof Player) && this.isInit) {
-            this.setChanged();
+            this.setChangedForSave();
         }
     }
 
@@ -537,10 +1118,142 @@ public class Chunk implements IChunk {
             synchronized (this.entities) {
                 if (this.entities.remove(entity.runtimeId()) != null) {
                     this.entityCount.decrementAndGet();
+                    unindexEntitySection(entity);
                 }
                 if (!(entity instanceof Player) && this.isInit) {
-                    this.setChanged();
+                    this.setChangedForSave();
                 }
+            }
+        }
+    }
+
+    private static AtomicReferenceArray<Long2ObjectNonBlockingMap<Entity>> newEntitySections(LevelProvider levelProvider) {
+        return new AtomicReferenceArray<>(levelProvider.getDimensionData().getChunkSectionCount());
+    }
+
+    private Long2ObjectNonBlockingMap<Entity> entitySection(int section) {
+        Long2ObjectNonBlockingMap<Entity> bucket = this.entitySections.get(section);
+        if (bucket != null) return bucket;
+        Long2ObjectNonBlockingMap<Entity> created = new Long2ObjectNonBlockingMap<>();
+        return this.entitySections.compareAndSet(section, null, created) ? created : this.entitySections.get(section);
+    }
+
+    /**
+     * Index of the 16-block tall section holding {@code worldY}, clamped to this chunk's range.
+     */
+    private int sectionIndexOf(double worldY) {
+        int section = (NukkitMath.floorDouble(worldY) >> 4) - getDimensionData().getMinSectionY();
+        if (section < 0) return 0;
+        int last = this.entitySections.length() - 1;
+        return section > last ? last : section;
+    }
+
+    private void indexEntitySection(Entity entity, int section) {
+        if (entitySection(section).put(entity.getId(), entity) == null) {
+            this.indexedEntityCount.incrementAndGet();
+        }
+        trackEntityHeight(entity);
+        entity.chunkSectionIndex = section;
+    }
+
+    private boolean removeFromEntitySection(int section, Entity entity) {
+        Long2ObjectNonBlockingMap<Entity> bucket = this.entitySections.get(section);
+        return bucket != null && bucket.remove(entity.getId()) != null;
+    }
+
+    private void unindexEntitySection(Entity entity) {
+        int previous = entity.chunkSectionIndex;
+        if (previous >= 0 && previous < this.entitySections.length()
+                && removeFromEntitySection(previous, entity)) {
+            this.indexedEntityCount.decrementAndGet();
+        }
+        entity.chunkSectionIndex = -1;
+    }
+
+    /**
+     * Places an entity in its bucket unconditionally, dropping any bucket of this chunk it was
+     * previously in. Used when an entity joins this chunk: it may already carry the section index
+     * it held in a different chunk, so {@link #updateEntitySection} - which short-circuits when the
+     * index already matches - would leave it unindexed here.
+     */
+    private void reindexEntitySection(Entity entity) {
+        int section = sectionIndexOf(entity.y);
+        int previous = entity.chunkSectionIndex;
+        if (previous >= 0 && previous < this.entitySections.length() && previous != section
+                && removeFromEntitySection(previous, entity)) {
+            this.indexedEntityCount.decrementAndGet();
+        }
+        indexEntitySection(entity, section);
+    }
+
+    /**
+     * Grows {@link #maxIndexedEntityHeight} to cover how far this entity reaches above its feet.
+     * Has to read the live bounding box rather than {@code getHeight()}: scale multiplies the box,
+     * so a scaled-up mob reaches well past its default height.
+     */
+    private void trackEntityHeight(Entity entity) {
+        AxisAlignedBB bb = entity.boundingBox;
+        if (bb == null) return;
+        double reach = bb.getMaxY() - entity.y;
+        if (reach > this.maxIndexedEntityHeight) {
+            // Two threads can get here at once, and a plain write could drop the larger value
+            synchronized (this.maxIndexedEntityHeightLock) {
+                if (reach > this.maxIndexedEntityHeight) {
+                    this.maxIndexedEntityHeight = reach;
+                }
+            }
+        }
+    }
+
+    /**
+     * Re-buckets an entity whose Y has moved it into another section. Called from the same place
+     * that re-buckets an entity between chunks, so the two indexes stay in step. Also called when
+     * the entity's box changes size, which is why the height is tracked before the early return.
+     */
+    public void updateEntitySection(Entity entity) {
+        int section = sectionIndexOf(entity.y);
+        int previous = entity.chunkSectionIndex;
+        if (section == previous) {
+            trackEntityHeight(entity);
+            return;
+        }
+        if (previous >= 0 && previous < this.entitySections.length()
+                && removeFromEntitySection(previous, entity)) {
+            this.indexedEntityCount.decrementAndGet();
+        }
+        indexEntitySection(entity, section);
+    }
+
+    /**
+     * Visits the entities whose section overlaps the given world Y range, plus the buckets below it
+     * that a tall entity could reach into.
+     * <p>
+     * The flat {@link #getEntities()} map stays authoritative; this is an accelerator for queries
+     * that only care about a few blocks of height, which would otherwise walk every entity in a
+     * 16 x 16 x 384 column. Near an item pile or a mob farm that is the difference between visiting
+     * every entity in the chunk and visiting one section's worth.
+     */
+    public void forEachEntityInYRange(double minY, double maxY, Consumer<Entity> action) {
+        if (this.indexedEntityCount.get() != this.entityCount.get()) {
+            // The index is not accounting for every entity, so trust the authoritative map. This
+            // degrades to the old full-column scan instead of silently missing an entity.
+            for (Entity entity : this.entities.values()) {
+                action.accept(entity);
+            }
+            return;
+        }
+        int from = sectionIndexOf(minY - this.maxIndexedEntityHeight);
+        int to = sectionIndexOf(maxY);
+        for (int i = from; i <= to; i++) {
+            Long2ObjectNonBlockingMap<Entity> section = this.entitySections.get(i);
+            if (section == null) continue;
+            // An empty section still hands out a values() view plus a snapshot iterator, and that
+            // iterator's constructor walks the key table looking for a first entry it will never
+            // find. Most sections a collision query touches are empty, so the size check pays for
+            // itself many times over.
+            if (section.isEmpty()) continue;
+            for (Entity entity : section.values()) {
+                action.accept(entity);
             }
         }
     }
@@ -584,7 +1297,13 @@ public class Chunk implements IChunk {
     @Override
     public void doMobSpawning() {
         Level level = getProvider().getLevel();
-        if (!isLoaded() || !isGenerated() || !isLightPopulated()) return;
+        if (!isLoaded() || getFinalizationState() != ChunkFinalizationState.DONE || !isLightPopulated()) return;
+
+        // Structure-spawn cadence: Random::nextInt(2000) <= 10.
+        if (Utils.rand(0, 1999) <= 10) {
+            tryStructureMobSpawning(level);
+        }
+
         if (Utils.rand(0, 50) != 0) return;
 
         var chunkEntities = level.getChunkEntities(getX(), getZ());
@@ -605,19 +1324,6 @@ public class Chunk implements IChunk {
 
             DimensionData data = getDimensionData();
             SpawnRule[] spawnRules = Registries.ENTITY.getSpawnRules().toArray(new SpawnRule[0]);
-            var players = level.getPlayers().values();
-
-            boolean nearPlayer = false;
-            for (Player player : players) {
-                double dx = player.x - absX;
-                double dz = player.z - absZ;
-                double distSq = dx * dx + dz * dz;
-                if (distSq < 54 * 54 && distSq > 24 * 24) {
-                    nearPlayer = true;
-                    break;
-                }
-            }
-            if (!nearPlayer) return;
 
             Vector3 lookVec = new Vector3();
             for (int y = data.getMaxHeight(); y > data.getMinHeight(); y--) {
@@ -633,6 +1339,8 @@ public class Chunk implements IChunk {
                 }
 
                 if (applicableRules != null && !applicableRules.isEmpty()) {
+                    if (!isMobSpawnPlayerDistanceAllowed(level, absX, y, absZ)) continue;
+
                     int totalWeight = 0;
                     for (SpawnRule rule : applicableRules) {
                         totalWeight += rule.getWeight();
@@ -680,9 +1388,189 @@ public class Chunk implements IChunk {
         }
     }
 
+    private void tryStructureMobSpawning(Level level) {
+        if (aabbVolumes.isEmpty()) return;
+
+        int localX = Utils.rand(0, 15);
+        int localZ = Utils.rand(0, 15);
+        int absX = (getX() << 4) + localX;
+        int absZ = (getZ() << 4) + localZ;
+
+        DimensionData dimension = getDimensionData();
+        boolean surfacePass = true;
+        for (int supportY = dimension.getMaxHeight() - 1; supportY >= dimension.getMinHeight(); supportY--) {
+            Block support = level.getBlock(absX, supportY, absZ, false);
+            if (!isStructureSpawnSupport(support)) continue;
+
+            int spawnY = supportY + 1;
+            Block spawnBlock = level.getBlock(absX, spawnY, absZ, false);
+            Block headBlock = level.getBlock(absX, spawnY + 1, absZ, false);
+            if (spawnBlock.isSolid() || headBlock.isSolid()) continue;
+
+            boolean underwater = isStructureSpawnWater(spawnBlock);
+            boolean surface = !underwater && surfacePass;
+            surfacePass = false;
+
+            BlockVector3 blockPosition = new BlockVector3(absX, spawnY, absZ);
+            List<StructureSpawnerEntry> entries = findStructureSpawnerEntries(blockPosition);
+            if (entries == null) continue;
+
+            // A present but empty structure override suppresses this structure spawn category.
+            if (entries.size() == 0) return;
+            if (!isMobSpawnPlayerDistanceAllowed(level, absX, spawnY, absZ)) continue;
+
+            StructureSpawnerData spawner = selectStructureSpawner(entries);
+            if (spawner == null || !isStructureSpawnLocationAllowed(spawner, surface, underwater)) continue;
+            if (!isStructureSpawnBrightnessAllowed(level, spawner, absX, spawnY, absZ)) continue;
+
+            double herdRoll = Utils.random.nextDouble();
+            int herd = spawner.minCount() + (int) Math.round(herdRoll * herdRoll * (spawner.maxCount() - spawner.minCount()));
+            Vector3 spawnPosition = new Vector3(absX + 0.5, spawnY, absZ + 0.5);
+
+            for (int i = 0; i < herd; i++) {
+                if (!isStructureSpawnPopulationAllowed(level, spawner, surface)) break;
+
+                CompoundTag nbt = Entity.getDefaultNBT(spawnPosition);
+                nbt.putBoolean("NaturalSpawn", true);
+                nbt.putBoolean("Surface", surface);
+                nbt.putString("SpawnReason", "NATURAL");
+
+                Entity entity = Registries.ENTITY.provideEntity(spawner.entityId(), this, nbt);
+                if (entity == null) continue;
+                if (!applyStructureSpawnInitializationEvent(entity, spawner.initializationEvent())) {
+                    entity.close();
+                    continue;
+                }
+
+                entity.despawnable = true;
+                entity.spawnToAll();
+            }
+        }
+    }
+
+    private static boolean applyStructureSpawnInitializationEvent(Entity entity, String initializationEvent) {
+        if (initializationEvent.isEmpty()) return true;
+
+        if (ILLAGER_CAPTAIN_EVENT.equals(initializationEvent) && entity instanceof EntityPillager pillager) {
+            pillager.setIllagerCaptain();
+            return true;
+        }
+
+        return false;
+    }
+
+    private List<StructureSpawnerEntry> findStructureSpawnerEntries(BlockVector3 position) {
+        return STRUCTURE_SPAWN_HANDLER.findSpawnerEntries(aabbVolumes, position, SpawnCategory.MONSTER);
+    }
+
+    private static boolean isMobSpawnPlayerDistanceAllowed(Level level, int x, int y, int z) {
+        int chunkTickRadius = level.getChunkTickRadius();
+        if (chunkTickRadius < 4) return false;
+
+        int maxDistance = chunkTickRadius == 4 ? 44 : 128;
+        double nearestDistanceSquared = Double.MAX_VALUE;
+
+        for (Player player : level.getPlayers().values()) {
+            if (!player.isOnline()) continue;
+
+            double dx = player.x - x;
+            double dy = player.y - y;
+            double dz = player.z - z;
+            nearestDistanceSquared = Math.min(nearestDistanceSquared, dx * dx + dy * dy + dz * dz);
+        }
+
+        return nearestDistanceSquared >= 24 * 24 && nearestDistanceSquared < maxDistance * maxDistance;
+    }
+
+    private static StructureSpawnerData selectStructureSpawner(List<StructureSpawnerEntry> entries) {
+        int totalWeight = 0;
+        for (StructureSpawnerEntry entry : entries) {
+            totalWeight += Math.max(0, entry.data().probabilityWeight());
+        }
+        if (totalWeight <= 0) return null;
+
+        int selectedWeight = Utils.rand(1, totalWeight);
+        for (StructureSpawnerEntry entry : entries) {
+            selectedWeight -= Math.max(0, entry.data().probabilityWeight());
+            if (selectedWeight <= 0) return entry.data();
+        }
+
+        return null;
+    }
+
+    private static boolean isStructureSpawnLocationAllowed(StructureSpawnerData spawner, boolean surface, boolean underwater) {
+        if (underwater) return spawner.underwater() == SpawnOverrideState.YES;
+        return surface ? spawner.surface() == SpawnOverrideState.YES : spawner.underground() == SpawnOverrideState.YES;
+    }
+
+    private static boolean isStructureSpawnBrightnessAllowed(Level level, StructureSpawnerData spawner, int x, int y, int z) {
+        StructureSpawnerData.Brightness brightness = spawner.brightness();
+        if (brightness == null) return true;
+
+        int light = brightness.raw() ? level.getBlockLightAt(x, y, z) : level.getFullLight(new Vector3(x, y, z));
+
+        return light >= brightness.min() && light <= brightness.max();
+    }
+
+    private boolean isStructureSpawnPopulationAllowed(Level level, StructureSpawnerData spawner, boolean surface) {
+        StructureSpawnerData.Population population = spawner.population();
+        if (population == null) return true;
+
+        int limit = surface ? population.surface() : population.underground();
+        if (limit <= 0) return false;
+
+        int count = 0;
+        for (int chunkX = getX() - 4; chunkX <= getX() + 4; chunkX++) {
+            for (int chunkZ = getZ() - 4; chunkZ <= getZ() + 4; chunkZ++) {
+                for (Entity entity : level.getChunkEntities(chunkX, chunkZ, false).values()) {
+                    if (entity.closed || !entity.isAlive() || !spawner.entityId().equals(entity.getIdentifier())) continue;
+
+                    CompoundTag nbt = entity.getNbt();
+                    if (!nbt.getBoolean("NaturalSpawn") || nbt.getBoolean("Surface") != surface) continue;
+                    if (entity instanceof EntityPillager pillager && pillager.isIllagerCaptain() != ILLAGER_CAPTAIN_EVENT.equals(spawner.initializationEvent())) {
+                        continue;
+                    }
+                    if (++count >= limit) return false;
+                }
+            }
+        }
+
+        return true;
+    }
+
+    private static boolean isStructureSpawnWater(Block block) {
+        String id = block.getId();
+        return BlockID.WATER.equals(id) || BlockID.FLOWING_WATER.equals(id);
+    }
+
+    private static boolean isStructureSpawnSupport(Block block) {
+        String id = block.getId();
+
+        if (BlockID.AIR.equals(id) || BlockID.WATER.equals(id) || BlockID.FLOWING_WATER.equals(id) || BlockID.LAVA.equals(id) || BlockID.FLOWING_LAVA.equals(id)) {
+            return false;
+        }
+
+        return block.isSolid();
+    }
+
     @Override
     public BlockUpdateScheduler getBlockUpdateScheduler() {
         return blockUpdateScheduler;
+    }
+
+    @Override
+    public GenerationBlockUpdateQueue getGenerationBlockUpdateQueue() {
+        return generationBlockUpdateQueue;
+    }
+
+    @Override
+    public RandomBlockUpdateScheduler getRandomBlockUpdateScheduler() {
+        return randomBlockUpdateScheduler;
+    }
+
+    @Override
+    public int nextSnowRandomValue() {
+        return snowRandomValue.updateAndGet(value -> value * 3 + SNOW_RANDOM_ADDEND);
     }
 
     @Override
@@ -736,6 +1624,13 @@ public class Chunk implements IChunk {
                 }
             }
         }
+
+        synchronized (this) {
+            this.available = false;
+            this.discarded = true;
+        }
+        releaseNetworkPayloads();
+
         for (Entity entity : new ArrayList<>(this.getEntities().values())) {
             if (entity instanceof Player) {
                 continue;
@@ -764,14 +1659,10 @@ public class Chunk implements IChunk {
                         this.setChanged();
                         continue;
                     }
-                    ListTag<? extends Tag> pos = nbt.getList("Pos");
-                    if ((((NumberTag<?>) pos.get(0)).getData().intValue() >> 4) != this.getX() || ((((NumberTag<?>) pos.get(2)).getData().intValue() >> 4) != this.getZ())) {
-                        changed = true;
-                        continue;
-                    }
+                    long actorUniqueId = nbt.contains("UniqueID") ? nbt.getLong("UniqueID") : 0;
                     try {
                         Entity entity = Entity.createEntity(nbt.getString("identifier"), this, nbt);
-                        if (entity != null) {
+                        if (entity != null || actorUniqueId != 0 && this.getLevel().getEntityByUniqueId(actorUniqueId) != null) {
                             changed = true;
                         }
                     } catch (Exception e) {
@@ -807,6 +1698,7 @@ public class Chunk implements IChunk {
             }
 
             this.isInit = true;
+            this.getProvider().onChunkInitialized(this);
         } finally {
             this.isInitializing = false;
         }
@@ -833,6 +1725,36 @@ public class Chunk implements IChunk {
     }
 
     @Override
+    public LevelChunkMetaData getLevelChunkMetaData() {
+        return this.levelChunkMetaData;
+    }
+
+    @Override
+    public void setLevelChunkMetaData(LevelChunkMetaData levelChunkMetaData) {
+        this.levelChunkMetaData = Preconditions.checkNotNull(levelChunkMetaData);
+    }
+
+    @Override
+    public AabbVolumes getAabbVolumes() {
+        return this.aabbVolumes;
+    }
+
+    @Override
+    public void setAabbVolumes(AabbVolumes aabbVolumes) {
+        this.aabbVolumes = Preconditions.checkNotNull(aabbVolumes);
+        if (this.isInit) {
+            this.setChangedForSave();
+        }
+    }
+
+    /**
+     * Returns the persisted Bedrock biome state.
+     */
+    public BiomeState getBiomeState() {
+        return biomeState;
+    }
+
+    @Override
     public boolean hasChanged() {
         return this.changes.get() != 0;
     }
@@ -840,7 +1762,263 @@ public class Chunk implements IChunk {
     @Override
     public void setChanged() {
         this.changes.incrementAndGet();
+        markNetworkPayloadStale();
     }
+
+    /**
+     * Marks the chunk for saving without touching the cached network payload, for edits the
+     * payload either does not carry (light, entities) or validates on its own (blocks, through
+     * {@link ChunkSection#blockChanges()}).
+     */
+    private void setChangedForSave() {
+        this.changes.incrementAndGet();
+    }
+
+    /**
+     * Must be called after the edit has landed. The release store pairs with the acquiring
+     * {@code getAndSet} in {@link #beginNetworkPayload()}, so an edit made without the chunk lock
+     * is either visible to the serializer or leaves the payload stale.
+     */
+    void markNetworkPayloadStale() {
+        this.networkPayloadStale.setRelease(true);
+    }
+
+    /**
+     * Serialized network bytes of one section, as written by {@link ChunkSection#writeToBuf}.
+     * Valid while {@link #section()} is still installed and its {@link ChunkSection#blockChanges()}
+     * still equals {@link #version()}.
+     */
+    @ApiStatus.Internal
+    public static final class SectionNetworkPayload {
+        private final ChunkSection section;
+        private final long version;
+        private final byte[] data;
+        private volatile ClientBlobCacheManager.Blob blob;
+
+        private SectionNetworkPayload(ChunkSection section, long version, byte[] data) {
+            this.section = section;
+            this.version = version;
+            this.data = data;
+        }
+
+        public ChunkSection section() {
+            return section;
+        }
+
+        public long version() {
+            return version;
+        }
+
+        /**
+         * @return the serialized section, which callers must not modify
+         */
+        public byte[] data() {
+            return data;
+        }
+
+        /**
+         * @return the client cache blob of {@link #data()}, hashed on first use.
+         */
+        public ClientBlobCacheManager.Blob blob() {
+            ClientBlobCacheManager.Blob result = this.blob;
+            if (result == null) {
+                result = ClientBlobCacheManager.rememberBlob(this.data);
+                this.blob = result;
+            }
+            return result;
+        }
+
+        boolean isValidFor(@Nullable ChunkSection installed) {
+            return installed == this.section && installed.blockChanges().get() == this.version;
+        }
+    }
+
+    /**
+     * Serialized bytes of a section of this chunk, reused until a block in it changes or the section
+     * is replaced. Safe to call from any thread, with or without the chunk lock: a copy taken while
+     * the section is being edited is never returned again, because the edit advances
+     * {@link ChunkSection#blockChanges()} past the version read here.
+     *
+     * @param section a section currently installed in this chunk
+     */
+    @ApiStatus.Internal
+    public @NotNull SectionNetworkPayload getSectionNetworkPayload(@NotNull ChunkSection section) {
+        final int index = section.y() - getDimensionData().getMinSectionY();
+        final long version = section.blockChanges().get();
+        final SectionNetworkPayload cached = this.sectionNetworkPayloads.get(index);
+        if (cached != null && cached.section == section && cached.version == version) {
+            this.networkPayloadLastUse = System.nanoTime();
+            return cached;
+        }
+        final ByteBuf buffer = PooledByteBufAllocator.DEFAULT.heapBuffer(SECTION_PAYLOAD_INITIAL_CAPACITY);
+        final SectionNetworkPayload created;
+        try {
+            section.writeToBuf(buffer);
+            created = new SectionNetworkPayload(section, version, ByteBufUtil.getBytes(buffer));
+        } finally {
+            buffer.release();
+        }
+        if (reserveNetworkPayloadBytes(created.data.length)) {
+            discardSectionNetworkPayload(this.sectionNetworkPayloads.getAndSet(index, created));
+            touchNetworkPayloads();
+        } else {
+            discardSectionNetworkPayload(this.sectionNetworkPayloads.getAndSet(index, null));
+        }
+        return created;
+    }
+
+    /**
+     * A serialized {@code LevelChunkPacket} payload, stored as its sections plus the bytes that
+     * follow them, so section bytes are shared with {@link #getSectionNetworkPayload} rather than
+     * held twice.
+     *
+     * @param sections      one entry per section slot, {@code null} where the slot was empty
+     * @param subChunkCount number of sub-chunks the payload writes, absent ones included
+     * @param tail          biomes, border blocks and block entity NBT, which must not be modified
+     */
+    @ApiStatus.Internal
+    public record NetworkPayload(SectionNetworkPayload[] sections, int subChunkCount, byte[] tail) {
+    }
+
+    /**
+     * @return the cached network payload if it still matches this chunk's content, otherwise
+     * {@code null}. Safe to call from any thread.
+     */
+    @ApiStatus.Internal
+    public @Nullable NetworkPayload getNetworkPayload() {
+        if (this.networkPayloadStale.get()) {
+            return null;
+        }
+        final NetworkPayload payload = this.networkPayload.get();
+        if (payload == null) {
+            return null;
+        }
+        final SectionNetworkPayload[] cachedSections = payload.sections();
+        for (int i = 0; i < cachedSections.length; i++) {
+            final SectionNetworkPayload cached = cachedSections[i];
+            final ChunkSection installed = this.sections[i];
+            if (cached == null ? installed != null : !cached.isValidFor(installed)) {
+                return null;
+            }
+        }
+        this.networkPayloadLastUse = System.nanoTime();
+        return payload;
+    }
+
+    /**
+     * Starts serializing a new network payload. Must be called inside {@link #batchProcess} before
+     * any content is read, followed by {@link #setNetworkPayload} in the same batch, so that
+     * payloads are stored in the order they were built.
+     */
+    @ApiStatus.Internal
+    public void beginNetworkPayload() {
+        discardNetworkPayload(this.networkPayload.getAndSet(null));
+        this.networkPayloadStale.getAndSet(false);
+    }
+
+    /**
+     * Caches the payload started by {@link #beginNetworkPayload()}. An edit made in between leaves
+     * it stale, so it is never returned.
+     */
+    @ApiStatus.Internal
+    public void setNetworkPayload(@NotNull NetworkPayload payload) {
+        final SectionNetworkPayload[] payloadSections = payload.sections();
+        for (int i = 0; i < payloadSections.length; i++) {
+            if (payloadSections[i] != null && this.sectionNetworkPayloads.get(i) != payloadSections[i]) {
+                return;
+            }
+        }
+        if (!reserveNetworkPayloadBytes(payload.tail().length)) {
+            return;
+        }
+        discardNetworkPayload(this.networkPayload.getAndSet(payload));
+        touchNetworkPayloads();
+    }
+
+    /**
+     * Drops this chunk's cached network payloads if none has been used for a minute. Called
+     * periodically from {@link org.powernukkitx.level.Level#doLevelGarbageCollection(boolean)}.
+     *
+     * @param now the current {@link System#nanoTime()}
+     */
+    @ApiStatus.Internal
+    public void expireNetworkPayloads(long now) {
+        if (this.holdsNetworkPayloads && now - this.networkPayloadLastUse >= NETWORK_PAYLOAD_IDLE_NANOS) {
+            releaseNetworkPayloads();
+        }
+    }
+
+    /**
+     * Drops every cached network payload of this chunk and returns its bytes to the shared budget.
+     * Safe to call from any thread.
+     */
+    @ApiStatus.Internal
+    public void releaseNetworkPayloads() {
+        this.holdsNetworkPayloads = false;
+        discardNetworkPayload(this.networkPayload.getAndSet(null));
+        for (int i = 0; i < this.sectionNetworkPayloads.length(); i++) {
+            final SectionNetworkPayload old = this.sectionNetworkPayloads.getAndSet(i, null);
+            if (old != null) {
+                releaseNetworkPayloadBytes(old.data.length);
+            }
+        }
+    }
+
+    /**
+     * @return bytes currently held by cached network payloads across all chunks, bounded by
+     * {@code chunk-settings.payloadCacheMemoryMb} and 10% of the maximum heap
+     */
+    @ApiStatus.Internal
+    public static long getCachedNetworkPayloadBytes() {
+        return NETWORK_PAYLOAD_BYTES.get();
+    }
+
+    void dropSectionNetworkPayload(int index) {
+        discardSectionNetworkPayload(this.sectionNetworkPayloads.getAndSet(index, null));
+    }
+
+    private void touchNetworkPayloads() {
+        this.networkPayloadLastUse = System.nanoTime();
+        this.holdsNetworkPayloads = true;
+    }
+
+    private void discardSectionNetworkPayload(@Nullable SectionNetworkPayload old) {
+        if (old != null) {
+            releaseNetworkPayloadBytes(old.data.length);
+            discardNetworkPayload(this.networkPayload.getAndSet(null));
+        }
+    }
+
+    private static void discardNetworkPayload(@Nullable NetworkPayload old) {
+        if (old != null) {
+            releaseNetworkPayloadBytes(old.tail().length);
+        }
+    }
+
+    private static boolean reserveNetworkPayloadBytes(long bytes) {
+        if (NETWORK_PAYLOAD_BYTES.addAndGet(bytes) <= networkPayloadBudget) {
+            return true;
+        }
+        releaseNetworkPayloadBytes(bytes);
+        return false;
+    }
+
+    private static void releaseNetworkPayloadBytes(long bytes) {
+        NETWORK_PAYLOAD_BYTES.addAndGet(-bytes);
+    }
+
+    /**
+     * Sets the shared budget for cached network payloads from
+     * {@code chunk-settings.payloadCacheMemoryMb}, capped at 10% of the maximum heap. Until this is
+     * called the budget is 10% of the maximum heap.
+     *
+     * @param megabytes the configured budget; {@code 0} or less disables caching
+     */
+    @ApiStatus.Internal
+    public static void setNetworkPayloadBudgetMb(int megabytes) {
+        networkPayloadBudget = Math.min(Runtime.getRuntime().maxMemory() / 10, Math.max(0, megabytes) * 1024L * 1024L);
+    }
+
 
     @Override
     public void setChanged(boolean changed) {
@@ -892,7 +2070,7 @@ public class Chunk implements IChunk {
         int minSectionY = this.getDimensionData().getMinSectionY();
         int offsetY = sectionY - minSectionY;
         if (this.sections[offsetY] == null) {
-            this.sections[offsetY] = new ChunkSection((byte) (offsetY + minSectionY));
+            this.sections[offsetY] = new ChunkSection((byte) (offsetY + minSectionY), this.biomeSections[offsetY]);
         }
         return sections[offsetY];
     }
@@ -901,19 +2079,11 @@ public class Chunk implements IChunk {
         BlockEntity entity = getTile(x, y, z);
         if (entity != null) {
             try {
-                if (!entity.closed && entity.isBlockEntityValid()) {
-                    return;
-                }
+                if (!entity.closed && entity.isBlockEntityValid()) return;
             } catch (Exception e) {
                 try {
                     log.warn("Block entity validation of {} at {}, {} {} {} failed, removing as invalid.",
-                            entity.getClass().getName(),
-                            getProvider().getLevel().getName(),
-                            entity.x,
-                            entity.y,
-                            entity.z,
-                            e
-                    );
+                            entity.getClass().getName(), getProvider().getLevel().getName(), entity.x, entity.y, entity.z, e);
                 } catch (Exception e2) {
                     e.addSuppressed(e2);
                     log.warn("Block entity validation failed", e);
@@ -945,99 +2115,42 @@ public class Chunk implements IChunk {
 
     @Override
     public String toString() {
-        return "Chunk{" +
-                "x=" + x +
-                ", z=" + z +
-                '}';
+        return "Chunk{" + "x=" + x + ", z=" + z + '}';
     }
 
     @Override
-    public boolean areBorderBlockColumnsInitialized() {
-        return this.borderBlockColumnsInitialized;
-    }
-
-    @Override
-    public void invalidateBorderBlockColumns() {
-        this.borderBlockColumnsInitialized = false;
-        this.borderColumnsLow = 0L;
-        this.borderColumnsMidLow = 0L;
-        this.borderColumnsMidHigh = 0L;
-        this.borderColumnsHigh = 0L;
-    }
-
-    @Override
-    public long getBorderColumnsLow() {
-        return this.borderColumnsLow;
-    }
-
-    @Override
-    public long getBorderColumnsMidLow() {
-        return this.borderColumnsMidLow;
-    }
-
-    @Override
-    public long getBorderColumnsMidHigh() {
-        return this.borderColumnsMidHigh;
-    }
-
-    @Override
-    public long getBorderColumnsHigh() {
-        return this.borderColumnsHigh;
-    }
-
-    private void setBorderBlockColumn(int localX, int localZ, boolean value) {
-        int entry = (localZ << 4) | localX;
-        int bitIndex = entry & 63;
-        long bit = 1L << bitIndex;
-        int maskIndex = entry >>> 6;
-
-        if (maskIndex == 0) {
-            this.borderColumnsLow = value ? this.borderColumnsLow | bit : this.borderColumnsLow & ~bit;
-        } else if (maskIndex == 1) {
-            this.borderColumnsMidLow = value ? this.borderColumnsMidLow | bit : this.borderColumnsMidLow & ~bit;
-        } else if (maskIndex == 2) {
-            this.borderColumnsMidHigh = value ? this.borderColumnsMidHigh | bit : this.borderColumnsMidHigh & ~bit;
-        } else {
-            this.borderColumnsHigh = value ? this.borderColumnsHigh | bit : this.borderColumnsHigh & ~bit;
-        }
-    }
-
-    @Override
-    public void rebuildBorderBlockColumns() {
-        this.borderColumnsLow = 0L;
-        this.borderColumnsMidLow = 0L;
-        this.borderColumnsMidHigh = 0L;
-        this.borderColumnsHigh = 0L;
-
-        for (int localX = 0; localX < 16; localX++) {
-            for (int localZ = 0; localZ < 16; localZ++) {
-                if (hasBorderBlockInColumnInternal(localX, localZ)) {
-                    setBorderBlockColumn(localX, localZ, true);
-                }
+    public boolean hasBorderBlock(int localX, int localZ) {
+        long stamp = blockLock.tryOptimisticRead();
+        try {
+            for (; ; stamp = blockLock.readLock()) {
+                if (stamp == 0L) continue;
+                boolean result = hasBorderBlockInternal(localX, localZ);
+                if (!blockLock.validate(stamp)) continue;
+                return result;
             }
+        } finally {
+            if (StampedLock.isReadLockStamp(stamp)) blockLock.unlockRead(stamp);
         }
-
-        this.borderBlockColumnsInitialized = true;
     }
 
-    private void updateBorderBlockColumnCache(int localX, int y, int localZ, BlockState oldState, BlockState newState) {
-        if (!this.borderBlockColumnsInitialized) {
+    boolean hasBorderBlockInternal(int localX, int localZ) {
+        return this.borderBlockMap[(localX << 4) | localZ];
+    }
+
+    void updateBorderBlockMap(int localX, int localZ, BlockState oldState, BlockState newState) {
+        if (oldState == newState) return;
+
+        int index = (localX << 4) | localZ;
+        if (isBorderBlock(newState)) {
+            this.borderBlockMap[index] = true;
+            markNetworkPayloadStale();
             return;
         }
 
-        boolean oldBorder = isBorderBlock(oldState);
-        boolean newBorder = isBorderBlock(newState);
+        if (!isBorderBlock(oldState)) return;
 
-        if (oldBorder == newBorder) {
-            return;
-        }
-
-        if (newBorder) {
-            setBorderBlockColumn(localX, localZ, true);
-            return;
-        }
-
-        setBorderBlockColumn(localX, localZ, hasBorderBlockInColumnInternal(localX, localZ));
+        this.borderBlockMap[index] = hasBorderBlockInColumnInternal(localX, localZ);
+        markNetworkPayloadStale();
     }
 
     private boolean hasBorderBlockInColumnInternal(int localX, int localZ) {
@@ -1048,7 +2161,6 @@ public class Chunk implements IChunk {
 
             for (int localY = 0; localY < 16; localY++) {
                 BlockState state = section.getBlockState(localX, localY, localZ);
-
                 if (isBorderBlock(state)) {
                     return true;
                 }
@@ -1059,22 +2171,24 @@ public class Chunk implements IChunk {
     }
 
     private static boolean isBorderBlock(BlockState state) {
-        if (state == null) return false;
-
-        ensureBorderBlockStateHashes();
-        return BORDER_BLOCK_STATE_HASHES.contains(state.blockStateHash());
+        return state != null && BlockID.BORDER_BLOCK.equals(state.getIdentifier());
     }
 
     public static class Builder implements IChunkBuilder {
-        ChunkState state;
+        ChunkFinalizationState finalizationState;
         int chunkZ;
         int chunkX;
         LevelProvider levelProvider;
         ChunkSection[] sections;
+        Palette<Integer>[] biomeSections;
         short[] heightMap;
         List<CompoundTag> entities;
         List<CompoundTag> blockEntities;
         CompoundTag extraData;
+        AabbVolumes aabbVolumes;
+        BiomeState biomeState;
+        LevelChunkMetaData levelChunkMetaData;
+        boolean[] borderBlockMap;
 
         private Builder() {
         }
@@ -1102,8 +2216,15 @@ public class Chunk implements IChunk {
         }
 
         @Override
+        public Builder finalizationState(ChunkFinalizationState finalizationState) {
+            this.finalizationState = finalizationState;
+            return this;
+        }
+
+        @Override
+        @Deprecated(since = "3.1.0", forRemoval = true)
         public Builder state(ChunkState state) {
-            this.state = state;
+            this.finalizationState = state.toFinalizationState();
             return this;
         }
 
@@ -1134,6 +2255,17 @@ public class Chunk implements IChunk {
             return sections;
         }
 
+        @Override
+        public Builder biomeSections(Palette<Integer>[] biomeSections) {
+            this.biomeSections = biomeSections;
+            return this;
+        }
+
+        @Override
+        public Palette<Integer>[] getBiomeSections() {
+            return biomeSections;
+        }
+
         public Builder heightMap(short[] heightMap) {
             this.heightMap = heightMap;
             return this;
@@ -1157,24 +2289,70 @@ public class Chunk implements IChunk {
             return this;
         }
 
+        @Override
+        public Builder levelChunkMetaData(LevelChunkMetaData levelChunkMetaData) {
+            this.levelChunkMetaData = Preconditions.checkNotNull(levelChunkMetaData);
+            return this;
+        }
+
+        @Override
+        public Builder aabbVolumes(AabbVolumes aabbVolumes) {
+            this.aabbVolumes = aabbVolumes;
+            return this;
+        }
+
+        @Override
+        public Builder biomeState(BiomeState biomeState) {
+            this.biomeState = Preconditions.checkNotNull(biomeState);
+            return this;
+        }
+
+        @Override
+        public Builder borderBlockMap(boolean[] borderBlockMap) {
+            Preconditions.checkNotNull(borderBlockMap);
+            Preconditions.checkArgument(borderBlockMap.length == 256, "Border Block map must contain 256 columns");
+            this.borderBlockMap = borderBlockMap.clone();
+            return this;
+        }
+
         public Chunk build() {
             Preconditions.checkNotNull(levelProvider);
-            if (state == null) state = ChunkState.NEW;
+            if (finalizationState == null) {
+                finalizationState = ChunkFinalizationState.NEEDS_INSTATICKING;
+            }
             if (sections == null) sections = new ChunkSection[levelProvider.getDimensionData().getChunkSectionCount()];
+
+            if (biomeSections == null) {
+                biomeSections = createBiomeSections(levelProvider.getDimensionData().getChunkSectionCount());
+
+                for (int i = 0; i < sections.length; i++) {
+                    if (sections[i] != null) biomeSections[i] = sections[i].biomes();
+                }
+            }
+
             if (heightMap == null) heightMap = new short[256];
             if (entities == null) entities = new ArrayList<>();
             if (blockEntities == null) blockEntities = new ArrayList<>();
             if (extraData == null) extraData = new CompoundTag();
+            if (aabbVolumes == null) aabbVolumes = AabbVolumes.empty();
+            if (biomeState == null) biomeState = new BiomeState();
+            if (levelChunkMetaData == null) levelChunkMetaData = LevelChunkMetaData.uninitialized();
+            if (borderBlockMap == null) borderBlockMap = new boolean[256];
             return new Chunk(
-                    state,
+                    finalizationState,
                     chunkX,
                     chunkZ,
                     levelProvider,
                     sections,
+                    biomeSections,
                     heightMap,
                     entities,
                     blockEntities,
-                    extraData
+                    extraData,
+                    aabbVolumes,
+                    biomeState,
+                    levelChunkMetaData,
+                    borderBlockMap
             );
         }
 

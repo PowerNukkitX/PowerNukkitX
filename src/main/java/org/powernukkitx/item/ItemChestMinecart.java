@@ -5,15 +5,20 @@ import org.powernukkitx.block.Block;
 import org.powernukkitx.block.BlockRail;
 import org.powernukkitx.entity.Entity;
 import org.powernukkitx.entity.item.EntityChestMinecart;
+import org.powernukkitx.item.definition.ItemDefinition;
 import org.powernukkitx.level.Level;
 import org.powernukkitx.math.BlockFace;
 import org.powernukkitx.nbt.tag.CompoundTag;
-import org.powernukkitx.nbt.tag.DoubleTag;
 import org.powernukkitx.nbt.tag.FloatTag;
 import org.powernukkitx.nbt.tag.ListTag;
 import org.powernukkitx.utils.Rail;
 
 public class ItemChestMinecart extends Item {
+    public static final ItemDefinition DEFINITION = Item.DEFAULT_DEFINITION.toBuilder()
+            .canBeActivated(true)
+            .maxStackSize(1)
+            .build();
+
     public ItemChestMinecart() {
         this(0, 1);
     }
@@ -23,12 +28,7 @@ public class ItemChestMinecart extends Item {
     }
 
     public ItemChestMinecart(Integer meta, int count) {
-        super(CHEST_MINECART, meta, count, "Minecart with Chest");
-    }
-
-    @Override
-    public boolean canBeActivated() {
-        return true;
+        super(CHEST_MINECART, meta, count, "Minecart with Chest", DEFINITION);
     }
 
     @Override
@@ -42,13 +42,13 @@ public class ItemChestMinecart extends Item {
             EntityChestMinecart minecart = (EntityChestMinecart) Entity.createEntity(Entity.CHEST_MINECART,
                     level.getChunk(target.getFloorX() >> 4, target.getFloorZ() >> 4), new CompoundTag()
                             .putList("Pos", new ListTag<>()
-                                    .add(new DoubleTag(target.getX() + 0.5))
-                                    .add(new DoubleTag(target.getY() + 0.0625D + adjacent))
-                                    .add(new DoubleTag(target.getZ() + 0.5)))
+                                    .add(new FloatTag(target.getX() + 0.5))
+                                    .add(new FloatTag(target.getY() + 0.0625D + adjacent))
+                                    .add(new FloatTag(target.getZ() + 0.5)))
                             .putList("Motion", new ListTag<>()
-                                    .add(new DoubleTag(0))
-                                    .add(new DoubleTag(0))
-                                    .add(new DoubleTag(0)))
+                                    .add(new FloatTag(0))
+                                    .add(new FloatTag(0))
+                                    .add(new FloatTag(0)))
                             .putList("Rotation", new ListTag<>()
                                     .add(new FloatTag(0))
                                     .add(new FloatTag(0)))
@@ -68,10 +68,5 @@ public class ItemChestMinecart extends Item {
             return true;
         }
         return false;
-    }
-
-    @Override
-    public int getMaxStackSize() {
-        return 1;
     }
 }

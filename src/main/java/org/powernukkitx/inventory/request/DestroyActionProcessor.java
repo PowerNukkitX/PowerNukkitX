@@ -3,7 +3,8 @@ package org.powernukkitx.inventory.request;
 import org.cloudburstmc.protocol.bedrock.data.payload.common.RedactableString;
 import org.cloudburstmc.protocol.bedrock.data.payload.inventory.net.ItemStackNetId;
 import org.powernukkitx.Player;
-import org.powernukkitx.inventory.BeaconInventory;
+import org.powernukkitx.inventory.Inventory;
+import org.powernukkitx.item.Item;
 import com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
 import org.cloudburstmc.protocol.bedrock.data.inventory.ContainerEnumName;
@@ -41,12 +42,29 @@ public class DestroyActionProcessor implements ItemStackRequestActionProcessor<D
         Integer dynamicId = containerName.getDynamicID();
         ContainerEnumName container = containerName.getContainerName();
         var sourceInventory = NetworkMapping.getInventory(player, container, dynamicId);
-        if (player.getGamemode() != Player.CREATIVE && !(sourceInventory instanceof BeaconInventory)) {
+        var slot = sourceInventory.fromNetworkSlot(action.getSource().getSlot());
+        if (slot < 0 || slot >= sourceInventory.getSize()) {
+            log.warn("destroy action points at slot {} which is outside of {}", slot, sourceInventory.getClass().getSimpleName());
+            return context.error();
+        }
+
+        ContainerEnumName slotType = resolveSlotType(sourceInventory, slot);
+        if (slotType == null) {
+            log.warn("unknown slot type for slot {} in inventory {}", slot, sourceInventory.getClass().getSimpleName());
+            return context.error();
+        }
+
+        // Slots a station already emptied in this request (the beacon payment, for one) only need the
+        // destroy acknowledged, not applied again.
+        if (context.isServerConsumed(slotType)) {
+            return respondWithSlot(sourceInventory, slot, slotType, containerName, context);
+        }
+
+        if (player.getGamemode() != Player.CREATIVE) {
             log.warn("only creative mode can destroy item");
             return context.error();
         }
         var count = action.getAmount();
-        var slot = sourceInventory.fromNetworkSlot(action.getSource().getSlot());
         var item = sourceInventory.getItem(slot);
         if (validateStackNetworkId(item.getNetId(), action.getSource().getStackNetworkId())) {
             log.warn("mismatch stack network id!");
@@ -67,13 +85,18 @@ public class DestroyActionProcessor implements ItemStackRequestActionProcessor<D
             sourceInventory.clear(slot, false);
             item = sourceInventory.getItem(slot);
         }
+        return respondWithSlot(sourceInventory, slot, slotType, containerName, context);
+    }
+
+    private ActionResponse respondWithSlot(Inventory inventory, int slot, ContainerEnumName slotType, FullContainerName containerName, ItemStackRequestContext context) {
+        Item item = inventory.getItem(slot);
         return context.success(List.of(
             new ItemStackResponseContainerInfo(
-                sourceInventory.getContainerEnumName(slot),
+                slotType,
                 Lists.newArrayList(
                     new ItemStackResponseSlotInfo(
-                        sourceInventory.toNetworkSlot(slot),
-                        sourceInventory.toNetworkSlot(slot),
+                        inventory.toNetworkSlot(slot),
+                        inventory.toNetworkSlot(slot),
                         item.getCount(),
                         new ItemStackNetId(item.getNetId()),
                         new RedactableString(item.getCustomName(), ""),

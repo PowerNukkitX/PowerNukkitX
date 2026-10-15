@@ -12,8 +12,7 @@ import org.powernukkitx.entity.EntityFlyable;
 import org.powernukkitx.entity.EntityID;
 import org.powernukkitx.entity.EntityIntelligent;
 import org.powernukkitx.entity.EntitySmite;
-import org.powernukkitx.entity.ai.behavior.Behavior;
-import org.powernukkitx.entity.ai.behaviorgroup.BehaviorGroup;
+import org.powernukkitx.entity.ai.EntityAI;
 import org.powernukkitx.entity.ai.behaviorgroup.IBehaviorGroup;
 import org.powernukkitx.entity.ai.controller.LiftController;
 import org.powernukkitx.entity.ai.controller.LookController;
@@ -43,7 +42,6 @@ import org.powernukkitx.level.Sound;
 import org.powernukkitx.level.format.IChunk;
 import org.powernukkitx.math.BlockFace;
 import org.powernukkitx.nbt.tag.CompoundTag;
-import org.powernukkitx.nbt.tag.DoubleTag;
 import org.powernukkitx.nbt.tag.FloatTag;
 import org.powernukkitx.nbt.tag.ListTag;
 
@@ -65,6 +63,9 @@ import java.util.List;
 import java.util.Set;
 
 public class EntityWither extends EntityBoss implements EntityFlyable, EntitySmite {
+    public EntityWither(IChunk chunk, CompoundTag nbt) {
+        super(chunk, nbt);
+    }
 
     @Override
     @NotNull
@@ -72,19 +73,18 @@ public class EntityWither extends EntityBoss implements EntityFlyable, EntitySmi
         return WITHER;
     }
 
-    public EntityWither(IChunk chunk, CompoundTag nbt) {
-        super(chunk, nbt);
-    }
+    private boolean exploded = false;
 
     @Override
     public IBehaviorGroup requireBehaviorGroup() {
-        return BehaviorGroup.builder(this)
-                .behaviors(
-                        new Behavior(new PlaySoundExecutor(Sound.MOB_WITHER_AMBIENT), all(
+        return EntityAI.of(this)
+                .behavior(new PlaySoundExecutor(Sound.MOB_WITHER_AMBIENT))
+                        .when(all(
                                 new RandomSoundEvaluator(),
                                 entity -> age >= 200
-                        ), 11, 1),
-                        new Behavior(new WitherDashExecutor(CoreMemoryTypes.ATTACK_TARGET, 1f, true, 64, 0), all(
+                        ))
+                .behavior(new WitherDashExecutor(CoreMemoryTypes.ATTACK_TARGET, 1f, true, 64, 0))
+                        .when(all(
                                 new EntityCheckEvaluator(CoreMemoryTypes.ATTACK_TARGET),
                                 any(
                                         new PassByTimeEvaluator(CoreMemoryTypes.LAST_ATTACK_DASH, 400),
@@ -93,8 +93,9 @@ public class EntityWither extends EntityBoss implements EntityFlyable, EntitySmi
                                 new DistanceEvaluator(CoreMemoryTypes.ATTACK_TARGET, 65, 3),
                                 entity -> getHealthCurrent() <= getHealthMax() / 2f,
                                 entity -> age >= 200
-                        ), 10, 1),
-                        new Behavior(new WitherDashExecutor(CoreMemoryTypes.NEAREST_PLAYER, 1f, true, 64, 0), all(
+                        ))
+                .behavior(new WitherDashExecutor(CoreMemoryTypes.NEAREST_PLAYER, 1f, true, 64, 0))
+                        .when(all(
                                 new EntityCheckEvaluator(CoreMemoryTypes.NEAREST_PLAYER),
                                 any(
                                         new PassByTimeEvaluator(CoreMemoryTypes.LAST_ATTACK_DASH, 400),
@@ -103,8 +104,9 @@ public class EntityWither extends EntityBoss implements EntityFlyable, EntitySmi
                                 new DistanceEvaluator(CoreMemoryTypes.NEAREST_PLAYER, 65, 3),
                                 entity -> getHealthCurrent() <= getHealthMax() / 2f,
                                 entity -> age >= 200
-                        ), 9, 1),
-                        new Behavior(new WitherDashExecutor(CoreMemoryTypes.NEAREST_SUITABLE_ATTACK_TARGET, 1f, true, 64, 0), all(
+                        ))
+                .behavior(new WitherDashExecutor(CoreMemoryTypes.NEAREST_SUITABLE_ATTACK_TARGET, 1f, true, 64, 0))
+                        .when(all(
                                 new EntityCheckEvaluator(CoreMemoryTypes.NEAREST_SUITABLE_ATTACK_TARGET),
                                 any(
                                         new PassByTimeEvaluator(CoreMemoryTypes.LAST_ATTACK_DASH, 400),
@@ -113,38 +115,44 @@ public class EntityWither extends EntityBoss implements EntityFlyable, EntitySmi
                                 new DistanceEvaluator(CoreMemoryTypes.NEAREST_SUITABLE_ATTACK_TARGET, 65, 3),
                                 entity -> getHealthCurrent() <= getHealthMax() / 2f,
                                 entity -> age >= 200
-                        ), 8, 1),
-                        new Behavior(new MoveToTargetExecutor(CoreMemoryTypes.ATTACK_TARGET, 0.7f, true, 64, 16), all(
-                                new EntityCheckEvaluator(CoreMemoryTypes.ATTACK_TARGET),
-                                new DistanceEvaluator(CoreMemoryTypes.ATTACK_TARGET, 65, 17),
-                                entity -> age >= 200), 7, 1),
-                        new Behavior(new MoveToTargetExecutor(CoreMemoryTypes.NEAREST_PLAYER, 0.7f, true, 64, 16), all(
+                        ))
+                .behavior(new MoveToTargetExecutor(CoreMemoryTypes.ATTACK_TARGET, 0.7f, true, 64, 16))
+                        .when(all(
+                        new EntityCheckEvaluator(CoreMemoryTypes.ATTACK_TARGET),
+                        new DistanceEvaluator(CoreMemoryTypes.ATTACK_TARGET, 65, 17),
+                        entity -> age >= 200))
+                .behavior(new MoveToTargetExecutor(CoreMemoryTypes.NEAREST_PLAYER, 0.7f, true, 64, 16))
+                        .when(all(
                                 new EntityCheckEvaluator(CoreMemoryTypes.NEAREST_PLAYER),
                                 new DistanceEvaluator(CoreMemoryTypes.NEAREST_PLAYER, 65, 17),
                                 entity -> age >= 200
-                        ), 6, 1),
-                        new Behavior(new MoveToTargetExecutor(CoreMemoryTypes.NEAREST_SUITABLE_ATTACK_TARGET, 0.7f, true, 64, 16), all(
+                        ))
+                .behavior(new MoveToTargetExecutor(CoreMemoryTypes.NEAREST_SUITABLE_ATTACK_TARGET, 0.7f, true, 64, 16))
+                        .when(all(
                                 new EntityCheckEvaluator(CoreMemoryTypes.NEAREST_SUITABLE_ATTACK_TARGET),
                                 new DistanceEvaluator(CoreMemoryTypes.NEAREST_SUITABLE_ATTACK_TARGET, 65, 17),
                                 entity -> age >= 200
-                        ), 5, 1),
-                        new Behavior(new WitherShootExecutor(CoreMemoryTypes.ATTACK_TARGET), all(
+                        ))
+                .behavior(new WitherShootExecutor(CoreMemoryTypes.ATTACK_TARGET))
+                        .when(all(
                                 new EntityCheckEvaluator(CoreMemoryTypes.ATTACK_TARGET),
                                 new PassByTimeEvaluator(CoreMemoryTypes.LAST_ATTACK_TIME, 100),
                                 entity -> age >= 200
-                        ), 4, 1),
-                        new Behavior(new WitherShootExecutor(CoreMemoryTypes.NEAREST_PLAYER), all(
+                        ))
+                .behavior(new WitherShootExecutor(CoreMemoryTypes.NEAREST_PLAYER))
+                        .when(all(
                                 new EntityCheckEvaluator(CoreMemoryTypes.NEAREST_PLAYER),
                                 new PassByTimeEvaluator(CoreMemoryTypes.LAST_ATTACK_TIME, 100),
                                 entity -> age >= 200
-                        ), 3, 1),
-                        new Behavior(new WitherShootExecutor(CoreMemoryTypes.NEAREST_SUITABLE_ATTACK_TARGET), all(
+                        ))
+                .behavior(new WitherShootExecutor(CoreMemoryTypes.NEAREST_SUITABLE_ATTACK_TARGET))
+                        .when(all(
                                 new EntityCheckEvaluator(CoreMemoryTypes.NEAREST_SUITABLE_ATTACK_TARGET),
                                 new PassByTimeEvaluator(CoreMemoryTypes.LAST_ATTACK_TIME, 100),
                                 entity -> age >= 200
-                        ), 2, 1),
-                        new Behavior(new SpaceRandomRoamExecutor(0.15f, 12, 100, 20, false, -1, true, 10), entity -> age >= 200, 1, 1)
-                )
+                        ))
+                .behavior(new SpaceRandomRoamExecutor(0.15f, 12, 100, 20, false, -1, true, 10))
+                        .when(entity -> age >= 200)
                 .sensors(new NearestPlayerSensor(64, 0, 20),
                         new NearestTargetEntitySensor<>(0, 64, 20,
                                 List.of(CoreMemoryTypes.NEAREST_SUITABLE_ATTACK_TARGET), this::attackTarget))
@@ -153,26 +161,36 @@ public class EntityWither extends EntityBoss implements EntityFlyable, EntitySmi
                 .build();
     }
 
-    private boolean exploded = false;
-    private int deathTicks = -1;
-
     @Override
     public void kill() {
-        if (deathTicks == -1) {
-            deathTicks = 190;
-            getLevel().addLevelSoundEvent(this, SoundEvent.DEATH, -1, Entity.WITHER, false, false);
-            final ActorEventPacket packet = new ActorEventPacket();
-            packet.setTargetRuntimeID(this.runtimeId());
-            packet.setType(ActorEvent.DEATH);
-            Server.broadcastPacket(getViewers().values(), packet);
-            setImmobile(true);
-        } else {
-            if (!this.exploded && this.lastDamageCause != null && EntityDamageEvent.DamageCause.SUICIDE != this.lastDamageCause.getCause()) {
-                this.exploded = true;
-                this.explode();
-            }
-            super.kill();
+        if (!this.beginDeath()) return;
+
+        getLevel().addLevelSoundEvent(this, SoundEvent.DEATH, -1, Entity.WITHER, false, false);
+        final ActorEventPacket packet = new ActorEventPacket();
+        packet.setTargetRuntimeID(this.runtimeId());
+        packet.setType(ActorEvent.DEATH);
+        Server.broadcastPacket(getViewers().values(), packet);
+        setImmobile(true);
+    }
+
+    @Override
+    protected int getDeathDurationTicks() {
+        return 200;
+    }
+
+    @Override
+    protected void onDeathTick(int previousDeathTime) {
+    }
+
+    @Override
+    protected void onDeathComplete() {
+        if (!this.exploded && this.lastDamageCause != null && EntityDamageEvent.DamageCause.SUICIDE != this.lastDamageCause.getCause()) {
+            this.exploded = true;
+            this.explode();
         }
+
+        this.processDeathConsequences();
+        super.onDeathComplete();
     }
 
     @Override
@@ -198,7 +216,7 @@ public class EntityWither extends EntityBoss implements EntityFlyable, EntitySmi
 
     @Override
     public boolean attack(EntityDamageEvent source) {
-        if (age < 200 || deathTicks != -1) return false;
+        if (age < 200 || this.deadState) return false;
         if (source.getCause() == EntityDamageEvent.DamageCause.ENTITY_EXPLOSION) {
             return false;
         }
@@ -232,8 +250,8 @@ public class EntityWither extends EntityBoss implements EntityFlyable, EntitySmi
         packet.getAttributesList().add(
                 Attribute.getAttribute(Attribute.HEALTH).setMaxValue(getMaxDiffHealth()).setValue(getMaxDiffHealth()).toNetwork()
         );
-        packet.setActorData(this.getActorDataMap());
-        packet.setTargetActorID(this.getId());
+        packet.setActorData(this.snapshotActorDataMap());
+        packet.setTargetActorID(this.uniqueIdLong());
         packet.setTargetRuntimeID(this.runtimeId());
         packet.setActorType("minecraft:wither");
         packet.setPosition(org.cloudburstmc.math.vector.Vector3f.from(this.x, this.y, this.z));
@@ -257,18 +275,18 @@ public class EntityWither extends EntityBoss implements EntityFlyable, EntitySmi
     protected void initEntity() {
         super.initEntity();
         this.blockBreakSound = Sound.MOB_WITHER_BREAK_BLOCK;
-        this.setInvulnerable(200);
-        this.setHealthCurrent(1);
+
+        if (!this.deadState && !this.nbt.contains("Attributes")) {
+            this.setInvulnerable(200);
+            this.setHealthCurrent(1);
+        }
     }
 
     @Override
     public boolean onUpdate(int currentTick) {
+        if (this.deadState) return super.onUpdate(currentTick);
+
         if (!closed) {
-            if (deathTicks != -1) {
-                if (deathTicks <= 0) {
-                    kill();
-                } else deathTicks--;
-            }
             if (isInvulnerable()) {
                 this.setDataProperty(ActorDataTypes.INV, getDataProperty(ActorDataTypes.INV) - 1);
             }
@@ -292,14 +310,14 @@ public class EntityWither extends EntityBoss implements EntityFlyable, EntitySmi
     @Override
     public void addBossbar(Player player) {
         final BossEventPacket bossEventPacket = new BossEventPacket();
-        bossEventPacket.setTargetActorID(this.getId());
+        bossEventPacket.setTargetActorID(this.uniqueIdLong());
         bossEventPacket.setEventType(BossEventUpdateType.ADD);
         bossEventPacket.setName(this.getName());
         bossEventPacket.setFilteredName(this.getName());
         bossEventPacket.setHealthPercent(0f);
         bossEventPacket.setOverlay(BossBarOverlay.PROGRESS);
         bossEventPacket.setColor(BossBarColor.PURPLE);
-        bossEventPacket.setPlayerID(player.getId());
+        bossEventPacket.setPlayerID(player.uniqueIdLong());
         bossEventPacket.setDarkenScreen(1);
         bossEventPacket.setColor(BossBarColor.REBECCA_PURPLE);
         player.sendPacket(bossEventPacket);
@@ -412,14 +430,14 @@ public class EntityWither extends EntityBoss implements EntityFlyable, EntitySmi
                         }
                         Block pos = check.getSide(blockFace, 2);
                         CompoundTag nbt = new CompoundTag()
-                                .putList("Pos", new ListTag<DoubleTag>()
-                                        .add(new DoubleTag(pos.x + 0.5))
-                                        .add(new DoubleTag(pos.y))
-                                        .add(new DoubleTag(pos.z + 0.5)))
-                                .putList("Motion", new ListTag<DoubleTag>()
-                                        .add(new DoubleTag(0))
-                                        .add(new DoubleTag(0))
-                                        .add(new DoubleTag(0)))
+                                .putList("Pos", new ListTag<FloatTag>()
+                                        .add(new FloatTag(pos.x + 0.5))
+                                        .add(new FloatTag(pos.y))
+                                        .add(new FloatTag(pos.z + 0.5)))
+                                .putList("Motion", new ListTag<FloatTag>()
+                                        .add(new FloatTag(0))
+                                        .add(new FloatTag(0))
+                                        .add(new FloatTag(0)))
                                 .putList("Rotation", new ListTag<FloatTag>()
                                         .add(new FloatTag(0f))
                                         .add(new FloatTag(0f)));

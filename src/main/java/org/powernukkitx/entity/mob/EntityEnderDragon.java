@@ -2,17 +2,11 @@ package org.powernukkitx.entity.mob;
 
 import org.powernukkitx.Player;
 import org.powernukkitx.Server;
-import org.powernukkitx.block.Block;
-import org.powernukkitx.block.BlockBedrock;
-import org.powernukkitx.block.BlockEndGateway;
-import org.powernukkitx.block.BlockTorch;
-import org.powernukkitx.block.property.enums.TorchFacingDirection;
 import org.powernukkitx.entity.Attribute;
 import org.powernukkitx.entity.Entity;
 import org.powernukkitx.entity.EntityFlyable;
 import org.powernukkitx.entity.EntityIntelligent;
-import org.powernukkitx.entity.ai.behavior.Behavior;
-import org.powernukkitx.entity.ai.behaviorgroup.BehaviorGroup;
+import org.powernukkitx.entity.ai.EntityAI;
 import org.powernukkitx.entity.ai.behaviorgroup.IBehaviorGroup;
 import org.powernukkitx.entity.ai.controller.IController;
 import org.powernukkitx.entity.ai.controller.LiftController;
@@ -42,7 +36,6 @@ import org.powernukkitx.level.Level;
 import org.powernukkitx.level.Sound;
 import org.powernukkitx.level.format.IChunk;
 import org.powernukkitx.math.BVector3;
-import org.powernukkitx.math.BlockFace;
 import org.powernukkitx.math.Vector2;
 import org.powernukkitx.math.Vector3;
 import org.powernukkitx.nbt.tag.CompoundTag;
@@ -64,9 +57,10 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Set;
 
-import static org.powernukkitx.block.property.CommonBlockProperties.TORCH_FACING_DIRECTION;
-
 public class EntityEnderDragon extends EntityBoss implements EntityFlyable {
+    public EntityEnderDragon(IChunk chunk, CompoundTag nbt) {
+        super(chunk, nbt);
+    }
 
     @Override
     @NotNull
@@ -74,32 +68,29 @@ public class EntityEnderDragon extends EntityBoss implements EntityFlyable {
         return ENDER_DRAGON;
     }
 
-    public EntityEnderDragon(IChunk chunk, CompoundTag nbt) {
-        super(chunk, nbt);
-    }
-
     @Override
     public IBehaviorGroup requireBehaviorGroup() {
-        return BehaviorGroup.builder(this)
-                .coreBehaviors(
-                        new Behavior(new PlaySoundExecutor(Sound.MOB_ENDERDRAGON_GROWL), new RandomSoundEvaluator(), 2, 1)
-                )
-                .behaviors(
-                        new Behavior(new PerchingExecutor(), entity -> getMemoryStorage().get(CoreMemoryTypes.FORCE_PERCHING), 5, 1),
-                        new Behavior(new StrafeExecutor(), all(
+        return EntityAI.of(this)
+                .coreBehavior(new PlaySoundExecutor(Sound.MOB_ENDERDRAGON_GROWL))
+                        .when(new RandomSoundEvaluator())
+                .behavior(new PerchingExecutor())
+                        .when(entity -> getMemoryStorage().get(CoreMemoryTypes.FORCE_PERCHING))
+                .behavior(new StrafeExecutor())
+                        .when(all(
                                 new MemoryCheckNotEmptyEvaluator(CoreMemoryTypes.NEAREST_PLAYER),
                                 new EntityCheckEvaluator(CoreMemoryTypes.NEAREST_PLAYER),
                                 new MemoryCheckNotEmptyEvaluator(CoreMemoryTypes.LAST_ENDER_CRYSTAL_DESTROY)
-                        ), 4, 1),
-                        new Behavior(new CircleMovementExecutor(CoreMemoryTypes.STAY_NEARBY, 1f, true, 82, 12, 5), all(
+                        ))
+                .behavior(new CircleMovementExecutor(CoreMemoryTypes.STAY_NEARBY, 1f, true, 82, 12, 5))
+                        .when(all(
                                 new MemoryCheckNotEmptyEvaluator(CoreMemoryTypes.STAY_NEARBY),
                                 new MemoryCheckEmptyEvaluator(CoreMemoryTypes.NEAREST_SHARED_ENTITY)
-                        ), 3, 1),
-                        new Behavior(new CircleMovementExecutor(CoreMemoryTypes.STAY_NEARBY, 1f, true, 48, 8, 4), all(
+                        ))
+                .behavior(new CircleMovementExecutor(CoreMemoryTypes.STAY_NEARBY, 1f, true, 48, 8, 4))
+                        .when(all(
                                 new MemoryCheckNotEmptyEvaluator(CoreMemoryTypes.STAY_NEARBY),
                                 new MemoryCheckNotEmptyEvaluator(CoreMemoryTypes.NEAREST_SHARED_ENTITY)
-                        ), 2, 1)
-                )
+                        ))
                 .sensors(
                         new NearestPlayerSensor(512, 0, 20),
                         new NearestEntitySensor(EntityEnderCrystal.class, CoreMemoryTypes.NEAREST_SHARED_ENTITY, 192, 0, 10)
@@ -115,8 +106,8 @@ public class EntityEnderDragon extends EntityBoss implements EntityFlyable {
         pk.getAttributesList().add(
                 Attribute.getAttribute(Attribute.HEALTH).setMaxValue(200).setValue(200).toNetwork()
         );
-        pk.setActorData(this.getActorDataMap());
-        pk.setTargetActorID(this.getId());
+        pk.setActorData(this.snapshotActorDataMap());
+        pk.setTargetActorID(this.uniqueIdLong());
         pk.setTargetRuntimeID(this.runtimeId());
         pk.setActorType("minecraft:ender_dragon");
         pk.setPosition(org.cloudburstmc.math.vector.Vector3f.from(this.x, this.y, this.z));
@@ -127,7 +118,7 @@ public class EntityEnderDragon extends EntityBoss implements EntityFlyable {
 
     @Override
     public boolean attack(EntityDamageEvent source) {
-        if (deathTicks != -1) return false;
+        if (this.deadState) return false;
         switch (source.getCause()) {
             case SUFFOCATION,
                  MAGIC -> {
@@ -141,12 +132,8 @@ public class EntityEnderDragon extends EntityBoss implements EntityFlyable {
     public boolean onUpdate(int currentTick) {
         //Hack -> Ensures that Ender Dragon is always ticked.
         getLevel().getScheduler().scheduleTask(InternalPlugin.INSTANCE, this::scheduleUpdate);
-        if (deathTicks != -1) {
-            if (deathTicks <= 0) {
-                kill();
-            } else deathTicks--;
-            return true;
-        }
+        if (this.deadState) return super.onUpdate(currentTick);
+
         if (currentTick % 2 == 0) {
             if (currentTick % ((toHorizontal().distance(Vector2.ZERO) < 1) ? 10 : 20) == 0) {
                 getLevel().addLevelSoundEvent(this, SoundEvent.FLAP, -1, this.getIdentifier(), false, false);
@@ -165,59 +152,38 @@ public class EntityEnderDragon extends EntityBoss implements EntityFlyable {
         return super.onUpdate(currentTick);
     }
 
-    private int deathTicks = -1;
-
     @Override
     public void kill() {
-        if (deathTicks == -1) {
-            deathTicks = 190;
+        if (!this.beginDeath()) return;
+
+        final ActorEventPacket packet = new ActorEventPacket();
+        packet.setTargetRuntimeID(this.runtimeId());
+        packet.setType(ActorEvent.DRAGON_START_DEATH_ANIM);
+        Server.broadcastPacket(getViewers().values(), packet);
+        setImmobile(true);
+    }
+
+    @Override
+    protected int getDeathDurationTicks() {
+        return 200;
+    }
+
+    @Override
+    protected void onDeathTick(int previousDeathTime) {
+        if (previousDeathTime < 2 && this.deathTime >= 2) {
             getLevel().addLevelSoundEvent(this, SoundEvent.DEATH, -1, getIdentifier(), false, false);
-            final ActorEventPacket packet = new ActorEventPacket();
-            packet.setTargetRuntimeID(this.runtimeId());
-            packet.setType(ActorEvent.DRAGON_START_DEATH_ANIM);
-            Server.broadcastPacket(getViewers().values(), packet);
-            setImmobile(true);
-        } else {
-            super.kill();
-            close();
-            if(this.getLevel().getDimension() == Level.DIMENSION_THE_END) {
-                if (!isRevived()) {
-                    int y = getLevel().getHighestBlockAt(Vector2.ZERO);
-                    getLevel().setBlock(new Vector3(0, y + 1, 0), Block.get(Block.DRAGON_EGG));
-                    for (BlockFace face : BlockFace.getHorizontals()) {
-                        Block torch = BlockTorch.PROPERTIES.getBlockState(TORCH_FACING_DIRECTION.createValue(TorchFacingDirection.getByTorchDirection(face))).toBlock();
-                        getLevel().setBlock(new Vector3(0, y - 1, 0).getSide(face), torch);
-                    }
-                }
+        }
+    }
 
-                for (int y = getLevel().getMinHeight(); y < getLevel().getHighestBlockAt(0, 0); y++) {
-                    if (getLevel().getBlock(0, y, 0) instanceof BlockBedrock) {
-                        for (int i = -2; i <= 2; i++) {
-                            for (int j = -1; j <= 1; j++) {
-                                if (!(i == 0 && j == 0)) {
-                                    getLevel().setBlock(new Vector3(i, y + 1, j), Block.get(Block.END_PORTAL));
-                                    getLevel().setBlock(new Vector3(j, y + 1, i), Block.get(Block.END_PORTAL));
-                                }
-                            }
-                        }
-                        break;
-                    }
-                }
+    @Override
+    protected void onDeathComplete() {
+        this.processDeathConsequences();
+        super.onDeathComplete();
 
-                for (int i = 0; i < 20; i++) {
-                    Vector3 origin = Vector3.ZERO;
-                    double angleIncrement = 360.0 / 20;
-                    double angle = Math.toRadians(i * angleIncrement);
-                    double particleX = origin.getX() + Math.cos(angle) * 96;
-                    double particleZ = origin.getZ() + Math.sin(angle) * 96;
-                    Block dest = getLevel().getBlock(new Vector3(particleX, 75, particleZ));
-                    if (!(dest instanceof BlockEndGateway)) {
-                        Arrays.stream(BlockFace.values()).forEach(face -> getLevel().setBlock(dest.up().getSide(face), Block.get(Block.BEDROCK)));
-                        Arrays.stream(BlockFace.values()).forEach(face -> getLevel().setBlock(dest.down().getSide(face), Block.get(Block.BEDROCK)));
-                        getLevel().setBlock(dest, Block.get(Block.END_GATEWAY));
-                        break;
-                    }
-                }
+        if (this.getLevel().getDimension() == Level.DIMENSION_THE_END) {
+            var fight = getLevel().getEndDragonFight();
+            if (fight != null) {
+                fight.onDragonKilled(this);
             }
         }
     }
@@ -290,14 +256,14 @@ public class EntityEnderDragon extends EntityBoss implements EntityFlyable {
     @Override
     public void addBossbar(Player player) {
         final BossEventPacket bossEventPacket = new BossEventPacket();
-        bossEventPacket.setTargetActorID(this.getId());
+        bossEventPacket.setTargetActorID(this.uniqueIdLong());
         bossEventPacket.setEventType(BossEventUpdateType.ADD);
         bossEventPacket.setName(this.getName());
         bossEventPacket.setFilteredName(this.getName());
         bossEventPacket.setHealthPercent(health / getHealthMax());
         bossEventPacket.setOverlay(BossBarOverlay.PROGRESS);
         bossEventPacket.setColor(BossBarColor.PURPLE);
-        bossEventPacket.setPlayerID(player.getId());
+        bossEventPacket.setPlayerID(player.uniqueIdLong());
         player.sendPacket(bossEventPacket);
     }
 

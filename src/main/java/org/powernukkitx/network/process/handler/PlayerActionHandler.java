@@ -14,7 +14,6 @@ import org.powernukkitx.event.player.PlayerToggleSpinAttackEvent;
 import org.powernukkitx.item.ItemID;
 import org.powernukkitx.item.enchantment.Enchantment;
 import org.powernukkitx.level.Sound;
-import org.powernukkitx.math.BlockFace;
 import org.powernukkitx.math.Vector3;
 import org.powernukkitx.network.process.PacketHandler;
 import org.powernukkitx.network.process.PlayerSessionHolder;
@@ -37,7 +36,6 @@ public class PlayerActionHandler implements PacketHandler<PlayerActionPacket> {
 
         packet.setPlayerRuntimeID(player.runtimeId());
         Vector3 pos = Vector3.fromNetwork(packet.getBlockPosition().toFloat());
-        BlockFace face = BlockFace.fromIndex(packet.getFace());
 
         switch (packet.getAction()) {
             case PlayerActionType.CREATIVE_DESTROY_BLOCK -> {
@@ -46,11 +44,11 @@ public class PlayerActionHandler implements PacketHandler<PlayerActionPacket> {
                 if (!player.canInteract(pos.add(0.5, 0.5, 0.5), 13)) {
                     return;
                 }
-                Block blockLectern = playerHandle.player.getLevel().getBlock(pos);
-                if (blockLectern instanceof BlockLectern blockLecternI && blockLectern.distance(playerHandle.player) <= 6) {
+                Block block = player.getLevel().getBlock(pos);
+                if (block instanceof BlockLectern blockLecternI && block.distance(player) <= 6) {
                     blockLecternI.dropBook(playerHandle.player);
                 }
-                if (blockLectern instanceof BlockFrame blockFrame && blockFrame.getBlockEntity() != null) {
+                if (block instanceof BlockFrame blockFrame && blockFrame.getBlockEntity() != null) {
                     blockFrame.getBlockEntity().dropItem(playerHandle.player);
                 }
             }

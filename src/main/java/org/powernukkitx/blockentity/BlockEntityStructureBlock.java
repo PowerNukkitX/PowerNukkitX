@@ -30,6 +30,7 @@ public class BlockEntityStructureBlock extends BlockEntitySpawnable implements I
     private boolean includePlayers;
     private float integrity;
     private boolean isPowered;
+    private long lastTouchedPlayerId;
     private Mirror mirror;
     private StructureRedstoneSaveMode redstoneSaveMode;
     private boolean removeBlocks;
@@ -62,9 +63,9 @@ public class BlockEntityStructureBlock extends BlockEntitySpawnable implements I
             this.animationSeconds = 0f;
         }
         if (this.nbt.contains(TAG_DATA)) {
-            this.data = StructureBlockType.from(nbtMap.getByte(TAG_DATA));
+            this.data = StructureBlockType.from(nbtMap.getInt(TAG_DATA));
         } else {
-            this.data = StructureBlockType.from(1);
+            this.data = StructureBlockType.from(0);
         }
         if (this.nbt.contains(TAG_DATA_FIELD)) {
             this.dataField = nbtMap.getString(TAG_DATA_FIELD);
@@ -91,13 +92,18 @@ public class BlockEntityStructureBlock extends BlockEntitySpawnable implements I
         } else {
             this.isPowered = false;
         }
+        if (this.nbt.contains(TAG_LAST_TOUCHED_PLAYER_ID)) {
+            this.lastTouchedPlayerId = nbtMap.getLong(TAG_LAST_TOUCHED_PLAYER_ID);
+        } else {
+            this.lastTouchedPlayerId = 0L;
+        }
         if (this.nbt.contains(TAG_MIRROR)) {
             this.mirror = Mirror.from(nbtMap.getByte(TAG_MIRROR));
         } else {
             this.mirror = Mirror.from(0);
         }
         if (this.nbt.contains(TAG_REDSTONE_SAVEMODE)) {
-            this.redstoneSaveMode = StructureRedstoneSaveMode.from(nbtMap.getByte(TAG_REDSTONE_SAVEMODE));
+            this.redstoneSaveMode = StructureRedstoneSaveMode.from(nbtMap.getInt(TAG_REDSTONE_SAVEMODE));
         } else {
             this.redstoneSaveMode = StructureRedstoneSaveMode.from(0);
         }
@@ -149,8 +155,9 @@ public class BlockEntityStructureBlock extends BlockEntitySpawnable implements I
                 .putBoolean(TAG_INCLUDE_PLAYERS, includePlayers)
                 .putFloat(TAG_INTEGRITY, integrity)
                 .putBoolean(TAG_IS_POWERED, isPowered)
+                .putLong(TAG_LAST_TOUCHED_PLAYER_ID, lastTouchedPlayerId)
                 .putByte(TAG_MIRROR, (byte) mirror.ordinal())
-                .putByte(TAG_REDSTONE_SAVEMODE, (byte) redstoneSaveMode.ordinal())
+                .putInt(TAG_REDSTONE_SAVEMODE, redstoneSaveMode.ordinal())
                 .putBoolean(TAG_REMOVE_BLOCKS, removeBlocks)
                 .putByte(TAG_ROTATION, (byte) rotation.ordinal())
                 .putLong(TAG_SEED, seed)
@@ -175,8 +182,9 @@ public class BlockEntityStructureBlock extends BlockEntitySpawnable implements I
                 .putBoolean(TAG_INCLUDE_PLAYERS, includePlayers)
                 .putFloat(TAG_INTEGRITY, integrity)
                 .putBoolean(TAG_IS_POWERED, isPowered)
+                .putLong(TAG_LAST_TOUCHED_PLAYER_ID, lastTouchedPlayerId)
                 .putByte(TAG_MIRROR, (byte) mirror.ordinal())
-                .putByte(TAG_REDSTONE_SAVEMODE, (byte) redstoneSaveMode.ordinal())
+                .putInt(TAG_REDSTONE_SAVEMODE, redstoneSaveMode.ordinal())
                 .putBoolean(TAG_REMOVE_BLOCKS, removeBlocks)
                 .putByte(TAG_ROTATION, (byte) rotation.ordinal())
                 .putLong(TAG_SEED, seed)
@@ -192,8 +200,7 @@ public class BlockEntityStructureBlock extends BlockEntitySpawnable implements I
 
     @Override
     public boolean isBlockEntityValid() {
-        String blockId = this.getLevelBlock().getId();
-        return blockId == BlockID.STRUCTURE_BLOCK;
+        return BlockID.STRUCTURE_BLOCK.equals(this.getLevelBlock().getId());
     }
 
     @NotNull
@@ -231,7 +238,13 @@ public class BlockEntityStructureBlock extends BlockEntitySpawnable implements I
         }
     }
 
-    public void updateSetting(StructureBlockUpdatePacket packet) {
+    /**
+     * Applies structure editor settings received from a player.
+     *
+     * @param player player updating the structure block
+     * @param packet structure block update packet
+     */
+    public void updateSetting(Player player, StructureBlockUpdatePacket packet) {
         var editorData = packet.getStructureData();
         this.animationMode = editorData.getStructureSettings().getAnimationMode();
         this.animationSeconds = editorData.getStructureSettings().getAnimationSeconds();
@@ -249,6 +262,8 @@ public class BlockEntityStructureBlock extends BlockEntitySpawnable implements I
         this.structureName = editorData.getStructureName().getUnredacted();
         this.offset = BlockVector3.fromNetwork(editorData.getStructureSettings().getStructureOffset());
         this.size = BlockVector3.fromNetwork(editorData.getStructureSettings().getStructureSize());
+        this.lastTouchedPlayerId = player.uniqueIdLong();
+        this.setDirty();
 
         if (packet.isTrigger()) onPower();
     }

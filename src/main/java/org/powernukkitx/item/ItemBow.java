@@ -4,15 +4,14 @@ import org.powernukkitx.Player;
 import org.powernukkitx.Server;
 import org.powernukkitx.entity.Entity;
 import org.powernukkitx.entity.projectile.EntityArrow;
-import org.powernukkitx.entity.projectile.EntityProjectile;
 import org.powernukkitx.event.entity.EntityShootBowEvent;
 import org.powernukkitx.event.entity.ProjectileLaunchEvent;
+import org.powernukkitx.item.definition.ItemDefinition;
 import org.powernukkitx.item.enchantment.Enchantment;
 import org.powernukkitx.item.enchantment.bow.EnchantmentBow;
 import org.powernukkitx.level.Sound;
 import org.powernukkitx.math.Vector3;
 import org.powernukkitx.nbt.tag.CompoundTag;
-import org.powernukkitx.nbt.tag.DoubleTag;
 import org.powernukkitx.nbt.tag.FloatTag;
 import org.powernukkitx.nbt.tag.ListTag;
 
@@ -24,6 +23,11 @@ import java.util.Random;
  * @author MagicDroidX (Nukkit Project)
  */
 public class ItemBow extends ItemTool {
+    public static final ItemDefinition DEFINITION = TOOL.toBuilder()
+            .bow(true)
+            .maxDurability(ItemTool.DURABILITY_BOW)
+            .usingTicks(72000)
+            .build();
 
     public ItemBow() {
         this(0, 1);
@@ -34,12 +38,7 @@ public class ItemBow extends ItemTool {
     }
 
     public ItemBow(Integer meta, int count) {
-        super(BOW, meta, count, "Bow");
-    }
-
-    @Override
-    public int getMaxDurability() {
-        return ItemTool.DURABILITY_BOW;
+        super(BOW, meta, count, "Bow", DEFINITION);
     }
 
     @Override
@@ -52,11 +51,6 @@ public class ItemBow extends ItemTool {
         return player.isCreative() ||
                 player.getInventory().getContents().values().stream().filter(item -> item instanceof ItemArrow).findFirst().isPresent() ||
                 player.getOffhandInventory().getContents().values().stream().filter(item -> item instanceof ItemArrow).findFirst().isPresent();
-    }
-
-    @Override
-    public int getUsingTicks() {
-        return 72000;
     }
 
     @Override
@@ -90,14 +84,14 @@ public class ItemBow extends ItemTool {
         }
 
         final CompoundTag nbt = new CompoundTag()
-                .putList("Pos", new ListTag<DoubleTag>()
-                        .add(new DoubleTag(player.x))
-                        .add(new DoubleTag(player.y + player.getEyeHeight()))
-                        .add(new DoubleTag(player.z)))
-                .putList("Motion", new ListTag<DoubleTag>()
-                        .add(new DoubleTag(-Math.sin(player.yaw / 180 * Math.PI) * Math.cos(player.pitch / 180 * Math.PI)))
-                        .add(new DoubleTag(-Math.sin(player.pitch / 180 * Math.PI)))
-                        .add(new DoubleTag(Math.cos(player.yaw / 180 * Math.PI) * Math.cos(player.pitch / 180 * Math.PI))))
+                .putList("Pos", new ListTag<FloatTag>()
+                        .add(new FloatTag(player.x))
+                        .add(new FloatTag(player.y + player.getBaseOffset() - 0.1))
+                        .add(new FloatTag(player.z)))
+                .putList("Motion", new ListTag<FloatTag>()
+                        .add(new FloatTag(-Math.sin(player.yaw / 180 * Math.PI) * Math.cos(player.pitch / 180 * Math.PI)))
+                        .add(new FloatTag(-Math.sin(player.pitch / 180 * Math.PI)))
+                        .add(new FloatTag(Math.cos(player.yaw / 180 * Math.PI) * Math.cos(player.pitch / 180 * Math.PI))))
                 .putList("Rotation", new ListTag<FloatTag>()
                         .add(new FloatTag((player.yaw > 180 ? 360 : 0) - (float) player.yaw))
                         .add(new FloatTag((float) -player.pitch)))
@@ -112,9 +106,7 @@ public class ItemBow extends ItemTool {
         ItemArrow copy = (ItemArrow) itemArrow.clone();
         copy.setCount(1);
         arrow.setItem(copy);
-        if (arrow == null) {
-            return false;
-        }
+
         EntityShootBowEvent entityShootBowEvent = new EntityShootBowEvent(player, this, arrow, f);
 
         if (f < 0.1 || ticksUsed < 3) {
@@ -130,10 +122,6 @@ public class ItemBow extends ItemTool {
             entityShootBowEvent.getProjectile().setMotion(entityShootBowEvent.getProjectile().getMotion().multiply(entityShootBowEvent.getForce()));
             Enchantment infinityEnchant = this.getEnchantment(Enchantment.ID_BOW_INFINITY);
             boolean infinity = infinityEnchant != null && infinityEnchant.getLevel() > 0;
-            EntityProjectile projectile;
-            if (infinity && (projectile = entityShootBowEvent.getProjectile()) instanceof EntityArrow) {
-                ((EntityArrow) projectile).setPickupMode(EntityProjectile.PICKUP_CREATIVE);
-            }
 
             arrow.setEnchantments(this.getEnchantments());
 

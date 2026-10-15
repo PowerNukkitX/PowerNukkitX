@@ -9,8 +9,7 @@ import org.powernukkitx.block.BlockID;
 import org.powernukkitx.blockentity.BlockEntityBed;
 import org.powernukkitx.entity.Entity;
 import org.powernukkitx.entity.EntityIntelligent;
-import org.powernukkitx.entity.ai.behavior.Behavior;
-import org.powernukkitx.entity.ai.behaviorgroup.BehaviorGroup;
+import org.powernukkitx.entity.ai.EntityAI;
 import org.powernukkitx.entity.ai.behaviorgroup.IBehaviorGroup;
 import org.powernukkitx.entity.ai.controller.FluctuateController;
 import org.powernukkitx.entity.ai.controller.LookController;
@@ -35,6 +34,7 @@ import org.powernukkitx.entity.ai.executor.villager.WorkExecutor;
 import org.powernukkitx.entity.ai.memory.CoreMemoryTypes;
 import org.powernukkitx.entity.ai.route.finder.impl.SimpleFlatAStarRouteFinder;
 import org.powernukkitx.entity.ai.route.posevaluator.DoorCapableWalkingPosEvaluator;
+import org.powernukkitx.entity.ai.sensor.ISensor;
 import org.powernukkitx.entity.ai.sensor.BlockSensor;
 import org.powernukkitx.entity.ai.sensor.NearestEntitySensor;
 import org.powernukkitx.entity.components.HealthComponent;
@@ -160,53 +160,54 @@ public class EntityVillagerV2 extends EntityIntelligent implements InventoryHold
 
     @Override
     public IBehaviorGroup requireBehaviorGroup() {
-        return BehaviorGroup.builder(this)
-                .coreBehaviors(
-                        new Behavior(new DoorExecutor(), all(
+        return EntityAI.of(this)
+                .coreBehavior(new DoorExecutor())
+                        .when(all(
                                 entity -> {
                                     Block block = getMemoryStorage().get(CoreMemoryTypes.NEAREST_BLOCK_2);
                                     if (block == null || getMoveDirectionEnd() == null) return false;
                                     return getLevel().raycastBlocks(this, getMoveDirectionEnd(), true, false, 0.5d).contains(block);
                                 }
-                        ), 4, 1),
-                        new Behavior(
-                                new WillingnessExecutor(),
-                                all(
-                                        entity -> getFoodPoints() >= 12,
-                                        entity -> !isBaby(),
-                                        entity -> !getMemoryStorage().get(CoreMemoryTypes.WILLING),
-                                        new PassByTimeEvaluator(CoreMemoryTypes.LAST_IN_LOVE_TIME, 6000, Integer.MAX_VALUE)
-                                ), 3, 1, 1, false
-                        ),
-                        //grow
-                        new Behavior(
-                                new AnimalGrowExecutor(),
-                                all(
-                                        new PassByTimeEvaluator(CoreMemoryTypes.ENTITY_SPAWN_TIME, 20 * 60 * 20, Integer.MAX_VALUE),
-                                        entity -> entity instanceof EntityAnimal animal && animal.isBaby()
-                                ), 2, 1, 1200
-                        ),
-                        new Behavior(new PlaySoundExecutor(Sound.MOB_VILLAGER_IDLE, isBaby() ? 1.3f : 0.8f, isBaby() ? 1.7f : 1.2f, 1, 1), new RandomSoundEvaluator(), 1, 1)
-                )
-                .behaviors(
-                        new Behavior(entity -> {
-                            setMoveTarget(null);
-                            setLookTarget(getTradeInventory().getViewers().stream().findFirst().get());
-                            return true;
-                        }, entity -> getTradeInventory() != null && !getTradeInventory().getViewers().isEmpty(), 9, 1),
-                        new Behavior(new FleeFromTargetExecutor(CoreMemoryTypes.NEAREST_ZOMBIE, 0.5f, true, 8), all(
+                        ))
+                .coreBehavior(new WillingnessExecutor())
+                        .when(all(
+                                entity -> getFoodPoints() >= 12,
+                                entity -> !isBaby(),
+                                entity -> !getMemoryStorage().get(CoreMemoryTypes.WILLING),
+                                new PassByTimeEvaluator(CoreMemoryTypes.LAST_IN_LOVE_TIME, 6000, Integer.MAX_VALUE)
+                        ))
+                        .evaluateOnce()
+                //grow
+                .coreBehavior(new AnimalGrowExecutor())
+                        .when(all(
+                                new PassByTimeEvaluator(CoreMemoryTypes.ENTITY_SPAWN_TIME, 20 * 60 * 20, Integer.MAX_VALUE),
+                                entity -> entity instanceof EntityAnimal animal && animal.isBaby()
+                        ))
+                        .period(1200)
+                .coreBehavior(new PlaySoundExecutor(Sound.MOB_VILLAGER_IDLE, isBaby() ? 1.3f : 0.8f, isBaby() ? 1.7f : 1.2f, 1, 1))
+                        .when(new RandomSoundEvaluator())
+                .behavior(entity -> {
+                    setMoveTarget(null);
+                    setLookTarget(getTradeInventory().getViewers().stream().findFirst().get());
+                    return true;
+                })
+                        .when(entity -> getTradeInventory() != null && !getTradeInventory().getViewers().isEmpty())
+                .behavior(new FleeFromTargetExecutor(CoreMemoryTypes.NEAREST_ZOMBIE, 0.5f, true, 8))
+                        .when(all(
                                 new EntityCheckEvaluator(CoreMemoryTypes.NEAREST_ZOMBIE),
                                 new DistanceEvaluator(CoreMemoryTypes.NEAREST_ZOMBIE, 8),
                                 entity -> getMemoryStorage().notEmpty(CoreMemoryTypes.NEAREST_ZOMBIE) && getMemoryStorage().get(CoreMemoryTypes.NEAREST_ZOMBIE) instanceof EntityIntelligent i && i.getMemoryStorage().notEmpty(CoreMemoryTypes.NEAREST_SUITABLE_ATTACK_TARGET) && i.getMemoryStorage().get(CoreMemoryTypes.NEAREST_SUITABLE_ATTACK_TARGET) == this,
                                 entity -> getMemoryStorage().notEmpty(CoreMemoryTypes.NEAREST_ZOMBIE) && getLevel().raycastBlocks(this, getMemoryStorage().get(CoreMemoryTypes.NEAREST_ZOMBIE)).isEmpty()
-                        ), 8, 1),
-                        new Behavior(new SleepExecutor(), all(
+                        ))
+                .behavior(new SleepExecutor())
+                        .when(all(
                                 new MemoryCheckNotEmptyEvaluator(CoreMemoryTypes.OCCUPIED_BED),
                                 new DistanceEvaluator(CoreMemoryTypes.OCCUPIED_BED, 2),
                                 new PassByTimeEvaluator(CoreMemoryTypes.LAST_BE_ATTACKED_TIME, 100),
                                 entity -> getLevel().getDayTime() >= 12000 && entity.getLevel().getDayTime() < Level.TIME_FULL
-                        ), 7, 1),
-                        new Behavior(new MoveToTargetExecutor(CoreMemoryTypes.OCCUPIED_BED, 0.3f, true), all(
+                        ))
+                .behavior(new MoveToTargetExecutor(CoreMemoryTypes.OCCUPIED_BED, 0.3f, true))
+                        .when(all(
                                 new MemoryCheckNotEmptyEvaluator(CoreMemoryTypes.OCCUPIED_BED),
                                 any(
                                         entity -> getLevel().getDayTime() >= 12000 && entity.getLevel().getDayTime() < Level.TIME_FULL,
@@ -215,29 +216,29 @@ public class EntityVillagerV2 extends EntityIntelligent implements InventoryHold
                                                 not(new DistanceEvaluator(CoreMemoryTypes.OCCUPIED_BED, 5))
                                         )
                                 )
-                        ), 6, 1),
-                        new Behavior(new NearbyFlatRandomRoamExecutor(CoreMemoryTypes.OCCUPIED_BED, 0.2f, 5, 100, false, -1, true, 10), all(
+                        ))
+                .behavior(new NearbyFlatRandomRoamExecutor(CoreMemoryTypes.OCCUPIED_BED, 0.2f, 5, 100, false, -1, true, 10))
+                        .when(all(
                                 new MemoryCheckNotEmptyEvaluator(CoreMemoryTypes.OCCUPIED_BED),
                                 entity -> getLevel().getDayTime() >= 11000 && entity.getLevel().getDayTime() < 12000
-                        ), 5, 1),
-                        new Behavior(new WorkExecutor(), all(
+                        ))
+                .behavior(new WorkExecutor())
+                        .when(all(
                                 new MemoryCheckNotEmptyEvaluator(CoreMemoryTypes.SITE_BLOCK),
                                 any(
                                         entity -> getLevel().getDayTime() >= 0 && entity.getLevel().getDayTime() < 8000,
                                         entity -> getLevel().getDayTime() >= 10000 && entity.getLevel().getDayTime() < 11000
                                 )
-                        ), 4, 1, 1),
-                        new Behavior(new GossipExecutor(CoreMemoryTypes.GOSSIP_TARGET), all(
+                        ))
+                .behavior(new GossipExecutor(CoreMemoryTypes.GOSSIP_TARGET))
+                        .when(all(
                                 new MemoryCheckNotEmptyEvaluator(CoreMemoryTypes.GOSSIP_TARGET),
                                 entity -> !isBaby()
-                        ), 3, 1),
-                        new Behavior(
-                                new VillagerBreedingExecutor(16, 100, 0.5f),
-                                new MemoryCheckNotEmptyEvaluator(CoreMemoryTypes.ENTITY_SPOUSE),
-                                2, 1
-                        ),
-                        new Behavior(new FlatRandomRoamExecutor(0.2f, 12, 100, false, -1, true, 10), (entity -> true), 1, 1)
-                )
+                        ))
+                .behavior(new VillagerBreedingExecutor(16, 100, 0.5f))
+                        .when(new MemoryCheckNotEmptyEvaluator(CoreMemoryTypes.ENTITY_SPOUSE))
+                .behavior(new FlatRandomRoamExecutor(0.2f, 12, 100, false, -1, true, 10))
+                        .when((entity -> true))
                 .sensors(
                         entity -> {
                             if (getLevel().getTick() % 120 == 0) {
@@ -247,11 +248,11 @@ public class EntityVillagerV2 extends EntityIntelligent implements InventoryHold
                                         setBed(bed);
                                     }
                                 } else if (!getMemoryStorage().get(CoreMemoryTypes.OCCUPIED_BED).isBedValid()) {
-                                    getLevel().getVillageManager().release(getMemoryStorage().get(CoreMemoryTypes.OCCUPIED_BED).asBlockVector3());
+                                    getLevel().getVillageManager().release(getBedPoiPosition(getMemoryStorage().get(CoreMemoryTypes.OCCUPIED_BED)));
                                     this.nbt.remove("bed");
                                     getMemoryStorage().clear(CoreMemoryTypes.OCCUPIED_BED);
                                 } else {
-                                    getLevel().getVillageManager().ensureTicket(getMemoryStorage().get(CoreMemoryTypes.OCCUPIED_BED).asBlockVector3(), runtimeId());
+                                    getLevel().getVillageManager().ensureTicket(getBedPoiPosition(getMemoryStorage().get(CoreMemoryTypes.OCCUPIED_BED)), uniqueIdLong());
                                 }
                             }
                         },
@@ -293,7 +294,7 @@ public class EntityVillagerV2 extends EntityIntelligent implements InventoryHold
                                         setTradeSeed(new NukkitRandom().nextInt(Integer.MAX_VALUE - 1));
                                     }
                                 } else if (siteBlock != null) {
-                                    getLevel().getVillageManager().ensureTicket(siteBlock.asBlockVector3(), runtimeId());
+                                    getLevel().getVillageManager().ensureTicket(siteBlock.asBlockVector3(), uniqueIdLong());
                                 }
 
                                 if (getMemoryStorage().isEmpty(CoreMemoryTypes.SITE_BLOCK)) {
@@ -338,7 +339,7 @@ public class EntityVillagerV2 extends EntityIntelligent implements InventoryHold
                             }
                         },
                         new BlockSensor(BlockDoor.class, CoreMemoryTypes.NEAREST_BLOCK_2, 1, 0, 10),
-                        new NearestEntitySensor(EntityZombie.class, CoreMemoryTypes.NEAREST_ZOMBIE, 8, 0)
+                        new NearestEntitySensor(EntityZombie.class, CoreMemoryTypes.NEAREST_ZOMBIE, 8, 0, ISensor.DEFAULT_TARGETING_PERIOD)
                 )
                 .controllers(new WalkController(), new LookController(true, true), new FluctuateController())
                 .routeFinder(new SimpleFlatAStarRouteFinder(new DoorCapableWalkingPosEvaluator(), this))
@@ -377,11 +378,11 @@ public class EntityVillagerV2 extends EntityIntelligent implements InventoryHold
     }
 
     public void setBed(BlockBed bed) {
-        if (bed.isBedValid() && getLevel().getVillageManager().takeAt(bed.getFootPart().asBlockVector3(), runtimeId())) {
+        if (bed.isBedValid() && getLevel().getVillageManager().takeAt(getBedPoiPosition(bed), uniqueIdLong())) {
             getMemoryStorage().put(CoreMemoryTypes.OCCUPIED_BED, bed);
-            getLevel().getVillageManager().getVillageAt(bed.asBlockVector3()).ifPresent(village -> {
+            getLevel().getVillageManager().getVillageAt(getBedPoiPosition(bed)).ifPresent(village -> {
                 setVillageUuid(village.uuid());
-                getLevel().getVillageManager().addDweller(village.uuid(), new VillageDwellers.Actor(runtimeId(), asBlockVector3(), getLevel().getCurrentTick(), null));
+                getLevel().getVillageManager().addDweller(village.uuid(), new VillageDwellers.Actor(uniqueIdLong(), asBlockVector3(), 0, null));
             });
             for (int i = 0; i < 5; i++) {
                 float randX = Utils.rand(0f, 0.5f);
@@ -427,10 +428,14 @@ public class EntityVillagerV2 extends EntityIntelligent implements InventoryHold
         return nearestBed;
     }
 
+    private static BlockVector3 getBedPoiPosition(BlockBed bed) {
+        return bed.isHeadPiece() ? bed.asBlockVector3() : bed.asBlockVector3().getSide(bed.getBlockFace());
+    }
+
     private void restoreBed(BlockBed bed) {
         BlockBed foot = bed.getFootPart();
         if (foot != null && foot.isBedValid()
-                && getLevel().getVillageManager().ensureTicket(foot.asBlockVector3(), runtimeId())) {
+                && getLevel().getVillageManager().ensureTicket(getBedPoiPosition(foot), uniqueIdLong())) {
             getMemoryStorage().put(CoreMemoryTypes.OCCUPIED_BED, foot);
         }
     }
@@ -562,7 +567,7 @@ public class EntityVillagerV2 extends EntityIntelligent implements InventoryHold
             setProfession(nbtMap.getInt("profession"), false);
         }
         if (!nbtMap.containsString("villageUuid")) {
-            getLevel().getVillageManager().getVillageForDweller(runtimeId())
+            getLevel().getVillageManager().getVillageForDweller(uniqueIdLong())
                     .ifPresent(village -> setVillageUuid(village.uuid()));
         }
         if (nbtMap.contains("clothing")) {
@@ -802,7 +807,7 @@ public class EntityVillagerV2 extends EntityIntelligent implements InventoryHold
         for (Profession profession : Profession.getProfessions().values()) {
             if (getTradeExp() != 0 && profession.getIndex() != getProfession()) continue;
             if (block.getId().equals(profession.getBlockID())) {
-                if (!getLevel().getVillageManager().takeAt(block.asBlockVector3(), runtimeId())) return false;
+                if (!getLevel().getVillageManager().takeAt(block.asBlockVector3(), uniqueIdLong())) return false;
                 getMemoryStorage().put(CoreMemoryTypes.SITE_BLOCK, block);
                 getLevel().getVillageManager().getVillageAt(block.asBlockVector3())
                         .ifPresent(village -> setVillageUuid(village.uuid()));
@@ -841,7 +846,7 @@ public class EntityVillagerV2 extends EntityIntelligent implements InventoryHold
     private void restoreProfessionBlock(Block block) {
         Profession profession = Profession.getProfession(getProfession());
         if (profession != null && block.getId().equals(profession.getBlockID())
-                && getLevel().getVillageManager().ensureTicket(block.asBlockVector3(), runtimeId())) {
+                && getLevel().getVillageManager().ensureTicket(block.asBlockVector3(), uniqueIdLong())) {
             getMemoryStorage().put(CoreMemoryTypes.SITE_BLOCK, block);
         }
     }
@@ -905,8 +910,8 @@ public class EntityVillagerV2 extends EntityIntelligent implements InventoryHold
         var updateTradePacket = new UpdateTradePacket();
         updateTradePacket.setContainerId((byte) player.getWindowId(getTradeInventory()));
         updateTradePacket.setTradeTier(this.getTradeTier());
-        updateTradePacket.setEntityUniqueId(this.getId());
-        updateTradePacket.setLastTradingPlayer(player.getId());
+        updateTradePacket.setEntityUniqueId(this.uniqueIdLong());
+        updateTradePacket.setLastTradingPlayer(player.uniqueIdLong());
         updateTradePacket.setDisplayName(this.getDisplayName());
         updateTradePacket.setType(ContainerType.TRADE);
 
@@ -1096,7 +1101,7 @@ public class EntityVillagerV2 extends EntityIntelligent implements InventoryHold
 
     protected boolean transformZombie() {
         this.saveNBT();
-        Entity zombie = new EntityZombieVillagerV2(this.getChunk(), this.getNbt().copy().remove("Health"));
+        Entity zombie = new EntityZombieVillagerV2(this.getChunk(), this.copyNBTForNewActor().remove("Health"));
         EntityTransformEvent event = new EntityTransformEvent(this, zombie);
         server.getPluginManager().callEvent(event);
         if(event.isCancelled()) {

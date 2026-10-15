@@ -37,7 +37,7 @@ public class WaterlilyFeature extends CountGenerateFeature {
         IChunk chunk = context.getChunk();
         int x = random.nextInt(15);
         int z = random.nextInt(15);
-        int y = chunk.getHeightMap(x, z);
+        int y = chunk.getHeightMap(x, z) - 1;
         if(y == SEA_LEVEL) {
             if(chunk.getBlockState(x, y, z).getIdentifier().equals(Block.WATER)) {
                 chunk.setBlockState(x, y+1, z, WATERLILY);

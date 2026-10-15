@@ -4,8 +4,7 @@ import org.powernukkitx.Player;
 import org.powernukkitx.block.Block;
 import org.powernukkitx.entity.Entity;
 import org.powernukkitx.entity.EntitySmite;
-import org.powernukkitx.entity.ai.behavior.Behavior;
-import org.powernukkitx.entity.ai.behaviorgroup.BehaviorGroup;
+import org.powernukkitx.entity.ai.EntityAI;
 import org.powernukkitx.entity.ai.behaviorgroup.IBehaviorGroup;
 import org.powernukkitx.entity.ai.controller.DiveController;
 import org.powernukkitx.entity.ai.controller.LookController;
@@ -34,6 +33,7 @@ import org.powernukkitx.level.format.IChunk;
 import org.powernukkitx.math.Vector3;
 import org.powernukkitx.math.Vector3f;
 import org.powernukkitx.nbt.tag.CompoundTag;
+import org.powernukkitx.nbt.tag.ListTag;
 import org.powernukkitx.registry.Registries;
 import org.powernukkitx.utils.ItemHelper;
 import org.powernukkitx.utils.Utils;
@@ -331,7 +331,7 @@ public class EntityZombieNautilus extends EntityNautilus implements EntitySmite 
 
         if (this.jockeyType == SpawnRiderType.DROWNED_JOCKEY) {
             Item trident = Item.get(Item.TRIDENT, 0, 1);
-            nbt.putCompound("Mainhand", ItemHelper.write(trident));
+            nbt.putList("Mainhand", new ListTag<CompoundTag>().add(ItemHelper.write(trident)));
         }
 
         Entity rider = Entity.createEntity(entityId, this.getChunk(), nbt);
@@ -350,62 +350,48 @@ public class EntityZombieNautilus extends EntityNautilus implements EntitySmite 
 
     @Override
     public IBehaviorGroup requireBehaviorGroup() {
-        return BehaviorGroup.builder(this)
-                .behaviors(
-                        new Behavior(
-                                new MoveToRiderTargetExecutor(this.getEnvironmentalMoveSpeed() * 2.00f, true),
-                                e -> this.isRiddenByMob(),
-                                7, 1
-                        ),
-                        new Behavior(
-                                new TemptExecutor(1.2f, TEMPT_ITEMS),
-                                all(
-                                        e -> !e.getMemoryStorage().get(CoreMemoryTypes.IS_IN_LOVE),
-                                        e -> TemptExecutor.hasTemptingPlayer(e, false, 10, TEMPT_ITEMS)
-                                ),
-                                4, 1
-                        ),
-                        new Behavior( // RETURN HOME if too far
-                                new MoveToTargetExecutor(CoreMemoryTypes.NEAREST_BLOCK, this.getEnvironmentalMoveSpeed() * 8f, true),
-                                entity -> {
-                                    EntityNautilus n = (EntityNautilus) entity;
+        return EntityAI.of(this)
+                .behavior(new MoveToRiderTargetExecutor(this.getEnvironmentalMoveSpeed() * 2.00f, true))
+                        .when(e -> this.isRiddenByMob())
+                .behavior(new TemptExecutor(1.2f, TEMPT_ITEMS))
+                        .when(all(
+                                e -> !e.getMemoryStorage().get(CoreMemoryTypes.IS_IN_LOVE),
+                                e -> TemptExecutor.hasTemptingPlayer(e, false, 10, TEMPT_ITEMS)
+                        ))
+                // RETURN HOME if too far
+                .behavior(new MoveToTargetExecutor(CoreMemoryTypes.NEAREST_BLOCK, this.getEnvironmentalMoveSpeed() * 8f, true))
+                        .when(entity -> {
+                            EntityNautilus n = (EntityNautilus) entity;
 
-                                    if (!n.isTamed()) return false;
-                                    if (n.hasControllingPassenger()) return false;
+                            if (!n.isTamed()) return false;
+                            if (n.hasControllingPassenger()) return false;
 
-                                    if (entity.getMemoryStorage().get(CoreMemoryTypes.IS_IN_LOVE)) return false;
+                            if (entity.getMemoryStorage().get(CoreMemoryTypes.IS_IN_LOVE)) return false;
 
-                                    Block home = entity.getMemoryStorage().get(CoreMemoryTypes.NEAREST_BLOCK);
-                                    if (home == null) return false;
+                            Block home = entity.getMemoryStorage().get(CoreMemoryTypes.NEAREST_BLOCK);
+                            if (home == null) return false;
 
-                                    double max = n.roamDistance();
-                                    return entity.distanceSquared(home) > (max * max);
-                                },
-                                3, 1
-                        ),
-                        new Behavior( // ROAM freely (not tamed)
-                                new SpaceRandomRoamExecutor(getEnvironmentalMoveSpeed(), 64, 16, 80, false, -1, false, 10),
-                                entity -> {
-                                    EntityNautilus n = (EntityNautilus) entity;
-                                    return !n.isTamed() && !n.hasControllingPassenger();
-                                },
-                                2
-                        ),
-                        new Behavior( // ROAM but only while inside home radius (tamed only)
-                                new SpaceRandomRoamExecutor(getEnvironmentalMoveSpeed() * 3, roamDistance(), 16, 80, false, -1, false, 10),
-                                entity -> {
-                                    EntityNautilus n = (EntityNautilus) entity;
+                            double max = n.roamDistance();
+                            return entity.distanceSquared(home) > (max * max);
+                        })
+                // ROAM freely (not tamed)
+                .behavior(new SpaceRandomRoamExecutor(getEnvironmentalMoveSpeed(), 64, 16, 80, false, -1, false, 10))
+                        .when(entity -> {
+                            EntityNautilus n = (EntityNautilus) entity;
+                            return !n.isTamed() && !n.hasControllingPassenger();
+                        })
+                // ROAM but only while inside home radius (tamed only)
+                .behavior(new SpaceRandomRoamExecutor(getEnvironmentalMoveSpeed() * 3, roamDistance(), 16, 80, false, -1, false, 10))
+                        .when(entity -> {
+                            EntityNautilus n = (EntityNautilus) entity;
 
-                                    if (entity.getMemoryStorage().get(CoreMemoryTypes.IS_IN_LOVE)) return false;
-                                    Block home = entity.getMemoryStorage().get(CoreMemoryTypes.NEAREST_BLOCK);
-                                    if (home == null) return false;
+                            if (entity.getMemoryStorage().get(CoreMemoryTypes.IS_IN_LOVE)) return false;
+                            Block home = entity.getMemoryStorage().get(CoreMemoryTypes.NEAREST_BLOCK);
+                            if (home == null) return false;
 
-                                    double max = n.roamDistance();
-                                    return entity.distanceSquared(home) <= (max * max);
-                                },
-                                1
-                        )
-                )
+                            double max = n.roamDistance();
+                            return entity.distanceSquared(home) <= (max * max);
+                        })
                 .sensors()
                 .controllers(
                         new SpaceMoveController(),

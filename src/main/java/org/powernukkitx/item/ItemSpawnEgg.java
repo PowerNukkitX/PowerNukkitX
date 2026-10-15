@@ -5,6 +5,7 @@ import org.powernukkitx.block.Block;
 import org.powernukkitx.entity.Entity;
 import org.powernukkitx.event.entity.CreatureSpawnEvent;
 import org.powernukkitx.event.entity.CreatureSpawnEvent.SpawnReason;
+import org.powernukkitx.item.definition.ItemDefinition;
 import org.powernukkitx.level.Level;
 import org.powernukkitx.level.Location;
 import org.powernukkitx.level.format.IChunk;
@@ -13,7 +14,6 @@ import org.powernukkitx.level.vibration.VibrationType;
 import org.powernukkitx.math.AxisAlignedBB;
 import org.powernukkitx.math.BlockFace;
 import org.powernukkitx.nbt.tag.CompoundTag;
-import org.powernukkitx.nbt.tag.DoubleTag;
 import org.powernukkitx.nbt.tag.FloatTag;
 import org.powernukkitx.registry.Registries;
 
@@ -24,22 +24,41 @@ import java.util.concurrent.ThreadLocalRandom;
  * @author MagicDroidX (Nukkit Project)
  */
 public class ItemSpawnEgg extends Item implements SpawnEggPickable {
+    public static final ItemDefinition DEFINITION = DEFAULT_DEFINITION.toBuilder()
+            .canBeActivated(true)
+            .build();
 
     public ItemSpawnEgg() {
-        this(0, 1);
+        this(0, 1, DEFINITION);
+    }
+
+    public ItemSpawnEgg(ItemDefinition definition) {
+        this(0, 1, definition);
     }
 
     public ItemSpawnEgg(Integer meta) {
-        this(meta, 1);
+        this(meta, 1, DEFINITION);
+    }
+
+    public ItemSpawnEgg(Integer meta, ItemDefinition definition) {
+        this(meta, 1, definition);
     }
 
     public ItemSpawnEgg(Integer meta, int count) {
-        super(SPAWN_EGG, meta, count, "Spawn Egg");
+        this(meta, count, DEFINITION);
+    }
+
+    public ItemSpawnEgg(Integer meta, int count, ItemDefinition definition) {
+        super(SPAWN_EGG, meta, count, "Spawn Egg", definition);
         updateName();
     }
 
     public ItemSpawnEgg(String id) {
-        super(id, 0, 1);
+        this(id, DEFINITION);
+    }
+
+    public ItemSpawnEgg(String id, ItemDefinition definition) {
+        super(id, 0, 1, (String) null, definition);
     }
 
     protected CompoundTag entityNBT;
@@ -57,11 +76,6 @@ public class ItemSpawnEgg extends Item implements SpawnEggPickable {
         } else {
             name = entityName + " Spawn Egg";
         }
-    }
-
-    @Override
-    public boolean canBeActivated() {
-        return true;
     }
 
     @Override
@@ -85,8 +99,8 @@ public class ItemSpawnEgg extends Item implements SpawnEggPickable {
         }
 
         if (this.entityNBT != null) {
-            this.entityNBT.putList("Pos", nbt.getList("Pos", DoubleTag.class));
-            this.entityNBT.putList("Motion", nbt.getList("Motion", DoubleTag.class));
+            this.entityNBT.putList("Pos", nbt.getList("Pos", FloatTag.class));
+            this.entityNBT.putList("Motion", nbt.getList("Motion", FloatTag.class));
             this.entityNBT.putList("Rotation", nbt.getList("Rotation", FloatTag.class));
             nbt = this.entityNBT;
         }

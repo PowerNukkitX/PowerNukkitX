@@ -867,7 +867,7 @@ public class HumanInventory extends BaseInventory {
                 pk.setTargetActorID(-1);
             } else {
                 pk.setContainerID((byte) who.getWindowId(this));
-                pk.setTargetActorID(this.getHolder().getEntity().getId());
+                pk.setTargetActorID(this.getHolder().getEntity().uniqueIdLong());
             }
 
             pk.setContainerType(this.getType());

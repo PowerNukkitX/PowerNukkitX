@@ -1,10 +1,19 @@
 package org.powernukkitx.block;
 
+import org.powernukkitx.block.definition.BlockDefinition;
+
 import org.powernukkitx.item.ItemTool;
 import org.jetbrains.annotations.NotNull;
 
 public class BlockDiamondBlock extends BlockSolid {
     public static final BlockProperties PROPERTIES = new BlockProperties(DIAMOND_BLOCK);
+    public static final BlockDefinition DEFINITION = SOLID.toBuilder()
+            .hardness(5)
+            .resistance(30)
+            .toolType(ItemTool.TYPE_PICKAXE)
+            .toolTier(ItemTool.TIER_IRON)
+            .canHarvestWithHand(false)
+            .build();
 
     @Override
     @NotNull public BlockProperties getProperties() {
@@ -16,22 +25,7 @@ public class BlockDiamondBlock extends BlockSolid {
     }
 
     public BlockDiamondBlock(BlockState blockstate) {
-        super(blockstate);
-    }
-
-    @Override
-    public double getHardness() {
-        return 5;
-    }
-
-    @Override
-    public double getResistance() {
-        return 30;
-    }
-
-    @Override
-    public int getToolType() {
-        return ItemTool.TYPE_PICKAXE;
+        super(blockstate, DEFINITION);
     }
 
     @Override
@@ -39,13 +33,5 @@ public class BlockDiamondBlock extends BlockSolid {
         return "Diamond Block";
     }
 
-    @Override
-    public int getToolTier() {
-        return ItemTool.TIER_IRON;
+    
     }
-
-    @Override
-    public boolean canHarvestWithHand() {
-        return false;
-    }
-}

@@ -74,6 +74,56 @@ public class BlockStateUpdater_1_26_50 implements Updater {
     );
 
     /**
+     * Blocks selected by the BDS neighbor-aware version-3 connection upgrade.
+     */
+    public static final List<String> THIN_CONNECTION_BLOCKS = List.of(
+        "minecraft:black_stained_glass_pane",
+        "minecraft:blue_stained_glass_pane",
+        "minecraft:brown_stained_glass_pane",
+        "minecraft:copper_bars",
+        "minecraft:cyan_stained_glass_pane",
+        "minecraft:exposed_copper_bars",
+        "minecraft:glass_pane",
+        "minecraft:gray_stained_glass_pane",
+        "minecraft:green_stained_glass_pane",
+        "minecraft:hard_black_stained_glass_pane",
+        "minecraft:hard_blue_stained_glass_pane",
+        "minecraft:hard_brown_stained_glass_pane",
+        "minecraft:hard_cyan_stained_glass_pane",
+        "minecraft:hard_glass_pane",
+        "minecraft:hard_gray_stained_glass_pane",
+        "minecraft:hard_green_stained_glass_pane",
+        "minecraft:hard_light_blue_stained_glass_pane",
+        "minecraft:hard_light_gray_stained_glass_pane",
+        "minecraft:hard_lime_stained_glass_pane",
+        "minecraft:hard_magenta_stained_glass_pane",
+        "minecraft:hard_orange_stained_glass_pane",
+        "minecraft:hard_pink_stained_glass_pane",
+        "minecraft:hard_purple_stained_glass_pane",
+        "minecraft:hard_red_stained_glass_pane",
+        "minecraft:hard_white_stained_glass_pane",
+        "minecraft:hard_yellow_stained_glass_pane",
+        "minecraft:iron_bars",
+        "minecraft:light_blue_stained_glass_pane",
+        "minecraft:light_gray_stained_glass_pane",
+        "minecraft:lime_stained_glass_pane",
+        "minecraft:magenta_stained_glass_pane",
+        "minecraft:orange_stained_glass_pane",
+        "minecraft:oxidized_copper_bars",
+        "minecraft:pink_stained_glass_pane",
+        "minecraft:purple_stained_glass_pane",
+        "minecraft:red_stained_glass_pane",
+        "minecraft:trip_wire",
+        "minecraft:waxed_copper_bars",
+        "minecraft:waxed_exposed_copper_bars",
+        "minecraft:waxed_oxidized_copper_bars",
+        "minecraft:waxed_weathered_copper_bars",
+        "minecraft:weathered_copper_bars",
+        "minecraft:white_stained_glass_pane",
+        "minecraft:yellow_stained_glass_pane"
+    );
+
+    /**
      * Blocks that gained {@code minecraft:corner}
      */
     public static final List<String> CORNER_BLOCKS = List.of(

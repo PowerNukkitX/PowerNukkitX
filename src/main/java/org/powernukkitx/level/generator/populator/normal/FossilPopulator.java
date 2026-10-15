@@ -39,10 +39,10 @@ public class FossilPopulator extends Populator implements PopulatorStructure {
         int chunkZ = chunk.getZ();
         Level level = chunk.getLevel();
         random.setSeed(level.getSeed() ^ Level.chunkHash(chunkX, chunkZ));
-        int biome = chunk.getBiomeId(3, chunk.getHeightMap(3, 3), 3);
+        int biome = chunk.getBiomeId(3, chunk.getHeightMap(3, 3) - 1, 3);
         BiomeDefinitionData definition = Registries.BIOME.get(biome).second();
         if (random.nextInt(RARITY) == 0 && isFossilBiome(definition)) {
-            int y = Math.min(64, chunk.getHeightMap(0, 0));
+            int y = Math.min(64, chunk.getHeightMap(0, 0) - 1);
 
             String id = chunk.getBlockState(0, y, 0).getIdentifier();
             while (id.equals(BlockID.WATER)) {

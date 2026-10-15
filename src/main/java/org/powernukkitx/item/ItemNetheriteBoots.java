@@ -1,6 +1,18 @@
 package org.powernukkitx.item;
 
+import org.powernukkitx.item.definition.ItemDefinition;
+
 public class ItemNetheriteBoots extends ItemArmor {
+    public static final ItemDefinition DEFINITION = ARMOR.toBuilder()
+            .armorPoints(3)
+            .boots(true)
+            .knockbackResistance(0.1f)
+            .lavaResistant(true)
+            .maxDurability(481)
+            .tier(Item.WEARABLE_TIER_NETHERITE)
+            .toughness(3)
+            .build();
+
     public ItemNetheriteBoots() {
         this(0, 1);
     }
@@ -10,41 +22,6 @@ public class ItemNetheriteBoots extends ItemArmor {
     }
 
     public ItemNetheriteBoots(Integer meta, int count) {
-        super(NETHERITE_BOOTS, meta, count, "Netherite Boots");
-    }
-
-    @Override
-    public int getTier() {
-        return Item.WEARABLE_TIER_NETHERITE;
-    }
-
-    @Override
-    public boolean isBoots() {
-        return true;
-    }
-
-    @Override
-    public int getArmorPoints() {
-        return 3;
-    }
-
-    @Override
-    public int getMaxDurability() {
-        return 481;
-    }
-
-    @Override
-    public int getToughness() {
-        return 3;
-    }
-
-    @Override
-    public boolean isLavaResistant() {
-        return true;
-    }
-
-    @Override
-    public float getKnockbackResistance() {
-        return 0.1f;
+        super(NETHERITE_BOOTS, meta, count, "Netherite Boots", DEFINITION);
     }
 }

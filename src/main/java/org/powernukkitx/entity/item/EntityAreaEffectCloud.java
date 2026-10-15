@@ -60,7 +60,8 @@ public class EntityAreaEffectCloud extends Entity {
     }
 
     public int getPotionId() {
-        return this.getDataProperty(ActorDataTypes.AUX_VALUE_DATA);
+        // A dragon breath cloud carries no potion, and saving it must not fail the whole chunk
+        return this.getDataProperty(ActorDataTypes.AUX_VALUE_DATA, (short) 0);
     }
 
     public void setPotionId(int potionId) {

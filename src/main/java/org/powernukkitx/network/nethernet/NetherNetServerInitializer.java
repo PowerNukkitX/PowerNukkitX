@@ -2,6 +2,8 @@ package org.powernukkitx.network.nethernet;
 
 import io.netty.channel.Channel;
 import org.cloudburstmc.netty.channel.raknet.config.RakChannelOption;
+import org.cloudburstmc.protocol.bedrock.BedrockPeer;
+import org.cloudburstmc.protocol.bedrock.BedrockServerSession;
 import org.cloudburstmc.protocol.bedrock.PacketDirection;
 import org.cloudburstmc.protocol.bedrock.data.PacketCompressionAlgorithm;
 import org.cloudburstmc.protocol.bedrock.netty.codec.compression.CompressionCodec;
@@ -9,6 +11,7 @@ import org.cloudburstmc.protocol.bedrock.netty.codec.packet.BedrockPacketCodec;
 import org.cloudburstmc.protocol.bedrock.netty.codec.packet.BedrockPacketCodec_v3;
 import org.cloudburstmc.protocol.bedrock.netty.initializer.BedrockChannelInitializer;
 import org.cloudburstmc.protocol.bedrock.netty.initializer.BedrockServerInitializer;
+import org.powernukkitx.network.HoldableServerSession;
 
 /**
  * Builds the Bedrock pipeline on top of a NetherNet data channel.
@@ -33,6 +36,11 @@ public abstract class NetherNetServerInitializer extends BedrockServerInitialize
     protected NetherNetServerInitializer(int codecVersion, boolean packetTrace) {
         this.codecVersion = codecVersion;
         this.packetTrace = packetTrace;
+    }
+
+    @Override
+    public BedrockServerSession createSession0(BedrockPeer peer, int subClientId) {
+        return new HoldableServerSession(peer, subClientId);
     }
 
     @Override

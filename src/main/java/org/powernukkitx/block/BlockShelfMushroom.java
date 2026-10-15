@@ -18,7 +18,7 @@ import static org.powernukkitx.block.property.CommonBlockProperties.MINECRAFT_CA
  * A mushroom that grows on the side of a block. Bone meal takes it from small to full grown.
  */
 public class BlockShelfMushroom extends BlockFlowable {
-    public static final BlockProperties PROPERTIES = new BlockProperties(SHELF_MUSHROOM, MINECRAFT_CARDINAL_DIRECTION, GROWTH_1);
+    public static final BlockProperties PROPERTIES = new BlockProperties(SHELF_MUSHROOM, PrecipitationBehavior.NONE, MINECRAFT_CARDINAL_DIRECTION, GROWTH_1);
 
     public BlockShelfMushroom() {
         this(PROPERTIES.getDefaultState());

@@ -116,7 +116,7 @@ public class EntityDamageEvent extends EntityEvent implements Cancellable {
 
     public boolean canBeReducedByArmor() {
         return switch (this.cause) {
-            case FIRE_TICK, SUFFOCATION, DROWNING, HUNGER, FALL, VOID, MAGIC, SUICIDE -> false;
+            case FIRE_TICK, SUFFOCATION, DROWNING, HUNGER, FALL, VOID, MAGIC, SUICIDE, SONIC_BOOM -> false;
             default -> true;
         };
     }
@@ -295,6 +295,10 @@ public class EntityDamageEvent extends EntityEvent implements Cancellable {
         /**
          * Damage caused by ageing
          */
-        AGE
+        AGE,
+        /**
+         * Damage caused by a Warden sonic boom
+         */
+        SONIC_BOOM
     }
 }

@@ -1,5 +1,7 @@
 package org.powernukkitx.block;
 
+import org.powernukkitx.block.definition.BlockDefinition;
+
 import org.powernukkitx.Player;
 import org.powernukkitx.item.Item;
 import org.powernukkitx.level.Level;
@@ -11,8 +13,16 @@ import javax.annotation.Nullable;
 
 
 public abstract class BlockFungus extends BlockFlowable implements BlockFlowerPot.FlowerPotBlock, Natural {
+    public static final BlockDefinition DEFINITION = FLOWABLE.toBuilder()
+            .canBeActivated(true)
+            .isFertilizable(true)
+            .build();
     public BlockFungus(BlockState blockState) {
-        super(blockState);
+        super(blockState, DEFINITION);
+    }
+
+    public BlockFungus(BlockState blockState, BlockDefinition definition) {
+        super(blockState, definition);
     }
 
     @Override
@@ -69,18 +79,10 @@ public abstract class BlockFungus extends BlockFlowable implements BlockFlowerPo
         };
     }
 
-    @Override
-    public boolean canBeActivated() {
-        return true;
-    }
-
+    
     public abstract boolean grow(@Nullable Player cause);
 
-    @Override
-    public boolean isFertilizable() {
-        return true;
-    }
-
+    
     @Override
     public int getSnowloggingLevel() {
         return 1;

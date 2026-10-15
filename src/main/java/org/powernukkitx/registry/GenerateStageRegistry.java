@@ -3,6 +3,7 @@ package org.powernukkitx.registry;
 import org.powernukkitx.level.generator.GenerateStage;
 import org.powernukkitx.level.generator.stages.GeneratedStage;
 import org.powernukkitx.level.generator.stages.NormalChunkFeatureStage;
+import org.powernukkitx.level.generator.stages.NormalPregenerationFeatureStage;
 import org.powernukkitx.level.generator.stages.end.TheEndPopulatorStage;
 import org.powernukkitx.level.generator.stages.end.TheEndTerrainStage;
 import org.powernukkitx.level.generator.stages.FinishedStage;
@@ -39,6 +40,7 @@ public class GenerateStageRegistry implements IRegistry<String, GenerateStage, C
             this.register(NormalTerrainStage.NAME, NormalTerrainStage.class);
             this.register(NormalSurfaceDataStage.NAME, NormalSurfaceDataStage.class);
             this.register(NormalSurfaceOverwriteStage.NAME, NormalSurfaceOverwriteStage.class);
+            this.register(NormalPregenerationFeatureStage.NAME, NormalPregenerationFeatureStage.class);
             this.register(NormalPopulatorStage.NAME, NormalPopulatorStage.class);
             this.register(NormalChunkFeatureStage.NAME, NormalChunkFeatureStage.class);
             this.register(NetherTerrainStage.NAME, NetherTerrainStage.class);

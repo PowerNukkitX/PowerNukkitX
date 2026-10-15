@@ -4,10 +4,11 @@ import org.powernukkitx.level.format.Chunk;
 import org.powernukkitx.level.format.IChunk;
 import org.powernukkitx.level.generator.noise.minecraft.noise.NormalNoise;
 import org.powernukkitx.math.NukkitMath;
+import it.unimi.dsi.fastutil.longs.Long2DoubleOpenHashMap;
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
 
 import java.util.Arrays;
-import java.util.IdentityHashMap;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.Map;
 import java.util.function.Supplier;
 
@@ -76,15 +77,33 @@ public final class DensityCommon {
     }
 
     public static final class ChunkCache {
-        private final Map<Marker, Object> states = new IdentityHashMap<>();
+        /**
+         * Indexed by {@link Marker#cacheSlot}. This is read once per marker per block - roughly a
+         * million times per generated chunk - so it is an array rather than an identity map: the
+         * hash probe was paid on every lookup even though the contents never change after the first
+         * pass over a chunk.
+         */
+        private Object[] states = new Object[Math.max(16, Marker.cacheSlotCount())];
 
         @SuppressWarnings("unchecked")
         private <T> T getOrCreate(Marker marker, Supplier<T> supplier) {
-            return (T) states.computeIfAbsent(marker, ignored -> supplier.get());
+            int slot = marker.cacheSlot;
+            Object[] current = this.states;
+            if (slot >= current.length) {
+                // A generator built after this cache was created can push the slot count up.
+                current = Arrays.copyOf(current, Math.max(slot + 1, Marker.cacheSlotCount()));
+                this.states = current;
+            }
+            Object state = current[slot];
+            if (state == null) {
+                state = supplier.get();
+                current[slot] = state;
+            }
+            return (T) state;
         }
 
         public void clear() {
-            states.clear();
+            Arrays.fill(this.states, null);
         }
     }
 
@@ -619,12 +638,24 @@ public final class DensityCommon {
             CACHE_ALL_IN_CELL
         }
 
+        /**
+         * Hands every marker a dense slot in {@link ChunkCache}. Markers are created once when a
+         * generator builds its density function graph, so the counter is only touched at setup.
+         */
+        private static final AtomicInteger CACHE_SLOTS = new AtomicInteger();
+
         protected final DensityFunction wrapped;
         private final Type type;
+        final int cacheSlot;
 
         protected Marker(Type type, DensityFunction wrapped) {
             this.type = type;
             this.wrapped = wrapped;
+            this.cacheSlot = CACHE_SLOTS.getAndIncrement();
+        }
+
+        static int cacheSlotCount() {
+            return CACHE_SLOTS.get();
         }
 
         public static DensityFunction create(Type type, DensityFunction wrapped) {
@@ -915,8 +946,13 @@ public final class DensityCommon {
             private final double[] values = new double[CELL_VALUE_COUNT];
             private final MutableFunctionContext context = new MutableFunctionContext();
             private final MutableChunkCacheContext chunkCacheContext = new MutableChunkCacheContext();
+            private final Long2DoubleOpenHashMap cornerValues = new Long2DoubleOpenHashMap(1024);
 
             private long lastKey = Long.MAX_VALUE;
+
+            private InterpolatedState() {
+                cornerValues.defaultReturnValue(Double.NaN);
+            }
 
             private double[] getOrCreateCell(int cellX, int cellY, int cellZ, DensityFunction wrapped, FunctionContext sourceContext) {
                 long key = (((long) cellX & 0x1FFFFFL) << 42) | (((long) cellY & 0x1FFFFFL) << 21) | ((long) cellZ & 0x1FFFFFL);
@@ -927,6 +963,20 @@ public final class DensityCommon {
                 fillCell(cellX, cellY, cellZ, wrapped, sourceContext);
                 lastKey = key;
                 return values;
+            }
+
+            private double cornerValue(DensityFunction wrapped, FunctionContext context) {
+                final int blockX = context.blockX();
+                final int blockY = context.blockY();
+                final int blockZ = context.blockZ();
+                final long key = (((long) blockX & 0x3FFFFFFL) << 38) | (((long) blockZ & 0x3FFFFFFL) << 12) | ((long) blockY & 0xFFFL);
+
+                final double cached = cornerValues.get(key);
+                if (!Double.isNaN(cached)) return cached;
+
+                final double value = wrapped.compute(context);
+                cornerValues.put(key, value);
+                return value;
             }
 
             private void fillCell(int cellX, int cellY, int cellZ, DensityFunction wrapped, FunctionContext sourceContext) {
@@ -942,14 +992,14 @@ public final class DensityCommon {
                 int nextY = cellY + CELL_SIZE_Y;
                 int nextZ = cellZ + CELL_SIZE_XZ;
                 fillValues(
-                        wrapped.compute(context.set(cellX, cellY, cellZ)),
-                        wrapped.compute(context.set(nextX, cellY, cellZ)),
-                        wrapped.compute(context.set(cellX, nextY, cellZ)),
-                        wrapped.compute(context.set(nextX, nextY, cellZ)),
-                        wrapped.compute(context.set(cellX, cellY, nextZ)),
-                        wrapped.compute(context.set(nextX, cellY, nextZ)),
-                        wrapped.compute(context.set(cellX, nextY, nextZ)),
-                        wrapped.compute(context.set(nextX, nextY, nextZ))
+                        cornerValue(wrapped, context.set(cellX, cellY, cellZ)),
+                        cornerValue(wrapped, context.set(nextX, cellY, cellZ)),
+                        cornerValue(wrapped, context.set(cellX, nextY, cellZ)),
+                        cornerValue(wrapped, context.set(nextX, nextY, cellZ)),
+                        cornerValue(wrapped, context.set(cellX, cellY, nextZ)),
+                        cornerValue(wrapped, context.set(nextX, cellY, nextZ)),
+                        cornerValue(wrapped, context.set(cellX, nextY, nextZ)),
+                        cornerValue(wrapped, context.set(nextX, nextY, nextZ))
                 );
             }
 
@@ -958,14 +1008,14 @@ public final class DensityCommon {
                 int nextY = cellY + CELL_SIZE_Y;
                 int nextZ = cellZ + CELL_SIZE_XZ;
                 fillValues(
-                        wrapped.compute(context.set(cellX, cellY, cellZ)),
-                        wrapped.compute(context.set(nextX, cellY, cellZ)),
-                        wrapped.compute(context.set(cellX, nextY, cellZ)),
-                        wrapped.compute(context.set(nextX, nextY, cellZ)),
-                        wrapped.compute(context.set(cellX, cellY, nextZ)),
-                        wrapped.compute(context.set(nextX, cellY, nextZ)),
-                        wrapped.compute(context.set(cellX, nextY, nextZ)),
-                        wrapped.compute(context.set(nextX, nextY, nextZ))
+                        cornerValue(wrapped, context.set(cellX, cellY, cellZ)),
+                        cornerValue(wrapped, context.set(nextX, cellY, cellZ)),
+                        cornerValue(wrapped, context.set(cellX, nextY, cellZ)),
+                        cornerValue(wrapped, context.set(nextX, nextY, cellZ)),
+                        cornerValue(wrapped, context.set(cellX, cellY, nextZ)),
+                        cornerValue(wrapped, context.set(nextX, cellY, nextZ)),
+                        cornerValue(wrapped, context.set(cellX, nextY, nextZ)),
+                        cornerValue(wrapped, context.set(nextX, nextY, nextZ))
                 );
             }
 

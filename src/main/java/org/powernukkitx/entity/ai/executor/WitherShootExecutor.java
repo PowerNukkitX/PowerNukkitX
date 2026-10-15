@@ -12,7 +12,6 @@ import org.powernukkitx.event.entity.ProjectileLaunchEvent;
 import org.powernukkitx.level.Location;
 import org.powernukkitx.level.Sound;
 import org.powernukkitx.nbt.tag.CompoundTag;
-import org.powernukkitx.nbt.tag.DoubleTag;
 import org.powernukkitx.nbt.tag.FloatTag;
 import org.powernukkitx.nbt.tag.ListTag;
 
@@ -54,14 +53,14 @@ public class WitherShootExecutor implements EntityControl, IBehaviorExecutor {
         Location fireballLocation = entity.getLocation();
         fireballLocation.add(entity.getDirectionVector());
         CompoundTag nbt = new CompoundTag()
-                .putList("Pos", new ListTag<DoubleTag>()
-                        .add(new DoubleTag(fireballLocation.x))
-                        .add(new DoubleTag(fireballLocation.y))
-                        .add(new DoubleTag(fireballLocation.z)))
-                .putList("Motion", new ListTag<DoubleTag>()
-                        .add(new DoubleTag(-Math.sin(entity.headYaw / 180 * Math.PI) * Math.cos(entity.pitch / 180 * Math.PI)))
-                        .add(new DoubleTag(-Math.sin(entity.pitch / 180 * Math.PI)))
-                        .add(new DoubleTag(Math.cos(entity.headYaw / 180 * Math.PI) * Math.cos(entity.pitch / 180 * Math.PI))))
+                .putList("Pos", new ListTag<FloatTag>()
+                        .add(new FloatTag(fireballLocation.x))
+                        .add(new FloatTag(fireballLocation.y))
+                        .add(new FloatTag(fireballLocation.z)))
+                .putList("Motion", new ListTag<FloatTag>()
+                        .add(new FloatTag(-Math.sin(entity.headYaw / 180 * Math.PI) * Math.cos(entity.pitch / 180 * Math.PI)))
+                        .add(new FloatTag(-Math.sin(entity.pitch / 180 * Math.PI)))
+                        .add(new FloatTag(Math.cos(entity.headYaw / 180 * Math.PI) * Math.cos(entity.pitch / 180 * Math.PI))))
                 .putList("Rotation", new ListTag<FloatTag>()
                         .add(new FloatTag((entity.headYaw > 180 ? 360 : 0) - (float) entity.headYaw))
                         .add(new FloatTag((float) -entity.pitch)))

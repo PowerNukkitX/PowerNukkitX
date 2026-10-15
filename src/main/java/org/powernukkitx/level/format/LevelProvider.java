@@ -1,14 +1,17 @@
 package org.powernukkitx.level.format;
 
+import org.powernukkitx.entity.Entity;
 import org.powernukkitx.level.DimensionData;
 import org.powernukkitx.level.GameRules;
 import org.powernukkitx.level.Level;
 import org.powernukkitx.math.Vector3;
 import io.netty.buffer.ByteBuf;
 import it.unimi.dsi.fastutil.Pair;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
 import java.util.Map;
+import java.util.concurrent.Executor;
 
 /**
  * @author MagicDroidX (Nukkit Project)
@@ -20,6 +23,20 @@ public interface LevelProvider {
     DimensionData getDimensionData();
 
     Pair<ByteBuf, Integer> requestChunkData(int x, int z);
+
+    /**
+     * Builds the data required for client SubChunk request mode.
+     *
+     * @param x chunk X
+     * @param z chunk Z
+     * @return SubChunk request metadata
+     */
+    default SubChunkRequestData requestSubChunkModeData(int x, int z) {
+        throw new UnsupportedOperationException(getClass().getName() + " does not support SubChunk request mode");
+    }
+
+    record SubChunkRequestData(ByteBuf biomeData, ByteBuf borderBlockData, int requestLimit) {
+    }
 
     String getPath();
 
@@ -33,9 +50,47 @@ public interface LevelProvider {
 
     IChunk getEmptyChunk(int x, int z);
 
+    /**
+     * Acquires a physical chunk object without requiring persistent data to be resolved first.
+     *
+     * @param x chunk X
+     * @param z chunk Z
+     * @return acquired chunk
+     */
+    default IChunk acquireChunk(int x, int z) {
+        return getChunk(x, z, true);
+    }
+
+    /**
+     * Resolves persisted data for an acquired chunk.
+     *
+     * @param chunk acquired chunk
+     * @return whether persisted chunk data was loaded
+     */
+    default boolean loadPersistentChunk(IChunk chunk) {
+        return false;
+    }
+
     void saveChunks();
 
     void saveChunks(Collection<IChunk> chunks);
+
+    /**
+     * Saves the given chunks, with the calling thread taking part in serializing them.
+     * <p>
+     * Unlike {@link #saveChunks(Collection)}, which hands serialization to the compute pool and
+     * waits for it, the caller serializes chunks itself while idle threads of {@code helpers} pick
+     * up the rest. It only ever waits for chunks a helper is already serializing, never for a
+     * helper task that has not started, so a busy executor slows the save down to serial speed
+     * instead of stalling it. Meant for tick threads.
+     *
+     * @param chunks  chunks to save; unchanged chunks are skipped
+     * @param helpers executor whose threads may help serializing, or {@code null} to serialize
+     *                on the calling thread alone
+     */
+    default void saveChunks(Collection<IChunk> chunks, @Nullable Executor helpers) {
+        saveChunks(chunks);
+    }
 
     void saveChunk(int x, int z);
 
@@ -118,6 +173,23 @@ public interface LevelProvider {
     Map<Long, IChunk> getLoadedChunks();
 
     Level getLevel();
+
+    /**
+     * Defers a non-ticking entity move before normal chunk attachment.
+     *
+     * @return whether the move was deferred and the runtime entity must be detached
+     */
+    default boolean deferEntityChunkMove(Entity entity, int targetChunkX, int targetChunkZ) {
+        return false;
+    }
+
+    /**
+     * Called after a chunk completes runtime initialization.
+     *
+     * @param chunk initialized chunk
+     */
+    default void onChunkInitialized(IChunk chunk) {
+    }
 
     void close();
 

@@ -1,11 +1,5 @@
 package org.powernukkitx.network.positiontracking;
 
-import org.powernukkitx.Player;
-import org.powernukkitx.Server;
-import org.powernukkitx.inventory.Inventory;
-import org.powernukkitx.item.Item;
-import org.powernukkitx.item.ItemID;
-import org.powernukkitx.item.ItemLodestoneCompass;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.MapMaker;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
@@ -15,56 +9,51 @@ import it.unimi.dsi.fastutil.ints.IntSet;
 import lombok.extern.slf4j.Slf4j;
 import org.cloudburstmc.nbt.NbtMap;
 import org.cloudburstmc.nbt.NbtType;
-import org.cloudburstmc.protocol.bedrock.packet.BedrockPacket;
 import org.cloudburstmc.protocol.bedrock.packet.PositionTrackingDBServerBroadcastPacket;
+import org.iq80.leveldb.DB;
 import org.jetbrains.annotations.NotNull;
+import org.powernukkitx.Player;
+import org.powernukkitx.Server;
+import org.powernukkitx.inventory.Inventory;
+import org.powernukkitx.item.Item;
+import org.powernukkitx.item.ItemID;
+import org.powernukkitx.item.ItemLodestoneCompass;
 
 import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.io.Closeable;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FilenameFilter;
 import java.io.IOException;
-import java.lang.ref.WeakReference;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.NoSuchElementException;
+import java.util.OptionalInt;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.IntConsumer;
-import java.util.regex.Pattern;
-import java.util.stream.IntStream;
 
 /**
- * A position tracking db service. It holds file resources that needs to be closed when not needed anymore.
+ * Provides server-global position tracking backed by the LevelDB records stored in {@code server_data}.
  *
  * @author joserobjr
+ * @author Curse
  */
-
-
 @ParametersAreNonnullByDefault
 @Slf4j
 public class PositionTrackingService implements Closeable {
-    private static final Pattern FILENAME_PATTERN = Pattern.compile("^\\d+\\.pnt$", Pattern.CASE_INSENSITIVE);
-    private static final FilenameFilter FILENAME_FILTER = (dir, name) -> FILENAME_PATTERN.matcher(name).matches() && new File(dir, name).isFile();
-    private final TreeMap<Integer, WeakReference<PositionTrackingStorage>> storage = new TreeMap<>(Comparator.reverseOrder());
+    private final PositionTrackingStorage storage;
     private final AtomicBoolean closed = new AtomicBoolean(false);
-    private final File folder;
-    private final Map<Player, Map<PositionTrackingStorage, IntSet>> tracking = new MapMaker().weakKeys().makeMap();
+    private final Map<Player, IntSet> tracking = new MapMaker().weakKeys().makeMap();
 
     /**
-     * Creates position tracking db service. The service is ready to be used right after the creation.
+     * Creates a position-tracking service backed by the server-global LevelDB.
      *
-     * @param folder The folder that will hold the position tracking db files
-     * @throws FileNotFoundException If the folder does not exist and can't be created
+     * @param database server-global LevelDB
      */
-    public PositionTrackingService(File folder) throws FileNotFoundException {
-        if (!folder.isDirectory() && !folder.mkdirs()) {
-            throw new FileNotFoundException("Failed to create the folder " + folder);
-        }
-        this.folder = folder;
-        WeakReference<PositionTrackingStorage> emptyRef = new WeakReference<>(null);
-        Arrays.stream(Optional.ofNullable(folder.list(FILENAME_FILTER)).orElseThrow(() -> new FileNotFoundException("Invalid folder: " + folder)))
-                .map(name -> Integer.parseInt(name.substring(0, name.length() - 4)))
-                .forEachOrdered(startIndex -> storage.put(startIndex, emptyRef));
+    public PositionTrackingService(DB database) {
+        this.storage = new PositionTrackingStorage(database);
     }
 
     private boolean hasTrackingDevice(Player player, @Nullable Inventory inventory, int trackingHandler) throws IOException {
@@ -84,7 +73,6 @@ public class PositionTrackingService implements Closeable {
         if (!(item != null && item.getId().equals(ItemID.LODESTONE_COMPASS) && item instanceof ItemLodestoneCompass compassLodestone)) {
             return false;
         }
-
         if (compassLodestone.getTrackingHandle() != trackingHandler) {
             return false;
         }
@@ -104,7 +92,7 @@ public class PositionTrackingService implements Closeable {
 
     private void sendTrackingUpdate(Player player, int trackingHandler, PositionTracking pos) {
         if (player.getLevelName().equals(pos.getLevelName())) {
-            final PositionTrackingDBServerBroadcastPacket packet = new PositionTrackingDBServerBroadcastPacket();
+            PositionTrackingDBServerBroadcastPacket packet = new PositionTrackingDBServerBroadcastPacket();
             packet.setAction(PositionTrackingDBServerBroadcastPacket.Action.UPDATE);
             packet.setTrackingId(trackingHandler);
             packet.setPositionTrackingData(
@@ -123,13 +111,23 @@ public class PositionTrackingService implements Closeable {
     }
 
     private void sendTrackingDestroy(Player player, int trackingHandler) {
-        PositionTrackingDBServerBroadcastPacket packet = destroyPacket(trackingHandler);
-        player.sendPacket(packet);
+        player.sendPacket(destroyPacket(trackingHandler));
     }
 
-    public @Nullable
-    synchronized PositionTracking startTracking(Player player, int trackingHandler, boolean validate) throws IOException {
+    /**
+     * Starts tracking a stored position for a player.
+     *
+     * @param player player starting tracking
+     * @param trackingHandler tracking handle
+     * @param validate whether a matching tracking device must be present
+     * @return tracked position, or {@code null} when tracking cannot be started
+     * @throws IOException if the tracking data cannot be read
+     */
+    public @Nullable synchronized PositionTracking startTracking(Player player, int trackingHandler, boolean validate) throws IOException {
         Preconditions.checkArgument(trackingHandler >= 0, "Tracking handler must be positive");
+        if (trackingHandler == 0) {
+            return null;
+        }
         if (isTracking(player, trackingHandler, validate)) {
             PositionTracking position = getPosition(trackingHandler);
             if (position != null) {
@@ -144,17 +142,12 @@ public class PositionTrackingService implements Closeable {
             return null;
         }
 
-        PositionTrackingStorage storage = getStorageForHandler(trackingHandler);
-        if (storage == null) {
-            return null;
-        }
-
-        PositionTracking position = storage.getPosition(trackingHandler);
+        PositionTracking position = getPosition(trackingHandler);
         if (position == null) {
             return null;
         }
 
-        tracking.computeIfAbsent(player, p -> new HashMap<>()).computeIfAbsent(storage, s -> new IntOpenHashSet(3)).add(trackingHandler);
+        tracking.computeIfAbsent(player, p -> new IntOpenHashSet(3)).add(trackingHandler);
         return position;
     }
 
@@ -175,77 +168,57 @@ public class PositionTrackingService implements Closeable {
     }
 
     public synchronized boolean stopTracking(Player player) {
-        Map<PositionTrackingStorage, IntSet> toRemove = tracking.remove(player);
+        IntSet toRemove = tracking.remove(player);
         if (toRemove != null && player.isOnline()) {
-            BedrockPacket[] packets = toRemove.values().stream()
-                    .flatMapToInt(handlers -> IntStream.of(handlers.toIntArray()))
-                    .mapToObj(this::destroyPacket)
-                    .toArray(BedrockPacket[]::new);
-            for (var p : packets) {
-                player.sendPacket(p);
+            for (int trackingHandler : toRemove) {
+                player.sendPacket(destroyPacket(trackingHandler));
             }
         }
         return toRemove != null;
     }
 
     public synchronized boolean stopTracking(Player player, int trackingHandler) {
-        Map<PositionTrackingStorage, IntSet> tracking = this.tracking.get(player);
-        if (tracking == null) {
+        IntSet handlers = tracking.get(player);
+        if (handlers == null || !handlers.remove(trackingHandler)) {
             return false;
         }
-
-        for (Map.Entry<PositionTrackingStorage, IntSet> entry : tracking.entrySet()) {
-            if (entry.getValue().remove(trackingHandler)) {
-                if (entry.getValue().isEmpty()) {
-                    tracking.remove(entry.getKey());
-                }
-                player.sendPacket(destroyPacket(trackingHandler));
-                return true;
-            }
+        if (handlers.size() == 0) {
+            tracking.remove(player);
         }
-        return false;
+        player.sendPacket(destroyPacket(trackingHandler));
+        return true;
     }
 
     public synchronized boolean isTracking(Player player, int trackingHandler, boolean validate) throws IOException {
-        Map<PositionTrackingStorage, IntSet> tracking = this.tracking.get(player);
-        if (tracking == null) {
+        IntSet handlers = tracking.get(player);
+        if (handlers == null || !handlers.contains(trackingHandler)) {
             return false;
         }
-
-        for (IntSet value : tracking.values()) {
-            if (value.contains(trackingHandler)) {
-                if (validate && !hasTrackingDevice(player, trackingHandler)) {
-                    stopTracking(player, trackingHandler);
-                    return false;
-                }
-                return true;
-            }
+        if (validate && !hasTrackingDevice(player, trackingHandler)) {
+            stopTracking(player, trackingHandler);
+            return false;
         }
-        return false;
+        return true;
     }
 
     public synchronized void forceRecheckAllPlayers() {
-        tracking.keySet().removeIf(p -> !p.isOnline());
+        tracking.keySet().removeIf(player -> !player.isOnline());
         Map<Player, IntList> toRemove = new HashMap<>(2);
-        for (Map.Entry<Player, Map<PositionTrackingStorage, IntSet>> entry : tracking.entrySet()) {
+
+        for (Map.Entry<Player, IntSet> entry : tracking.entrySet()) {
             Player player = entry.getKey();
-            for (Map.Entry<PositionTrackingStorage, IntSet> entry2 : entry.getValue().entrySet()) {
-                entry2.getValue().forEach((IntConsumer) trackingHandler -> {
-                    try {
-                        if (!hasTrackingDevice(player, trackingHandler)) {
-                            toRemove.computeIfAbsent(player, p -> new IntArrayList(2)).add(trackingHandler);
-                        }
-                    } catch (IOException e) {
-                        log.error("Failed to update the tracking handler {} for player {}", trackingHandler, player.getName(), e);
+            entry.getValue().forEach((IntConsumer) trackingHandler -> {
+                try {
+                    if (!hasTrackingDevice(player, trackingHandler)) {
+                        toRemove.computeIfAbsent(player, p -> new IntArrayList(2)).add(trackingHandler);
                     }
-                });
-            }
+                } catch (IOException e) {
+                    log.error("Failed to update the tracking handler {} for player {}", trackingHandler, player.getName(), e);
+                }
+            });
         }
 
-        toRemove.forEach((player, list) ->
-                list.forEach((IntConsumer) handler ->
-                        stopTracking(player, handler)));
-
+        toRemove.forEach((player, list) -> list.forEach((IntConsumer) handler -> stopTracking(player, handler)));
         Server.getInstance().getOnlinePlayers().values().forEach(this::detectNeededUpdates);
     }
 
@@ -282,16 +255,16 @@ public class PositionTrackingService implements Closeable {
                 Item item = inventory.getItem(slot);
                 if (item.getId().equals(ItemID.LODESTONE_COMPASS) && item instanceof ItemLodestoneCompass compass) {
                     int trackingHandle = compass.getTrackingHandle();
-                    if (trackingHandle != 0) {
-                        PositionTracking pos;
-                        try {
-                            pos = getPosition(trackingHandle);
-                            if (pos != null && pos.getLevelName().equals(player.getLevelName())) {
-                                startTracking(player, trackingHandle, false);
-                            }
-                        } catch (IOException e) {
-                            log.error("Failed to get the position of the tracking handler {}", trackingHandle, e);
+                    if (trackingHandle == 0) {
+                        continue;
+                    }
+                    try {
+                        PositionTracking pos = getPosition(trackingHandle);
+                        if (pos != null && pos.getLevelName().equals(player.getLevelName())) {
+                            startTracking(player, trackingHandle, false);
                         }
+                    } catch (IOException e) {
+                        log.error("Failed to get the position of the tracking handler {}", trackingHandle, e);
                     }
                 }
             }
@@ -299,165 +272,78 @@ public class PositionTrackingService implements Closeable {
     }
 
     public void forceRecheck(Player player) {
-        Map<PositionTrackingStorage, IntSet> tracking = this.tracking.get(player);
-        if (tracking != null) {
+        IntSet handlers = tracking.get(player);
+        if (handlers != null) {
             IntList toRemove = new IntArrayList(2);
-            for (Map.Entry<PositionTrackingStorage, IntSet> entry2 : tracking.entrySet()) {
-                entry2.getValue().forEach((IntConsumer) trackingHandler -> {
-                    try {
-                        if (!hasTrackingDevice(player, trackingHandler)) {
-                            toRemove.add(trackingHandler);
-                        }
-                    } catch (IOException e) {
-                        log.error("Failed to update the tracking handler {} for player {}", trackingHandler, player.getName(), e);
+            handlers.forEach((IntConsumer) trackingHandler -> {
+                try {
+                    if (!hasTrackingDevice(player, trackingHandler)) {
+                        toRemove.add(trackingHandler);
                     }
-                });
-            }
+                } catch (IOException e) {
+                    log.error("Failed to update the tracking handler {} for player {}", trackingHandler, player.getName(), e);
+                }
+            });
             toRemove.forEach((IntConsumer) handler -> stopTracking(player, handler));
         }
-
         detectNeededUpdates(player);
     }
 
-    @Nullable
-    private synchronized Integer findStorageForHandler(@NotNull Integer handler) {
-        Integer best = null;
-        for (Integer startIndex : storage.keySet()) {
-            int comp = startIndex.compareTo(handler);
-            if (comp == 0) {
-                return startIndex;
-            }
-            if (comp < 0 && (best == null || best.compareTo(startIndex) < 0)) {
-                best = startIndex;
-            }
-        }
-        return best;
-    }
-
-    @NotNull
-    private synchronized PositionTrackingStorage loadStorage(@NotNull Integer startIndex) throws IOException {
-        PositionTrackingStorage trackingStorage = storage.get(startIndex).get();
-        if (trackingStorage != null) {
-            return trackingStorage;
-        }
-        PositionTrackingStorage positionTrackingStorage = new PositionTrackingStorage(startIndex, new File(folder, startIndex + ".pnt"));
-        storage.put(startIndex, new WeakReference<>(positionTrackingStorage));
-        return positionTrackingStorage;
-    }
-
-    @Nullable
-    private synchronized PositionTrackingStorage getStorageForHandler(@NotNull Integer trackingHandler) throws IOException {
-        Integer startIndex = findStorageForHandler(trackingHandler);
-        if (startIndex == null) {
-            return null;
-        }
-
-        PositionTrackingStorage storage = loadStorage(startIndex);
-        if (trackingHandler > storage.getMaxHandler()) {
-            return null;
-        }
-
-        return storage;
-    }
-
     /**
-     * Attempts to reuse an existing and enabled trackingHandler for the given position, if none is found than a new handler is created
-     * if the limit was not exceeded.
-     *
-     * @param position The position that needs a handler
-     * @return The trackingHandler assigned to the position or an empty OptionalInt if none was found and this storage is full
-     * @throws IOException If an error occurred while reading or writing the file
+     * Reuses an enabled tracking handle for a position or creates a new one.
      */
     public synchronized int addOrReusePosition(NamedPosition position) throws IOException {
         checkClosed();
-        OptionalInt trackingHandler = findTrackingHandler(position);
-        if (trackingHandler.isPresent()) {
-            return trackingHandler.getAsInt();
-        }
-        return addNewPosition(position);
+        return storage.addOrReusePosition(position).orElseThrow(InternalError::new);
     }
 
     /**
-     * Adds the given position as a new entry in this storage, even if the position is already registered and enabled.
-     *
-     * @param position The position that needs a handler
-     * @return The trackingHandler assigned to the position or an empty OptionalInt if none was found and this storage is full
-     * @throws IOException If an error occurred while reading or writing the file
+     * Creates a new enabled tracking handle for a position.
      */
     public synchronized int addNewPosition(NamedPosition position) throws IOException {
         return addNewPosition(position, true);
     }
 
     /**
-     * Adds the given position as a new entry in this storage, even if the position is already registered and enabled.
-     *
-     * @param position The position that needs a handler
-     * @param enabled  If the position will be added as enabled or disabled
-     * @return The trackingHandler assigned to the position or an empty OptionalInt if none was found and this storage is full
-     * @throws IOException If an error occurred while reading or writing the file
+     * Creates a new tracking handle for a position.
      */
     public synchronized int addNewPosition(NamedPosition position, boolean enabled) throws IOException {
         checkClosed();
-        int next = 1;
-        if (!storage.isEmpty()) {
-            PositionTrackingStorage trackingStorage = loadStorage(storage.firstKey());
-            OptionalInt handler = trackingStorage.addNewPosition(position, enabled);
-            if (handler.isPresent()) {
-                return handler.getAsInt();
-            }
-            next = trackingStorage.getMaxHandler();
-        }
-
-        PositionTrackingStorage trackingStorage = new PositionTrackingStorage(next, new File(folder, next + ".pnt"));
-        storage.put(next, new WeakReference<>(trackingStorage));
-        return trackingStorage.addNewPosition(position, enabled).orElseThrow(InternalError::new);
+        return storage.addNewPosition(position, enabled).orElseThrow(InternalError::new);
     }
 
-    @NotNull
-    public OptionalInt findTrackingHandler(NamedPosition position) throws IOException {
-        IntList handlers = findTrackingHandlers(position, true, 1);
-        if (!handlers.isEmpty()) {
-            return OptionalInt.of(handlers.getInt(0));
-        }
-        return OptionalInt.empty();
+    /**
+     * Finds one enabled tracking handle for a position.
+     */
+    public @NotNull OptionalInt findTrackingHandler(NamedPosition position) throws IOException {
+        checkClosed();
+        return storage.findTrackingHandler(position);
     }
 
     public synchronized boolean invalidateHandler(int trackingHandler) throws IOException {
         checkClosed();
-        PositionTrackingStorage storage = getStorageForHandler(trackingHandler);
-        if (storage == null) {
-            return false;
-        }
-
-        if (!storage.hasPosition(trackingHandler, false)) {
+        if (trackingHandler == 0 || !storage.hasPosition(trackingHandler, false)) {
             return false;
         }
         storage.invalidateHandler(trackingHandler);
-
         handlerDisabled(trackingHandler);
-
         return true;
     }
 
     private void handlerDisabled(int trackingHandler) {
         List<Player> players = new ArrayList<>();
-        for (Map.Entry<Player, Map<PositionTrackingStorage, IntSet>> playerMapEntry : tracking.entrySet()) {
-            for (IntSet value : playerMapEntry.getValue().values()) {
-                if (value.contains(trackingHandler)) {
-                    players.add(playerMapEntry.getKey());
-                    break;
-                }
+        for (Map.Entry<Player, IntSet> entry : tracking.entrySet()) {
+            if (entry.getValue().contains(trackingHandler)) {
+                players.add(entry.getKey());
             }
         }
-
-        if (!players.isEmpty()) {
+        if (players.size() != 0) {
             Server.broadcastPacket(players, destroyPacket(trackingHandler));
         }
     }
 
     private void handlerEnabled(int trackingHandler) throws IOException {
-        Server server = Server.getInstance();
-        for (Player player : server.getOnlinePlayers().values()) {
+        for (Player player : Server.getInstance().getOnlinePlayers().values()) {
             if (hasTrackingDevice(player, trackingHandler) && !isTracking(player, trackingHandler, false)) {
                 startTracking(player, trackingHandler, false);
             }
@@ -470,36 +356,25 @@ public class PositionTrackingService implements Closeable {
 
     public @Nullable PositionTracking getPosition(int trackingHandle, boolean onlyEnabled) throws IOException {
         checkClosed();
-        PositionTrackingStorage trackingStorage = getStorageForHandler(trackingHandle);
-        if (trackingStorage == null) {
-            return null;
-        }
-
-        return trackingStorage.getPosition(trackingHandle, onlyEnabled);
+        return trackingHandle == 0 ? null : storage.getPosition(trackingHandle, onlyEnabled);
     }
 
     public synchronized boolean isEnabled(int trackingHandler) throws IOException {
         checkClosed();
-        PositionTrackingStorage trackingStorage = getStorageForHandler(trackingHandler);
-        return trackingStorage != null && trackingStorage.isEnabled(trackingHandler);
+        return trackingHandler != 0 && storage.isEnabled(trackingHandler);
     }
 
     public synchronized boolean setEnabled(int trackingHandler, boolean enabled) throws IOException {
         checkClosed();
-        PositionTrackingStorage trackingStorage = getStorageForHandler(trackingHandler);
-        if (trackingStorage == null) {
+        if (trackingHandler == 0 || !storage.setEnabled(trackingHandler, enabled)) {
             return false;
         }
-        if (trackingStorage.setEnabled(trackingHandler, enabled)) {
-            if (enabled) {
-                handlerEnabled(trackingHandler);
-            } else {
-                handlerDisabled(trackingHandler);
-            }
-            return true;
+        if (enabled) {
+            handlerEnabled(trackingHandler);
+        } else {
+            handlerDisabled(trackingHandler);
         }
-
-        return false;
+        return true;
     }
 
     public synchronized boolean hasPosition(int trackingHandler) throws IOException {
@@ -508,68 +383,26 @@ public class PositionTrackingService implements Closeable {
 
     public synchronized boolean hasPosition(int trackingHandler, boolean onlyEnabled) throws IOException {
         checkClosed();
-        Integer startIndex = findStorageForHandler(trackingHandler);
-        if (startIndex == null) {
-            return false;
-        }
-
-        if (!storage.containsKey(startIndex)) {
-            return false;
-        }
-
-        return loadStorage(startIndex).hasPosition(trackingHandler, onlyEnabled);
+        return trackingHandler != 0 && storage.hasPosition(trackingHandler, onlyEnabled);
     }
 
-    @NotNull
-    public synchronized IntList findTrackingHandlers(NamedPosition pos) throws IOException {
+    public @NotNull IntList findTrackingHandlers(NamedPosition pos) throws IOException {
         return findTrackingHandlers(pos, true);
     }
 
-    @NotNull
-    public synchronized IntList findTrackingHandlers(NamedPosition pos, boolean onlyEnabled) throws IOException {
+    public @NotNull IntList findTrackingHandlers(NamedPosition pos, boolean onlyEnabled) throws IOException {
         return findTrackingHandlers(pos, onlyEnabled, Integer.MAX_VALUE);
     }
 
-    @NotNull
-    public synchronized IntList findTrackingHandlers(NamedPosition pos, boolean onlyEnabled, int limit) throws IOException {
+    public synchronized @NotNull IntList findTrackingHandlers(NamedPosition pos, boolean onlyEnabled, int limit) throws IOException {
         checkClosed();
-        IntList list = new IntArrayList();
-        for (Integer startIndex : storage.descendingKeySet()) {
-            list.addAll(loadStorage(startIndex).findTrackingHandlers(pos, onlyEnabled, limit - list.size()));
-            if (list.size() >= limit) {
-                break;
-            }
-        }
-        return list;
+        return storage.findTrackingHandlers(pos, onlyEnabled, limit);
     }
 
-    /**
-     * Close all active
-     *
-     * @throws IOException If any resource failed to close properly.
-     *                     The detailed exceptions will be in getCause() and getSuppressed()
-     */
     @Override
-    public synchronized void close() throws IOException {
+    public synchronized void close() {
         closed.set(true);
-        IOException exception = null;
-        for (WeakReference<PositionTrackingStorage> ref : storage.values()) {
-            PositionTrackingStorage positionTrackingStorage = ref.get();
-            if (positionTrackingStorage != null) {
-                try {
-                    positionTrackingStorage.close();
-                } catch (Throwable e) {
-                    if (exception == null) {
-                        exception = new IOException(e);
-                    } else {
-                        exception.addSuppressed(e);
-                    }
-                }
-            }
-        }
-        if (exception != null) {
-            throw exception;
-        }
+        tracking.clear();
     }
 
     private void checkClosed() throws IOException {

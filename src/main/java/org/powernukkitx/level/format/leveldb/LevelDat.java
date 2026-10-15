@@ -9,6 +9,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.ToString;
 import lombok.Value;
+import org.cloudburstmc.nbt.NbtMap;
 import org.cloudburstmc.protocol.bedrock.data.Experiment;
 import org.cloudburstmc.protocol.bedrock.data.GameType;
 
@@ -20,6 +21,10 @@ import java.util.Map;
 @Builder
 @ToString
 public class LevelDat {
+    @Builder.Default
+    @Getter(AccessLevel.PACKAGE)
+    @ToString.Exclude
+    NbtMap rawData = NbtMap.EMPTY;
     @Builder.Default
     String biomeOverride = "";
     @Builder.Default
@@ -176,15 +181,19 @@ public class LevelDat {
     @Builder.Default
     boolean useMsaGamertagsOnly = true;
     @Builder.Default
-    long worldStartCount = 0L;
+    long worldStartCount = 0xffffffffL;
     @Builder.Default
     WorldPolicies worldPolicies = new WorldPolicies();
     @Builder.Default
-    boolean raining = false;//PNX Custom field
+    boolean raining = false; // PNX Custom field
     @Builder.Default
-    boolean thundering = false;//PNX Custom field
+    boolean thundering = false; // PNX Custom field
     @Builder.Default
-    int noSleepNight = 0;//PNX Custom field
+    int noSleepNight = 0; // PNX Custom field
+
+    void setRawData(NbtMap rawData) {
+        this.rawData = rawData == null ? NbtMap.EMPTY : rawData;
+    }
 
     public void setRandomSeed(long seed) {
         this.randomSeed = seed;
@@ -260,6 +269,15 @@ public class LevelDat {
 
     public void setCurrentTick(long currentTick) {
         this.currentTick = currentTick;
+    }
+
+    /**
+     * Sets the persisted Bedrock WorldStartCount.
+     *
+     * @param worldStartCount world start count
+     */
+    public void setWorldStartCount(long worldStartCount) {
+        this.worldStartCount = worldStartCount;
     }
 
     public GameRules getGameRules() {

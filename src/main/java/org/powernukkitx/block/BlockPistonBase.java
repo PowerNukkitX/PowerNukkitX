@@ -1,5 +1,7 @@
 package org.powernukkitx.block;
 
+import org.powernukkitx.block.definition.BlockDefinition;
+
 import org.powernukkitx.Player;
 import org.powernukkitx.block.property.CommonBlockProperties;
 import org.powernukkitx.block.property.enums.TorchFacingDirection;
@@ -36,10 +38,20 @@ import java.util.concurrent.CopyOnWriteArrayList;
  */
 @Slf4j
 public abstract class BlockPistonBase extends BlockTransparent implements Faceable, RedstoneComponent, BlockEntityHolder<BlockEntityPistonArm> {
+    public static final BlockDefinition DEFINITION = TRANSPARENT.toBuilder()
+            .hardness(1.5)
+            .resistance(1.5)
+            .isSolid(false)
+            .waterloggingLevel(1)
+            .build();
     public boolean sticky = false;
 
     public BlockPistonBase(BlockState blockstate) {
-        super(blockstate);
+        super(blockstate, DEFINITION);
+    }
+
+    public BlockPistonBase(BlockState blockstate, BlockDefinition definition) {
+        super(blockstate, definition);
     }
 
     /**
@@ -83,21 +95,6 @@ public abstract class BlockPistonBase extends BlockTransparent implements Faceab
     public boolean canBePulled() {
         BlockEntityPistonArm pistonArm = getBlockEntity();
         return pistonArm == null || pistonArm.isMovable();
-    }
-
-    @Override
-    public double getResistance() {
-        return 1.5;
-    }
-
-    @Override
-    public double getHardness() {
-        return 1.5;
-    }
-
-    @Override
-    public int getWaterloggingLevel() {
-        return 1;
     }
 
     @Override
@@ -410,11 +407,7 @@ public abstract class BlockPistonBase extends BlockTransparent implements Faceab
         setPropertyValue(CommonBlockProperties.FACING_DIRECTION, face.getIndex());
     }
 
-    @Override
-    public boolean isSolid() {
-        return false;
-    }
-
+    
     public class BlocksCalculator {
         private static int MOVE_BLOCK_LIMIT = 12;
 

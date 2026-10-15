@@ -5,10 +5,10 @@ import org.powernukkitx.block.Block;
 import org.powernukkitx.block.BlockFlowingWater;
 import org.powernukkitx.entity.Entity;
 import org.powernukkitx.entity.item.EntityBoat;
+import org.powernukkitx.item.definition.ItemDefinition;
 import org.powernukkitx.level.Level;
 import org.powernukkitx.math.BlockFace;
 import org.powernukkitx.nbt.tag.CompoundTag;
-import org.powernukkitx.nbt.tag.DoubleTag;
 import org.powernukkitx.nbt.tag.FloatTag;
 import org.powernukkitx.nbt.tag.ListTag;
 import org.powernukkitx.utils.Identifier;
@@ -18,21 +18,41 @@ import org.powernukkitx.utils.Identifier;
  * @since 2016/2/13
  */
 public class ItemBoat extends Item {
+    public static final ItemDefinition DEFINITION = DEFAULT_DEFINITION.toBuilder()
+            .canBeActivated(true)
+            .maxStackSize(1)
+            .build();
 
     public ItemBoat() {
-        this(0, 1);
+        this(0, 1, DEFINITION);
+    }
+
+    public ItemBoat(ItemDefinition definition) {
+        this(0, 1, definition);
     }
 
     public ItemBoat(Integer meta) {
-        this(meta, 1);
+        this(meta, 1, DEFINITION);
+    }
+
+    public ItemBoat(Integer meta, ItemDefinition definition) {
+        this(meta, 1, definition);
     }
 
     public ItemBoat(Integer meta, int count) {
-        super(BOAT, meta, count);
+        this(meta, count, DEFINITION);
+    }
+
+    public ItemBoat(Integer meta, int count, ItemDefinition definition) {
+        super(BOAT, meta, count, (String) null, definition);
     }
 
     public ItemBoat(String id) {
-        super(id);
+        this(id, DEFINITION);
+    }
+
+    public ItemBoat(String id, ItemDefinition definition) {
+        super(id, definition);
     }
 
     @Override
@@ -96,11 +116,6 @@ public class ItemBoat extends Item {
         this.meta = 0;
     }
 
-    @Override
-    public boolean canBeActivated() {
-        return true;
-    }
-
     public int getBoatId() {
         return this.meta;
     }
@@ -111,14 +126,14 @@ public class ItemBoat extends Item {
         if (block instanceof BlockFlowingWater) block = block.up();
         EntityBoat boat = (EntityBoat) Entity.createEntity(Entity.BOAT,
                 level.getChunk(block.getFloorX() >> 4, block.getFloorZ() >> 4), new CompoundTag()
-                        .putList("Pos", new ListTag<DoubleTag>()
-                                .add(new DoubleTag(block.getX() + 0.5))
-                                .add(new DoubleTag(block.getY() - (target instanceof BlockFlowingWater ? 0.375 : 0)))
-                                .add(new DoubleTag(block.getZ() + 0.5)))
-                        .putList("Motion", new ListTag<DoubleTag>()
-                                .add(new DoubleTag(0))
-                                .add(new DoubleTag(0))
-                                .add(new DoubleTag(0)))
+                        .putList("Pos", new ListTag<FloatTag>()
+                                .add(new FloatTag(block.getX() + 0.5))
+                                .add(new FloatTag(block.getY() - (target instanceof BlockFlowingWater ? 0.375 : 0)))
+                                .add(new FloatTag(block.getZ() + 0.5)))
+                        .putList("Motion", new ListTag<FloatTag>()
+                                .add(new FloatTag(0))
+                                .add(new FloatTag(0))
+                                .add(new FloatTag(0)))
                         .putList("Rotation", new ListTag<FloatTag>()
                                 .add(new FloatTag((float) ((player.yaw + 90f) % 360)))
                                 .add(new FloatTag(0)))
@@ -137,10 +152,5 @@ public class ItemBoat extends Item {
 
         boat.spawnToAll();
         return true;
-    }
-
-    @Override
-    public int getMaxStackSize() {
-        return 1;
     }
 }

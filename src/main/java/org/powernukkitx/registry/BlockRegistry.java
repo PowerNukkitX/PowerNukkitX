@@ -105,7 +105,27 @@ public final class BlockRegistry implements BlockID, IRegistry<String, Block, Cl
     private static final Object2ObjectOpenHashMap<String, BlockProperties> PROPERTIES = new Object2ObjectOpenHashMap<>();
     private static final Map<Plugin, List<CustomBlockDefinition>> CUSTOM_BLOCK_DEFINITIONS = new LinkedHashMap<>();
     private static final Map<String, CustomBlockDefinition> CUSTOM_BLOCK_DEFINITION_BY_ID = new HashMap<>();
+    private static final Map<String, String> ALIASES = new HashMap<>();
+    private static volatile boolean aliasesBuilt = false;
     private static final List<ServerBlockProperty> DATA_DRIVEN_PROPERTIES = new ObjectArrayList<>();
+
+    private static String resolveAlias(String id) {
+        return ALIASES.getOrDefault(id, id);
+    }
+
+    private static FastConstructor<? extends Block> resolveConstructor(String identifier) {
+        FastConstructor<? extends Block> constructor = CACHE_CONSTRUCTORS.get(identifier);
+        if (constructor == null) {
+            constructor = CACHE_CONSTRUCTORS.get(resolveAlias(identifier));
+        }
+        return constructor;
+    }
+
+    private static void registerAliases(String key, Block block) {
+        for (String alias : block.getAliases()) {
+            ALIASES.putIfAbsent(alias, key);
+        }
+    }
 
     public static final List<String> skipBlocks = List.of(
             "minecraft:deprecated_anvil",
@@ -1233,10 +1253,6 @@ public final class BlockRegistry implements BlockID, IRegistry<String, Block, Cl
         register0(ZOMBIE_HEAD, BlockZombieHead.class);
         register0(DRIED_GHAST, BlockDriedGhast.class);
 
-        /**
-         * @since 1.21.110
-         */
-
         register0(COPPER_BARS, BlockCopperBars.class);
         register0(EXPOSED_COPPER_BARS, BlockExposedCopperBars.class);
         register0(WEATHERED_COPPER_BARS, BlockWeatheredCopperBars.class);
@@ -1442,7 +1458,19 @@ public final class BlockRegistry implements BlockID, IRegistry<String, Block, Cl
         register0(CINNABAR_BRICK_STAIRS, BlockCinnabarBrickStairs.class);
         register0(POLISHED_CINNABAR_STAIRS, BlockPolishedCinnabarStairs.class);
 
+        buildAliases();
         loadDataDrivenProperties();
+    }
+
+    private static void buildAliases() {
+        for (var entry : CACHE_CONSTRUCTORS.entrySet()) {
+            try {
+                registerAliases(entry.getKey(), (Block) entry.getValue().invoke((Object) null));
+            } catch (Throwable e) {
+                log.error("Failed to resolve aliases for block: {}", entry.getKey(), e);
+            }
+        }
+        aliasesBuilt = true;
     }
 
     /**
@@ -1509,6 +1537,11 @@ public final class BlockRegistry implements BlockID, IRegistry<String, Block, Cl
                         Registries.BLOCKSTATE.registerInternal(state);
                         CACHE_CONSTRUCTORS_BY_HASH.putIfAbsent(state.blockStateHash(), c);
                     });
+                    // Vanilla blocks are instantiated in a post-pass at the end of init(): constructors such as
+                    // BlockSlab's resolve other blocks (the double slab) that may not be registered yet.
+                    if (aliasesBuilt) {
+                        registerAliases(blockProperties.getIdentifier(), (Block) c.invoke((Object) null));
+                    }
                 }
             } else {
                 throw new RegisterException("There block: %s must define a field `public static final BlockProperties PROPERTIES` in this class!".formatted(key));
@@ -1568,34 +1601,38 @@ public final class BlockRegistry implements BlockID, IRegistry<String, Block, Cl
             String key = blockProperties.getIdentifier();
             FastMemberLoader memberLoader = fastMemberLoaderCache.computeIfAbsent(plugin.getName(), p -> new FastMemberLoader(plugin.getPluginClassLoader()));
             FastConstructor<? extends Block> c = FastConstructor.create(value.getConstructor(BlockState.class), memberLoader, false);
-            if (CACHE_CONSTRUCTORS.putIfAbsent(key, c) == null) {
-                if (CustomBlock.class.isAssignableFrom(value)) {
-                    CustomBlock customBlock = (CustomBlock) c.invoke((Object) null);
-                    List<CustomBlockDefinition> customBlockDefinitions = CUSTOM_BLOCK_DEFINITIONS.computeIfAbsent(plugin, (p) -> new ArrayList<>());
-                    CustomBlockDefinition def = customBlock.getDefinition();
-                    customBlockDefinitions.add(def);
-                    CUSTOM_BLOCK_DEFINITION_BY_ID.put(customBlock.getId(), customBlock.getDefinition());
-                    int rid = 255 - CustomBlockDefinition.getRuntimeId(customBlock.getId());
-                    Registries.ITEM_RUNTIMEID.registerCustomRuntimeItem(new ItemRuntimeIdRegistry.RuntimeEntry(customBlock.getId(), rid, false));
-                    CompoundTag nbt = def.nbt();
-                    if (Registries.CREATIVE.shouldBeRegisteredBlock(nbt)) {
-                        ItemBlock itemBlock = new ItemBlock(customBlock.toBlock());
-                        itemBlock.setNetId(null);
-                        int groupIndex = Registries.CREATIVE.resolveGroupIndexFromBlockDefinition(key, nbt);
-                        Registries.CREATIVE.addCreativeItem(itemBlock, groupIndex);
-                    }
-                    KEYSET.add(key);
-                    PROPERTIES.put(key, blockProperties);
-                    blockProperties.getSpecialValueMap().values().forEach(state -> {
-                        Registries.BLOCKSTATE.registerInternal(state);
-                        CACHE_CONSTRUCTORS_BY_HASH.putIfAbsent(state.blockStateHash(), c);
-                    });
-                } else {
-                    throw new RegisterException("Register Error: Must implement the CustomBlock interface!");
-                }
-            } else {
+            if (!CustomBlock.class.isAssignableFrom(value)) {
+                throw new RegisterException("Register Error: Must implement the CustomBlock interface!");
+            }
+
+            if (CACHE_CONSTRUCTORS.putIfAbsent(key, c) != null) {
                 throw new RegisterException("There custom block has already been registered with the identifier: " + key);
             }
+
+            CustomBlock customBlock = (CustomBlock) c.invoke((Object) null);
+            CustomBlockDefinition def = customBlock.getDefinition();
+            CUSTOM_BLOCK_DEFINITIONS.computeIfAbsent(plugin, p -> new ArrayList<>()).add(def);
+            CUSTOM_BLOCK_DEFINITION_BY_ID.put(customBlock.getId(), def);
+
+            int rid = 255 - CustomBlockDefinition.getRuntimeId(customBlock.getId());
+            Registries.ITEM_RUNTIMEID.registerCustomRuntimeItem(new ItemRuntimeIdRegistry.RuntimeEntry(customBlock.getId(), rid, false));
+
+            CompoundTag nbt = def.nbt();
+            if (Registries.CREATIVE.shouldBeRegisteredBlock(nbt)) {
+                // created after the definition was published so the instance carries it
+                ItemBlock itemBlock = new ItemBlock((Block) c.invoke((Object) null));
+                itemBlock.setNetId(null);
+                int groupIndex = Registries.CREATIVE.resolveGroupIndexFromBlockDefinition(key, nbt);
+                Registries.CREATIVE.addCreativeItem(itemBlock, groupIndex);
+            }
+
+            KEYSET.add(key);
+            PROPERTIES.put(key, blockProperties);
+            blockProperties.getSpecialValueMap().values().forEach(state -> {
+                Registries.BLOCKSTATE.registerInternal(state);
+                CACHE_CONSTRUCTORS_BY_HASH.putIfAbsent(state.blockStateHash(), c);
+            });
+            registerAliases(key, customBlock.toBlock());
         } catch (NoSuchFieldException | IllegalAccessException | NoSuchMethodException e) {
             throw new RegisterException(e);
         } catch (Throwable e) {
@@ -1619,6 +1656,8 @@ public final class BlockRegistry implements BlockID, IRegistry<String, Block, Cl
         CACHE_CONSTRUCTORS_BY_HASH.clear();
         PROPERTIES.clear();
         CUSTOM_BLOCK_DEFINITIONS.clear();
+        ALIASES.clear();
+        aliasesBuilt = false;
         DATA_DRIVEN_PROPERTIES.clear();
         init();
     }
@@ -1626,13 +1665,16 @@ public final class BlockRegistry implements BlockID, IRegistry<String, Block, Cl
     public BlockProperties getBlockProperties(String identifier) {
         BlockProperties properties = PROPERTIES.get(identifier);
         if (properties == null) {
+            properties = PROPERTIES.get(resolveAlias(identifier));
+        }
+        if (properties == null) {
             throw new IllegalArgumentException("Get the Block State from a unknown id: " + identifier);
         } else return properties;
     }
 
     @Override
     public Block get(String identifier) {
-        FastConstructor<? extends Block> constructor = CACHE_CONSTRUCTORS.get(identifier);
+        FastConstructor<? extends Block> constructor = resolveConstructor(identifier);
         if (constructor == null) return null;
         try {
             return (Block) constructor.invoke((Object) null);
@@ -1642,7 +1684,7 @@ public final class BlockRegistry implements BlockID, IRegistry<String, Block, Cl
     }
 
     public Block get(String identifier, int x, int y, int z) {
-        FastConstructor<? extends Block> constructor = CACHE_CONSTRUCTORS.get(identifier);
+        FastConstructor<? extends Block> constructor = resolveConstructor(identifier);
         if (constructor == null) return null;
         try {
             var b = (Block) constructor.invoke((Object) null);
@@ -1656,7 +1698,7 @@ public final class BlockRegistry implements BlockID, IRegistry<String, Block, Cl
     }
 
     public Block get(String identifier, int x, int y, int z, Level level) {
-        FastConstructor<? extends Block> constructor = CACHE_CONSTRUCTORS.get(identifier);
+        FastConstructor<? extends Block> constructor = resolveConstructor(identifier);
         if (constructor == null) return null;
         try {
             var b = (Block) constructor.invoke((Object) null);
@@ -1671,7 +1713,7 @@ public final class BlockRegistry implements BlockID, IRegistry<String, Block, Cl
     }
 
     public Block get(String identifier, int x, int y, int z, int layer, Level level) {
-        FastConstructor<? extends Block> constructor = CACHE_CONSTRUCTORS.get(identifier);
+        FastConstructor<? extends Block> constructor = resolveConstructor(identifier);
         if (constructor == null) return null;
         try {
             var b = (Block) constructor.invoke((Object) null);

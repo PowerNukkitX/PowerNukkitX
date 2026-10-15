@@ -16,8 +16,7 @@ import org.powernukkitx.block.property.enums.OxidizationLevel;
 import org.powernukkitx.entity.Entity;
 import org.powernukkitx.entity.EntityID;
 import org.powernukkitx.entity.EntityInteractable;
-import org.powernukkitx.entity.ai.behavior.Behavior;
-import org.powernukkitx.entity.ai.behaviorgroup.BehaviorGroup;
+import org.powernukkitx.entity.ai.EntityAI;
 import org.powernukkitx.entity.ai.behaviorgroup.IBehaviorGroup;
 import org.powernukkitx.entity.ai.controller.LookController;
 import org.powernukkitx.entity.ai.controller.WalkController;
@@ -60,6 +59,8 @@ import org.powernukkitx.math.BlockFace;
 import org.powernukkitx.math.NukkitMath;
 import org.powernukkitx.math.Vector3;
 import org.powernukkitx.nbt.tag.CompoundTag;
+import org.powernukkitx.nbt.tag.ListTag;
+import org.powernukkitx.nbt.tag.Tag;
 import org.powernukkitx.utils.ItemHelper;
 import org.powernukkitx.utils.Utils;
 import org.powernukkitx.utils.random.NukkitRandom;
@@ -115,57 +116,64 @@ public class EntityCopperGolem extends EntityGolem implements InventoryHolder, E
 
     @Override
     public IBehaviorGroup requireBehaviorGroup() {
-        return BehaviorGroup.builder(this)
-                .behaviors(
-                        new Behavior(new ChestInteractionFailExecutor(), entity -> {
+        return EntityAI.of(this)
+                .behavior(new ChestInteractionFailExecutor())
+                        .when(entity -> {
                             String interaction = getEnumEntityProperty(PROPERTIES[0].getIdentifier());
                             return "take_fail".equals(interaction) || "put_fail".equals(interaction);
-                        }, 8, 1),
-                        new Behavior(new FlatRandomRoamExecutor(0.2f, 12, 100, false, -1, true, 10), all(
+                        })
+                .behavior(new FlatRandomRoamExecutor(0.2f, 12, 100, false, -1, true, 10))
+                        .when(all(
                             entity -> entity.getMemoryStorage().get(CoreMemoryTypes.FORCE_WANDERING) > 0,
                             entity -> {
                                 entity.getMemoryStorage().put(CoreMemoryTypes.FORCE_WANDERING,
                                     entity.getMemoryStorage().get(CoreMemoryTypes.FORCE_WANDERING) - 1);
                                 return true;
                             }
-                        ), 7, 1),
-                        new Behavior(new PutInChestExecutor(), all(
+                        ))
+                .behavior(new PutInChestExecutor())
+                        .when(all(
                                 new MemoryCheckNotEmptyEvaluator(CoreMemoryTypes.NEAREST_BLOCK),
                                 not(entity -> inventory.getItemInHand().isNull()),
                                 new DistanceEvaluator(CoreMemoryTypes.NEAREST_BLOCK, 3.1f)
-                        ), 6, 1),
-                        new Behavior(new MoveToTargetExecutor(CoreMemoryTypes.NEAREST_BLOCK, 0.2f, true), all(
+                        ))
+                .behavior(new MoveToTargetExecutor(CoreMemoryTypes.NEAREST_BLOCK, 0.2f, true))
+                        .when(all(
                                 not(entity -> inventory.getItemInHand().isNull()),
                                 new MemoryCheckNotEmptyEvaluator(CoreMemoryTypes.NEAREST_BLOCK)
-                        ), 5, 1),
-                        new Behavior(new TakeFromCopperChestExecutor(), all(
+                        ))
+                .behavior(new TakeFromCopperChestExecutor())
+                        .when(all(
                                 new MemoryCheckNotEmptyEvaluator(CoreMemoryTypes.NEAREST_BLOCK_2),
                                 entity -> inventory.getItemInHand().isNull(),
                                 new DistanceEvaluator(CoreMemoryTypes.NEAREST_BLOCK_2, 3.1f)
-                        ), 4, 1),
-                        new Behavior(new MoveToTargetExecutor(CoreMemoryTypes.NEAREST_BLOCK_2, 0.2f, true), all(
+                        ))
+                .behavior(new MoveToTargetExecutor(CoreMemoryTypes.NEAREST_BLOCK_2, 0.2f, true))
+                        .when(all(
                                 entity -> inventory.getItemInHand().isNull(),
                                 new MemoryCheckNotEmptyEvaluator(CoreMemoryTypes.NEAREST_BLOCK_2)
-                        ), 3, 1),
-                        new Behavior(entity -> {
-                            entity.getMemoryStorage().put(CoreMemoryTypes.FORCE_WANDERING, 7 * 20);
-                            entity.getMemoryStorage().get(CoreMemoryTypes.COPPER_CHESTS).clear();
-                            return true;
-                        }, all(
+                        ))
+                .behavior(entity -> {
+                    entity.getMemoryStorage().put(CoreMemoryTypes.FORCE_WANDERING, 7 * 20);
+                    entity.getMemoryStorage().get(CoreMemoryTypes.COPPER_CHESTS).clear();
+                    return true;
+                })
+                        .when(all(
                                 entity -> inventory.getItemInHand().isNull(),
                                 new MemoryCheckEmptyEvaluator(CoreMemoryTypes.NEAREST_BLOCK_2),
                                 entity -> !entity.getMemoryStorage().get(CoreMemoryTypes.COPPER_CHESTS).isEmpty()
-                        ), 2, 1),
-                        new Behavior(entity -> {
-                            entity.getMemoryStorage().put(CoreMemoryTypes.FORCE_WANDERING, 7 * 20);
-                            entity.getMemoryStorage().get(CoreMemoryTypes.CHESTS).clear();
-                            return true;
-                        }, all(
+                        ))
+                .behavior(entity -> {
+                    entity.getMemoryStorage().put(CoreMemoryTypes.FORCE_WANDERING, 7 * 20);
+                    entity.getMemoryStorage().get(CoreMemoryTypes.CHESTS).clear();
+                    return true;
+                })
+                        .when(all(
                                 not(entity -> inventory.getItemInHand().isNull()),
                                 new MemoryCheckEmptyEvaluator(CoreMemoryTypes.NEAREST_BLOCK)
-                        ), 2, 1),
-                        new Behavior(new FlatRandomRoamExecutor(0.2f, 12, 100, false, -1, true, 10), none(), 1, 1)
-                )
+                        ))
+                        .alongsidePrevious()
+                .behavior(new FlatRandomRoamExecutor(0.2f, 12, 100, false, -1, true, 10))
                 .sensors(
                         new BlockSensor(BlockChest.class, CoreMemoryTypes.NEAREST_BLOCK, 32, 8, 20, new ChestCondition(false)),
                         new BlockSensor(BlockCopperChest.class, CoreMemoryTypes.NEAREST_BLOCK_2, 32, 8, 20, new ChestCondition(true))
@@ -184,8 +192,13 @@ public class EntityCopperGolem extends EntityGolem implements InventoryHolder, E
         }
         this.inventory = new EntityEquipmentInventory(this);
 
-        if (nbtMap.contains("Mainhand")) {
-            this.inventory.setItemInHand(ItemHelper.read(nbtMap.getCompound("Mainhand")), true);
+        if (nbtMap.containsList("Mainhand", Tag.TAG_Compound)) {
+            ListTag<CompoundTag> mainhand = nbtMap.getList("Mainhand", CompoundTag.class);
+            if (mainhand.size() > 0) this.inventory.setItemInHand(ItemHelper.read(mainhand.get(0)), true);
+        }
+        if (nbtMap.containsList("Offhand", Tag.TAG_Compound)) {
+            ListTag<CompoundTag> offhand = nbtMap.getList("Offhand", CompoundTag.class);
+            if (offhand.size() > 0) this.inventory.setItemInOffhand(ItemHelper.read(offhand.get(0)), true);
         }
         setOxidation(Oxidation.valueOf(nbtMap.getString("oxidationLevel").toUpperCase(Locale.ROOT)));
         this.weatherTick = nbtMap.getInt("weatheredTick");
@@ -230,7 +243,11 @@ public class EntityCopperGolem extends EntityGolem implements InventoryHolder, E
     @Override
     public void saveNBT() {
         super.saveNBT();
-        this.nbt.putCompound("Mainhand", ItemHelper.write(this.getInventory().getItem(0), null))
+        ListTag<CompoundTag> armor = new ListTag<>();
+        for (int i = 0; i < 5; i++) armor.add(ItemHelper.write(Item.AIR));
+        this.nbt.putList("Mainhand", new ListTag<CompoundTag>().add(ItemHelper.write(this.getInventory().getItemInHand())))
+                .putList("Offhand", new ListTag<CompoundTag>().add(ItemHelper.write(this.getInventory().getItemInOffhand())))
+                .putList("Armor", armor)
                 .putString("oxidationLevel", this.getOxidation().getName())
                 .putInt("weatheredTick", this.weatherTick);
     }

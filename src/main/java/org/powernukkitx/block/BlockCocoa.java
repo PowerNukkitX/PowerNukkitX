@@ -1,5 +1,7 @@
 package org.powernukkitx.block;
 
+import org.powernukkitx.block.definition.BlockDefinition;
+
 import org.powernukkitx.Player;
 import org.powernukkitx.Server;
 import org.powernukkitx.block.property.enums.WoodType;
@@ -28,6 +30,15 @@ import static org.powernukkitx.block.property.CommonBlockProperties.DIRECTION;
  */
 public class BlockCocoa extends BlockTransparent implements Faceable {
     public static final BlockProperties PROPERTIES = new BlockProperties(COCOA, AGE_3, DIRECTION);
+    public static final BlockDefinition DEFINITION = TRANSPARENT.toBuilder()
+            .hardness(0.2)
+            .resistance(15)
+            .toolType(ItemTool.TYPE_AXE)
+            .breaksWhenMoved(true)
+            .sticksToPiston(false)
+            .canBeActivated(true)
+            .canBeFlowedInto(true)
+            .build();
 
     protected static final AxisAlignedBB[] EAST = new SimpleAxisAlignedBB[]{new SimpleAxisAlignedBB(0.6875D, 0.4375D, 0.375D, 0.9375D, 0.75D, 0.625D), new SimpleAxisAlignedBB(0.5625D, 0.3125D, 0.3125D, 0.9375D, 0.75D, 0.6875D), new SimpleAxisAlignedBB(0.5625D, 0.3125D, 0.3125D, 0.9375D, 0.75D, 0.6875D)};
     protected static final AxisAlignedBB[] WEST = new SimpleAxisAlignedBB[]{new SimpleAxisAlignedBB(0.0625D, 0.4375D, 0.375D, 0.3125D, 0.75D, 0.625D), new SimpleAxisAlignedBB(0.0625D, 0.3125D, 0.3125D, 0.4375D, 0.75D, 0.6875D), new SimpleAxisAlignedBB(0.0625D, 0.3125D, 0.3125D, 0.4375D, 0.75D, 0.6875D)};
@@ -46,7 +57,7 @@ public class BlockCocoa extends BlockTransparent implements Faceable {
     }
 
     public BlockCocoa(BlockState blockstate) {
-        super(blockstate);
+        super(blockstate, DEFINITION);
     }
 
     @Override
@@ -145,11 +156,7 @@ public class BlockCocoa extends BlockTransparent implements Faceable {
         return 0;
     }
 
-    @Override
-    public boolean canBeActivated() {
-        return true;
-    }
-
+    
     @Override
     public boolean onActivate(@NotNull Item item, Player player, BlockFace blockFace, float fx, float fy, float fz) {
         if (item.isFertilizer()) {
@@ -178,26 +185,7 @@ public class BlockCocoa extends BlockTransparent implements Faceable {
         return !ev.isCancelled() && this.getLevel().setBlock(this, ev.getNewState(), true, true);
     }
 
-    @Override
-    public double getResistance() {
-        return 15;
-    }
-
-    @Override
-    public double getHardness() {
-        return 0.2;
-    }
-
-    @Override
-    public int getToolType() {
-        return ItemTool.TYPE_AXE;
-    }
-
-    @Override
-    public boolean canBeFlowedInto() {
-        return true;
-    }
-
+    
     @Override
     @NotNull
     public String getItemId() {
@@ -236,13 +224,5 @@ public class BlockCocoa extends BlockTransparent implements Faceable {
         setPropertyValue(AGE_3, age);
     }
 
-    @Override
-    public boolean breaksWhenMoved() {
-        return true;
+    
     }
-
-    @Override
-    public boolean sticksToPiston() {
-        return false;
-    }
-}

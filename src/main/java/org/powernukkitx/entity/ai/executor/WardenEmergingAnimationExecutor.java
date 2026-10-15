@@ -1,6 +1,7 @@
 package org.powernukkitx.entity.ai.executor;
 
 import org.powernukkitx.entity.EntityIntelligent;
+import org.powernukkitx.entity.mob.EntityWarden;
 import org.powernukkitx.level.Sound;
 import org.cloudburstmc.protocol.bedrock.data.actor.ActorFlags;
 
@@ -23,7 +24,8 @@ public class WardenEmergingAnimationExecutor implements IBehaviorExecutor {
     @Override
     public void onInterrupt(EntityIntelligent entity) {
         this.currentTick = 0;
-        entity.setDataFlag(ActorFlags.EMERGING, false);
+        if (entity instanceof EntityWarden warden) warden.finishEmerging();
+        else entity.setDataFlag(ActorFlags.EMERGING, false);
     }
 
     @Override
@@ -36,6 +38,7 @@ public class WardenEmergingAnimationExecutor implements IBehaviorExecutor {
     @Override
     public void onStop(EntityIntelligent entity) {
         this.currentTick = 0;
-        entity.setDataFlag(ActorFlags.EMERGING, false);
+        if (entity instanceof EntityWarden warden) warden.finishEmerging();
+        else entity.setDataFlag(ActorFlags.EMERGING, false);
     }
 }

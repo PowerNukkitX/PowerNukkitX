@@ -2,10 +2,20 @@ package org.powernukkitx.math;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
+import org.powernukkitx.utils.random.RandomSourceProvider;
 
 import java.math.BigInteger;
 
 public class NukkitMathTest {
+
+    @Test
+    void randomRangeUsesStart() {
+        RandomSourceProvider random = Mockito.mock(RandomSourceProvider.class);
+        Mockito.when(random.nextInt()).thenReturn(0);
+
+        Assertions.assertEquals(37, NukkitMath.randomRange(random, 37));
+    }
 
     @Test
     void isZero() {

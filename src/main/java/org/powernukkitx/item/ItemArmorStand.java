@@ -5,6 +5,7 @@ import org.powernukkitx.block.Block;
 import org.powernukkitx.block.BlockID;
 import org.powernukkitx.entity.Entity;
 import org.powernukkitx.entity.item.EntityArmorStand;
+import org.powernukkitx.item.definition.ItemDefinition;
 import org.powernukkitx.level.Level;
 import org.powernukkitx.level.Sound;
 import org.powernukkitx.level.format.IChunk;
@@ -18,18 +19,13 @@ import static org.powernukkitx.math.CompassRoseDirection.Precision.PRIMARY_INTER
 
 
 public class ItemArmorStand extends Item {
+    public static final ItemDefinition DEFINITION = Item.DEFAULT_DEFINITION.toBuilder()
+            .canBeActivated(true)
+            .maxStackSize(64)
+            .build();
+
     public ItemArmorStand() {
-        super(ARMOR_STAND);
-    }
-
-    @Override
-    public boolean canBeActivated() {
-        return true;
-    }
-
-    @Override
-    public int getMaxStackSize() {
-        return 64;
+        super(ARMOR_STAND, DEFINITION);
     }
 
     @Override

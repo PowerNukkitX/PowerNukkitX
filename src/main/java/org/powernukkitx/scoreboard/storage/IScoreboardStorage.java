@@ -29,4 +29,21 @@ public interface IScoreboardStorage {
     void removeAllScoreboard();
 
     boolean containScoreboard(String name);
+
+    /**
+     * Reads the last persisted scoreboard identity ID.
+     *
+     * @return last persisted identity ID
+     */
+    default long readLastUniqueId() {
+        return 0;
+    }
+
+    /**
+     * Persists the last assigned scoreboard identity ID.
+     *
+     * @param lastUniqueId last assigned identity ID
+     */
+    default void saveLastUniqueId(long lastUniqueId) {
+    }
 }

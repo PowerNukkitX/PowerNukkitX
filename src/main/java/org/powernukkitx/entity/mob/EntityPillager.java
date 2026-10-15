@@ -2,9 +2,7 @@ package org.powernukkitx.entity.mob;
 
 import org.powernukkitx.Player;
 import org.powernukkitx.entity.Entity;
-import org.powernukkitx.entity.EntityWalkable;
-import org.powernukkitx.entity.ai.behavior.Behavior;
-import org.powernukkitx.entity.ai.behaviorgroup.BehaviorGroup;
+import org.powernukkitx.entity.ai.EntityAI;
 import org.powernukkitx.entity.ai.behaviorgroup.IBehaviorGroup;
 import org.powernukkitx.entity.ai.controller.LookController;
 import org.powernukkitx.entity.ai.controller.WalkController;
@@ -21,11 +19,13 @@ import org.powernukkitx.entity.ai.sensor.NearestTargetEntitySensor;
 import org.powernukkitx.entity.components.HealthComponent;
 import org.powernukkitx.entity.components.MovementComponent;
 import org.powernukkitx.item.Item;
+import org.powernukkitx.item.ItemBanner;
 import org.powernukkitx.item.enchantment.Enchantment;
 import org.powernukkitx.level.Sound;
 import org.powernukkitx.level.format.IChunk;
 import org.powernukkitx.nbt.tag.CompoundTag;
 import org.powernukkitx.utils.Utils;
+import org.cloudburstmc.protocol.bedrock.data.actor.ActorDataTypes;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -34,7 +34,10 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 
-public class EntityPillager extends EntityIllager implements EntityWalkable {
+public class EntityPillager extends EntityIllager {
+    private static final String TAG_ILLAGER_CAPTAIN = "IsIllagerCaptain";
+    private static final String TAG_VARIANT = "Variant";
+
     @Override
     @NotNull public String getIdentifier() {
         return PILLAGER;
@@ -47,14 +50,16 @@ public class EntityPillager extends EntityIllager implements EntityWalkable {
 
     @Override
     public IBehaviorGroup requireBehaviorGroup() {
-        return BehaviorGroup.builder(this)
-                .behaviors(
-                        new Behavior(new PlaySoundExecutor(Sound.MOB_PILLAGER_IDLE, 0.8f, 1.2f, 0.8f, 0.8f), new RandomSoundEvaluator(), 5, 1),
-                        new Behavior(new CrossBowShootExecutor(this::getItemInHand, CoreMemoryTypes.ATTACK_TARGET, 0.3f, 15, true, 30, 80), new EntityCheckEvaluator(CoreMemoryTypes.ATTACK_TARGET), 4, 1),
-                        new Behavior(new CrossBowShootExecutor(this::getItemInHand, CoreMemoryTypes.NEAREST_PLAYER, 0.3f, 15, true, 30, 80), new EntityCheckEvaluator(CoreMemoryTypes.NEAREST_PLAYER), 3, 1),
-                        new Behavior(new CrossBowShootExecutor(this::getItemInHand, CoreMemoryTypes.NEAREST_SUITABLE_ATTACK_TARGET, 0.3f, 15, true, 30, 80), new EntityCheckEvaluator(CoreMemoryTypes.NEAREST_SUITABLE_ATTACK_TARGET), 2, 1),
-                        new Behavior(new FlatRandomRoamExecutor(0.3f, 12, 100, false, -1, true, 10), none(), 1, 1)
-                )
+        return EntityAI.of(this)
+                .behavior(new PlaySoundExecutor(Sound.MOB_PILLAGER_IDLE, 0.8f, 1.2f, 0.8f, 0.8f))
+                        .when(new RandomSoundEvaluator())
+                .behavior(new CrossBowShootExecutor(this::getItemInHand, CoreMemoryTypes.ATTACK_TARGET, 0.3f, 15, true, 30, 80))
+                        .when(new EntityCheckEvaluator(CoreMemoryTypes.ATTACK_TARGET))
+                .behavior(new CrossBowShootExecutor(this::getItemInHand, CoreMemoryTypes.NEAREST_PLAYER, 0.3f, 15, true, 30, 80))
+                        .when(new EntityCheckEvaluator(CoreMemoryTypes.NEAREST_PLAYER))
+                .behavior(new CrossBowShootExecutor(this::getItemInHand, CoreMemoryTypes.NEAREST_SUITABLE_ATTACK_TARGET, 0.3f, 15, true, 30, 80))
+                        .when(new EntityCheckEvaluator(CoreMemoryTypes.NEAREST_SUITABLE_ATTACK_TARGET))
+                .behavior(new FlatRandomRoamExecutor(0.3f, 12, 100, false, -1, true, 10))
                 .sensors(
                         new NearestPlayerSensor(40, 0, 20),
                         new NearestTargetEntitySensor<>(0, 16, 20,
@@ -69,7 +74,28 @@ public class EntityPillager extends EntityIllager implements EntityWalkable {
     protected void initEntity() {
         this.diffHandDamage = new float[]{2.5f, 3f, 4.5f};
         super.initEntity();
+        this.setDataProperty(ActorDataTypes.VARIANT, this.nbt.getInt(TAG_VARIANT, 0));
         setItemInHand(enchantGear(Item.get(Item.CROSSBOW), 0.1f));
+    }
+
+    /**
+     * Returns whether this pillager has the Bedrock illager-captain state.
+     */
+    public boolean isIllagerCaptain() {
+        return this.nbt.getBoolean(TAG_ILLAGER_CAPTAIN);
+    }
+
+    /**
+     * Applies the Bedrock illager-captain initialization state.
+     */
+    public void setIllagerCaptain() {
+        this.nbt.putBoolean(TAG_ILLAGER_CAPTAIN, true);
+        this.nbt.putInt(TAG_VARIANT, 1);
+        this.setDataProperty(ActorDataTypes.VARIANT, 1);
+
+        ItemBanner banner = new ItemBanner();
+        banner.setType(1);
+        this.setChestplate(banner);
     }
 
     @Override

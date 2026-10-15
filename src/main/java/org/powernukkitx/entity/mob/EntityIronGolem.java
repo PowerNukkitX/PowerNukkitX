@@ -26,8 +26,7 @@ import org.powernukkitx.block.BlockPumpkin;
 import org.powernukkitx.entity.Attribute;
 import org.powernukkitx.entity.Entity;
 import org.powernukkitx.entity.EntityID;
-import org.powernukkitx.entity.ai.behavior.Behavior;
-import org.powernukkitx.entity.ai.behaviorgroup.BehaviorGroup;
+import org.powernukkitx.entity.ai.EntityAI;
 import org.powernukkitx.entity.ai.behaviorgroup.IBehaviorGroup;
 import org.powernukkitx.entity.ai.controller.LookController;
 import org.powernukkitx.entity.ai.controller.WalkController;
@@ -37,6 +36,7 @@ import org.powernukkitx.entity.ai.executor.MeleeAttackExecutor;
 import org.powernukkitx.entity.ai.memory.CoreMemoryTypes;
 import org.powernukkitx.entity.ai.route.finder.impl.SimpleFlatAStarRouteFinder;
 import org.powernukkitx.entity.ai.route.posevaluator.WalkingPosEvaluator;
+import org.powernukkitx.entity.ai.sensor.ISensor;
 import org.powernukkitx.entity.ai.sensor.NearestEntitySensor;
 import org.powernukkitx.entity.components.HealthComponent;
 import org.powernukkitx.entity.components.MovementComponent;
@@ -53,7 +53,6 @@ import org.powernukkitx.level.vibration.VibrationType;
 import org.powernukkitx.math.BlockFace;
 import org.powernukkitx.math.Vector3;
 import org.powernukkitx.nbt.tag.CompoundTag;
-import org.powernukkitx.nbt.tag.DoubleTag;
 import org.powernukkitx.nbt.tag.FloatTag;
 import org.powernukkitx.nbt.tag.ListTag;
 
@@ -82,9 +81,9 @@ public class EntityIronGolem extends EntityGolem {
 
     @Override
     public IBehaviorGroup requireBehaviorGroup() {
-        return BehaviorGroup.builder(this)
-                .behaviors(
-                        new Behavior(new MeleeAttackExecutor(CoreMemoryTypes.ATTACK_TARGET, 0.2f, 40, true, 30), all(
+        return EntityAI.of(this)
+                .behavior(new MeleeAttackExecutor(CoreMemoryTypes.ATTACK_TARGET, 0.2f, 40, true, 30))
+                        .when(all(
                                 new EntityCheckEvaluator(CoreMemoryTypes.ATTACK_TARGET),
                                 not(any(
                                         entity -> entity.getServer().getDifficulty() == 0,
@@ -92,14 +91,14 @@ public class EntityIronGolem extends EntityGolem {
                                                 entity -> attackingPlayer = getMemoryStorage().get(CoreMemoryTypes.ATTACK_TARGET) instanceof Player,
                                                 entity -> hasOwner(false)
                                         )))
-                        ), 3, 1),
-                        new Behavior(new MeleeAttackExecutor(CoreMemoryTypes.NEAREST_SHARED_ENTITY, 0.2f, 40, true, 30), all(
+                        ))
+                .behavior(new MeleeAttackExecutor(CoreMemoryTypes.NEAREST_SHARED_ENTITY, 0.2f, 40, true, 30))
+                        .when(all(
                                 new EntityCheckEvaluator(CoreMemoryTypes.NEAREST_SHARED_ENTITY),
                                 entity -> attackTarget(getMemoryStorage().get(CoreMemoryTypes.NEAREST_SHARED_ENTITY)),
                                 not(entity -> attackingPlayer = false)
-                        ), 2, 1),
-                        new Behavior(new FlatRandomRoamExecutor(0.2f, 12, 100, false, -1, true, 10), none(), 1, 1)
-                )
+                        ))
+                .behavior(new FlatRandomRoamExecutor(0.2f, 12, 100, false, -1, true, 10))
                 .sensors(new NearestEntitySensor(EntityMob.class, CoreMemoryTypes.NEAREST_SHARED_ENTITY, 16, 0))
                 .controllers(new WalkController(), new LookController(true, true))
                 .routeFinder(new SimpleFlatAStarRouteFinder(new WalkingPosEvaluator(), this))
@@ -252,14 +251,14 @@ public class EntityIronGolem extends EntityGolem {
                         }
                         Block pos = block.getSide(blockFace, 2);
                         CompoundTag nbt = new CompoundTag()
-                                .putList("Pos", new ListTag<DoubleTag>()
-                                        .add(new DoubleTag(pos.x + 0.5))
-                                        .add(new DoubleTag(pos.y))
-                                        .add(new DoubleTag(pos.z + 0.5)))
-                                .putList("Motion", new ListTag<DoubleTag>()
-                                        .add(new DoubleTag(0))
-                                        .add(new DoubleTag(0))
-                                        .add(new DoubleTag(0)))
+                                .putList("Pos", new ListTag<FloatTag>()
+                                        .add(new FloatTag(pos.x + 0.5))
+                                        .add(new FloatTag(pos.y))
+                                        .add(new FloatTag(pos.z + 0.5)))
+                                .putList("Motion", new ListTag<FloatTag>()
+                                        .add(new FloatTag(0))
+                                        .add(new FloatTag(0))
+                                        .add(new FloatTag(0)))
                                 .putList("Rotation", new ListTag<FloatTag>()
                                         .add(new FloatTag(0f))
                                         .add(new FloatTag(0f)));

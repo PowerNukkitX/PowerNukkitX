@@ -37,15 +37,17 @@ public class MemoryStorage implements IMemoryStorage {
 
     @Override
     public <D> D get(MemoryType<D> type) {
-        if (!memoryMap.containsKey(type)) {
+        Object stored = memoryMap.get(type);
+        if (stored == null) {
+            //the memory was never written, so fall back to the persisted value or the default one
             D data = type.decode(getEntity());
             if (data == null) data = type.getDefaultData();
             put(type, data);
+            return data;
         }
-        D value;
         @SuppressWarnings("unchecked")
-        var result = (value = (D) memoryMap.get(type)) != EMPTY_VALUE ? value : null;
-        return result;
+        var value = stored != EMPTY_VALUE ? (D) stored : null;
+        return value;
     }
 
     @Override

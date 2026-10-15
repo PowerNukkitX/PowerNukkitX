@@ -8,8 +8,11 @@ import org.powernukkitx.level.format.IChunk;
 import org.powernukkitx.level.generator.ChunkGenerateContext;
 import org.powernukkitx.level.generator.object.BlockManager;
 import org.powernukkitx.level.generator.object.RandomizableContainer;
+import org.powernukkitx.level.generator.object.structures.utils.BoundingBox;
+import org.powernukkitx.level.generator.object.structures.utils.StructureAabbVolumes;
 import org.powernukkitx.level.generator.populator.Populator;
 import org.powernukkitx.level.generator.populator.PopulatorStructure;
+import org.powernukkitx.level.generator.populator.placement.StructureRandomSpreadPlacement;
 import org.powernukkitx.level.generator.populator.placement.StructurePlacement;
 import org.powernukkitx.level.structure.PNXStructure;
 import org.powernukkitx.math.BlockFace;
@@ -39,11 +42,28 @@ public class PopulatorRuinedPortal extends Populator implements PopulatorStructu
 
     private static final ChestPopulator CHEST_POPULATOR = new ChestPopulator();
 
-    public static final StructurePlacement PLACEMENT = new StructurePlacement(StructurePlacement.PlacementSettings.builder()
-            .salt(34222645L)
+    public static final StructurePlacement PLACEMENT = new StructureRandomSpreadPlacement(StructurePlacement.PlacementSettings.builder()
+            .salt(40552231L)
             .minDistance(15)
             .maxDistance(40)
-            .build());
+            .build(), StructureRandomSpreadPlacement.SpreadType.LINEAR);
+
+    private static final StructurePlacement NETHER_PLACEMENT = new StructureRandomSpreadPlacement(StructurePlacement.PlacementSettings.builder()
+            .salt(40552231L)
+            .minDistance(10)
+            .maxDistance(25)
+            .build(), StructureRandomSpreadPlacement.SpreadType.LINEAR);
+
+    /**
+     * Returns the ruined-portal placement for the dimension.
+     */
+    public static StructurePlacement getPlacement(int dimension) {
+        return switch (dimension) {
+            case Level.DIMENSION_OVERWORLD -> PLACEMENT;
+            case Level.DIMENSION_NETHER -> NETHER_PLACEMENT;
+            default -> null;
+        };
+    }
 
     private static final String[] PORTALS = new String[]{
             "ruined_portal/portal_1",
@@ -72,7 +92,8 @@ public class PopulatorRuinedPortal extends Populator implements PopulatorStructu
         int chunkZ = chunk.getZ();
         Level level = chunk.getLevel();
         int biome = chunk.getBiomeId(7, SEA_LEVEL, 7);
-        if(PLACEMENT.canGenerate(level.getSeed(), random, chunkX, chunkZ, biome)) {
+        StructurePlacement placement = getPlacement(level.getDimension());
+        if(placement != null && placement.canGenerate(level.getSeed(), random, chunkX, chunkZ, biome)) {
             random.setSeed(level.getSeed() ^ Level.chunkHash(chunkX, chunkZ));
             int x = (chunkX << 4) + 7;
             int z = (chunkZ << 4) + 7;
@@ -88,6 +109,14 @@ public class PopulatorRuinedPortal extends Populator implements PopulatorStructu
             PNXStructure structure = (PNXStructure) Registries.STRUCTURE.get(big ? GIANT_PORTALS[random.nextInt(GIANT_PORTALS.length)] : PORTALS[random.nextInt(PORTALS.length)]);
             boolean airPocket = height == PortalHeight.IN_NETHER && random.nextFloat() < 0.5f;
             int y = findSuitableY(random, level, x, z, height, airPocket, structure.getSizeX(), structure.getSizeY(), structure.getSizeZ());
+            int aabbY = level.getDimension() == Level.DIMENSION_NETHER ? 1 : chunk.getHeightMap(0, 0);
+            int structureX = chunkX << 4;
+            int structureZ = chunkZ << 4;
+            StructureAabbVolumes.addDynamic(
+                    level,
+                    "minecraft:ruined_portal",
+                    List.of(new BoundingBox(structureX - 20, aabbY - 50, structureZ - 20, structureX + 20, aabbY + 50, structureZ + 20))
+            );
             BlockManager manager = new BlockManager(level);
             structure.preparePlace(new Position(x, y, z), manager);
             for(Block block : manager.getBlocks()) {

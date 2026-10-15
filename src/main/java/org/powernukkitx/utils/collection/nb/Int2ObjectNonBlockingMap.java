@@ -365,7 +365,27 @@ public class Int2ObjectNonBlockingMap<TypeV>
      * Removes all of the mappings from this map.
      */
     public void clear() {         // Smack a new empty table down
-        CHM newchm = new CHM(this, new ConcurrentAutoIntTable(), MIN_SIZE_LOG);
+        clear(MIN_SIZE_LOG);
+    }
+
+    /**
+     * Removes all mappings, keeping a table large enough for roughly as many entries as the map
+     * held before.
+     * <p>
+     * {@link #clear()} drops back to the minimum table size, so a map that is emptied and refilled
+     * every tick pays for the whole sequence of resizes again each time - a profile attributed
+     * several CPU-seconds to {@code copy_slot} on exactly that pattern. This keeps the atomic
+     * single-CAS swap, so concurrent readers still see either the old table or an empty one.
+     */
+    public void clearRetainingCapacity() {
+        int log2 = MIN_SIZE_LOG;
+        int len = _chm._keys.length;
+        while ((1 << log2) < len) log2++;
+        clear(log2);
+    }
+
+    private void clear(int logSize) {
+        CHM newchm = new CHM(this, new ConcurrentAutoIntTable(), logSize);
         while (!CAS(_chm_handler, _chm, newchm)) { /*Spin until the clear works*/}
         CAS(_val_1_handler, _val_1, TOMBSTONE);
     }

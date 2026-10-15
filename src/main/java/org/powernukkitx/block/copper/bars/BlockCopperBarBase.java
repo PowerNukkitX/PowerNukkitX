@@ -1,10 +1,13 @@
 package org.powernukkitx.block.copper.bars;
 
+import org.powernukkitx.block.definition.BlockDefinition;
+
 import org.powernukkitx.Player;
 import org.powernukkitx.block.*;
 import org.powernukkitx.block.property.enums.OxidizationLevel;
 import org.powernukkitx.item.Item;
 import org.powernukkitx.item.ItemTool;
+import org.powernukkitx.level.Level;
 import org.powernukkitx.math.BlockFace;
 import org.powernukkitx.registry.Registries;
 import org.jetbrains.annotations.NotNull;
@@ -16,28 +19,20 @@ import javax.annotation.Nullable;
  * @since 1.21.110
  */
 public abstract class BlockCopperBarBase extends BlockTransparent implements Oxidizable, Waxable {
+    public static final BlockDefinition DEFINITION = TRANSPARENT.toBuilder()
+            .hardness(5)
+            .resistance(6)
+            .toolType(ItemTool.TYPE_PICKAXE)
+            .toolTier(ItemTool.TIER_WOODEN)
+            .canBeActivated(true)
+            .canHarvestWithHand(false)
+            .build();
     public BlockCopperBarBase(BlockState blockState) {
-        super(blockState);
+        super(blockState, DEFINITION);
     }
 
-    @Override
-    public double getHardness() {
-        return 5;
-    }
-
-    @Override
-    public double getResistance() {
-        return 6;
-    }
-
-    @Override
-    public int getToolType() {
-        return ItemTool.TYPE_PICKAXE;
-    }
-
-    @Override
-    public int getToolTier() {
-        return ItemTool.TIER_WOODEN;
+    public BlockCopperBarBase(BlockState blockState, BlockDefinition definition) {
+        super(blockState, definition);
     }
 
     @Override
@@ -48,17 +43,18 @@ public abstract class BlockCopperBarBase extends BlockTransparent implements Oxi
 
     @Override
     public int onUpdate(int type) {
+        if (type == Level.BLOCK_UPDATE_NORMAL && this instanceof BlockConnectable connectable && connectable.updateConnections()) {
+            level.setBlock(this, this, true);
+        }
         return Oxidizable.super.onUpdate(type);
     }
 
     @Override
-    public boolean canBeActivated() {
-        return true;
-    }
-
-    @Override
-    public boolean canHarvestWithHand() {
-        return false;
+    public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, @Nullable Player player) {
+        if (this instanceof BlockConnectable connectable) {
+            connectable.updateConnections();
+        }
+        return super.place(item, block, target, face, fx, fy, fz, player);
     }
 
     @Override

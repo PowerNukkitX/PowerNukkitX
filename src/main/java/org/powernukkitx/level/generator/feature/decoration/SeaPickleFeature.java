@@ -73,7 +73,7 @@ public class SeaPickleFeature extends CountGenerateFeature {
     }
 
     private static int findOceanFloorWaterY(IChunk chunk, int x, int z) {
-        int y = chunk.getHeightMap(x, z);
+        int y = chunk.getHeightMap(x, z) - 1;
         Level level = chunk.getLevel();
         if (y <= level.getMinHeight()) {
             return y;

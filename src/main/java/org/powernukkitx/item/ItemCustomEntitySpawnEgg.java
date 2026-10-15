@@ -6,6 +6,7 @@ import org.powernukkitx.entity.Entity;
 import org.powernukkitx.event.entity.CreatureSpawnEvent;
 import org.powernukkitx.event.entity.CreatureSpawnEvent.SpawnReason;
 import org.powernukkitx.item.customitem.CustomItemDefinition;
+import org.powernukkitx.item.definition.ItemDefinition;
 import org.powernukkitx.level.Level;
 import org.powernukkitx.level.Location;
 import org.powernukkitx.level.format.IChunk;
@@ -14,7 +15,6 @@ import org.powernukkitx.level.vibration.VibrationType;
 import org.powernukkitx.math.AxisAlignedBB;
 import org.powernukkitx.math.BlockFace;
 import org.powernukkitx.nbt.tag.CompoundTag;
-import org.powernukkitx.nbt.tag.DoubleTag;
 import org.powernukkitx.nbt.tag.FloatTag;
 import org.powernukkitx.registry.Registries;
 import org.powernukkitx.utils.Identifier;
@@ -25,6 +25,10 @@ import java.util.concurrent.ThreadLocalRandom;
 
 @SuppressWarnings("PMD.AvoidAccessibilityAlteration")
 public class ItemCustomEntitySpawnEgg extends Item implements SpawnEggPickable {
+    public static final ItemDefinition DEFINITION = Item.DEFAULT_DEFINITION.toBuilder()
+            .canBeActivated(true)
+            .build();
+
     private static final String SUFFIX = "_spawn_egg";
     private static final String PLACEHOLDER_ID = "pnx:auto_spawn_egg";
 
@@ -36,7 +40,7 @@ public class ItemCustomEntitySpawnEgg extends Item implements SpawnEggPickable {
     private CompoundTag entityNBT;
 
     public ItemCustomEntitySpawnEgg() {
-        super(PLACEHOLDER_ID, 0, 1);
+        super(PLACEHOLDER_ID, 0, 1, (String) null, DEFINITION);
         selfHealIdentifierFromNamedTag();
     }
 
@@ -75,11 +79,6 @@ public class ItemCustomEntitySpawnEgg extends Item implements SpawnEggPickable {
     }
 
     @Override
-    public boolean canBeActivated() {
-        return true;
-    }
-
-    @Override
     public boolean onActivate(Level level, Player player, Block block, Block target, BlockFace face, double fx, double fy, double fz) {
         if (player != null && player.isAdventure()) return false;
         selfHealIdentifierFromNamedTag();
@@ -113,8 +112,8 @@ public class ItemCustomEntitySpawnEgg extends Item implements SpawnEggPickable {
             nbt.putString("CustomName", this.getCustomName());
         }
         if (this.entityNBT != null) {
-            this.entityNBT.putList("Pos", nbt.getList("Pos", DoubleTag.class));
-            this.entityNBT.putList("Motion", nbt.getList("Motion", DoubleTag.class));
+            this.entityNBT.putList("Pos", nbt.getList("Pos", FloatTag.class));
+            this.entityNBT.putList("Motion", nbt.getList("Motion", FloatTag.class));
             this.entityNBT.putList("Rotation", nbt.getList("Rotation", FloatTag.class));
             nbt = this.entityNBT;
         }

@@ -1,12 +1,18 @@
 package org.powernukkitx.item;
 
+import org.powernukkitx.item.definition.ItemDefinition;
+
 public class ItemTotemOfUndying extends Item {
+    public static final ItemDefinition DEFINITION = DEFAULT_DEFINITION.toBuilder()
+            .maxStackSize(1)
+            .build();
+
     public ItemTotemOfUndying() {
-        super(TOTEM_OF_UNDYING);
+        super(TOTEM_OF_UNDYING, DEFINITION);
     }
 
     @Override
-    public int getMaxStackSize() {
-        return 1;
+    public String[] getAliases() {
+        return new String[]{"minecraft:totem"};
     }
 }

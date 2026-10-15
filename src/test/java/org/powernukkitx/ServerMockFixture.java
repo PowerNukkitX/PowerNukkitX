@@ -10,6 +10,7 @@ import org.powernukkitx.entity.data.profession.Profession;
 import org.powernukkitx.event.server.QueryRegenerateEvent;
 import org.powernukkitx.item.enchantment.Enchantment;
 import org.powernukkitx.lang.BaseLang;
+import org.powernukkitx.level.ChunkPublisherBudgetController;
 import org.powernukkitx.level.DimensionEnum;
 import org.powernukkitx.level.Level;
 import org.powernukkitx.level.format.LevelConfig;
@@ -18,20 +19,29 @@ import org.powernukkitx.network.Network;
 import org.powernukkitx.permission.BanList;
 import org.powernukkitx.plugin.JavaPluginLoader;
 import org.powernukkitx.network.positiontracking.PositionTrackingService;
+import org.powernukkitx.network.process.LoginService;
 import org.powernukkitx.registry.Registries;
 import org.powernukkitx.scheduler.ServerScheduler;
 import org.powernukkitx.utils.collection.FreezableArrayManager;
 import eu.okaeri.configs.ConfigManager;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.reflect.FieldUtils;
+import org.iq80.leveldb.DB;
+import org.iq80.leveldb.Options;
+import org.iq80.leveldb.impl.Iq80DBFactory;
 
 import java.io.File;
-import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.concurrent.ForkJoinPool;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicLong;
 
-import static org.mockito.Mockito.any;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doCallRealMethod;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
@@ -152,9 +162,11 @@ public final class ServerMockFixture {
         doReturn(queryRegenerateEvent).when(server).getQueryInformation();
         doCallRealMethod().when(server).getNetwork();
         doReturn(false).when(server).getAutoSave();
+        doReturn(true).when(server).isRunning();
         doReturn(1).when(server).getTick();
         doReturn(4).when(server).getViewDistance();
         doReturn(20).when(server).getBaseTps();
+        doReturn(new ChunkPublisherBudgetController(server)).when(server).getChunkPublisherBudgetController();
         doReturn(java.util.concurrent.Executors.newSingleThreadScheduledExecutor(r -> {
             Thread t = new Thread(r, "fixture-level-tick");
             t.setDaemon(true);
@@ -163,14 +175,33 @@ public final class ServerMockFixture {
 
         ForkJoinPool pool = new ForkJoinPool(Runtime.getRuntime().availableProcessors());
         doReturn(pool).when(server).getComputeThreadPool();
+        doReturn(new ThreadPoolExecutor(2, 2, 30L, TimeUnit.SECONDS, new LinkedBlockingQueue<>(), r -> {
+            Thread t = new Thread(r, "fixture-chunk-io");
+            t.setDaemon(true);
+            return t;
+        })).when(server).getChunkIoExecutor();
+        doReturn(new LoginService(serverSettings.networkSettings())).when(server).getLoginService();
+        // Persistent actor IDs need a negative high half, as the real allocator hands out; the mock's 0
+        // is refused as soon as a generated chunk stores its actors
+        final AtomicLong nextActorUniqueId = new AtomicLong();
+        doAnswer(invocation -> (-1L << 32) | nextActorUniqueId.incrementAndGet()).when(server).getNewActorUniqueId();
         doReturn(simpleCommandMap).when(server).getCommandMap();
         doReturn(null).when(server).getScoreboardManager();
         try {
-            final PositionTrackingService positionTrackingService =
-                    new PositionTrackingService(new File(PowerNukkitX.DATA_PATH,
-                            "services/position_tracking_db_" + ProcessHandle.current().pid()));
-            doReturn(positionTrackingService).when(server).getPositionTrackingService();
-        } catch (FileNotFoundException e) {
+            final File positionTrackingDir = new File(
+                    PowerNukkitX.DATA_PATH,
+                    "position_tracking_db_" + ProcessHandle.current().pid() + "_" + System.nanoTime()
+            );
+            final DB positionTrackingDB = Iq80DBFactory.factory.open(positionTrackingDir, new Options().createIfMissing(true));
+            doReturn(new PositionTrackingService(positionTrackingDB)).when(server).getPositionTrackingService();
+            Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+                try {
+                    positionTrackingDB.close();
+                } catch (IOException ignored) {
+                }
+                FileUtils.deleteQuietly(positionTrackingDir);
+            }));
+        } catch (IOException e) {
             throw new IllegalStateException(e);
         }
         doNothing().when(server).sendRecipeList(any());

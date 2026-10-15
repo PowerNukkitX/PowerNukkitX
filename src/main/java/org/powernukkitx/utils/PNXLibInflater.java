@@ -1,6 +1,6 @@
 package org.powernukkitx.utils;
 
-import cn.powernukkitx.libdeflate.LibdeflateDecompressor;
+import org.powernukkitx.libdeflate.LibdeflateDecompressor;
 
 public final class PNXLibInflater extends LibdeflateDecompressor {
     public PNXLibInflater() {

@@ -1,9 +1,15 @@
 package org.powernukkitx.item;
 
+import org.powernukkitx.item.definition.ItemDefinition;
+
 /**
  * @author MagicDroidX (Nukkit Project)
  */
 public class ItemPumpkinPie extends ItemFood {
+    public static final ItemDefinition DEFINITION = FOOD.toBuilder()
+            .nutrition(8)
+            .saturation(4.8f)
+            .build();
 
     public ItemPumpkinPie() {
         this(0, 1);
@@ -14,16 +20,6 @@ public class ItemPumpkinPie extends ItemFood {
     }
 
     public ItemPumpkinPie(Integer meta, int count) {
-        super(PUMPKIN_PIE, meta, count, "Pumpkin Pie");
-    }
-
-    @Override
-    public int getNutrition() {
-        return 8;
-    }
-
-    @Override
-    public float getSaturation() {
-        return 4.8F;
+        super(PUMPKIN_PIE, meta, count, "Pumpkin Pie", DEFINITION);
     }
 }

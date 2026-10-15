@@ -1,5 +1,7 @@
 package org.powernukkitx.block;
 
+import org.powernukkitx.block.definition.BlockDefinition;
+
 import org.powernukkitx.Player;
 import org.powernukkitx.entity.Entity;
 import org.powernukkitx.entity.projectile.EntityArrow;
@@ -13,7 +15,6 @@ import org.powernukkitx.level.vibration.VibrationType;
 import org.powernukkitx.math.BlockFace;
 import org.powernukkitx.math.Vector3;
 import org.powernukkitx.nbt.tag.CompoundTag;
-import org.powernukkitx.nbt.tag.DoubleTag;
 import org.powernukkitx.nbt.tag.FloatTag;
 import org.powernukkitx.nbt.tag.ListTag;
 import org.powernukkitx.utils.RedstoneComponent;
@@ -27,6 +28,13 @@ import static org.powernukkitx.block.property.CommonBlockProperties.EXPLODE_BIT;
 public class BlockTnt extends BlockSolid implements RedstoneComponent, Natural {
 
     public static final BlockProperties PROPERTIES = new BlockProperties(TNT, EXPLODE_BIT);
+    public static final BlockDefinition DEFINITION = SOLID.toBuilder()
+            .hardness(0)
+            .resistance(0)
+            .burnChance(15)
+            .burnAbility(100)
+            .canBeActivated(true)
+            .build();
 
     @Override
     @NotNull
@@ -39,37 +47,12 @@ public class BlockTnt extends BlockSolid implements RedstoneComponent, Natural {
     }
 
     public BlockTnt(BlockState state) {
-        super(state);
+        super(state, DEFINITION);
     }
 
     @Override
     public String getName() {
         return "TNT";
-    }
-
-    @Override
-    public double getHardness() {
-        return 0;
-    }
-
-    @Override
-    public double getResistance() {
-        return 0;
-    }
-
-    @Override
-    public boolean canBeActivated() {
-        return true;
-    }
-
-    @Override
-    public int getBurnChance() {
-        return 15;
-    }
-
-    @Override
-    public int getBurnAbility() {
-        return 100;
     }
 
     public void prime() {
@@ -84,14 +67,14 @@ public class BlockTnt extends BlockSolid implements RedstoneComponent, Natural {
         this.getLevel().setBlock(this, Block.get(BlockID.AIR), true);
         double mot = (new NukkitRandom()).nextFloat() * Math.PI * 2;
         CompoundTag nbt = new CompoundTag()
-                .putList("Pos", new ListTag<DoubleTag>()
-                        .add(new DoubleTag(this.x + 0.5))
-                        .add(new DoubleTag(this.y))
-                        .add(new DoubleTag(this.z + 0.5)))
-                .putList("Motion", new ListTag<DoubleTag>()
-                        .add(new DoubleTag(-Math.sin(mot) * 0.02))
-                        .add(new DoubleTag(0.2))
-                        .add(new DoubleTag(-Math.cos(mot) * 0.02)))
+                .putList("Pos", new ListTag<FloatTag>()
+                        .add(new FloatTag(this.x + 0.5))
+                        .add(new FloatTag(this.y))
+                        .add(new FloatTag(this.z + 0.5)))
+                .putList("Motion", new ListTag<FloatTag>()
+                        .add(new FloatTag(-Math.sin(mot) * 0.02))
+                        .add(new FloatTag(0.2))
+                        .add(new FloatTag(-Math.cos(mot) * 0.02)))
                 .putList("Rotation", new ListTag<FloatTag>()
                         .add(new FloatTag(0f))
                         .add(new FloatTag(0f)))

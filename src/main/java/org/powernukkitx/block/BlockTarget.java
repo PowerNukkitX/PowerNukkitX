@@ -1,5 +1,7 @@
 package org.powernukkitx.block;
 
+import org.powernukkitx.block.definition.BlockDefinition;
+
 import org.powernukkitx.Player;
 import org.powernukkitx.entity.Entity;
 import org.powernukkitx.entity.projectile.EntityArrow;
@@ -28,6 +30,14 @@ import java.util.List;
  */
 public class BlockTarget extends BlockSolid implements RedstoneComponent {
     public static final BlockProperties PROPERTIES = new BlockProperties(TARGET);
+    public static final BlockDefinition DEFINITION = SOLID.toBuilder()
+            .hardness(0.5)
+            .resistance(0.5)
+            .toolType(ItemTool.TYPE_HOE)
+            .burnChance(0)
+            .burnAbility(15)
+            .isPowerSource(true)
+            .build();
     private static final int NON_DIRECTIONAL_PRODUCER = 6;
     private static final float TARGET_FACE_RADIUS = 0.70710677f;
 
@@ -41,17 +51,12 @@ public class BlockTarget extends BlockSolid implements RedstoneComponent {
     }
 
     public BlockTarget(BlockState blockState) {
-        super(blockState);
+        super(blockState, DEFINITION);
     }
 
     @Override
     public String getName() {
         return "Target";
-    }
-
-    @Override
-    public boolean isPowerSource() {
-        return true;
     }
 
     @Override
@@ -168,30 +173,5 @@ public class BlockTarget extends BlockSolid implements RedstoneComponent {
         }
 
         super.afterRemoval(newBlock, update);
-    }
-
-    @Override
-    public int getToolType() {
-        return ItemTool.TYPE_HOE;
-    }
-
-    @Override
-    public double getHardness() {
-        return 0.5;
-    }
-
-    @Override
-    public double getResistance() {
-        return 0.5;
-    }
-
-    @Override
-    public int getBurnAbility() {
-        return 15;
-    }
-
-    @Override
-    public int getBurnChance() {
-        return 0;
     }
 }

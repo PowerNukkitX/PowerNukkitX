@@ -3,92 +3,120 @@ package org.powernukkitx.level.generator.feature.decoration;
 import org.powernukkitx.block.*;
 import org.powernukkitx.block.property.CommonBlockProperties;
 import org.powernukkitx.level.Level;
-import org.powernukkitx.level.Position;
 import org.powernukkitx.level.format.IChunk;
 import org.powernukkitx.level.generator.ChunkGenerateContext;
-import org.powernukkitx.level.generator.feature.CountGenerateFeature;
+import org.powernukkitx.level.generator.GenerateFeature;
 import org.powernukkitx.level.generator.object.BlockManager;
-import org.powernukkitx.math.NukkitMath;
-import org.powernukkitx.registry.Registries;
-import org.powernukkitx.tags.BiomeTags;
-import org.powernukkitx.utils.random.RandomSourceProvider;
+import org.powernukkitx.tags.BlockTags;
+import it.unimi.dsi.fastutil.longs.LongOpenHashSet;
 
-public class ForestFlowerFoliageFeature extends CountGenerateFeature implements Supportable {
+public class ForestFlowerFoliageFeature extends GenerateFeature {
 
     public static final String NAME = "minecraft:forest_first_foliage_feature";
 
     @Override
-    public void populate(ChunkGenerateContext context, RandomSourceProvider random) {
+    public void apply(ChunkGenerateContext context) {
         IChunk chunk = context.getChunk();
         int chunkX = chunk.getX();
         int chunkZ = chunk.getZ();
         Level level = chunk.getLevel();
-        int randomX = random.nextInt(15);
-        int randomZ = random.nextInt(15);
-        int sourceX = (chunkX << 4) + randomX;
-        int sourceZ = (chunkZ << 4) + randomZ;
 
-        int flower = random.nextInt(4);
+        this.random.setSeed(level.getSeed() ^ Level.chunkHash(chunkX, chunkZ) ^ name().hashCode());
 
-        BlockManager object = new BlockManager(chunk.getLevel());
+        int count = random.nextInt(5) - 3;
+        if (count <= 0) return;
 
-        int radius = NukkitMath.randomRange(random, 0, 2);
-        for (int x = sourceX - radius; x <= sourceX + radius; x++) {
-            for (int z = sourceZ - radius; z <= sourceZ + radius; z++) {
-                if (!level.isChunkGenerated(x >> 4, z >> 4)) return;
-                if ((x - sourceX) * (x - sourceX) + (z - sourceZ) * (z - sourceZ) <= radius * radius) {
-                    if (random.nextFloat() < 0.3f) {
-                        int depth = 0;
-                        int height = level.getHeightMap(x, z);
-                        BlockState topBlockState = level.getBlockStateAt(x, height, z);
-                        while (topBlockState.toBlock() instanceof BlockLeaves || topBlockState == BlockAir.STATE) {
-                            topBlockState = level.getBlockStateAt(x, height - (++depth), z);
-                        }
-                        if (isSupportValid(topBlockState.toBlock(new Position(x, (height - depth), z, level)))) {
-                            populateFlower(flower, object, x, (height - depth) + 1, z);
-                        }
-                    }
+        BlockManager object = new BlockManager(level);
+        LongOpenHashSet occupied = new LongOpenHashSet();
+
+        int baseX = chunkX << 4;
+        int baseZ = chunkZ << 4;
+
+        for (int i = 0; i < count; i++) {
+            BlockState lowerState;
+            BlockState upperState;
+
+            switch (random.nextInt(3)) {
+                case 0 -> {
+                    lowerState = BlockLilac.PROPERTIES.getDefaultState();
+                    upperState = BlockLilac.PROPERTIES.getBlockState(CommonBlockProperties.UPPER_BLOCK_BIT.createValue(true));
+                }
+                case 1 -> {
+                    lowerState = BlockRoseBush.PROPERTIES.getDefaultState();
+                    upperState = BlockRoseBush.PROPERTIES.getBlockState(CommonBlockProperties.UPPER_BLOCK_BIT.createValue(true));
+                }
+                default -> {
+                    lowerState = BlockPeony.PROPERTIES.getDefaultState();
+                    upperState = BlockPeony.PROPERTIES.getBlockState(CommonBlockProperties.UPPER_BLOCK_BIT.createValue(true));
                 }
             }
+
+            for (int center = 0; center < 5; center++) {
+                int localX = random.nextInt(16);
+                int localZ = random.nextInt(16);
+
+                int heightBound = chunk.getHeightMap(localX, localZ) + 31;
+                if (heightBound <= 0) continue;
+
+                int centerX = baseX + localX;
+                int centerY = random.nextInt(heightBound);
+                int centerZ = baseZ + localZ;
+
+                scatterDoublePlant(chunk, level, object, occupied, centerX, centerY, centerZ, lowerState, upperState);
+            }
         }
+
         queueObject(chunk, object);
     }
 
-    private void populateFlower(int flower, BlockManager level, int x, int y, int z) {
-        switch (flower) {
-            case 1 -> level.setBlockStateAt(x, y, z, BlockDandelion.PROPERTIES.getDefaultState());
-            case 2 -> level.setBlockStateAt(x, y, z, BlockLilyOfTheValley.PROPERTIES.getDefaultState());
-            case 3 -> {
-                level.setBlockStateAt(x, y, z, BlockLilac.PROPERTIES.getDefaultState());
-                level.setBlockStateAt(x, y + 1, z, BlockLilac.PROPERTIES.getBlockState(CommonBlockProperties.UPPER_BLOCK_BIT.createValue(true)));
+    private void scatterDoublePlant(IChunk sourceChunk, Level level, BlockManager object, LongOpenHashSet occupied, int centerX, int centerY, int centerZ, BlockState lowerState, BlockState upperState) {
+        int minHeight = level.getMinHeight();
+        int maxHeight = level.getMaxHeight();
+
+        for (int i = 0; i < 64; i++) {
+            int z = centerZ + ((random.nextInt() & 7) - (random.nextInt() & 7));
+            int y = centerY + ((random.nextInt() & 3) - (random.nextInt() & 3));
+            int x = centerX + ((random.nextInt() & 7) - (random.nextInt() & 7));
+
+            if (y <= minHeight || y + 1 >= maxHeight) continue;
+
+            long lowerKey = blockKey(x, y, z);
+            long upperKey = blockKey(x, y + 1, z);
+            long supportKey = blockKey(x, y - 1, z);
+
+            if (occupied.contains(lowerKey) || occupied.contains(upperKey) || occupied.contains(supportKey)) continue;
+
+            int targetChunkX = x >> 4;
+            int targetChunkZ = z >> 4;
+
+            IChunk targetChunk;
+            if (targetChunkX == sourceChunk.getX() && targetChunkZ == sourceChunk.getZ()) {
+                targetChunk = sourceChunk;
+            } else {
+                targetChunk = level.getChunkIfLoaded(targetChunkX, targetChunkZ);
             }
-            case 4 -> {
-                level.setBlockStateAt(x, y, z, BlockPeony.PROPERTIES.getDefaultState());
-                level.setBlockStateAt(x, y + 1, z, BlockPeony.PROPERTIES.getBlockState(CommonBlockProperties.UPPER_BLOCK_BIT.createValue(true)));
-            }
-            case 0 -> {
-                level.setBlockStateAt(x, y, z, BlockRoseBush.PROPERTIES.getDefaultState());
-                level.setBlockStateAt(x, y + 1, z, BlockRoseBush.PROPERTIES.getBlockState(CommonBlockProperties.UPPER_BLOCK_BIT.createValue(true)));
-            }
+
+            if (targetChunk == null) continue;
+
+            int localX = x & 15;
+            int localZ = z & 15;
+
+            if (targetChunk.getBlockState(localX, y, localZ) != BlockAir.STATE) continue;
+            if (targetChunk.getBlockState(localX, y + 1, localZ) != BlockAir.STATE) continue;
+
+            BlockState supportState = targetChunk.getBlockState(localX, y - 1, localZ);
+            if (!supportState.toBlock().hasTag(BlockTags.DIRT)) continue;
+
+            object.setBlockStateAt(x, y, z, lowerState);
+            object.setBlockStateAt(x, y + 1, z, upperState);
+
+            occupied.add(lowerKey);
+            occupied.add(upperKey);
         }
     }
 
-    @Override
-    public int getBase() {
-        return -1;
-    }
-
-    @Override
-    public int getRandom() {
-        return 8;
-    }
-
-    public boolean isSupportValid(Block support) {
-        return isSupportGrass(support) &&
-                Registries.BIOME.containsTag(BiomeTags.FOREST, support.getLevel().getBiomeId(
-                        support.getFloorX(),
-                        support.getFloorY(),
-                        support.getFloorZ()));
+    private static long blockKey(int x, int y, int z) {
+        return ((long) (x & 0x3ffffff) << 38) | ((long) (z & 0x3ffffff) << 12) | (y & 0xfffL);
     }
 
     @Override

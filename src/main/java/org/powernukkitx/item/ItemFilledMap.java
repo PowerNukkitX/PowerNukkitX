@@ -6,8 +6,8 @@ import org.powernukkitx.Player;
 import org.powernukkitx.Server;
 import org.powernukkitx.level.Level;
 import org.powernukkitx.math.Vector3;
+import org.powernukkitx.item.definition.ItemDefinition;
 import org.powernukkitx.nbt.tag.CompoundTag;
-import org.powernukkitx.plugin.InternalPlugin;
 import org.powernukkitx.utils.Utils;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import lombok.extern.slf4j.Slf4j;
@@ -22,11 +22,14 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Slf4j
 public class ItemFilledMap extends Item {
+    public static final ItemDefinition DEFINITION = Item.DEFAULT_DEFINITION.toBuilder()
+            .canBeActivated(true)
+            .maxStackSize(1)
+            .build();
+
     public static int mapCount = 0;
     // not very pretty but definitely better than before.
     private BufferedImage image;
@@ -40,7 +43,7 @@ public class ItemFilledMap extends Item {
     }
 
     public ItemFilledMap(Integer meta, int count) {
-        super(FILLED_MAP, meta, count, "Map");
+        super(FILLED_MAP, meta, count, "Map", DEFINITION);
         updateName();
         if (!hasNbt() || !getNbt().contains("map_uuid")) {
             this.setNbt(getOrCreateNbt().putLong("map_uuid", mapCount++));
@@ -182,16 +185,6 @@ public class ItemFilledMap extends Item {
         } catch (Exception ex) {
             log.warn("There was an error while generating map image", ex);
         }
-    }
-
-    @Override
-    public boolean canBeActivated() {
-        return true;
-    }
-
-    @Override
-    public int getMaxStackSize() {
-        return 1;
     }
 
     @Override

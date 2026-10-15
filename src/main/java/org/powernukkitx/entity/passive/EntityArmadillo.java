@@ -5,8 +5,7 @@ import org.powernukkitx.entity.Entity;
 import org.powernukkitx.entity.EntityFilter;
 import org.powernukkitx.entity.EntityID;
 import org.powernukkitx.entity.EntityIntelligent;
-import org.powernukkitx.entity.ai.behavior.Behavior;
-import org.powernukkitx.entity.ai.behaviorgroup.BehaviorGroup;
+import org.powernukkitx.entity.ai.EntityAI;
 import org.powernukkitx.entity.ai.behaviorgroup.IBehaviorGroup;
 import org.powernukkitx.entity.ai.controller.FluctuateController;
 import org.powernukkitx.entity.ai.controller.LookController;
@@ -131,88 +130,57 @@ public class EntityArmadillo extends EntityAnimal {
 
     @Override
     public IBehaviorGroup requireBehaviorGroup() {
-        return BehaviorGroup.builder(this)
-                .coreBehaviors(
-                    new Behavior(
-                        new LoveTimeoutExecutor(20 * 30),
-                            e -> e.getMemoryStorage().get(CoreMemoryTypes.IS_IN_LOVE),
-                        2, 1
-                    ),
-                    new Behavior(
-                        new AnimalGrowExecutor(),
+        return EntityAI.of(this)
+                .coreBehavior(new LoveTimeoutExecutor(20 * 30))
+                        .when(e -> e.getMemoryStorage().get(CoreMemoryTypes.IS_IN_LOVE))
+                .coreBehavior(new AnimalGrowExecutor())
+                        .when(all(
+                            e -> e.isAgeable(),
+                            e -> e.isBaby(),
+                            e -> !e.isGrowthPaused(),
+                            e -> e.getTicksGrowLeft() > 0
+                        ))
+                        .period(1200)
+                .behavior(new UnrollingExecutor())
+                        .when(entity -> getRollState() == RollState.ROLLED_UP_UNROLLING)
+                .behavior(new PeekExecutor())
+                        .when(any(
+                            entity -> getRollState() == RollState.ROLLED_UP_PEEKING,
                             all(
-                                e -> e.isAgeable(),
-                                e -> e.isBaby(),
-                                e -> !e.isGrowthPaused(),
-                                e -> e.getTicksGrowLeft() > 0
-                            ),
-                        1, 1, 1200
-                    )
-                )
-                .behaviors(
-                    new Behavior(
-                        new UnrollingExecutor(), 
-                            entity -> getRollState() == RollState.ROLLED_UP_UNROLLING,
-                        7, 1
-                    ),
-                    new Behavior(
-                        new PeekExecutor(),
-                            any(
-                                entity -> getRollState() == RollState.ROLLED_UP_PEEKING,
-                                all(
-                                    entity -> getRollState() == RollState.ROLLED_UP_RELAXING,
-                                    new ProbabilityEvaluator(1,0xFFF)
-                                )
-                            ),
-                        6, 1
-                    ),
-                    new Behavior(
-                        new RollUpExecutor(), new RollupEvaluator(),
-                        5, 1
-                    ),
-                    new Behavior(
-                        new RelaxingExecutor(), new ProbabilityEvaluator(1,0xFFFF),
-                        4, 1
-                    ),
-                    new Behavior(
-                        new ShedExecutor(),
-                            all(
-                                entity -> getRollState() == RollState.UNROLLED,
-                                new PassByTimeEvaluator(CoreMemoryTypes.NEXT_SHED, 0)
-                            ),
-                        4, 1
-                    ),
-                    new Behavior(
-                        new BreedingExecutor(16, 200, 0.35f),
-                            all(
-                                e -> !e.isBaby(),
-                                e -> e.getMemoryStorage().get(CoreMemoryTypes.IS_IN_LOVE)
-                            ),
-                        3, 1
-                    ),
-                    new Behavior(
-                        new TemptExecutor(1.25f, TEMPT_ITEMS),
-                            all(
-                                e -> !e.getMemoryStorage().get(CoreMemoryTypes.IS_IN_LOVE),
-                                e -> this.getRollState() == RollState.UNROLLED,
-                                e -> TemptExecutor.hasTemptingPlayer(e, false, 10, TEMPT_ITEMS)
-                            ),
-                        2, 1
-                    ),
-                    new Behavior(
-                        new LookAtTargetExecutor(CoreMemoryTypes.NEAREST_PLAYER, 100),
-                            all(
-                                new ProbabilityEvaluator(4, 10),
-                                entity -> getRollState() == RollState.UNROLLED
-                            ),
-                        1, 1, 100
-                    ),
-                    new Behavior(
-                        new FlatRandomRoamExecutor(0.2f, 12, 20, false, -1, true, 40),
+                                entity -> getRollState() == RollState.ROLLED_UP_RELAXING,
+                                new ProbabilityEvaluator(1,0xFFF)
+                            )
+                        ))
+                .behavior(new RollUpExecutor())
+                        .when(new RollupEvaluator())
+                .behavior(new RelaxingExecutor())
+                        .when(new ProbabilityEvaluator(1,0xFFFF))
+                .behavior(new ShedExecutor())
+                        .when(all(
                             entity -> getRollState() == RollState.UNROLLED,
-                        1, 1
-                    )
-                )
+                            new PassByTimeEvaluator(CoreMemoryTypes.NEXT_SHED, 0)
+                        ))
+                        .alongsidePrevious()
+                .behavior(new BreedingExecutor(16, 200, 0.35f))
+                        .when(all(
+                            e -> !e.isBaby(),
+                            e -> e.getMemoryStorage().get(CoreMemoryTypes.IS_IN_LOVE)
+                        ))
+                .behavior(new TemptExecutor(1.25f, TEMPT_ITEMS))
+                        .when(all(
+                            e -> !e.getMemoryStorage().get(CoreMemoryTypes.IS_IN_LOVE),
+                            e -> this.getRollState() == RollState.UNROLLED,
+                            e -> TemptExecutor.hasTemptingPlayer(e, false, 10, TEMPT_ITEMS)
+                        ))
+                .behavior(new LookAtTargetExecutor(CoreMemoryTypes.NEAREST_PLAYER, 100))
+                        .when(all(
+                            new ProbabilityEvaluator(4, 10),
+                            entity -> getRollState() == RollState.UNROLLED
+                        ))
+                        .period(100)
+                .behavior(new FlatRandomRoamExecutor(0.2f, 12, 20, false, -1, true, 40))
+                        .when(entity -> getRollState() == RollState.UNROLLED)
+                        .alongsidePrevious()
                 .sensors(
                     new NearestPlayerSensor(8, 0, 20)
                 )

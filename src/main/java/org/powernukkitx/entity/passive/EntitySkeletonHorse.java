@@ -7,8 +7,6 @@ import org.powernukkitx.entity.EntityIntelligent;
 import org.powernukkitx.entity.EntitySmite;
 import org.powernukkitx.entity.EntityWalkable;
 import org.powernukkitx.entity.ai.EntityAI;
-import org.powernukkitx.entity.ai.behavior.Behavior;
-import org.powernukkitx.entity.ai.behaviorgroup.BehaviorGroup;
 import org.powernukkitx.entity.ai.behaviorgroup.IBehaviorGroup;
 import org.powernukkitx.entity.ai.controller.FluctuateController;
 import org.powernukkitx.entity.ai.controller.LookController;
@@ -33,16 +31,14 @@ import org.powernukkitx.entity.components.RideableComponent;
 import org.powernukkitx.entity.weather.EntityLightningBolt;
 import org.powernukkitx.event.entity.EntityDamageByEntityEvent;
 import org.powernukkitx.event.entity.EntityDamageEvent;
-import org.powernukkitx.inventory.EntityArmorInventory;
 import org.powernukkitx.item.Item;
 import org.powernukkitx.item.enchantment.Enchantment;
 import org.powernukkitx.level.format.IChunk;
 import org.powernukkitx.math.Vector3;
 import org.powernukkitx.math.Vector3f;
 import org.powernukkitx.nbt.tag.CompoundTag;
-import org.powernukkitx.nbt.tag.DoubleTag;
+import org.powernukkitx.nbt.tag.FloatTag;
 import org.powernukkitx.nbt.tag.ListTag;
-import org.powernukkitx.nbt.tag.Tag;
 import org.powernukkitx.registry.Registries;
 import org.powernukkitx.utils.ItemHelper;
 import org.powernukkitx.utils.Utils;
@@ -296,16 +292,16 @@ public class EntitySkeletonHorse extends EntityAnimal implements EntityWalkable,
 
         double spread = 1.5d;
         CompoundTag nbt1 = nbt.copy();
-        nbt1.getList("Pos", DoubleTag.class).add(0, new DoubleTag(vector.x + spread));
-        nbt1.getList("Pos", DoubleTag.class).add(2, new DoubleTag(vector.z));
+        nbt1.getList("Pos", FloatTag.class).add(0, new FloatTag(vector.x + spread));
+        nbt1.getList("Pos", FloatTag.class).add(2, new FloatTag(vector.z));
 
         CompoundTag nbt2 = nbt.copy();
-        nbt2.getList("Pos", DoubleTag.class).add(0, new DoubleTag(vector.x - (spread * 0.5d)));
-        nbt2.getList("Pos", DoubleTag.class).add(2, new DoubleTag(vector.z + (spread * 0.866d)));
+        nbt2.getList("Pos", FloatTag.class).add(0, new FloatTag(vector.x - (spread * 0.5d)));
+        nbt2.getList("Pos", FloatTag.class).add(2, new FloatTag(vector.z + (spread * 0.866d)));
 
         CompoundTag nbt3 = nbt.copy();
-        nbt3.getList("Pos", DoubleTag.class).add(0, new DoubleTag(vector.x - (spread * 0.5d)));
-        nbt3.getList("Pos", DoubleTag.class).add(2, new DoubleTag(vector.z - (spread * 0.866d)));
+        nbt3.getList("Pos", FloatTag.class).add(0, new FloatTag(vector.x - (spread * 0.5d)));
+        nbt3.getList("Pos", FloatTag.class).add(2, new FloatTag(vector.z - (spread * 0.866d)));
 
         Entity skeletonHorse1 = Entity.createEntity(Entity.SKELETON_HORSE, this.getChunk(), nbt1);
         Entity skeletonHorse2 = Entity.createEntity(Entity.SKELETON_HORSE, this.getChunk(), nbt2);
@@ -359,7 +355,7 @@ public class EntitySkeletonHorse extends EntityAnimal implements EntityWalkable,
                 1 + ThreadLocalRandom.current().nextInt(2),
                 false
         );
-        nbt.putCompound("Mainhand", ItemHelper.write(bow));
+        nbt.putList("Mainhand", new ListTag<CompoundTag>().add(ItemHelper.write(bow)));
 
         // Iron helmet + enchants
         Item helmet = Item.get(Item.IRON_HELMET, 0, 1);
@@ -368,8 +364,9 @@ public class EntitySkeletonHorse extends EntityAnimal implements EntityWalkable,
                 1 + ThreadLocalRandom.current().nextInt(3),
                 false
         );
-        ListTag<CompoundTag> armor = new ListTag<>(Tag.TAG_Compound);
-        armor.add(ItemHelper.write(helmet, EntityArmorInventory.SLOT_HEAD));
+        ListTag<CompoundTag> armor = new ListTag<>();
+        armor.add(ItemHelper.write(helmet));
+        for (int i = 1; i < 5; i++) armor.add(ItemHelper.write(Item.AIR));
         nbt.putList("Armor", armor);
 
         return Entity.createEntity(entityId, this.getChunk(), nbt);
@@ -377,62 +374,45 @@ public class EntitySkeletonHorse extends EntityAnimal implements EntityWalkable,
 
     @Override
     public IBehaviorGroup requireBehaviorGroup() {
-        return BehaviorGroup.builder(this)
-                .coreBehaviors(
-                        new Behavior(
-                                new AnimalGrowExecutor(),
-                                all(
-                                        e -> e.isAgeable(),
-                                        e -> e.isBaby(),
-                                        e -> !e.isGrowthPaused(),
-                                        e -> e.getTicksGrowLeft() > 0
-                                ),
-                                1, 1, 1200
-                        )
-                )
-                .behaviors(
-                        new Behavior(
-                                new SkeletonHorseTrapExecutor(),
-                                e -> ((EntitySkeletonHorse) e).isStartedTrap(),
-                                4, 1, 1
-                        ),
-                        new Behavior( // Follow rider ONLY if rider has an attack target
-                                new FollowRiderExecutor(),
-                                all(
-                                        new RiderItemControllableEvaluator(),
-                                        e -> e.hasControllingPassenger(),
-                                        e -> {
-                                            Entity rider = e.getRider();
-                                            if (rider == null || !rider.isAlive()) return false;
-                                            if (rider instanceof EntityIntelligent ri) {
-                                                return ri.getMemoryStorage().notEmpty(CoreMemoryTypes.ATTACK_TARGET)
-                                                        && ri.getMemoryStorage().get(CoreMemoryTypes.ATTACK_TARGET) != null;
-                                            }
-                                            return false;
-                                        }
-                                ),
-                                3,
-                                1
-                        ),
-                        new Behavior(
-                                new FlatRandomRoamExecutor(0.2f, 12, 100, false, -1, true, 10),
-                                e -> e.passengers == null || e.passengers.isEmpty(),
-                                2, 1
-                        ),
-                        new Behavior(
-                                new LookAtTargetExecutor(CoreMemoryTypes.NEAREST_PLAYER, 100),
-                                all(
-                                        new ProbabilityEvaluator(4, 10),
-                                        e -> e.getMemoryStorage().notEmpty(CoreMemoryTypes.NEAREST_PLAYER),
-                                        e -> {
-                                            Player p = e.getMemoryStorage().get(CoreMemoryTypes.NEAREST_PLAYER);
-                                            return p != null && !e.isPassenger(p);
-                                        },
-                                        e -> e.passengers == null || e.passengers.isEmpty()
-                                ),
-                                1, 1, 100
-                        )
-                )
+        return EntityAI.of(this)
+                .coreBehavior(new AnimalGrowExecutor())
+                        .when(all(
+                                e -> e.isAgeable(),
+                                e -> e.isBaby(),
+                                e -> !e.isGrowthPaused(),
+                                e -> e.getTicksGrowLeft() > 0
+                        ))
+                        .period(1200)
+                .behavior(new SkeletonHorseTrapExecutor())
+                        .when(e -> ((EntitySkeletonHorse) e).isStartedTrap())
+                // Follow rider ONLY if rider has an attack target
+                .behavior(new FollowRiderExecutor())
+                        .when(all(
+                                new RiderItemControllableEvaluator(),
+                                e -> e.hasControllingPassenger(),
+                                e -> {
+                                    Entity rider = e.getRider();
+                                    if (rider == null || !rider.isAlive()) return false;
+                                    if (rider instanceof EntityIntelligent ri) {
+                                        return ri.getMemoryStorage().notEmpty(CoreMemoryTypes.ATTACK_TARGET)
+                                                && ri.getMemoryStorage().get(CoreMemoryTypes.ATTACK_TARGET) != null;
+                                    }
+                                    return false;
+                                }
+                        ))
+                .behavior(new FlatRandomRoamExecutor(0.2f, 12, 100, false, -1, true, 10))
+                        .when(e -> e.passengers.isEmpty())
+                .behavior(new LookAtTargetExecutor(CoreMemoryTypes.NEAREST_PLAYER, 100))
+                        .when(all(
+                                new ProbabilityEvaluator(4, 10),
+                                e -> e.getMemoryStorage().notEmpty(CoreMemoryTypes.NEAREST_PLAYER),
+                                e -> {
+                                    Player p = e.getMemoryStorage().get(CoreMemoryTypes.NEAREST_PLAYER);
+                                    return p != null && !e.isPassenger(p);
+                                },
+                                e -> e.passengers.isEmpty()
+                        ))
+                        .period(100)
                 .sensors(
                         new NearestPlayerSensor(8, 0, 20),
                         new SkeletonHorseTrapSensor(10, 3)

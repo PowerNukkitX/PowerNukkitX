@@ -12,6 +12,7 @@ import org.powernukkitx.nbt.tag.CompoundTag;
 import it.unimi.dsi.fastutil.Pair;
 import it.unimi.dsi.fastutil.objects.ObjectIntMutablePair;
 import lombok.extern.slf4j.Slf4j;
+import org.cloudburstmc.protocol.bedrock.data.inventory.ContainerEnumName;
 import org.cloudburstmc.protocol.bedrock.data.inventory.itemstack.request.action.CraftGrindstoneAction;
 import org.cloudburstmc.protocol.bedrock.data.inventory.itemstack.request.action.ItemStackRequestActionType;
 import org.jetbrains.annotations.Nullable;
@@ -41,7 +42,10 @@ public class CraftGrindstoneActionProcessor implements ItemStackRequestActionPro
             log.error("the player's inventory is empty!");
             return context.error();
         }
-        GrindstoneInventory inventory = (GrindstoneInventory) topWindow.get();
+        if (!(topWindow.get() instanceof GrindstoneInventory inventory)) {
+            log.error("the player's haven't open grindstone inventory! Instead {}", topWindow.get().getClass().getSimpleName());
+            return context.error();
+        }
         Item firstItem = inventory.getFirstItem();
         Item secondItem = inventory.getSecondItem();
         if ((firstItem == null || firstItem.isNull()) && (secondItem == null || secondItem.isNull())) {
@@ -63,6 +67,7 @@ public class CraftGrindstoneActionProcessor implements ItemStackRequestActionPro
         player.getCreativeOutputInventory().setItem(event.getResultItem());
         inventory.clear(0, false);
         inventory.clear(1, false);
+        context.markServerConsumed(ContainerEnumName.GRINDSTONE_INPUT_CONTAINER, ContainerEnumName.GRINDSTONE_ADDITIONAL_CONTAINER);
         return null;
     }
 

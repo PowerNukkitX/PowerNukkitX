@@ -1,5 +1,7 @@
 package org.powernukkitx.block;
 
+import org.powernukkitx.block.definition.BlockDefinition;
+
 import org.powernukkitx.Player;
 import org.powernukkitx.block.property.CommonBlockProperties;
 import org.powernukkitx.block.property.CommonPropertyMap;
@@ -18,6 +20,13 @@ import static org.powernukkitx.block.property.CommonBlockProperties.MINECRAFT_CA
 
 public class BlockVault extends Block implements BlockEntityHolder<BlockEntityVault>, Faceable {
     public static final BlockProperties PROPERTIES = new BlockProperties(VAULT, CommonBlockProperties.MINECRAFT_CARDINAL_DIRECTION, CommonBlockProperties.OMINOUS, CommonBlockProperties.VAULT_STATE);
+    public static final BlockDefinition DEFINITION = DEFAULT_DEFINITION.toBuilder()
+            .hardness(50)
+            .resistance(50)
+            .canBePushed(false)
+            .canBePulled(false)
+            .canBeActivated(true)
+            .build();
 
     @Override
     public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, Player player) {
@@ -27,11 +36,7 @@ public class BlockVault extends Block implements BlockEntityHolder<BlockEntityVa
         return true;
     }
 
-    @Override
-    public boolean canBeActivated() {
-        return true;
-    }
-
+    
     @Override
     public boolean onActivate(@NotNull Item item, @Nullable Player player, BlockFace blockFace, float fx, float fy, float fz) {
         if (player == null) {
@@ -49,7 +54,7 @@ public class BlockVault extends Block implements BlockEntityHolder<BlockEntityVa
             return false;
         }
 
-        RandomSourceProvider random = RandomSourceProvider.create(getLevel().getSeed() ^ player.getUniqueId().getLeastSignificantBits() ^ getLevel().getTick());
+        RandomSourceProvider random = RandomSourceProvider.create(getLevel().getSeed() ^ player.uniqueIdLong() ^ getLevel().getTick());
         if (!vault.populateItemsToEject(random, ominous)) {
             return false;
         }
@@ -58,35 +63,14 @@ public class BlockVault extends Block implements BlockEntityHolder<BlockEntityVa
             player.getInventory().decreaseCount(player.getInventory().getHeldItemIndex());
         }
 
-        vault.addRewardedPlayer(player.getUniqueId().toString());
-        vault.spawnToAll();
+        vault.addRewardedPlayer(player.uniqueIdLong());
+        vault.removeConnectedPlayer(player.runtimeId());
 
         setVaultState(VaultState.UNLOCKING);
 
         vault.spawnToAll();
         vault.scheduleUpdate();
         return true;
-    }
-
-
-    @Override
-    public double getHardness() {
-        return 50;
-    }
-
-    @Override
-    public double getResistance() {
-        return 50;
-    }
-
-    @Override
-    public boolean canBePushed() {
-        return false;
-    }
-
-    @Override
-    public boolean canBePulled() {
-        return false;
     }
 
     public void setVaultState(VaultState state) {
@@ -121,7 +105,7 @@ public class BlockVault extends Block implements BlockEntityHolder<BlockEntityVa
     }
 
     public BlockVault(BlockState blockstate) {
-        super(blockstate);
+        super(blockstate, DEFINITION);
     }
 
     @Override

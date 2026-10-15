@@ -1,9 +1,11 @@
 package org.powernukkitx.block;
 
+import org.powernukkitx.block.definition.BlockDefinition;
+
 import org.jetbrains.annotations.NotNull;
 import org.powernukkitx.block.property.CommonBlockProperties;
 
-public class BlockCrimsonFence extends BlockFence {
+public class BlockCrimsonFence extends BlockFenceNonFlammable {
     public static final BlockProperties PROPERTIES = new BlockProperties(CRIMSON_FENCE, CommonBlockProperties.CONNECTION_EAST, CommonBlockProperties.CONNECTION_NORTH, CommonBlockProperties.CONNECTION_SOUTH, CommonBlockProperties.CONNECTION_WEST);
 
     @Override
@@ -15,22 +17,16 @@ public class BlockCrimsonFence extends BlockFence {
         this(PROPERTIES.getDefaultState());
     }
 
-    public BlockCrimsonFence(BlockState blockstate) {
-        super(blockstate);
+    public static final BlockDefinition DEFINITION = BlockFenceNonFlammable.DEFINITION.toBuilder()
+            .burnChance(-1)
+            .build();
+
+    public BlockCrimsonFence(BlockState blockState) {
+        super(blockState, DEFINITION);
     }
 
     @Override
     public String getName() {
         return "Crimson Fence";
-    }
-
-    @Override
-    public int getBurnChance() {
-        return -1;
-    }
-
-    @Override
-    public int getBurnAbility() {
-        return 0;
     }
 }

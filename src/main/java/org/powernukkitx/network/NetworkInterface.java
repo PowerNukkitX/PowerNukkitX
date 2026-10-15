@@ -50,6 +50,25 @@ public interface NetworkInterface {
 
     int getNetworkLatency(Player player);
 
+    /**
+     * Returns transport-specific outbound pressure for a player.
+     *
+     * @param player player whose connection is sampled
+     * @return current network pressure
+     */
+    NetworkPressure getNetworkPressure(Player player);
+
+    /**
+     * Transport-neutral outbound network pressure.
+     */
+    enum NetworkPressure {
+        UNKNOWN,
+        UNRESTRICTED,
+        LOW,
+        MEDIUM,
+        HIGH
+    }
+
     void blockAddress(InetAddress address);
 
     void blockAddress(InetAddress address, int timeout);

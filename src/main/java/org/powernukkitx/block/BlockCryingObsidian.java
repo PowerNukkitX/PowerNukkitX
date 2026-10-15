@@ -1,10 +1,22 @@
 package org.powernukkitx.block;
 
+import org.powernukkitx.block.definition.BlockDefinition;
+
 import org.powernukkitx.item.ItemTool;
 import org.jetbrains.annotations.NotNull;
 
 public class BlockCryingObsidian extends BlockSolid {
     public static final BlockProperties PROPERTIES = new BlockProperties(CRYING_OBSIDIAN);
+    public static final BlockDefinition DEFINITION = SOLID.toBuilder()
+            .hardness(50)
+            .resistance(1200)
+            .toolType(ItemTool.TYPE_PICKAXE)
+            .toolTier(ItemTool.TIER_DIAMOND)
+            .lightEmission(10)
+            .canBePushed(false)
+            .canBePulled(false)
+            .canHarvestWithHand(false)
+            .build();
 
     @Override
     @NotNull public BlockProperties getProperties() {
@@ -16,52 +28,12 @@ public class BlockCryingObsidian extends BlockSolid {
     }
 
     public BlockCryingObsidian(BlockState blockstate) {
-        super(blockstate);
+        super(blockstate, DEFINITION);
     }
 
     @Override
     public String getName() {
         return "Crying Obsidian";
-    }
-
-    @Override
-    public double getHardness() {
-        return 50;
-    }
-
-    @Override
-    public double getResistance() {
-        return 1200;
-    }
-
-    @Override
-    public int getLightLevel() {
-        return 10;
-    }
-
-    @Override
-    public int getToolTier() {
-        return ItemTool.TIER_DIAMOND;
-    }
-
-    @Override
-    public boolean canBePushed() {
-        return false;
-    }
-
-    @Override
-    public boolean canBePulled() {
-        return false;
-    }
-
-    @Override
-    public boolean canHarvestWithHand() {
-        return false;
-    }
-
-    @Override
-    public int getToolType() {
-        return ItemTool.TYPE_PICKAXE;
     }
 
 }

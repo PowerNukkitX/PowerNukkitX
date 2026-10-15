@@ -1,9 +1,15 @@
 package org.powernukkitx.item;
 
+import org.powernukkitx.item.definition.ItemDefinition;
+
 /**
  * @author MagicDroidX (Nukkit Project)
  */
 public class ItemCookie extends ItemFood {
+    public static final ItemDefinition DEFINITION = FOOD.toBuilder()
+            .nutrition(2)
+            .saturation(0.4f)
+            .build();
 
     public ItemCookie() {
         this(0, 1);
@@ -14,16 +20,6 @@ public class ItemCookie extends ItemFood {
     }
 
     public ItemCookie(Integer meta, int count) {
-        super(COOKIE, meta, count, "Cookie");
-    }
-
-    @Override
-    public int getNutrition() {
-        return 2;
-    }
-
-    @Override
-    public float getSaturation() {
-        return 0.4F;
+        super(COOKIE, meta, count, "Cookie", DEFINITION);
     }
 }
