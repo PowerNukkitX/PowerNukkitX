@@ -4,6 +4,7 @@ import org.powernukkitx.ServerMockFixture;
 import org.powernukkitx.addons.AddonFeatureTracker;
 import org.powernukkitx.item.Item;
 import org.powernukkitx.item.ItemID;
+import org.powernukkitx.item.enchantment.Enchantment;
 import org.powernukkitx.loot.LootTable;
 
 import com.google.gson.JsonParser;
@@ -100,7 +101,7 @@ class LootTableParserTest {
     void uncheckableToolRequirementFailsClosed() {
         LootTable table = parse("""
                 { "pools": [ { "rolls": 1, "entries": [ { "type": "item", "name": "minecraft:diamond",
-                  "conditions": [ { "condition": "match_tool", "enchantments": [ { "enchantment": "silk_touch" } ] } ] } ] } ] }
+                  "conditions": [ { "condition": "match_tool", "durability": { "range_min": 1 } } ] } ] } ] }
                 """);
 
         assertTrue(table.generate(new Random(1), Item.get(ItemID.SHEARS)).isEmpty());
@@ -111,10 +112,53 @@ class LootTableParserTest {
     void reportsUnsupportedFunctionWithoutLosingEntry() {
         LootTable table = parse("""
                 { "pools": [ { "rolls": 1, "entries": [ { "type": "item", "name": "minecraft:diamond",
-                  "functions": [ { "function": "enchant_randomly" } ] } ] } ] }
+                  "functions": [ { "function": "set_book_contents" } ] } ] } ] }
                 """);
 
         assertEquals(1, table.generate(new Random(1)).size());
         assertFalse(tracker.isEmpty());
+    }
+
+    @Test
+    void matchToolChecksEnchantments() {
+        LootTable table = parse("""
+                { "pools": [ { "rolls": 1, "entries": [ { "type": "item", "name": "minecraft:diamond",
+                  "conditions": [ { "condition": "match_tool",
+                    "enchantments": [ { "enchantment": "silk_touch", "levels": { "range_min": 1 } } ] } ] } ] } ] }
+                """);
+        Item silkTouch = Item.get(ItemID.DIAMOND_PICKAXE);
+        silkTouch.addEnchantment(Enchantment.getEnchantment(Enchantment.ID_SILK_TOUCH));
+
+        assertTrue(table.generate(new Random(1), Item.get(ItemID.DIAMOND_PICKAXE)).isEmpty());
+        assertEquals(ItemID.DIAMOND, table.generate(new Random(1), silkTouch).getFirst().getId());
+        assertTrue(tracker.isEmpty());
+    }
+
+    @Test
+    void lootingRaisesChanceAndCount() {
+        LootTable table = parse("""
+                { "pools": [ { "rolls": 1,
+                  "conditions": [ { "condition": "random_chance_with_looting", "chance": 0.0, "looting_multiplier": 1.0 } ],
+                  "entries": [ { "type": "item", "name": "minecraft:stick",
+                    "functions": [ { "function": "looting_enchant", "count": { "min": 2, "max": 2 } } ] } ] } ] }
+                """);
+        Item sword = Item.get(ItemID.DIAMOND_SWORD);
+        sword.addEnchantment(Enchantment.getEnchantment(Enchantment.ID_LOOTING).setLevel(3, false));
+
+        assertTrue(table.generate(new Random(1)).isEmpty(), "without looting the chance is zero");
+        assertEquals(7, table.generate(new Random(1), sword).getFirst().getCount());
+    }
+
+    @Test
+    void specificEnchantsTurnBookIntoEnchantedBook() {
+        LootTable table = parse("""
+                { "pools": [ { "rolls": 1, "entries": [ { "type": "item", "name": "minecraft:book",
+                  "functions": [ { "function": "specific_enchants", "enchants": [ { "id": "sharpness", "level": [2, 2] } ] } ] } ] } ] }
+                """);
+
+        Item book = table.generate(new Random(1)).getFirst();
+        assertEquals(ItemID.ENCHANTED_BOOK, book.getId());
+        assertEquals(2, book.getEnchantmentLevel(Enchantment.ID_DAMAGE_ALL));
+        assertTrue(tracker.isEmpty());
     }
 }
