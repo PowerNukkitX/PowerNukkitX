@@ -1,6 +1,7 @@
 package org.powernukkitx.block.definition;
 
 import lombok.Getter;
+import lombok.experimental.Accessors;
 import lombok.experimental.SuperBuilder;
 
 @SuperBuilder(toBuilder = true)
@@ -17,6 +18,7 @@ public class BlockDefinition {
     boolean canBeFlowedInto;
     boolean canBeActivated;
     boolean hasEntityCollision;
+    @Accessors(fluent = true)
     boolean hasEntityStepSensor;
     boolean canPassThrough;
     boolean canBePushed;
