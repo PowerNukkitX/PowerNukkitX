@@ -53,7 +53,6 @@ public class BlockDefinition {
     double friction;
     double passableFrictionFactor;
 
-    // lombok would name this isHasEntityStepSensor(), which reads like a typo
     public boolean hasEntityStepSensor() {
         return hasEntityStepSensor;
     }
