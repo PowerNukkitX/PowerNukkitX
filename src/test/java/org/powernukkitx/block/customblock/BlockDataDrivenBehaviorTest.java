@@ -193,4 +193,22 @@ class BlockDataDrivenBehaviorTest {
         assertEquals(20, corners.properties().getSpecialValueMap().size());
         assertTrue(tracker.isEmpty());
     }
+
+    @Test
+    void declaresIntegerStatesWithGaps() {
+        BlockDataDriven.Spec spec = parse("pnxtest:gapped_states", ", \"states\": { \"pnxtest:level\": [0, 2, 4] }", "{}", "[]");
+
+        assertEquals(3, spec.properties().getSpecialValueMap().size(), "only the listed values are states");
+        assertNotNull(state(spec, Map.of("pnxtest:level", 4)));
+        assertTrue(tracker.isEmpty());
+    }
+
+    @Test
+    void readsInstrumentSound() {
+        BlockDataDriven block = new BlockDataDriven(null, parse("pnxtest:drum_block", "",
+                "{ \"minecraft:instrument_sound\": { \"up\": \"note.bassattack\", \"down\": \"note.none\" } }", "[]"));
+
+        assertEquals(org.powernukkitx.block.BlockNoteblock.Instrument.BASS, block.getInstrumentSound().up());
+        assertEquals(null, block.getInstrumentSound().down());
+    }
 }

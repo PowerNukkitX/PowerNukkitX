@@ -5,6 +5,7 @@ import org.powernukkitx.block.Block;
 import org.powernukkitx.block.BlockProperties;
 import org.powernukkitx.block.BlockFlowerPot;
 import org.powernukkitx.block.BlockID;
+import org.powernukkitx.block.BlockNoteblock;
 import org.powernukkitx.block.BlockState;
 import org.powernukkitx.block.property.type.BlockPropertyType;
 import org.powernukkitx.item.Item;
@@ -207,6 +208,16 @@ public class BlockDataDriven extends Block implements CustomBlock, BlockFlowerPo
     }
 
     /**
+     * The note block instruments a block sounds, from {@code minecraft:instrument_sound}.
+     *
+     * @param up   the instrument when the block is under a note block, or null for no sound
+     * @param down the instrument when the block is on top of a note block, or null to leave the choice to the
+     *             block under the note block
+     */
+    public record InstrumentSound(BlockNoteblock.@Nullable Instrument up, BlockNoteblock.@Nullable Instrument down) {
+    }
+
+    /**
      * A block made of several parts that act as one, from the {@code minecraft:multi_block} trait. Part 0
      * is where the block was placed; the others follow it in {@code direction}.
      *
@@ -220,6 +231,7 @@ public class BlockDataDriven extends Block implements CustomBlock, BlockFlowerPo
     /**
      * What a block does on the server whatever its state.
      *
+     * @param instrumentSound   the note block instruments it sounds, or null for the default
      * @param placementFilter   where the block may be placed, or null for anywhere
      * @param traitPlacement    the states the block's traits set when it is placed
      * @param itemSpeeds        destroy times for particular items, checked in order
@@ -235,14 +247,15 @@ public class BlockDataDriven extends Block implements CustomBlock, BlockFlowerPo
      * @param cornerWith        the blocks the {@code minecraft:corner} state forms corners with, empty for blocks
      *                          of the same identifier, or null when the block does not form corners
      */
-    public record Behavior(@Nullable PlacementFilter placementFilter, @NotNull TraitPlacement traitPlacement,
+    public record Behavior(@Nullable InstrumentSound instrumentSound,
+                           @Nullable PlacementFilter placementFilter, @NotNull TraitPlacement traitPlacement,
                            @NotNull List<ItemSpeed> itemSpeeds, @Nullable SupportShape support,
                            @NotNull ChestObstruction chestObstruction, boolean flowerPottable,
                            @Nullable Boolean redstoneConductor, @Nullable ConnectionRule connectionRule,
                            @Nullable RedstoneProducer redstoneProducer, @Nullable MultiBlock multiBlock,
                            boolean cardinalConnections, @Nullable List<PlacementFilter.BlockMatcher> cornerWith) {
 
-        public static final Behavior DEFAULT = new Behavior(null, TraitPlacement.NONE, List.of(), null,
+        public static final Behavior DEFAULT = new Behavior(null, null, TraitPlacement.NONE, List.of(), null,
                 ChestObstruction.SHAPE, false, null, null, null, null, false, null);
 
         public Behavior {
@@ -890,6 +903,13 @@ public class BlockDataDriven extends Block implements CustomBlock, BlockFlowerPo
      */
     public @Nullable SupportShape getSupportShape() {
         return spec.behavior().support();
+    }
+
+    /**
+     * @return the note block instruments the block sounds, or null when it sounds the default harp
+     */
+    public @Nullable InstrumentSound getInstrumentSound() {
+        return spec.behavior().instrumentSound();
     }
 
     /**

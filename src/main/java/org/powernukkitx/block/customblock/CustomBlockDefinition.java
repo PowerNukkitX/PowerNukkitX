@@ -11,6 +11,7 @@ import org.powernukkitx.block.definition.BlockDefinition;
 import org.powernukkitx.block.property.type.BlockPropertyType;
 import org.powernukkitx.block.property.type.BooleanPropertyType;
 import org.powernukkitx.block.property.type.EnumPropertyType;
+import org.powernukkitx.block.property.type.IntListPropertyType;
 import org.powernukkitx.block.property.type.IntPropertyType;
 import org.powernukkitx.block.property.type.StringEnumPropertyType;
 import org.powernukkitx.item.customitem.data.CreativeCategory;
@@ -722,6 +723,12 @@ public class CustomBlockDefinition extends BlockDefinition {
                             enumList.add(new StringTag(value));
                         }
                         nbtList.add(new CompoundTag().putString("name", stringEnumProperty.getName()).putList("enum", enumList));
+                    } else if (each instanceof IntListPropertyType intListProperty) {
+                        var enumList = new ListTag<IntTag>();
+                        for (var value : intListProperty.getValidValues()) {
+                            enumList.add(new IntTag(value));
+                        }
+                        nbtList.add(new CompoundTag().putString("name", intListProperty.getName()).putList("enum", enumList));
                     }
                 }
                 return nbtList;

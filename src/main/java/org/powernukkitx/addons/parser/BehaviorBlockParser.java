@@ -1,6 +1,7 @@
 package org.powernukkitx.addons.parser;
 
 import org.powernukkitx.addons.AddonFeatureTracker;
+import org.powernukkitx.block.BlockNoteblock;
 import org.powernukkitx.block.BlockProperties;
 import org.powernukkitx.block.PrecipitationBehavior;
 import org.powernukkitx.block.customblock.BlockDataDriven;
@@ -13,6 +14,7 @@ import org.powernukkitx.block.customblock.data.Movable;
 import org.powernukkitx.block.customblock.data.Transformation;
 import org.powernukkitx.block.property.type.BlockPropertyType;
 import org.powernukkitx.block.property.type.BooleanPropertyType;
+import org.powernukkitx.block.property.type.IntListPropertyType;
 import org.powernukkitx.block.property.type.IntPropertyType;
 import org.powernukkitx.block.property.type.StringEnumPropertyType;
 import org.powernukkitx.math.BlockFace;
@@ -246,6 +248,7 @@ public final class BehaviorBlockParser {
             conductor = asBoolean(conductivity.getAsJsonObject().get("redstone_conductor"), false);
         }
         return new BlockDataDriven.Behavior(
+                instrumentSound(components.get("minecraft:instrument_sound")),
                 parsePlacementFilter(packName, components.get("minecraft:placement_filter")),
                 traitPlacement(traits),
                 itemSpeeds(components.get("minecraft:destructible_by_mining")),
@@ -300,6 +303,34 @@ public final class BehaviorBlockParser {
             }
         }
         return matchers;
+    }
+
+    private static final List<String> INSTRUMENT_SOUNDS = List.of("note.harp", "note.bd", "note.snare", "note.hat",
+            "note.bassattack", "note.flute", "note.bell", "note.guitar", "note.chime", "note.xylophone", "note.iron_xylophone",
+            "note.cow_bell", "note.didgeridoo", "note.bit", "note.banjo", "note.pling", "note.trumpet", "note.trumpet_exposed",
+            "note.trumpet_weathered", "note.trumpet_oxidized", "note.zombie", "note.skeleton", "note.creeper",
+            "note.enderdragon", "note.witherskeleton", "note.piglin");
+
+    /**
+     * The sounds are listed in the order of the note block's instruments, so a sound's position is its
+     * instrument.
+     */
+    private static BlockDataDriven.@Nullable InstrumentSound instrumentSound(@Nullable JsonElement element) {
+        if (element == null || !element.isJsonObject()) {
+            return null;
+        }
+        JsonObject sound = element.getAsJsonObject();
+        return new BlockDataDriven.InstrumentSound(
+                instrument(optString(sound, "up"), BlockNoteblock.Instrument.HARP),
+                instrument(optString(sound, "down"), null));
+    }
+
+    private static BlockNoteblock.@Nullable Instrument instrument(String sound, BlockNoteblock.@Nullable Instrument fallback) {
+        if (sound.isEmpty()) {
+            return fallback;
+        }
+        int index = INSTRUMENT_SOUNDS.indexOf(sound);
+        return index < 0 ? null : BlockNoteblock.Instrument.values()[index];
     }
 
     private static List<BlockDataDriven.ItemSpeed> itemSpeeds(@Nullable JsonElement destructible) {
@@ -524,8 +555,11 @@ public final class BehaviorBlockParser {
                 max = Math.max(max, number);
             }
             if (max - min + 1 != values.size()) {
-                tracker.reportUnsupported(packName, "block-state-noncontiguous-int", name);
-                return null;
+                List<Integer> listed = new ArrayList<>();
+                for (JsonElement value : values) {
+                    listed.add(value.getAsInt());
+                }
+                return IntListPropertyType.of(name, listed, first.getAsInt());
             }
             return IntPropertyType.of(name, min, max, first.getAsInt());
         }
@@ -657,7 +691,8 @@ public final class BehaviorBlockParser {
             case "minecraft:explosion_resistance" -> builder.destructibleByExplosion((int) asFloat(value, 0f));
             case "minecraft:loot", "minecraft:placement_filter", "minecraft:precipitation_interactions",
                  "minecraft:redstone_conductivity", "minecraft:redstone_producer", "minecraft:support",
-                 "minecraft:chest_obstruction", "minecraft:flower_pottable", "minecraft:connection_rule" -> {
+                 "minecraft:chest_obstruction", "minecraft:flower_pottable", "minecraft:connection_rule",
+                 "minecraft:instrument_sound" -> {
             }
             default -> tracker.reportUnsupported(packName, "block-component", key);
         }
