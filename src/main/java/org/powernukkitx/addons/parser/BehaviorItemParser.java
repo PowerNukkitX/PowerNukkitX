@@ -21,6 +21,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * Turns a behaviour pack's {@code items/*.json} into registered items.
@@ -86,13 +87,14 @@ public final class BehaviorItemParser {
             if (fireResistant(components)) {
                 definition = new CustomItemDefinition(identifier, definition.nbt(),
                         definition.toBuilder().lavaResistant(true).build());
-                prototype = new ItemDataDriven(identifier, definition);
             }
+            ItemDataDriven.ServerComponents serverComponents = serverComponents(components);
+            prototype = new ItemDataDriven(identifier, definition, serverComponents);
             CustomItemDefinition registered = definition;
             if (replacesBlockItem) {
-                Registries.ITEM.registerBlockItemReplacement(prototype, () -> new ItemDataDriven(identifier, registered));
+                Registries.ITEM.registerBlockItemReplacement(prototype, () -> new ItemDataDriven(identifier, registered, serverComponents));
             } else {
-                Registries.ITEM.registerCustomItemDefinition(prototype, () -> new ItemDataDriven(identifier, registered));
+                Registries.ITEM.registerCustomItemDefinition(prototype, () -> new ItemDataDriven(identifier, registered, serverComponents));
             }
             registerCompostable(identifier, components);
             log.debug("Registered data-driven item {} from behavior pack '{}'", identifier, packName);
@@ -123,6 +125,29 @@ public final class BehaviorItemParser {
             return false;
         }
         return fireResistant.isJsonObject() ? optBoolean(fireResistant.getAsJsonObject(), "value", true) : asBoolean(fireResistant, true);
+    }
+
+    private static ItemDataDriven.ServerComponents serverComponents(@Nullable JsonObject components) {
+        if (components == null) {
+            return ItemDataDriven.ServerComponents.NONE;
+        }
+        ItemDataDriven.Record record = null;
+        JsonElement recordElement = components.get("minecraft:record");
+        if (recordElement != null && recordElement.isJsonObject()) {
+            JsonObject json = recordElement.getAsJsonObject();
+            String sound = optString(json, "sound_event");
+            if (!sound.isEmpty()) {
+                record = new ItemDataDriven.Record(sound, asFloat(json.get("duration"), 0f),
+                        Math.clamp(asInt(json.get("comparator_signal"), 1), 1, 13));
+            }
+        }
+        List<String> causes = List.of();
+        JsonElement absorption = components.get("minecraft:damage_absorption");
+        if (absorption != null && absorption.isJsonObject()) {
+            causes = asStringList(absorption.getAsJsonObject().get("absorbable_causes"));
+        }
+        return record == null && causes.isEmpty() ? ItemDataDriven.ServerComponents.NONE
+                : new ItemDataDriven.ServerComponents(record, Set.copyOf(causes));
     }
 
     private static void registerCompostable(String identifier, @Nullable JsonObject components) {
@@ -261,7 +286,7 @@ public final class BehaviorItemParser {
                     applyDigger(builder, value.getAsJsonObject());
                 }
             }
-            case "minecraft:compostable", "minecraft:fire_resistant" -> {
+            case "minecraft:compostable", "minecraft:fire_resistant", "minecraft:record", "minecraft:damage_absorption" -> {
             }
             case "minecraft:seed" -> {
                 if (value.isJsonObject()) {

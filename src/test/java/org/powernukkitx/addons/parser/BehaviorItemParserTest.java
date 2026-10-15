@@ -220,4 +220,20 @@ class BehaviorItemParserTest {
 
         assertNull(Item.get(id).getDiggerSpeed(Block.get(BlockID.STONE)), "all_tags must not match a block missing one tag");
     }
+
+    @Test
+    void readsRecordAndDamageAbsorption() {
+        String id = "pnxtest:parsed_record";
+
+        assertEquals(id, register(id, """
+                { "minecraft:record": { "sound_event": "record.cat", "duration": 185, "comparator_signal": 2 },
+                  "minecraft:damage_absorption": { "absorbable_causes": ["entity_attack"] } }
+                """));
+
+        ItemDataDriven item = (ItemDataDriven) Item.get(id);
+        assertEquals("record.cat", item.getRecord().soundEvent());
+        assertTrue(item.absorbs(org.powernukkitx.event.entity.EntityDamageEvent.DamageCause.ENTITY_ATTACK));
+        assertFalse(item.absorbs(org.powernukkitx.event.entity.EntityDamageEvent.DamageCause.FALL));
+        assertTrue(tracker.isEmpty());
+    }
 }

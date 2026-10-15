@@ -3,6 +3,7 @@ package org.powernukkitx.blockentity;
 import org.powernukkitx.block.Block;
 import org.powernukkitx.item.Item;
 import org.powernukkitx.item.ItemMusicDisc;
+import org.powernukkitx.item.customitem.ItemDataDriven;
 import org.powernukkitx.level.format.IChunk;
 import org.powernukkitx.nbt.tag.CompoundTag;
 import org.powernukkitx.utils.ItemHelper;
@@ -59,7 +60,12 @@ public class BlockEntityJukebox extends BlockEntitySpawnable {
 
 
     public void play() {
-        if (!(this.recordItem instanceof ItemMusicDisc itemRecord)) {
+        String sound;
+        if (this.recordItem instanceof ItemMusicDisc itemRecord) {
+            sound = itemRecord.getSoundId();
+        } else if (this.recordItem instanceof ItemDataDriven dataDriven && dataDriven.getRecord() != null) {
+            sound = dataDriven.getRecord().soundEvent();
+        } else {
             return;
         }
         stop();
@@ -68,7 +74,7 @@ public class BlockEntityJukebox extends BlockEntitySpawnable {
         this.soundHandle = handle;
 
         final PlaySoundPacket playSound = new PlaySoundPacket();
-        playSound.setName(itemRecord.getSoundId());
+        playSound.setName(sound);
         playSound.setPosition(Vector3f.from(this.getFloorX() + 0.5f, this.getFloorY() + 0.5f, this.getFloorZ() + 0.5f));
         playSound.setVolume(1f);
         playSound.setPitch(1f);
