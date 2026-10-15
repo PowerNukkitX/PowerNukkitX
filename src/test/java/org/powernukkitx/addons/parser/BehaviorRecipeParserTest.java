@@ -5,6 +5,9 @@ import org.powernukkitx.addons.AddonFeatureTracker;
 import org.powernukkitx.item.Item;
 import org.powernukkitx.item.ItemID;
 import org.powernukkitx.recipe.FurnaceRecipe;
+import org.powernukkitx.recipe.ContainerRecipe;
+import org.powernukkitx.recipe.CraftingRecipe;
+import org.powernukkitx.recipe.SmithingTransformRecipe;
 import org.powernukkitx.recipe.Recipe;
 import org.powernukkitx.recipe.ShapedRecipe;
 import org.powernukkitx.recipe.StonecutterRecipe;
@@ -12,6 +15,7 @@ import org.powernukkitx.registry.Registries;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import org.cloudburstmc.protocol.bedrock.data.payload.crafting.RecipeUnlockingContext;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -132,5 +136,41 @@ class BehaviorRecipeParserTest {
                 { "minecraft:recipe_smithing_transform": { "description": { "identifier": "pnxtest:smithing" } } }
                 """));
         assertFalse(tracker.isEmpty());
+    }
+
+    @Test
+    void registersSmithingAndBrewingRecipes() {
+        assertEquals(1, parse("""
+                { "minecraft:recipe_smithing_transform": {
+                  "description": { "identifier": "pnxtest:smith_stick" },
+                  "tags": [ "smithing_table" ],
+                  "template": "minecraft:netherite_upgrade_smithing_template",
+                  "base": "minecraft:diamond_hoe", "addition": "minecraft:stick", "result": "minecraft:diamond" } }
+                """));
+        assertEquals(1, parse("""
+                { "minecraft:recipe_brewing_container": {
+                  "description": { "identifier": "pnxtest:brew_stick" },
+                  "tags": [ "brewing_stand" ],
+                  "input": "minecraft:diamond", "reagent": "minecraft:stick", "output": "minecraft:diamond_hoe" } }
+                """));
+
+        assertInstanceOf(SmithingTransformRecipe.class, Registries.RECIPE.get("pnxtest:smith_stick"));
+        assertInstanceOf(ContainerRecipe.class, Registries.RECIPE.get("pnxtest:brew_stick"));
+        assertTrue(tracker.isEmpty());
+    }
+
+    @Test
+    void readsUnlockContext() {
+        assertEquals(1, parse("""
+                { "minecraft:recipe_shapeless": {
+                  "description": { "identifier": "pnxtest:unlocked_in_water" },
+                  "tags": [ "crafting_table" ],
+                  "unlock": { "context": "PlayerInWater" },
+                  "ingredients": [ { "item": "minecraft:diamond" } ],
+                  "result": "minecraft:diamond_hoe" } }
+                """));
+
+        CraftingRecipe recipe = assertInstanceOf(CraftingRecipe.class, Registries.RECIPE.get("pnxtest:unlocked_in_water"));
+        assertEquals(RecipeUnlockingContext.PLAYER_IN_WATER, recipe.getRequirement().getUnlockingContext());
     }
 }
