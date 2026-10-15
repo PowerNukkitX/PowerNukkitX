@@ -4,12 +4,16 @@ import org.powernukkitx.ServerMockFixture;
 import org.powernukkitx.addons.AddonFeatureTracker;
 import org.powernukkitx.block.Block;
 import org.powernukkitx.block.BlockState;
+import org.powernukkitx.block.BlockID;
 import org.powernukkitx.block.customblock.BlockDataDriven;
+import org.powernukkitx.block.customblock.PlacementFilter;
 import org.powernukkitx.block.property.type.BlockPropertyType;
 import org.powernukkitx.item.Item;
 import org.powernukkitx.item.ItemID;
 import org.powernukkitx.loot.LootTable;
 import org.powernukkitx.loot.LootTableRegistry;
+import org.powernukkitx.math.AxisAlignedBB;
+import org.powernukkitx.math.BlockFace;
 import org.powernukkitx.nbt.tag.CompoundTag;
 import org.powernukkitx.nbt.tag.ListTag;
 import org.powernukkitx.registry.Registries;
@@ -241,6 +245,89 @@ class BehaviorBlockParserTest {
                 "{ \"minecraft:loot\": \"loot_tables/pnxtest/does_not_exist.json\" }", "[]"));
 
         assertEquals(0, new BlockDataDriven(spec.properties().getDefaultState(), spec).getDrops(Item.AIR).length);
+        assertTrue(tracker.isEmpty());
+    }
+
+    @Test
+    void appliesPermutationGameplayValuesPerState() {
+        BlockDataDriven.Spec spec = parse(block("pnxtest:per_state_lamp",
+                ", \"states\": { \"pnxtest:lit\": [false, true] }",
+                "{ \"minecraft:light_emission\": 0, \"minecraft:friction\": 0.4 }",
+                "[ { \"condition\": \"q.block_state('pnxtest:lit')\", \"components\": { \"minecraft:light_emission\": 13, "
+                        + "\"minecraft:friction\": 0.8, \"minecraft:destructible_by_mining\": { \"seconds_to_destroy\": 5 } } } ]"));
+
+        BlockDataDriven unlit = new BlockDataDriven(stateWith(spec, "pnxtest:lit", false), spec);
+        BlockDataDriven lit = new BlockDataDriven(stateWith(spec, "pnxtest:lit", true), spec);
+
+        assertEquals(0, unlit.getLightLevel());
+        assertEquals(13, lit.getLightLevel());
+        assertEquals(0.8, lit.getFrictionFactor(), 1.0e-6);
+        assertEquals(5.0, lit.getHardness(), 1.0e-6);
+
+        unlit.setPropertyValue(stateWith(spec, "pnxtest:lit", true).getBlockPropertyValues().getFirst());
+        assertEquals(13, unlit.getLightLevel(), "changing the state in place must switch to that state's values");
+    }
+
+    @Test
+    void rotatesCollisionBoxWithPermutationTransformation() {
+        BlockDataDriven.Spec spec = parse(block("pnxtest:rotated_box",
+                ", \"states\": { \"pnxtest:turned\": [false, true] }",
+                "{ \"minecraft:collision_box\": { \"origin\": [-8, 0, -8], \"size\": [16, 8, 8] } }",
+                "[ { \"condition\": \"q.block_state('pnxtest:turned')\", \"components\": { "
+                        + "\"minecraft:transformation\": { \"rotation\": [0, 90, 0] } } } ]"));
+
+        AxisAlignedBB north = new BlockDataDriven(stateWith(spec, "pnxtest:turned", false), spec).getCollisionBoxes()[0];
+        AxisAlignedBB west = new BlockDataDriven(stateWith(spec, "pnxtest:turned", true), spec).getCollisionBoxes()[0];
+
+        assertEquals(0.0, north.getMinZ(), 1.0e-6);
+        assertEquals(0.5, north.getMaxZ(), 1.0e-6);
+        assertEquals(0.5, north.getMaxY(), 1.0e-6);
+        assertEquals(0.0, west.getMinX(), 1.0e-6);
+        assertEquals(0.5, west.getMaxX(), 1.0e-6);
+        assertEquals(1.0, west.getMaxZ(), 1.0e-6);
+    }
+
+    @Test
+    void disabledCollisionBoxLeavesNothingToCollideWith() {
+        BlockDataDriven.Spec spec = parse(block("pnxtest:ghost_block", "", "{ \"minecraft:collision_box\": false }", "[]"));
+        BlockDataDriven ghost = new BlockDataDriven(null, spec);
+
+        assertEquals(0, ghost.getCollisionBoxes().length);
+        assertNull(ghost.getBoundingBox());
+        assertFalse(ghost.isSolid());
+    }
+
+    @Test
+    void readsFlammableValues() {
+        BlockDataDriven flammable = new BlockDataDriven(null, parse(block("pnxtest:flammable_block", "",
+                "{ \"minecraft:flammable\": { \"catch_chance_modifier\": 30, \"destroy_chance_modifier\": 60 } }", "[]")));
+        BlockDataDriven planks = new BlockDataDriven(null, parse(block("pnxtest:flammable_default", "",
+                "{ \"minecraft:flammable\": true }", "[]")));
+
+        assertEquals(30, flammable.getBurnChance());
+        assertEquals(60, flammable.getBurnAbility());
+        assertEquals(5, planks.getBurnChance());
+        assertEquals(20, planks.getBurnAbility());
+    }
+
+    @Test
+    void parsesPlacementFilterAndTraits() {
+        BlockDataDriven.Spec spec = parse(block("pnxtest:filtered_block",
+                ", \"traits\": { \"minecraft:placement_direction\": { \"enabled_states\": [\"minecraft:cardinal_direction\"], "
+                        + "\"y_rotation_offset\": 180 }, \"minecraft:placement_position\": { \"enabled_states\": [\"minecraft:vertical_half\"] } }",
+                "{ \"minecraft:placement_filter\": { \"conditions\": [ { \"allowed_faces\": [\"up\"], "
+                        + "\"block_filter\": [\"minecraft:stone\", { \"name\": \"dirt\" }] } ] } }",
+                "[]"));
+
+        PlacementFilter filter = spec.placementFilter();
+        assertNotNull(filter);
+        assertTrue(filter.allowsPlacement(Block.get(BlockID.STONE), BlockFace.UP));
+        assertTrue(filter.allowsPlacement(Block.get(BlockID.DIRT), BlockFace.UP));
+        assertFalse(filter.allowsPlacement(Block.get(BlockID.STONE), BlockFace.NORTH));
+        assertFalse(filter.allowsPlacement(Block.get(BlockID.OAK_PLANKS), BlockFace.UP));
+        assertTrue(spec.traitPlacement().cardinalDirection());
+        assertEquals(180, spec.traitPlacement().yRotationOffset());
+        assertTrue(spec.traitPlacement().verticalHalf());
         assertTrue(tracker.isEmpty());
     }
 }

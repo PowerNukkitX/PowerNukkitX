@@ -4,6 +4,7 @@ import org.powernukkitx.addons.AddonFeatureTracker;
 import org.powernukkitx.block.BlockProperties;
 import org.powernukkitx.block.customblock.BlockDataDriven;
 import org.powernukkitx.block.customblock.CustomBlockDefinition;
+import org.powernukkitx.block.customblock.PlacementFilter;
 import org.powernukkitx.block.customblock.data.CollisionBox;
 import org.powernukkitx.block.customblock.data.CraftingTable;
 import org.powernukkitx.block.customblock.data.Geometry;
@@ -12,6 +13,7 @@ import org.powernukkitx.block.property.type.BlockPropertyType;
 import org.powernukkitx.block.property.type.BooleanPropertyType;
 import org.powernukkitx.block.property.type.IntPropertyType;
 import org.powernukkitx.block.property.type.StringEnumPropertyType;
+import org.powernukkitx.math.BlockFace;
 import org.powernukkitx.math.Vector3;
 import org.powernukkitx.math.Vector3f;
 import org.powernukkitx.molang.MolangExpression;
@@ -32,12 +34,14 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
+import java.util.EnumSet;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.Consumer;
 
 /**
  * Turns a behaviour pack's {@code blocks/*.json} into registered blocks.
@@ -49,9 +53,10 @@ import java.util.Set;
  * builder does not model - material instances, disabled boxes and permutations - is written as raw
  * NBT, in the schema the client expects.
  * <p>
- * Permutation components are client-side only: the server's definition is per identifier, so a
- * permutation that changes a gameplay value such as friction changes what the client predicts but
- * not what the server applies. Permutation tags are the exception and are resolved per state.
+ * Permutations apply on both sides: their components are sent to the client, and the gameplay
+ * values, collision boxes, ticks, tags and loot tables they change are resolved per state on the
+ * server when the block is parsed, so none of them is evaluated at runtime.
+ * {@code minecraft:placement_filter} is enforced by the server only.
  * <p>
  * A component without a mapping is recorded on the {@link AddonFeatureTracker} rather than failing
  * the block.
@@ -146,10 +151,14 @@ public final class BehaviorBlockParser {
             if (properties == null) {
                 return null;
             }
+            List<Permutation> translated = translatePermutations(packName, permutations);
             CustomBlockDefinition definition = buildDefinition(packName, identifier, properties, description,
-                    components, permutations, baseTags);
+                    components, translated, baseTags);
+            PlacementFilter placementFilter = components == null ? null
+                    : parsePlacementFilter(packName, components.get("minecraft:placement_filter"));
             BlockDataDriven.Spec spec = BlockDataDriven.Spec.of(properties, definition, baseTags, collectTagRules(permutations),
-                    lootTableOf(components), collectLootRules(permutations));
+                    lootTableOf(components), collectLootRules(permutations), permutationRules(translated), placementFilter,
+                    traitPlacement(description.getAsJsonObject("traits")));
             return new ParsedBlock(identifier, spec);
         } catch (RuntimeException e) {
             log.error("Behavior pack '{}': could not parse block {}", packName, identifier, e);
@@ -224,6 +233,26 @@ public final class BehaviorBlockParser {
         return types;
     }
 
+    /**
+     * Reads which trait states the server sets on placement. The states themselves are declared by
+     * {@link #buildTraitStates(String, JsonObject)}, which also reports what is not supported.
+     */
+    private static BlockDataDriven.TraitPlacement traitPlacement(@Nullable JsonObject traits) {
+        if (traits == null) {
+            return BlockDataDriven.TraitPlacement.NONE;
+        }
+        JsonObject direction = traits.getAsJsonObject("minecraft:placement_direction");
+        JsonObject position = traits.getAsJsonObject("minecraft:placement_position");
+        List<String> directionStates = direction == null ? List.of() : asStringList(direction.get("enabled_states"));
+        List<String> positionStates = position == null ? List.of() : asStringList(position.get("enabled_states"));
+        return new BlockDataDriven.TraitPlacement(
+                directionStates.contains("minecraft:cardinal_direction"),
+                directionStates.contains("minecraft:facing_direction"),
+                direction == null ? 0 : (int) asFloat(direction.get("y_rotation_offset"), 0f),
+                positionStates.contains("minecraft:block_face"),
+                positionStates.contains("minecraft:vertical_half"));
+    }
+
     private @Nullable BlockPropertyType<?> buildStateType(String packName, String name, JsonElement definition) {
         if (definition.isJsonObject() && definition.getAsJsonObject().has("values")) {
             JsonElement values = definition.getAsJsonObject().get("values");
@@ -270,7 +299,7 @@ public final class BehaviorBlockParser {
 
     private CustomBlockDefinition buildDefinition(String packName, String identifier, BlockProperties properties,
                                                   JsonObject description, @Nullable JsonObject components,
-                                                  @Nullable JsonArray permutations, Set<String> baseTags) {
+                                                  List<Permutation> permutations, Set<String> baseTags) {
         CustomBlockDefinition.Builder builder = CustomBlockDefinition.builder(properties);
         applyMenuCategory(builder, description);
         CompoundTag rawComponents = new CompoundTag(new LinkedHashMap<>());
@@ -282,7 +311,7 @@ public final class BehaviorBlockParser {
         if (!baseTags.isEmpty()) {
             builder.blockTags(baseTags.toArray(new String[0]));
         }
-        ListTag<CompoundTag> translatedPermutations = translatePermutations(packName, permutations);
+        ListTag<CompoundTag> translatedPermutations = clientPermutations(permutations);
         return builder.customBuild(nbt -> {
             CompoundTag target = nbt.getCompound("components");
             for (Map.Entry<String, Tag> entry : rawComponents.getTags().entrySet()) {
@@ -305,7 +334,7 @@ public final class BehaviorBlockParser {
         }
         String group = optString(menuCategory, "group");
         if (!group.isEmpty()) {
-            builder.creativeGroup(group);
+            builder.creativeGroup(CreativeGroupNames.normalize(group));
         }
         if (asBoolean(menuCategory.get("is_hidden_in_commands"), false)) {
             builder.isHiddenInCommands(true);
@@ -318,20 +347,8 @@ public final class BehaviorBlockParser {
             return;
         }
         switch (key) {
-            case "minecraft:destructible_by_mining" -> {
-                if (value.isJsonObject()) {
-                    builder.destructibleByMining(asFloat(value.getAsJsonObject().get("seconds_to_destroy"), 0f));
-                } else {
-                    builder.destructibleByMining(asBoolean(value, true));
-                }
-            }
-            case "minecraft:destructible_by_explosion" -> {
-                if (value.isJsonObject()) {
-                    builder.destructibleByExplosion((int) asFloat(value.getAsJsonObject().get("explosion_resistance"), 0f));
-                } else {
-                    builder.destructibleByExplosion(asBoolean(value, true));
-                }
-            }
+            case "minecraft:destructible_by_mining" -> builder.destructibleByMining(miningSeconds(value));
+            case "minecraft:destructible_by_explosion" -> builder.destructibleByExplosion(explosionResistance(value));
             case "minecraft:friction" -> builder.friction(Math.min(asDouble(value, 0.4), 0.9));
             case "minecraft:light_dampening" -> builder.lightDampening(asInt(value, 15));
             case "minecraft:light_emission" -> builder.lightEmission(asInt(value, 0));
@@ -389,10 +406,105 @@ public final class BehaviorBlockParser {
                 }
             }
             case "minecraft:unit_cube" -> raw.putCompound(key, new CompoundTag());
-            case "minecraft:loot" -> {
+            case "minecraft:flammable" -> applyFlammable(builder, value);
+            case "minecraft:loot", "minecraft:placement_filter" -> {
             }
             default -> tracker.reportUnsupported(packName, "block-component", key);
         }
+    }
+
+    /**
+     * Fire spread reads these on the server; Bedrock's defaults for {@code true} are those of planks.
+     */
+    private static void applyFlammable(CustomBlockDefinition.Builder builder, JsonElement value) {
+        int catchChance = 0;
+        int destroyChance = 0;
+        if (value.isJsonObject()) {
+            catchChance = asInt(value.getAsJsonObject().get("catch_chance_modifier"), 5);
+            destroyChance = asInt(value.getAsJsonObject().get("destroy_chance_modifier"), 20);
+        } else if (asBoolean(value, false)) {
+            catchChance = 5;
+            destroyChance = 20;
+        }
+        builder.burnChance(catchChance).burnAbility(destroyChance);
+    }
+
+    private @Nullable PlacementFilter parsePlacementFilter(String packName, @Nullable JsonElement element) {
+        if (element == null || !element.isJsonObject()) {
+            return null;
+        }
+        JsonElement conditionsElement = element.getAsJsonObject().get("conditions");
+        if (conditionsElement == null || !conditionsElement.isJsonArray()) {
+            return null;
+        }
+        List<PlacementFilter.Condition> conditions = new ArrayList<>();
+        for (JsonElement conditionElement : conditionsElement.getAsJsonArray()) {
+            if (!conditionElement.isJsonObject()) {
+                continue;
+            }
+            JsonObject condition = conditionElement.getAsJsonObject();
+            Set<BlockFace> faces = EnumSet.noneOf(BlockFace.class);
+            JsonElement allowedFaces = condition.get("allowed_faces");
+            if (allowedFaces == null) {
+                faces.addAll(List.of(BlockFace.values()));
+            }
+            for (String face : asStringList(allowedFaces)) {
+                switch (face.toLowerCase(Locale.ENGLISH)) {
+                    case "all" -> faces.addAll(List.of(BlockFace.values()));
+                    case "side" -> faces.addAll(List.of(BlockFace.NORTH, BlockFace.SOUTH, BlockFace.EAST, BlockFace.WEST));
+                    case "up" -> faces.add(BlockFace.UP);
+                    case "down" -> faces.add(BlockFace.DOWN);
+                    case "north" -> faces.add(BlockFace.NORTH);
+                    case "south" -> faces.add(BlockFace.SOUTH);
+                    case "east" -> faces.add(BlockFace.EAST);
+                    case "west" -> faces.add(BlockFace.WEST);
+                    default -> tracker.reportUnsupported(packName, "block-placement-face", face);
+                }
+            }
+            List<PlacementFilter.BlockMatcher> matchers = new ArrayList<>();
+            JsonElement blockFilter = condition.get("block_filter");
+            if (blockFilter != null && blockFilter.isJsonArray()) {
+                for (JsonElement entry : blockFilter.getAsJsonArray()) {
+                    PlacementFilter.BlockMatcher matcher = blockMatcher(entry);
+                    if (matcher != null) {
+                        matchers.add(matcher);
+                    } else {
+                        tracker.reportUnsupported(packName, "block-placement-filter", entry.toString());
+                    }
+                }
+            }
+            conditions.add(new PlacementFilter.Condition(faces, matchers));
+        }
+        return conditions.isEmpty() ? null : new PlacementFilter(conditions);
+    }
+
+    private static @Nullable PlacementFilter.BlockMatcher blockMatcher(JsonElement entry) {
+        if (entry.isJsonPrimitive()) {
+            return new PlacementFilter.IdMatcher(namespaced(entry.getAsString()), Map.of());
+        }
+        if (!entry.isJsonObject()) {
+            return null;
+        }
+        JsonObject json = entry.getAsJsonObject();
+        if (json.has("tags")) {
+            return new PlacementFilter.TagMatcher(MolangExpression.compile(optString(json, "tags")));
+        }
+        String name = optString(json, "name");
+        if (name.isEmpty()) {
+            return null;
+        }
+        Map<String, String> states = new LinkedHashMap<>();
+        JsonObject statesJson = json.getAsJsonObject("states");
+        if (statesJson != null) {
+            for (Map.Entry<String, JsonElement> state : statesJson.entrySet()) {
+                states.put(state.getKey(), state.getValue().getAsString());
+            }
+        }
+        return new PlacementFilter.IdMatcher(namespaced(name), states);
+    }
+
+    private static String namespaced(String identifier) {
+        return identifier.indexOf(':') >= 0 ? identifier : "minecraft:" + identifier;
     }
 
     private static void applyTick(CustomBlockDefinition.Builder builder, JsonObject tick) {
@@ -487,14 +599,17 @@ public final class BehaviorBlockParser {
     }
 
     /**
-     * Translates permutations into the client schema. A permutation left with no translatable
-     * component - one that only carries tags, say - is dropped rather than sent with an empty
-     * components compound.
+     * One permutation, translated once for both sides: its components in the client schema and the
+     * gameplay values the server applies while its condition holds.
      */
-    private ListTag<CompoundTag> translatePermutations(String packName, @Nullable JsonArray permutations) {
-        ListTag<CompoundTag> list = new ListTag<>();
+    private record Permutation(String condition, CompoundTag components,
+                               List<Consumer<CustomBlockDefinition.Builder>> serverValues) {
+    }
+
+    private List<Permutation> translatePermutations(String packName, @Nullable JsonArray permutations) {
+        List<Permutation> translated = new ArrayList<>();
         if (permutations == null) {
-            return list;
+            return translated;
         }
         for (JsonElement element : permutations) {
             if (!element.isJsonObject()) {
@@ -502,25 +617,50 @@ public final class BehaviorBlockParser {
             }
             JsonObject permutation = element.getAsJsonObject();
             JsonObject components = permutation.getAsJsonObject("components");
-            CompoundTag translated = new CompoundTag(new LinkedHashMap<>());
+            CompoundTag clientComponents = new CompoundTag(new LinkedHashMap<>());
+            List<Consumer<CustomBlockDefinition.Builder>> serverValues = new ArrayList<>();
             if (components != null) {
                 for (Map.Entry<String, JsonElement> entry : components.entrySet()) {
                     if (!entry.getKey().startsWith("tag:")) {
-                        translatePermutationComponent(packName, translated, entry.getKey(), entry.getValue());
+                        translatePermutationComponent(packName, clientComponents, serverValues, entry.getKey(), entry.getValue());
                     }
                 }
             }
-            if (translated.isEmpty()) {
-                continue;
+            translated.add(new Permutation(optString(permutation, "condition"), clientComponents, serverValues));
+        }
+        return translated;
+    }
+
+    /**
+     * The permutations in the client schema. A permutation left with no client component - one that
+     * only carries tags or a tick, say - is dropped rather than sent with an empty components compound.
+     */
+    private static ListTag<CompoundTag> clientPermutations(List<Permutation> permutations) {
+        ListTag<CompoundTag> list = new ListTag<>();
+        for (Permutation permutation : permutations) {
+            if (!permutation.components().isEmpty()) {
+                list.add(new CompoundTag()
+                        .putString("condition", permutation.condition())
+                        .putCompound("components", permutation.components()));
             }
-            list.add(new CompoundTag()
-                    .putString("condition", optString(permutation, "condition"))
-                    .putCompound("components", translated));
         }
         return list;
     }
 
-    private void translatePermutationComponent(String packName, CompoundTag target, String key, JsonElement value) {
+    private static List<BlockDataDriven.PermutationRule> permutationRules(List<Permutation> permutations) {
+        List<BlockDataDriven.PermutationRule> rules = new ArrayList<>();
+        for (Permutation permutation : permutations) {
+            if (!permutation.components().isEmpty() || !permutation.serverValues().isEmpty()) {
+                rules.add(new BlockDataDriven.PermutationRule(MolangExpression.compile(permutation.condition()),
+                        permutation.components(), permutation.serverValues()));
+            }
+        }
+        return rules;
+    }
+
+    private void translatePermutationComponent(String packName, CompoundTag target,
+                                               List<Consumer<CustomBlockDefinition.Builder>> serverValues,
+                                               String key, JsonElement value) {
         switch (key) {
             case "minecraft:material_instances" -> {
                 if (value.isJsonObject()) {
@@ -533,15 +673,30 @@ public final class BehaviorBlockParser {
                     target.putCompound(key, geometry);
                 }
             }
-            case "minecraft:friction" -> target.putCompound(key,
-                    new CompoundTag().putFloat("value", Math.min(asFloat(value, 0.4f), 0.9f)));
-            case "minecraft:light_dampening" -> target.putCompound(key,
-                    new CompoundTag().putByte("lightLevel", (byte) asInt(value, 15)));
-            case "minecraft:light_emission" -> target.putCompound(key,
-                    new CompoundTag().putByte("emission", (byte) asInt(value, 0)));
+            case "minecraft:friction" -> {
+                double friction = Math.min(asDouble(value, 0.4), 0.9);
+                target.putCompound(key, new CompoundTag().putFloat("value", (float) friction));
+                serverValues.add(builder -> builder.friction(friction));
+            }
+            case "minecraft:light_dampening" -> {
+                int dampening = asInt(value, 15);
+                target.putCompound(key, new CompoundTag().putByte("lightLevel", (byte) dampening));
+                serverValues.add(builder -> builder.lightDampening(dampening));
+            }
+            case "minecraft:light_emission" -> {
+                int emission = asInt(value, 0);
+                target.putCompound(key, new CompoundTag().putByte("emission", (byte) emission));
+                serverValues.add(builder -> builder.lightEmission(emission));
+            }
             case "minecraft:destructible_by_mining" -> {
-                float seconds = value.isJsonObject() ? asFloat(value.getAsJsonObject().get("seconds_to_destroy"), 0f) : 0f;
+                float seconds = miningSeconds(value);
                 target.putCompound(key, new CompoundTag().putFloat("value", seconds));
+                serverValues.add(builder -> builder.destructibleByMining(seconds));
+            }
+            case "minecraft:destructible_by_explosion" -> {
+                int resistance = explosionResistance(value);
+                target.putCompound(key, new CompoundTag().putInt("explosion_resistance", resistance));
+                serverValues.add(builder -> builder.destructibleByExplosion(resistance));
             }
             case "minecraft:collision_box" -> target.putCompound(key, isFalse(value)
                     ? disabledCollisionBox()
@@ -555,10 +710,39 @@ public final class BehaviorBlockParser {
                     target.putCompound(key, transformation.toCompoundTag());
                 }
             }
+            case "minecraft:tick" -> {
+                if (value.isJsonObject()) {
+                    JsonObject tick = value.getAsJsonObject();
+                    serverValues.add(builder -> applyTick(builder, tick));
+                }
+            }
+            case "minecraft:flammable" -> serverValues.add(builder -> applyFlammable(builder, value));
             case "minecraft:loot" -> {
             }
             default -> tracker.reportUnsupported(packName, "block-permutation-component", key);
         }
+    }
+
+    /**
+     * @return the mining time a {@code minecraft:destructible_by_mining} value gives, or {@code -1}
+     * when it makes the block unbreakable
+     */
+    private static float miningSeconds(JsonElement value) {
+        if (value.isJsonObject()) {
+            return asFloat(value.getAsJsonObject().get("seconds_to_destroy"), 0f);
+        }
+        return asBoolean(value, true) ? 0f : -1f;
+    }
+
+    /**
+     * @return the resistance a {@code minecraft:destructible_by_explosion} value gives, or {@code -1}
+     * when it makes the block immune to explosions
+     */
+    private static int explosionResistance(JsonElement value) {
+        if (value.isJsonObject()) {
+            return (int) asFloat(value.getAsJsonObject().get("explosion_resistance"), 0f);
+        }
+        return asBoolean(value, true) ? 0 : -1;
     }
 
     private static CompoundTag collisionBox(Vector3f origin, Vector3f size) {
