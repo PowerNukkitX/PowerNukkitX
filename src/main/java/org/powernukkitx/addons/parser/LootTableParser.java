@@ -22,10 +22,11 @@ import java.util.Map;
  * {@code match_tool} conditions, enchantments included, on both pools and entries; and the
  * {@code set_count}, {@code set_data}, {@code set_damage}, {@code set_name}, {@code set_lore},
  * {@code specific_enchants}, {@code enchant_randomly}, {@code enchant_with_levels},
- * {@code random_aux_value}, {@code furnace_smelt}, {@code looting_enchant}, {@code set_potion} and
- * {@code explosion_decay} functions. Looting is read from the tool the table is rolled for;
- * {@code explosion_decay} only thins drops blown up by an explosion, which no caller rolls a table for
- * yet, so it changes nothing.
+ * {@code random_aux_value}, {@code looting_enchant}, {@code set_potion}, {@code set_actor_id},
+ * {@code set_ominous_bottle_amplifier} and {@code random_dye} functions, and the
+ * {@code random_difficulty_chance} condition. Looting is read from the tool the table is rolled for.
+ * {@code explosion_decay} and {@code furnace_smelt} are accepted but change nothing: they apply to drops
+ * blown up by an explosion and to entities that die burning, and no caller rolls a table for either yet.
  * <p>
  * Anything else is recorded on the {@link AddonFeatureTracker}. A condition that cannot be
  * evaluated, or a {@code match_tool} requirement that cannot be checked, never holds: loot gated
@@ -115,7 +116,7 @@ public final class LootTableParser {
                 switch (functionName) {
                     case "set_count" -> count = parseRange(function.get("count"), LootTable.NumberRange.ONE);
                     case "set_data" -> data = asInt(rangeMin(function.get("data")), 0);
-                    case "set_damage" -> data = asInt(rangeMin(function.get("damage")), 0);
+                    case "set_damage" -> itemFunctions.add(setDamage(function.get("damage")));
                     case "set_name" -> displayName = optString(function, "name");
                     case "set_lore" -> lore = asStringList(function.get("lore"));
                     case "specific_enchants" -> itemFunctions.add(new LootTable.SpecificEnchants(specificEnchants(function.get("enchants"))));
@@ -124,7 +125,6 @@ public final class LootTableParser {
                             parseRange(function.get("levels"), LootTable.NumberRange.ONE), optBoolean(function, "treasure")));
                     case "random_aux_value" -> itemFunctions.add(new LootTable.RandomAuxValue(
                             parseRange(function.get("values"), new LootTable.NumberRange(0, 0))));
-                    case "furnace_smelt" -> itemFunctions.add(new LootTable.FurnaceSmelt());
                     case "looting_enchant" -> itemFunctions.add(new LootTable.LootingEnchant(
                             parseRange(function.get("count"), LootTable.NumberRange.ONE)));
                     case "set_potion" -> {
@@ -133,7 +133,18 @@ public final class LootTableParser {
                             itemFunctions.add(new LootTable.SetPotion(potion));
                         }
                     }
-                    case "explosion_decay" -> {
+                    case "set_actor_id" -> {
+                        String entity = optString(function, "id");
+                        if (!entity.isEmpty()) {
+                            itemFunctions.add(new LootTable.SetActorId(namespaced(entity)));
+                        } else {
+                            tracker.reportUnsupported(packName, "loot-function", "set_actor_id without id");
+                        }
+                    }
+                    case "set_ominous_bottle_amplifier" -> itemFunctions.add(new LootTable.SetOminousBottleAmplifier(
+                            parseRange(function.get("amplifier"), new LootTable.NumberRange(0, 0))));
+                    case "random_dye" -> itemFunctions.add(new LootTable.RandomDye());
+                    case "explosion_decay", "furnace_smelt" -> {
                     }
                     default -> tracker.reportUnsupported(packName, "loot-function", functionName);
                 }
@@ -159,6 +170,7 @@ public final class LootTableParser {
                 case "random_chance_with_looting" -> conditions.add(new LootTable.RandomChance(
                         asFloat(condition.get("chance"), 1.0f), asFloat(condition.get("looting_multiplier"), 0f)));
                 case "match_tool" -> conditions.add(parseMatchTool(packName, condition));
+                case "random_difficulty_chance" -> conditions.add(randomDifficultyChance(condition));
                 default -> {
                     tracker.reportUnsupported(packName, "loot-condition", name.isEmpty() ? "(missing)" : name);
                     conditions.add(new LootTable.MatchTool(null, List.of(), List.of(), List.of(), true));
@@ -175,10 +187,14 @@ public final class LootTableParser {
         List<String> noneTags = List.of();
         boolean unsatisfiable = false;
         List<LootTable.EnchantmentRequirement> enchantments = new ArrayList<>();
+        LootTable.NumberRange count = null;
+        LootTable.NumberRange durability = null;
         for (Map.Entry<String, JsonElement> entry : condition.entrySet()) {
             switch (entry.getKey()) {
-                case "condition", "count" -> {
+                case "condition" -> {
                 }
+                case "count" -> count = toolRange(entry.getValue());
+                case "durability" -> durability = toolRange(entry.getValue());
                 case "item" -> item = asStringOrNull(entry.getValue());
                 case "minecraft:match_tool_filter_all" -> allTags = asStringList(entry.getValue());
                 case "minecraft:match_tool_filter_any" -> anyTags = asStringList(entry.getValue());
@@ -195,7 +211,40 @@ public final class LootTableParser {
                 }
             }
         }
-        return new LootTable.MatchTool(item, allTags, anyTags, noneTags, unsatisfiable, enchantments);
+        return new LootTable.MatchTool(item, allTags, anyTags, noneTags, unsatisfiable, enchantments, count, durability);
+    }
+
+    /**
+     * Reads a {@code match_tool} range: a number for an exact value, or {@code range_min}/{@code range_max}
+     * with either end open.
+     */
+    private static LootTable.NumberRange toolRange(JsonElement element) {
+        if (element.isJsonPrimitive()) {
+            int value = asInt(element, 0);
+            return new LootTable.NumberRange(value, value);
+        }
+        JsonObject range = element.isJsonObject() ? element.getAsJsonObject() : new JsonObject();
+        return new LootTable.NumberRange(asInt(range.get("range_min"), Integer.MIN_VALUE),
+                asInt(range.get("range_max"), Integer.MAX_VALUE));
+    }
+
+    private static LootTable.SetDamage setDamage(@Nullable JsonElement element) {
+        if (element != null && element.isJsonObject()) {
+            JsonObject range = element.getAsJsonObject();
+            float min = asFloat(range.get("min"), 1.0f);
+            return new LootTable.SetDamage(min, Math.max(min, asFloat(range.get("max"), min)));
+        }
+        float value = asFloat(element, 1.0f);
+        return new LootTable.SetDamage(value, value);
+    }
+
+    private static LootTable.RandomDifficultyChance randomDifficultyChance(JsonObject condition) {
+        String[] names = {"peaceful", "easy", "normal", "hard"};
+        float[] byDifficulty = new float[names.length];
+        for (int i = 0; i < names.length; i++) {
+            byDifficulty[i] = condition.has(names[i]) ? asFloat(condition.get(names[i]), Float.NaN) : Float.NaN;
+        }
+        return new LootTable.RandomDifficultyChance(asFloat(condition.get("default_chance"), 0f), byDifficulty);
     }
 
     /**

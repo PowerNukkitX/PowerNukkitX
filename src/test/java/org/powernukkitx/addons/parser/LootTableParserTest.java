@@ -101,7 +101,7 @@ class LootTableParserTest {
     void uncheckableToolRequirementFailsClosed() {
         LootTable table = parse("""
                 { "pools": [ { "rolls": 1, "entries": [ { "type": "item", "name": "minecraft:diamond",
-                  "conditions": [ { "condition": "match_tool", "durability": { "range_min": 1 } } ] } ] } ] }
+                  "conditions": [ { "condition": "match_tool", "pnxtest_unknown_predicate": 1 } ] } ] } ] }
                 """);
 
         assertTrue(table.generate(new Random(1), Item.get(ItemID.SHEARS)).isEmpty());
@@ -159,6 +159,60 @@ class LootTableParserTest {
         Item book = table.generate(new Random(1)).getFirst();
         assertEquals(ItemID.ENCHANTED_BOOK, book.getId());
         assertEquals(2, book.getEnchantmentLevel(Enchantment.ID_DAMAGE_ALL));
+        assertTrue(tracker.isEmpty());
+    }
+
+    @Test
+    void setDamageIsTheDurabilityLeft() {
+        LootTable table = parse("""
+                { "pools": [ { "rolls": 1, "entries": [ { "type": "item", "name": "minecraft:diamond_sword",
+                  "functions": [ { "function": "set_damage", "damage": 0.25 } ] } ] } ] }
+                """);
+
+        Item sword = table.generate(new Random(1)).getFirst();
+        assertEquals(Math.round(sword.getMaxDurability() * 0.75), sword.getDamage());
+    }
+
+    @Test
+    void readsSpawnEggBottleAndToolDurability() {
+        LootTable table = parse("""
+                { "pools": [ { "rolls": 1, "entries": [ { "type": "item", "name": "minecraft:pig_spawn_egg",
+                    "functions": [ { "function": "set_actor_id", "id": "minecraft:wolf" } ] } ] },
+                  { "rolls": 1, "entries": [ { "type": "item", "name": "minecraft:ominous_bottle",
+                    "functions": [ { "function": "set_ominous_bottle_amplifier", "amplifier": { "min": 3, "max": 3 } } ] } ] },
+                  { "rolls": 1, "conditions": [ { "condition": "match_tool", "durability": { "range_min": 100 } } ],
+                    "entries": [ { "type": "item", "name": "minecraft:stick" } ] } ] }
+                """);
+        Item worn = Item.get(ItemID.DIAMOND_PICKAXE);
+        worn.setDamage(worn.getMaxDurability() - 10);
+
+        java.util.List<Item> loot = table.generate(new Random(1), worn);
+        assertEquals("minecraft:wolf_spawn_egg", loot.get(0).getId());
+        assertEquals(3, loot.get(1).getDamage());
+        assertEquals(2, loot.size(), "a tool with 10 durability left fails range_min 100");
+        assertEquals(3, table.generate(new Random(1), Item.get(ItemID.DIAMOND_PICKAXE)).size());
+        assertTrue(tracker.isEmpty());
+    }
+
+    @Test
+    void furnaceSmeltLeavesBlockDropsAlone() {
+        LootTable table = parse("""
+                { "pools": [ { "rolls": 1, "entries": [ { "type": "item", "name": "minecraft:raw_iron",
+                  "functions": [ { "function": "furnace_smelt" } ] } ] } ] }
+                """);
+
+        assertEquals(ItemID.RAW_IRON, table.generate(new Random(1)).getFirst().getId());
+        assertTrue(tracker.isEmpty());
+    }
+
+    @Test
+    void randomDifficultyChanceUsesDefaultWhenUnlisted() {
+        LootTable always = parse("""
+                { "pools": [ { "rolls": 1, "conditions": [ { "condition": "random_difficulty_chance", "default_chance": 1.0 } ],
+                  "entries": [ { "type": "item", "name": "minecraft:stick" } ] } ] }
+                """);
+
+        assertEquals(1, always.generate(new Random(1)).size());
         assertTrue(tracker.isEmpty());
     }
 }

@@ -1,12 +1,13 @@
 package org.powernukkitx.loot;
 
+import org.powernukkitx.Server;
 import org.powernukkitx.entity.effect.PotionType;
 import org.powernukkitx.item.Item;
 import org.powernukkitx.item.ItemID;
 import org.powernukkitx.item.enchantment.Enchantment;
 import org.powernukkitx.item.enchantment.EnchantmentHelper;
-import org.powernukkitx.recipe.FurnaceRecipe;
-import org.powernukkitx.registry.Registries;
+import org.powernukkitx.item.ItemColorArmor;
+import org.powernukkitx.utils.DyeColor;
 import org.powernukkitx.utils.random.NukkitRandom;
 
 import lombok.extern.slf4j.Slf4j;
@@ -70,7 +71,7 @@ public record LootTable(List<Pool> pools) {
     /**
      * A requirement a pool or an entry must meet to take part in a roll.
      */
-    public sealed interface Condition permits RandomChance, MatchTool {
+    public sealed interface Condition permits RandomChance, MatchTool, RandomDifficultyChance {
 
         /**
          * @param random the generation's random source
@@ -96,6 +97,24 @@ public record LootTable(List<Pool> pools) {
         public boolean test(@NotNull Random random, @Nullable Item tool) {
             float effective = chance + lootingMultiplier * lootingLevel(tool);
             return effective >= 1.0f || random.nextFloat() < effective;
+        }
+    }
+
+    /**
+     * Holds with a probability that depends on the server's difficulty.
+     *
+     * @param defaultChance the probability for difficulties without their own
+     * @param byDifficulty  the probability for each difficulty, 0 (peaceful) to 3 (hard), or NaN where the
+     *                      default applies
+     */
+    public record RandomDifficultyChance(float defaultChance, float[] byDifficulty) implements Condition {
+
+        @Override
+        public boolean test(@NotNull Random random, @Nullable Item tool) {
+            int difficulty = Server.getInstance().getDifficulty();
+            float chance = difficulty >= 0 && difficulty < byDifficulty.length && !Float.isNaN(byDifficulty[difficulty])
+                    ? byDifficulty[difficulty] : defaultChance;
+            return chance >= 1.0f || random.nextFloat() < chance;
         }
     }
 
@@ -129,10 +148,13 @@ public record LootTable(List<Pool> pools) {
      *                      the condition then never holds, so loot that needs such a tool is not
      *                      handed out to any tool
      * @param enchantments  enchantments the tool must all carry
+     * @param count         the range the tool's stack size must fall in, or null for any
+     * @param durability    the range the tool's remaining durability must fall in, or null for any
      */
     public record MatchTool(@Nullable String item, List<String> allTags, List<String> anyTags,
                             List<String> noneTags, boolean unsatisfiable,
-                            List<EnchantmentRequirement> enchantments) implements Condition {
+                            List<EnchantmentRequirement> enchantments, @Nullable NumberRange count,
+                            @Nullable NumberRange durability) implements Condition {
 
         public MatchTool {
             allTags = List.copyOf(allTags);
@@ -143,7 +165,7 @@ public record LootTable(List<Pool> pools) {
 
         public MatchTool(@Nullable String item, List<String> allTags, List<String> anyTags,
                          List<String> noneTags, boolean unsatisfiable) {
-            this(item, allTags, anyTags, noneTags, unsatisfiable, List.of());
+            this(item, allTags, anyTags, noneTags, unsatisfiable, List.of(), null, null);
         }
 
         @Override
@@ -187,6 +209,16 @@ public record LootTable(List<Pool> pools) {
                     return false;
                 }
             }
+            if (count != null && (empty || tool.getCount() < count.min() || tool.getCount() > count.max())) {
+                return false;
+            }
+            if (durability != null) {
+                if (empty || tool.getMaxDurability() <= 0) {
+                    return false;
+                }
+                int remaining = tool.getMaxDurability() - tool.getDamage();
+                return remaining >= durability.min() && remaining <= durability.max();
+            }
             return true;
         }
     }
@@ -195,7 +227,7 @@ public record LootTable(List<Pool> pools) {
      * Changes an item an entry yields, after its count, data, name and lore are applied.
      */
     public sealed interface ItemFunction permits SpecificEnchants, EnchantRandomly, EnchantWithLevels,
-            RandomAuxValue, FurnaceSmelt, LootingEnchant, SetPotion {
+            RandomAuxValue, SetDamage, LootingEnchant, SetPotion, SetActorId, SetOminousBottleAmplifier, RandomDye {
 
         /**
          * @param item   the item so far; may be changed in place
@@ -296,22 +328,67 @@ public record LootTable(List<Pool> pools) {
     }
 
     /**
-     * Replaces the item with what smelting it in a furnace gives, keeping its count; an item that does
-     * not smelt is left as it is.
+     * Sets how much durability an item has left, as a fraction drawn from a range: {@code 1.0} is
+     * undamaged, {@code 0.0} is broken. Items without durability are left as they are.
      */
-    public record FurnaceSmelt() implements ItemFunction {
+    public record SetDamage(float min, float max) implements ItemFunction {
 
         @Override
         public @NotNull Item apply(@NotNull Item item, @NotNull Random random, @Nullable Item tool) {
-            Item single = item.clone();
-            single.setCount(1);
-            FurnaceRecipe recipe = Registries.RECIPE.findFurnaceRecipe(single);
-            if (recipe == null) {
+            int maxDurability = item.getMaxDurability();
+            if (maxDurability <= 0) {
                 return item;
             }
-            Item smelted = recipe.getResult().clone();
-            smelted.setCount(item.getCount());
-            return smelted;
+            float remaining = max <= min ? min : min + random.nextFloat() * (max - min);
+            item.setDamage(Math.round(maxDurability * (1 - Math.clamp(remaining, 0f, 1f))));
+            return item;
+        }
+    }
+
+    /**
+     * Turns a spawn egg into the egg of the given entity.
+     *
+     * @param entity the entity identifier, such as {@code minecraft:wolf}
+     */
+    public record SetActorId(@NotNull String entity) implements ItemFunction {
+
+        @Override
+        public @NotNull Item apply(@NotNull Item item, @NotNull Random random, @Nullable Item tool) {
+            Item egg = Item.get(entity + "_spawn_egg");
+            if (egg.isNull()) {
+                return item;
+            }
+            egg.setCount(item.getCount());
+            return egg;
+        }
+    }
+
+    /**
+     * Sets the Bad Omen amplifier of an ominous bottle to one drawn from a range.
+     */
+    public record SetOminousBottleAmplifier(@NotNull NumberRange amplifier) implements ItemFunction {
+
+        @Override
+        public @NotNull Item apply(@NotNull Item item, @NotNull Random random, @Nullable Item tool) {
+            if (ItemID.OMINOUS_BOTTLE.equals(item.getId())) {
+                item.setDamage(Math.clamp(amplifier.sample(random), 0, 4));
+            }
+            return item;
+        }
+    }
+
+    /**
+     * Dyes leather armour a random colour.
+     */
+    public record RandomDye() implements ItemFunction {
+
+        @Override
+        public @NotNull Item apply(@NotNull Item item, @NotNull Random random, @Nullable Item tool) {
+            if (item instanceof ItemColorArmor armor) {
+                DyeColor[] colors = DyeColor.values();
+                armor.setColor(colors[random.nextInt(colors.length)]);
+            }
+            return item;
         }
     }
 
