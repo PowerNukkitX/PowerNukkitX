@@ -191,4 +191,33 @@ class BehaviorItemParserTest {
         assertEquals(65, BlockComposter.getChance(item));
         assertTrue(tracker.isEmpty());
     }
+
+    @Test
+    void mapsFireResistantSeedAndLegacyUseDuration() {
+        String id = "pnxtest:parsed_seed";
+
+        assertEquals(id, register(id, """
+                { "minecraft:fire_resistant": { "value": true },
+                  "minecraft:seed": { "crop_result": "minecraft:wheat", "plant_at": ["farmland"] },
+                  "minecraft:use_duration": 1.5 }
+                """));
+
+        Item item = Item.get(id);
+        assertTrue(item.isLavaResistant());
+        assertEquals("minecraft:wheat", item.getCustomDefinition().getBlockPlacerData().blockId());
+        assertEquals(java.util.List.of("minecraft:farmland"), item.getCustomDefinition().getBlockPlacerData().useOn());
+        assertTrue(tracker.isEmpty());
+    }
+
+    @Test
+    void diggerTagRulesFollowTheirQuery() {
+        String id = "pnxtest:all_tags_pickaxe";
+
+        assertEquals(id, register(id, """
+                { "minecraft:digger": { "destroy_speeds": [
+                    { "block": { "tags": "query.all_tags('stone', 'pnxtest_never_present')" }, "speed": 7 } ] } }
+                """));
+
+        assertNull(Item.get(id).getDiggerSpeed(Block.get(BlockID.STONE)), "all_tags must not match a block missing one tag");
+    }
 }

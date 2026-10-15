@@ -21,8 +21,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
  * Turns a behaviour pack's {@code items/*.json} into registered items.
@@ -35,8 +33,6 @@ import java.util.regex.Pattern;
  */
 @Slf4j
 public final class BehaviorItemParser {
-
-    private static final Pattern QUOTED = Pattern.compile("['\"]([^'\"]+)['\"]");
 
     private final AddonFeatureTracker tracker;
 
@@ -87,10 +83,16 @@ public final class BehaviorItemParser {
         try {
             ItemDataDriven prototype = buildItem(packName, identifier, description, components);
             CustomItemDefinition definition = prototype.getDefinition();
+            if (fireResistant(components)) {
+                definition = new CustomItemDefinition(identifier, definition.nbt(),
+                        definition.toBuilder().lavaResistant(true).build());
+                prototype = new ItemDataDriven(identifier, definition);
+            }
+            CustomItemDefinition registered = definition;
             if (replacesBlockItem) {
-                Registries.ITEM.registerBlockItemReplacement(prototype, () -> new ItemDataDriven(identifier, definition));
+                Registries.ITEM.registerBlockItemReplacement(prototype, () -> new ItemDataDriven(identifier, registered));
             } else {
-                Registries.ITEM.registerCustomItemDefinition(prototype, () -> new ItemDataDriven(identifier, definition));
+                Registries.ITEM.registerCustomItemDefinition(prototype, () -> new ItemDataDriven(identifier, registered));
             }
             registerCompostable(identifier, components);
             log.debug("Registered data-driven item {} from behavior pack '{}'", identifier, packName);
@@ -109,6 +111,18 @@ public final class BehaviorItemParser {
         JsonObject blockPlacer = components == null ? null : components.getAsJsonObject("minecraft:block_placer");
         return blockPlacer != null && identifier.equals(optString(blockPlacer, "block"))
                 && optBoolean(blockPlacer, "replace_block_item", false);
+    }
+
+    /**
+     * Whether a dropped stack survives fire and lava. Only the server acts on it, so the component is not
+     * sent to clients.
+     */
+    private static boolean fireResistant(@Nullable JsonObject components) {
+        JsonElement fireResistant = components == null ? null : components.get("minecraft:fire_resistant");
+        if (fireResistant == null) {
+            return false;
+        }
+        return fireResistant.isJsonObject() ? optBoolean(fireResistant.getAsJsonObject(), "value", true) : asBoolean(fireResistant, true);
     }
 
     private static void registerCompostable(String identifier, @Nullable JsonObject components) {
@@ -247,16 +261,21 @@ public final class BehaviorItemParser {
                     applyDigger(builder, value.getAsJsonObject());
                 }
             }
-            case "minecraft:compostable" -> {
+            case "minecraft:compostable", "minecraft:fire_resistant" -> {
             }
+            case "minecraft:seed" -> {
+                if (value.isJsonObject()) {
+                    applySeed(builder, value.getAsJsonObject());
+                }
+            }
+            case "minecraft:use_duration" -> builder.useModifiers(1.0f, asFloat(unwrapValue(value), 0f));
             default -> tracker.reportUnsupported(packName, "item-component", key);
         }
     }
 
     /**
-     * The server reads digger speeds from the item's components when it times block breaking. A rule
-     * matching by tags is kept as the tags its Molang expression names, which the server matches as
-     * {@code query.any_tag}.
+     * The server reads digger speeds from the item's components when it times block breaking; a rule
+     * matching by tags keeps its Molang expression as written.
      */
     private static void applyDigger(CustomItemDefinition.SimpleBuilder builder, JsonObject digger) {
         List<DiggerEntry> entries = new ArrayList<>();
@@ -275,13 +294,9 @@ public final class BehaviorItemParser {
                 if (block.isJsonPrimitive()) {
                     entries.add(DiggerEntry.block(block.getAsString(), speed));
                 } else if (block.isJsonObject() && block.getAsJsonObject().has("tags")) {
-                    List<String> tags = new ArrayList<>();
-                    Matcher matcher = QUOTED.matcher(optString(block.getAsJsonObject(), "tags"));
-                    while (matcher.find()) {
-                        tags.add("'" + matcher.group(1) + "'");
-                    }
-                    if (!tags.isEmpty()) {
-                        entries.add(DiggerEntry.create().speed(speed).addTags(tags.toArray(new String[0])));
+                    String tags = optString(block.getAsJsonObject(), "tags");
+                    if (!tags.isBlank()) {
+                        entries.add(DiggerEntry.create().speed(speed).tagsExpression(tags));
                     }
                 } else if (block.isJsonObject() && block.getAsJsonObject().has("name")) {
                     DiggerEntry entry = DiggerEntry.block(optString(block.getAsJsonObject(), "name"), speed);
@@ -308,6 +323,35 @@ public final class BehaviorItemParser {
         if (digger.has("use_efficiency")) {
             builder.useEfficiency(asBoolean(digger.get("use_efficiency"), false));
         }
+    }
+
+    /**
+     * A seed is a block placer for its crop, limited to the blocks it may be planted on unless it may go on
+     * any solid surface.
+     */
+    private static void applySeed(CustomItemDefinition.SimpleBuilder builder, JsonObject seed) {
+        String crop = optString(seed, "crop_result");
+        if (crop.isEmpty()) {
+            return;
+        }
+        List<String> plantAt = new ArrayList<>();
+        if (!optBoolean(seed, "plant_at_any_solid_surface", false)) {
+            JsonElement entries = seed.get("plant_at");
+            if (entries != null && entries.isJsonArray()) {
+                for (JsonElement entry : entries.getAsJsonArray()) {
+                    String block = entry.isJsonObject() ? optString(entry.getAsJsonObject(), "name") : asStringOrEmpty(entry);
+                    if (!block.isEmpty()) {
+                        plantAt.add(block.indexOf(':') >= 0 ? block : "minecraft:" + block);
+                    }
+                }
+            } else if (entries != null) {
+                String block = asStringOrEmpty(entries);
+                if (!block.isEmpty()) {
+                    plantAt.add(block.indexOf(':') >= 0 ? block : "minecraft:" + block);
+                }
+            }
+        }
+        builder.blockPlacer(crop, plantAt.toArray(new String[0]));
     }
 
     private static void applyDurability(CustomItemDefinition.SimpleBuilder builder, JsonElement value) {
