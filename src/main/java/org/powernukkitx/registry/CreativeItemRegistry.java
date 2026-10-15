@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import io.netty.util.internal.EmptyArrays;
 import it.unimi.dsi.fastutil.ints.Int2ObjectLinkedOpenHashMap;
+import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.objects.ObjectLinkedOpenHashSet;
 import lombok.extern.slf4j.Slf4j;
@@ -333,6 +334,45 @@ public class CreativeItemRegistry implements ItemID, IRegistry<Integer, Item, It
         }
     }
 
+
+    /**
+     * Swaps the item a creative entry hands out, keeping the entry's position, so an item can take over
+     * the entry another item with the same identifier registered - a block's item form replaced by an
+     * item definition, for instance.
+     *
+     * @param identifier the identifier of the entry to replace
+     * @param item       the item the entry hands out from now on
+     * @param groupIndex the group the entry is listed in from now on
+     * @return false when no entry has the identifier, or the registry is disabled
+     */
+    public boolean replaceCreativeItem(@NotNull String identifier, @NotNull Item item, int groupIndex) {
+        if (!enabled) return false;
+        int index = -1;
+        for (Int2ObjectMap.Entry<Item> entry : MAP.int2ObjectEntrySet()) {
+            if (identifier.equals(entry.getValue().getId())) {
+                index = entry.getIntKey();
+                break;
+            }
+        }
+        if (index == -1) return false;
+        MAP.put(index, item.clone());
+        INTERNAL_DIFF_ITEM.remove(index);
+        List<CreativeItemEntryPayload> rebuilt = new ArrayList<>(ITEM_DATA.size());
+        for (CreativeItemEntryPayload data : ITEM_DATA) {
+            if (identifier.equals(data.getItemInstance().getDefinition().getIdentifier())) {
+                CreativeItemEntryPayload payload = new CreativeItemEntryPayload();
+                payload.setCreativeNetId(data.getCreativeNetId());
+                payload.setItemInstance(item.toCreativeNetwork());
+                payload.setGroupIndex(groupIndex);
+                rebuilt.add(payload);
+            } else {
+                rebuilt.add(data);
+            }
+        }
+        ITEM_DATA.clear();
+        ITEM_DATA.addAll(rebuilt);
+        return true;
+    }
 
     /**
      * Remove a specified created item

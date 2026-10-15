@@ -944,6 +944,46 @@ public final class ItemRegistry implements ItemID, IRegistry<String, Item, Class
         }
     }
 
+    /**
+     * Registers a custom item that takes over the item form of a custom block with the same identifier,
+     * as a behaviour pack's {@code minecraft:block_placer} with {@code replace_block_item} does: the
+     * identifier keeps the block item's runtime ID, but clients are sent the item's components and the
+     * server creates the item from {@code factory}, so its icon, name, food and other components apply
+     * wherever the block's item would have appeared, the creative inventory included.
+     *
+     * @param prototype an instance of the item, whose definition is registered
+     * @param factory   creates the item from now on
+     * @throws RegisterException when no custom block has the identifier, or an item already replaced it
+     */
+    public void registerBlockItemReplacement(@NotNull CustomItem prototype, @NotNull ItemFactory factory) throws RegisterException {
+        CustomItemDefinition def = prototype.getDefinition();
+        String key = def.identifier();
+        if (BlockRegistry.getCustomBlockDefinitionByIdStatic(key) == null) {
+            throw new RegisterException("No custom block has the identifier " + key + " to replace the item of");
+        }
+        if (CACHE_CONSTRUCTORS.putIfAbsent(key, factory) != null) {
+            throw new RegisterException("This item has already been registered with the identifier: " + key);
+        }
+        int runtimeId = Registries.ITEM_RUNTIMEID.getInt(key);
+        Registries.ITEM_RUNTIMEID.replaceCustomRuntimeItem(new ItemRuntimeIdRegistry.RuntimeEntry(key, runtimeId, true));
+        CUSTOM_ITEM_DEFINITIONS.put(key, def);
+        registerAliases(key, (Item) prototype);
+        CUSTOM_ITEM_DEFINITION_CHANGES.incrementAndGet();
+
+        Item ci;
+        try {
+            ci = factory.create();
+        } catch (Throwable e) {
+            throw new RegisterException(e);
+        }
+        ci.setNetId(null);
+        CompoundTag nbt = def.nbt();
+        int groupIndex = Registries.CREATIVE.resolveGroupIndexFromItemDefinition(key, nbt);
+        if (!Registries.CREATIVE.replaceCreativeItem(key, ci, groupIndex) && Registries.CREATIVE.shouldBeRegisteredItem(nbt)) {
+            Registries.CREATIVE.addCreativeItem(ci, groupIndex);
+        }
+    }
+
     public void registerSpawnEgg(String eggId) throws RegisterException {
         register(eggId, ItemCustomEntitySpawnEgg.class);
         CustomItemDefinition def = ItemCustomEntitySpawnEgg.buildEggDefinition(eggId);

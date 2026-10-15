@@ -1,9 +1,11 @@
 package org.powernukkitx.addons.parser;
 
 import org.powernukkitx.addons.AddonFeatureTracker;
+import org.powernukkitx.block.BlockComposter;
 import org.powernukkitx.item.customitem.CustomItemDefinition;
 import org.powernukkitx.item.customitem.ItemDataDriven;
 import org.powernukkitx.item.customitem.data.CreativeCategory;
+import org.powernukkitx.item.utils.DiggerEntry;
 import org.powernukkitx.registry.BlockRegistry;
 import org.powernukkitx.registry.ItemRegistry;
 import org.powernukkitx.registry.Registries;
@@ -19,6 +21,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Turns a behaviour pack's {@code items/*.json} into registered items.
@@ -31,6 +35,8 @@ import java.util.Map;
  */
 @Slf4j
 public final class BehaviorItemParser {
+
+    private static final Pattern QUOTED = Pattern.compile("['\"]([^'\"]+)['\"]");
 
     private final AddonFeatureTracker tracker;
 
@@ -67,7 +73,9 @@ public final class BehaviorItemParser {
             tracker.reportUnsupported(packName, "vanilla-item-override", identifier);
             return null;
         }
-        if (BlockRegistry.getCustomBlockDefinitionByIdStatic(identifier) != null) {
+        JsonObject components = itemJson.getAsJsonObject("components");
+        boolean replacesBlockItem = BlockRegistry.getCustomBlockDefinitionByIdStatic(identifier) != null;
+        if (replacesBlockItem && !declaresBlockItemReplacement(identifier, components)) {
             tracker.reportUnsupported(packName, "item-id-taken-by-block", identifier);
             return null;
         }
@@ -77,14 +85,39 @@ public final class BehaviorItemParser {
         }
 
         try {
-            ItemDataDriven prototype = buildItem(packName, identifier, description, itemJson.getAsJsonObject("components"));
+            ItemDataDriven prototype = buildItem(packName, identifier, description, components);
             CustomItemDefinition definition = prototype.getDefinition();
-            Registries.ITEM.registerCustomItemDefinition(prototype, () -> new ItemDataDriven(identifier, definition));
+            if (replacesBlockItem) {
+                Registries.ITEM.registerBlockItemReplacement(prototype, () -> new ItemDataDriven(identifier, definition));
+            } else {
+                Registries.ITEM.registerCustomItemDefinition(prototype, () -> new ItemDataDriven(identifier, definition));
+            }
+            registerCompostable(identifier, components);
             log.debug("Registered data-driven item {} from behavior pack '{}'", identifier, packName);
             return identifier;
         } catch (Exception e) {
             log.error("Behavior pack '{}': could not register item {}", packName, identifier, e);
             return null;
+        }
+    }
+
+    /**
+     * An item document may share its identifier with a block only to replace the block's own item, which
+     * Bedrock expresses as a {@code minecraft:block_placer} for that block with {@code replace_block_item}.
+     */
+    private static boolean declaresBlockItemReplacement(String identifier, @Nullable JsonObject components) {
+        JsonObject blockPlacer = components == null ? null : components.getAsJsonObject("minecraft:block_placer");
+        return blockPlacer != null && identifier.equals(optString(blockPlacer, "block"))
+                && optBoolean(blockPlacer, "replace_block_item", false);
+    }
+
+    private static void registerCompostable(String identifier, @Nullable JsonObject components) {
+        JsonElement compostable = components == null ? null : components.get("minecraft:compostable");
+        if (compostable != null && compostable.isJsonObject()) {
+            int chance = asInt(compostable.getAsJsonObject().get("composting_chance"), 0);
+            if (chance > 0) {
+                BlockComposter.registerItem(Math.min(chance, 100), identifier);
+            }
         }
     }
 
@@ -116,7 +149,7 @@ public final class BehaviorItemParser {
         }
         String group = optString(menuCategory, "group");
         if (!group.isEmpty()) {
-            builder.creativeGroup(group);
+            builder.creativeGroup(CreativeGroupNames.normalize(group));
         }
         if (optBoolean(menuCategory, "is_hidden_in_commands", false)) {
             builder.isHiddenInCommands(true);
@@ -209,7 +242,71 @@ public final class BehaviorItemParser {
                     }
                 }
             }
+            case "minecraft:digger" -> {
+                if (value.isJsonObject()) {
+                    applyDigger(builder, value.getAsJsonObject());
+                }
+            }
+            case "minecraft:compostable" -> {
+            }
             default -> tracker.reportUnsupported(packName, "item-component", key);
+        }
+    }
+
+    /**
+     * The server reads digger speeds from the item's components when it times block breaking. A rule
+     * matching by tags is kept as the tags its Molang expression names, which the server matches as
+     * {@code query.any_tag}.
+     */
+    private static void applyDigger(CustomItemDefinition.SimpleBuilder builder, JsonObject digger) {
+        List<DiggerEntry> entries = new ArrayList<>();
+        JsonElement speeds = digger.get("destroy_speeds");
+        if (speeds != null && speeds.isJsonArray()) {
+            for (JsonElement speedElement : speeds.getAsJsonArray()) {
+                if (!speedElement.isJsonObject()) {
+                    continue;
+                }
+                JsonObject rule = speedElement.getAsJsonObject();
+                int speed = asInt(rule.get("speed"), 1);
+                JsonElement block = rule.get("block");
+                if (block == null) {
+                    continue;
+                }
+                if (block.isJsonPrimitive()) {
+                    entries.add(DiggerEntry.block(block.getAsString(), speed));
+                } else if (block.isJsonObject() && block.getAsJsonObject().has("tags")) {
+                    List<String> tags = new ArrayList<>();
+                    Matcher matcher = QUOTED.matcher(optString(block.getAsJsonObject(), "tags"));
+                    while (matcher.find()) {
+                        tags.add("'" + matcher.group(1) + "'");
+                    }
+                    if (!tags.isEmpty()) {
+                        entries.add(DiggerEntry.create().speed(speed).addTags(tags.toArray(new String[0])));
+                    }
+                } else if (block.isJsonObject() && block.getAsJsonObject().has("name")) {
+                    DiggerEntry entry = DiggerEntry.block(optString(block.getAsJsonObject(), "name"), speed);
+                    JsonObject states = block.getAsJsonObject().getAsJsonObject("states");
+                    if (states != null) {
+                        for (Map.Entry<String, JsonElement> state : states.entrySet()) {
+                            JsonElement stateValue = state.getValue();
+                            if (stateValue.isJsonPrimitive() && stateValue.getAsJsonPrimitive().isBoolean()) {
+                                entry.state(state.getKey(), stateValue.getAsBoolean());
+                            } else if (stateValue.isJsonPrimitive() && stateValue.getAsJsonPrimitive().isNumber()) {
+                                entry.state(state.getKey(), stateValue.getAsInt());
+                            } else if (stateValue.isJsonPrimitive()) {
+                                entry.state(state.getKey(), stateValue.getAsString());
+                            }
+                        }
+                    }
+                    entries.add(entry);
+                }
+            }
+        }
+        if (!entries.isEmpty()) {
+            builder.digger(entries.toArray(new DiggerEntry[0]));
+        }
+        if (digger.has("use_efficiency")) {
+            builder.useEfficiency(asBoolean(digger.get("use_efficiency"), false));
         }
     }
 

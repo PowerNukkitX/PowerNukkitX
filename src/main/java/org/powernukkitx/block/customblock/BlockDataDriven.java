@@ -17,6 +17,7 @@ import org.powernukkitx.molang.MolangExpression;
 import org.powernukkitx.nbt.tag.CompoundTag;
 import org.powernukkitx.nbt.tag.ListTag;
 import org.powernukkitx.nbt.tag.Tag;
+import org.powernukkitx.registry.ItemRegistry;
 
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMaps;
@@ -389,6 +390,20 @@ public class BlockDataDriven extends Block implements CustomBlock {
     @Override
     public String[] getTags() {
         return currentTags().toArray(new String[0]);
+    }
+
+    /**
+     * {@inheritDoc}
+     * <p>
+     * The item a pack registered to replace this block's item, when there is one, so the block drops and
+     * is picked as that item.
+     */
+    @Override
+    public Item toItem() {
+        if (ItemRegistry.getCustomItemDefinitionByIdStatic(getId()) != null) {
+            return Item.get(getId());
+        }
+        return super.toItem();
     }
 
     /**

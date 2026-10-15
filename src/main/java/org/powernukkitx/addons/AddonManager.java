@@ -4,6 +4,7 @@ import org.powernukkitx.Server;
 import org.powernukkitx.addons.parser.BehaviorBlockParser;
 import org.powernukkitx.addons.parser.BehaviorItemParser;
 import org.powernukkitx.addons.parser.BehaviorRecipeParser;
+import org.powernukkitx.addons.parser.ItemCatalogParser;
 import org.powernukkitx.addons.parser.LootTableParser;
 import org.powernukkitx.loot.LootTableRegistry;
 import org.powernukkitx.registry.Registries;
@@ -54,8 +55,7 @@ public final class AddonManager {
             "entities/", "entities",
             "spawn_rules/", "spawn rules",
             "trading/", "trading",
-            "functions/", "functions",
-            "item_catalog/", "item catalog"
+            "functions/", "functions"
     );
 
     @Getter
@@ -65,6 +65,7 @@ public final class AddonManager {
     private final BehaviorItemParser itemParser = new BehaviorItemParser(featureTracker);
     private final BehaviorRecipeParser recipeParser = new BehaviorRecipeParser(featureTracker);
     private final LootTableParser lootTableParser = new LootTableParser(featureTracker);
+    private final ItemCatalogParser itemCatalogParser = new ItemCatalogParser(featureTracker);
 
     /**
      * Parses every loaded behaviour pack and registers its content.
@@ -95,6 +96,7 @@ public final class AddonManager {
                 blockCount += loadBlocks(pack, zip, entries.getOrDefault("blocks/", List.of()));
                 itemCount += loadItems(pack, zip, entries.getOrDefault("items/", List.of()));
                 recipeCount += loadRecipes(pack, zip, entries.getOrDefault("recipes/", List.of()));
+                loadItemCatalog(pack, zip, entries.getOrDefault("item_catalog/", List.of()));
                 lootTableCount += loadLootTables(pack, zip, entries.getOrDefault("loot_tables/", List.of()));
                 trackUnsupportedSections(pack, entries);
             } catch (IOException e) {
@@ -180,6 +182,22 @@ public final class AddonManager {
             }
         }
         return count;
+    }
+
+    /**
+     * The catalog sorts the pack's items and blocks into creative groups, so it is read once they are
+     * registered.
+     */
+    private void loadItemCatalog(ResourcePack pack, ZipFile zip, List<String> entryNames) {
+        for (String entryName : entryNames) {
+            if (!entryName.toLowerCase(Locale.ENGLISH).endsWith(".json")) {
+                continue;
+            }
+            JsonObject root = readJson(zip, entryName, pack.getPackName());
+            if (root != null) {
+                itemCatalogParser.parse(pack.getPackName(), root);
+            }
+        }
     }
 
     /**

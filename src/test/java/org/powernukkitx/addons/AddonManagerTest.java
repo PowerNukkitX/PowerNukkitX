@@ -6,6 +6,7 @@ import org.powernukkitx.item.Item;
 import org.powernukkitx.item.ItemID;
 import org.powernukkitx.item.customitem.ItemDataDriven;
 import org.powernukkitx.recipe.ShapedRecipe;
+import org.powernukkitx.registry.CreativeItemRegistry;
 import org.powernukkitx.registry.ItemRegistry;
 import org.powernukkitx.registry.Registries;
 import org.powernukkitx.resourcepacks.ResourcePackManager;
@@ -67,6 +68,11 @@ class AddonManagerTest {
                 { "format_version": "1.21.0", "minecraft:block": { "description": { "identifier": "pnxtest:pipeline_lamp" },
                   "components": { "minecraft:light_emission": 12, "minecraft:loot": "loot_tables/blocks/pipeline_lamp.json" } } }
                 """);
+        entries.put("item_catalog/crafting_item_catalog.json", """
+                { "format_version": "1.21.90", "minecraft:crafting_items_catalog": { "categories": [ { "category_name": "equipment",
+                  "groups": [ { "group_identifier": { "icon": "pnxtest:pipeline_wrench", "name": "pnxtest:itemGroup.name.tools" },
+                    "items": [ "pnxtest:pipeline_wrench" ] } ] } ] } }
+                """);
         entries.put("recipes/wrench.json", """
                 { "format_version": "1.12", "minecraft:recipe_shaped": {
                   "description": { "identifier": "pnxtest:pipeline_wrench_recipe" },
@@ -83,7 +89,8 @@ class AddonManagerTest {
                   "components": {} } }
                 """);
         entries.put("items/wrench.json", """
-                { "format_version": "1.21.0", "minecraft:item": { "description": { "identifier": "pnxtest:pipeline_wrench" },
+                { "format_version": "1.21.0", "minecraft:item": { "description": { "identifier": "pnxtest:pipeline_wrench",
+                  "menu_category": { "category": "equipment" } },
                   "components": { "minecraft:max_stack_size": 1 } } }
                 """);
         writePack(entries);
@@ -97,6 +104,8 @@ class AddonManagerTest {
         assertTrue(Registries.RECIPE.getCraftingPacket().getShapedRecipes().stream()
                         .anyMatch(payload -> "pnxtest:pipeline_wrench_recipe".equals(payload.getRecipeId())),
                 "the crafting data packet must be rebuilt to include pack recipes");
+        assertEquals("pnxtest:itemGroup.name.tools", CreativeItemRegistry.ITEM_GROUP_MAP.get("pnxtest:pipeline_wrench"),
+                "the catalog must move the item into its group");
         Item[] drops = Registries.BLOCK.get("pnxtest:pipeline_lamp").getDrops(Item.AIR);
         assertEquals(1, drops.length);
         assertEquals(ItemID.GLOWSTONE_DUST, drops[0].getId());
