@@ -4894,6 +4894,8 @@ public class Level implements Metadatable, LiquidUpdateAccess {
         } else {
             Block blockToPlace = item.getBlockPlacerTargetBlock();
             if (blockToPlace == null) return null;
+            List<String> useOn = item.getCustomDefinition().getBlockPlacerData().useOn();
+            if (!useOn.isEmpty() && !useOn.contains(target.getId())) return null;
             hand = blockToPlace;
             hand.position(block);
         }

@@ -48,6 +48,10 @@ public final class ServerSettings extends OkaeriConfig {
     @CustomKey("performance-settings")
     private PerformanceSettings performanceSettings = new PerformanceSettings();
 
+    @Comment("pnx.settings.addon")
+    @CustomKey("addon-settings")
+    private AddonSettings addonSettings = new AddonSettings();
+
     @Comment("pnx.settings.version")
     @CustomKey("config")
     private ConfigSettings configSettings = new ConfigSettings();
