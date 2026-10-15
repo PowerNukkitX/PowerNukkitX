@@ -7,6 +7,9 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.powernukkitx.network.protocol.types.BannerPattern;
+import org.powernukkitx.network.protocol.types.BannerPatternType;
+import org.powernukkitx.utils.DyeColor;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -78,8 +81,15 @@ public final class LootTableParser {
         if (entries.isEmpty()) {
             return null;
         }
+        LootTable.Tiers tiers = null;
+        JsonElement tiersElement = poolJson.get("tiers");
+        if (tiersElement != null && tiersElement.isJsonObject()) {
+            JsonObject tiersJson = tiersElement.getAsJsonObject();
+            tiers = new LootTable.Tiers(asInt(tiersJson.get("initial_range"), 1), asInt(tiersJson.get("bonus_rolls"), 0),
+                    asFloat(tiersJson.get("bonus_chance"), 0f));
+        }
         return new LootTable.Pool(parseRange(poolJson.get("rolls"), LootTable.NumberRange.ONE),
-                parseConditions(packName, poolJson.get("conditions")), entries);
+                parseConditions(packName, poolJson.get("conditions")), entries, tiers);
     }
 
     private @Nullable LootTable.Entry parseEntry(String packName, JsonObject entryJson) {
@@ -144,6 +154,18 @@ public final class LootTableParser {
                     case "set_ominous_bottle_amplifier" -> itemFunctions.add(new LootTable.SetOminousBottleAmplifier(
                             parseRange(function.get("amplifier"), new LootTable.NumberRange(0, 0))));
                     case "random_dye" -> itemFunctions.add(new LootTable.RandomDye());
+                    case "enchant_random_gear" -> itemFunctions.add(new LootTable.EnchantRandomGear(asFloat(function.get("chance"), 1f)));
+                    case "random_block_state" -> {
+                        String state = optString(function, "block_state");
+                        if (!state.isEmpty()) {
+                            itemFunctions.add(new LootTable.RandomBlockState(state, parseRange(function.get("values"), new LootTable.NumberRange(0, 0))));
+                        }
+                    }
+                    case "set_banner_details" -> itemFunctions.add(bannerDetails(function));
+                    case "set_book_contents" -> itemFunctions.add(new LootTable.SetBookContents(optString(function, "author"),
+                            optString(function, "title"), pages(function.get("pages"))));
+                    case "set_armor_trim" -> itemFunctions.add(new LootTable.SetArmorTrim(optString(function, "material"),
+                            optString(function, "pattern")));
                     case "explosion_decay", "furnace_smelt" -> {
                     }
                     default -> tracker.reportUnsupported(packName, "loot-function", functionName);
@@ -226,6 +248,67 @@ public final class LootTableParser {
         JsonObject range = element.isJsonObject() ? element.getAsJsonObject() : new JsonObject();
         return new LootTable.NumberRange(asInt(range.get("range_min"), Integer.MIN_VALUE),
                 asInt(range.get("range_max"), Integer.MAX_VALUE));
+    }
+
+    private static LootTable.SetBannerDetails bannerDetails(JsonObject function) {
+        JsonElement typeElement = function.get("type");
+        int type = typeElement != null && typeElement.isJsonPrimitive() && typeElement.getAsJsonPrimitive().isString()
+                ? ("illager_captain".equals(typeElement.getAsString()) ? 1 : 0)
+                : asInt(typeElement, 0);
+        List<BannerPattern> patterns = new ArrayList<>();
+        JsonElement patternsElement = function.get("patterns");
+        if (patternsElement != null && patternsElement.isJsonArray()) {
+            for (JsonElement entry : patternsElement.getAsJsonArray()) {
+                if (!entry.isJsonObject()) {
+                    continue;
+                }
+                BannerPatternType pattern = bannerPattern(optString(entry.getAsJsonObject(), "pattern"));
+                DyeColor color = dyeColor(optString(entry.getAsJsonObject(), "color"));
+                if (pattern != null && color != null) {
+                    patterns.add(new BannerPattern(pattern, color));
+                }
+            }
+        }
+        return new LootTable.SetBannerDetails(type, dyeColor(optString(function, "base_color")), patterns);
+    }
+
+    private static @Nullable BannerPatternType bannerPattern(String name) {
+        for (BannerPatternType type : BannerPatternType.values()) {
+            if (type.name().equalsIgnoreCase(name) || type.getCode().equals(name)) {
+                return type;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Bedrock names colours the legacy way in loot tables, so {@code silver} is light grey.
+     */
+    private static @Nullable DyeColor dyeColor(String name) {
+        if (name.isEmpty()) {
+            return null;
+        }
+        String normalized = "silver".equalsIgnoreCase(name) ? "light_gray" : name;
+        for (DyeColor color : DyeColor.values()) {
+            if (color.name().equalsIgnoreCase(normalized) || color.getName().equalsIgnoreCase(normalized)
+                    || color.getDyeName().equalsIgnoreCase(normalized)) {
+                return color;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Pages are text, or rawtext objects kept as their JSON, which the client renders.
+     */
+    private static List<String> pages(@Nullable JsonElement element) {
+        List<String> pages = new ArrayList<>();
+        if (element != null && element.isJsonArray()) {
+            for (JsonElement page : element.getAsJsonArray()) {
+                pages.add(page.isJsonPrimitive() ? page.getAsString() : page.toString());
+            }
+        }
+        return pages;
     }
 
     private static LootTable.SetDamage setDamage(@Nullable JsonElement element) {

@@ -1,12 +1,19 @@
 package org.powernukkitx.loot;
 
 import org.powernukkitx.Server;
+import org.powernukkitx.block.Block;
+import org.powernukkitx.block.property.type.BlockPropertyType;
 import org.powernukkitx.entity.effect.PotionType;
 import org.powernukkitx.item.Item;
+import org.powernukkitx.item.ItemBanner;
+import org.powernukkitx.item.ItemBlock;
 import org.powernukkitx.item.ItemID;
+import org.powernukkitx.item.ItemWrittenBook;
 import org.powernukkitx.item.enchantment.Enchantment;
 import org.powernukkitx.item.enchantment.EnchantmentHelper;
 import org.powernukkitx.item.ItemColorArmor;
+import org.powernukkitx.network.protocol.types.ArmorTrim;
+import org.powernukkitx.network.protocol.types.BannerPattern;
 import org.powernukkitx.utils.DyeColor;
 import org.powernukkitx.utils.random.NukkitRandom;
 
@@ -227,7 +234,8 @@ public record LootTable(List<Pool> pools) {
      * Changes an item an entry yields, after its count, data, name and lore are applied.
      */
     public sealed interface ItemFunction permits SpecificEnchants, EnchantRandomly, EnchantWithLevels,
-            RandomAuxValue, SetDamage, LootingEnchant, SetPotion, SetActorId, SetOminousBottleAmplifier, RandomDye {
+            RandomAuxValue, SetDamage, LootingEnchant, SetPotion, SetActorId, SetOminousBottleAmplifier, RandomDye,
+            EnchantRandomGear, RandomBlockState, SetBannerDetails, SetBookContents, SetArmorTrim {
 
         /**
          * @param item   the item so far; may be changed in place
@@ -429,6 +437,111 @@ public record LootTable(List<Pool> pools) {
     }
 
     /**
+     * With the given chance, enchants the item as equipment a mob spawns with is enchanted: like the
+     * enchanting table at a level between 5 and 22, treasure enchantments excluded.
+     */
+    public record EnchantRandomGear(float chance) implements ItemFunction {
+
+        @Override
+        public @NotNull Item apply(@NotNull Item item, @NotNull Random random, @Nullable Item tool) {
+            if (random.nextFloat() >= chance) {
+                return item;
+            }
+            return new EnchantWithLevels(new NumberRange(5, 22), false).apply(item, random, tool);
+        }
+    }
+
+    /**
+     * Sets a block item's state to a value drawn from a range.
+     *
+     * @param state  the block state name
+     * @param values the range the value is drawn from
+     */
+    public record RandomBlockState(@NotNull String state, @NotNull NumberRange values) implements ItemFunction {
+
+        @Override
+        public @NotNull Item apply(@NotNull Item item, @NotNull Random random, @Nullable Item tool) {
+            if (!item.canBePlaced()) {
+                return item;
+            }
+            Block block = item.getBlock();
+            for (BlockPropertyType<?> type : block.getProperties().getPropertyTypeSet()) {
+                if (type.getName().equals(state)) {
+                    try {
+                        block.setPropertyValue(type.tryCreateValue(values.sample(random)));
+                    } catch (IllegalArgumentException e) {
+                        return item;
+                    }
+                    Item result = new ItemBlock(block);
+                    result.setCount(item.getCount());
+                    return result;
+                }
+            }
+            return item;
+        }
+    }
+
+    /**
+     * Sets a banner's type, base colour and patterns.
+     *
+     * @param type      0 for a default banner, 1 for the illager captain's
+     * @param baseColor the base colour, or null to keep the banner's
+     * @param patterns  the patterns, at most 6
+     */
+    public record SetBannerDetails(int type, @Nullable DyeColor baseColor, @NotNull List<BannerPattern> patterns) implements ItemFunction {
+
+        public SetBannerDetails {
+            patterns = List.copyOf(patterns.subList(0, Math.min(6, patterns.size())));
+        }
+
+        @Override
+        public @NotNull Item apply(@NotNull Item item, @NotNull Random random, @Nullable Item tool) {
+            if (item instanceof ItemBanner banner) {
+                banner.setType(type);
+                if (baseColor != null) {
+                    banner.setBaseColor(baseColor);
+                }
+                if (type == 0) {
+                    patterns.forEach(banner::addPattern);
+                }
+            }
+            return item;
+        }
+    }
+
+    /**
+     * Writes a written book's author, title and pages.
+     */
+    public record SetBookContents(@NotNull String author, @NotNull String title, @NotNull List<String> pages) implements ItemFunction {
+
+        public SetBookContents {
+            pages = List.copyOf(pages);
+        }
+
+        @Override
+        public @NotNull Item apply(@NotNull Item item, @NotNull Random random, @Nullable Item tool) {
+            if (item instanceof ItemWrittenBook book) {
+                return book.writeBook(author, title, pages.toArray(new String[0]));
+            }
+            return item;
+        }
+    }
+
+    /**
+     * Applies an armour trim.
+     *
+     * @param material the trim material, such as {@code netherite}
+     * @param pattern  the trim pattern, such as {@code wayfinder}
+     */
+    public record SetArmorTrim(@NotNull String material, @NotNull String pattern) implements ItemFunction {
+
+        @Override
+        public @NotNull Item apply(@NotNull Item item, @NotNull Random random, @Nullable Item tool) {
+            return new ArmorTrim(pattern, material).applyTo(item);
+        }
+    }
+
+    /**
      * Enchanting a plain book gives an enchanted book, as in Bedrock.
      */
     private static Item enchantable(Item item) {
@@ -453,15 +566,28 @@ public record LootTable(List<Pool> pools) {
     }
 
     /**
+     * Picks entries by tier instead of weight: the entries are ordered from lowest to highest tier, a roll
+     * starts at a random tier below {@code initialRange}, and each of {@code bonusRolls} attempts moves it up
+     * one tier with probability {@code bonusChance}, up to the last entry.
+     */
+    public record Tiers(int initialRange, int bonusRolls, float bonusChance) {
+    }
+
+    /**
      * @param rolls      how many entries to pick per generation
      * @param conditions requirements for the pool to be rolled at all; empty when it always rolls
      * @param entries    the candidates; an empty list makes the pool generate nothing
+     * @param tiers      how entries are picked by tier, or null to pick them by weight
      */
-    public record Pool(NumberRange rolls, List<Condition> conditions, List<Entry> entries) {
+    public record Pool(NumberRange rolls, List<Condition> conditions, List<Entry> entries, @Nullable Tiers tiers) {
 
         public Pool {
             conditions = List.copyOf(conditions);
             entries = List.copyOf(entries);
+        }
+
+        public Pool(NumberRange rolls, List<Condition> conditions, List<Entry> entries) {
+            this(rolls, conditions, entries, null);
         }
     }
 
@@ -555,7 +681,7 @@ public record LootTable(List<Pool> pools) {
             }
             int rolls = pool.rolls().sample(random);
             for (int i = 0; i < rolls; i++) {
-                Entry entry = pickWeighted(pool.entries(), random, tool);
+                Entry entry = pool.tiers() != null ? pickTiered(pool, random, tool) : pickWeighted(pool.entries(), random, tool);
                 if (entry == null) {
                     continue;
                 }
@@ -588,6 +714,22 @@ public record LootTable(List<Pool> pools) {
             }
         }
         return true;
+    }
+
+    private static @Nullable Entry pickTiered(Pool pool, Random random, @Nullable Item tool) {
+        List<Entry> entries = pool.entries();
+        Tiers tiers = pool.tiers();
+        if (entries.isEmpty()) {
+            return null;
+        }
+        int tier = random.nextInt(Math.max(1, tiers.initialRange()));
+        for (int i = 0; i < tiers.bonusRolls(); i++) {
+            if (random.nextFloat() < tiers.bonusChance()) {
+                tier++;
+            }
+        }
+        Entry entry = entries.get(Math.min(tier, entries.size() - 1));
+        return allHold(entry.conditions(), random, tool) ? entry : null;
     }
 
     private static @Nullable Entry pickWeighted(List<Entry> entries, Random random, @Nullable Item tool) {

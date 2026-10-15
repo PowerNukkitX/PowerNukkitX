@@ -112,7 +112,7 @@ class LootTableParserTest {
     void reportsUnsupportedFunctionWithoutLosingEntry() {
         LootTable table = parse("""
                 { "pools": [ { "rolls": 1, "entries": [ { "type": "item", "name": "minecraft:diamond",
-                  "functions": [ { "function": "set_book_contents" } ] } ] } ] }
+                  "functions": [ { "function": "exploration_map" } ] } ] } ] }
                 """);
 
         assertEquals(1, table.generate(new Random(1)).size());
@@ -213,6 +213,36 @@ class LootTableParserTest {
                 """);
 
         assertEquals(1, always.generate(new Random(1)).size());
+        assertTrue(tracker.isEmpty());
+    }
+
+    @Test
+    void tiersPickByPosition() {
+        LootTable table = parse("""
+                { "pools": [ { "rolls": 1, "tiers": { "initial_range": 1, "bonus_rolls": 3, "bonus_chance": 1.0 },
+                  "entries": [ { "type": "item", "name": "minecraft:stick" }, { "type": "item", "name": "minecraft:diamond" },
+                               { "type": "item", "name": "minecraft:diamond_hoe" } ] } ] }
+                """);
+
+        assertEquals(ItemID.DIAMOND_HOE, table.generate(new Random(1)).getFirst().getId(), "every bonus roll succeeds, capped at the last tier");
+    }
+
+    @Test
+    void appliesBannerBookAndTrim() {
+        LootTable table = parse("""
+                { "pools": [ { "rolls": 1, "entries": [ { "type": "item", "name": "minecraft:written_book",
+                    "functions": [ { "function": "set_book_contents", "author": "Steve", "title": "Notes", "pages": ["one", "two"] } ] } ] },
+                  { "rolls": 1, "entries": [ { "type": "item", "name": "minecraft:diamond_chestplate",
+                    "functions": [ { "function": "set_armor_trim", "material": "netherite", "pattern": "wayfinder" } ] } ] },
+                  { "rolls": 1, "entries": [ { "type": "item", "name": "minecraft:banner",
+                    "functions": [ { "function": "set_banner_details", "type": 0, "base_color": "silver",
+                      "patterns": [ { "color": "black", "pattern": "gradient" } ] } ] } ] } ] }
+                """);
+
+        java.util.List<Item> loot = table.generate(new Random(1));
+        assertEquals("Steve", ((org.powernukkitx.item.ItemWrittenBook) loot.get(0)).getAuthor());
+        assertTrue(org.powernukkitx.network.protocol.types.ArmorTrim.has(loot.get(1)));
+        assertEquals(1, ((org.powernukkitx.item.ItemBanner) loot.get(2)).getPatternsSize());
         assertTrue(tracker.isEmpty());
     }
 }
