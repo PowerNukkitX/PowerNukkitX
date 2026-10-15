@@ -1,5 +1,6 @@
 package org.powernukkitx.block.definition;
 
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.experimental.SuperBuilder;
 
@@ -17,6 +18,7 @@ public class BlockDefinition {
     boolean canBeFlowedInto;
     boolean canBeActivated;
     boolean hasEntityCollision;
+    @Getter(AccessLevel.NONE)
     boolean hasEntityStepSensor;
     boolean canPassThrough;
     boolean canBePushed;
@@ -50,4 +52,9 @@ public class BlockDefinition {
     double resistance;
     double friction;
     double passableFrictionFactor;
+
+    // lombok would name this isHasEntityStepSensor(), which reads like a typo
+    public boolean hasEntityStepSensor() {
+        return hasEntityStepSensor;
+    }
 }

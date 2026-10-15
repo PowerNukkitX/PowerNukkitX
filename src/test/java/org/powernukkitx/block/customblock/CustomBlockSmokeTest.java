@@ -91,7 +91,7 @@ public class CustomBlockSmokeTest {
 
         Assertions.assertEquals("test:tiny_block", def.identifier());
         Assertions.assertNotNull(def.nbt());
-        Assertions.assertTrue(def.isHasEntityStepSensor());
+        Assertions.assertTrue(def.hasEntityStepSensor());
         Assertions.assertNotNull(def.tickSettings());
         Assertions.assertTrue(def.nbt().getCompound("components").contains("minecraft:display_name"));
 
