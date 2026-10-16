@@ -33,10 +33,11 @@ public class ResourcePackClientResponseHandler implements PacketHandler<Resource
             case DOWNLOADING -> {
                 for (String downloadingPack : packet.getDownloadingPacks()) {
                     final UUID uuid;
-                    if (downloadingPack.contains("_")) {
-                        uuid = UUID.fromString(downloadingPack.split("_")[0]);
-                    } else {
-                        uuid = UUID.fromString(downloadingPack);
+                    try {
+                        uuid = UUID.fromString(downloadingPack.contains("_") ? downloadingPack.split("_")[0] : downloadingPack);
+                    } catch (IllegalArgumentException e) {
+                        holder.disconnect(DisconnectFailReason.RESOURCE_PACK_LOADING_FAILED);
+                        return;
                     }
                     final ResourcePack resourcePack = server.getResourcePackManager().getPackById(uuid);
                     if (resourcePack == null) {

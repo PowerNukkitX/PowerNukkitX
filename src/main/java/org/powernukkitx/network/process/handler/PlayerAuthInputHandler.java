@@ -227,7 +227,7 @@ public class PlayerAuthInputHandler implements PacketHandler<PlayerAuthInputPack
     private static void handleBlockActionsAndItemStackRequest(PlayerAuthInputPacket packet, PlayerSessionHolder holder, Server server, Player player) {
         // the override toggle ensures that an external source implements server authoritative block breaking, defaults to false
         if (!packet.getPlayerBlockActions().isEmpty() && !server.getSettings().miscSettings().overrideServerAuthBlockBreaking()) {
-            final PlayerHandle playerHandle = new PlayerHandle(player);
+            final PlayerHandle playerHandle = holder.getPlayerHandle();
             for (PlayerBlockActionData action : packet.getPlayerBlockActions()) {
                 //hack Since version 1.19.70, the Creative Mode Sword client no longer sends PREDITIC_DESTROY_BLOCK, but still sends START_DESTROY_BLOCK, filtering out
                 if (player.getInventory().getItemInMainHand().isSword() && player.isCreative() && action.getPlayerActionType() == PlayerActionType.START_DESTROY_BLOCK) {

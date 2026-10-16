@@ -464,7 +464,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
      */
     protected EnumSet<ClientInputLockComponent> clientInputLocks = EnumSet.noneOf(ClientInputLockComponent.class);
 
-    private final Map<Long, Runnable> ackRunnables = new HashMap<>();
+    private final Map<Long, Runnable> ackRunnables = new ConcurrentHashMap<>();
 
     private final Set<String> declaredSoftEnums = ConcurrentHashMap.newKeySet();
 
@@ -7841,6 +7841,6 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         if (runnable == null) {
             return;
         }
-        runnable.run();
+        this.getServer().getScheduler().scheduleTask(InternalPlugin.INSTANCE, runnable);
     }
 }
