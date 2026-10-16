@@ -16,14 +16,19 @@ public class SetPlayerGameTypeHandler implements PacketHandler<SetPlayerGameType
     @Override
     public void handle(SetPlayerGameTypePacket packet, PlayerSessionHolder holder, Server server) {
         PlayerHandle playerHandle = holder.getPlayerHandle();
-        if (packet.getPlayerGameType().ordinal() != playerHandle.player.gamemode && playerHandle.player.hasPermission("nukkit.command.gamemode")) {
-            playerHandle.player.setGamemode(switch (packet.getPlayerGameType()) {
-                case SURVIVAL, CREATIVE, ADVENTURE -> packet.getPlayerGameType().ordinal();
-                case SPECTATOR -> 3;
-                case DEFAULT -> playerHandle.player.getServer().getDefaultGamemode();
-                default -> throw new IllegalStateException("Unexpected value: " + packet.getPlayerGameType());
-            });
-            Command.broadcastCommandMessage(playerHandle.player, new TranslationContainer("commands.gamemode.success.self", Server.getGamemodeString(playerHandle.player.gamemode)));
+        if (packet.getPlayerGameType().ordinal() == playerHandle.player.gamemode || !playerHandle.player.hasPermission("nukkit.command.gamemode")) {
+            return;
         }
+        final int gamemode = switch (packet.getPlayerGameType()) {
+            case SURVIVAL, CREATIVE, ADVENTURE -> packet.getPlayerGameType().ordinal();
+            case SPECTATOR -> 3;
+            case DEFAULT -> playerHandle.player.getServer().getDefaultGamemode();
+            default -> -1;
+        };
+        if (gamemode == -1) {
+            return;
+        }
+        playerHandle.player.setGamemode(gamemode);
+        Command.broadcastCommandMessage(playerHandle.player, new TranslationContainer("commands.gamemode.success.self", Server.getGamemodeString(playerHandle.player.gamemode)));
     }
 }

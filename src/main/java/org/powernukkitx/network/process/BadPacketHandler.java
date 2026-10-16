@@ -23,18 +23,24 @@ public class BadPacketHandler extends ChannelInboundHandlerAdapter {
             if (throwable instanceof PacketSerializeException e) {
                 for (final Player player : Server.getInstance().getOnlinePlayers().values()) {
                     if (player.getSession().getSocketAddress().equals(this.session.getSocketAddress())) {
-                        final PlayerHackDetectedEvent event = new PlayerHackDetectedEvent(
-                            player,
-                            PlayerHackDetectedEvent.HackType.BAD_PACKET
-                        );
-
-                        Server.getInstance().getPluginManager().callEvent(event);
-
-                        if (event.isKick()) {
-                            player.close("Bad Packet");
-                        }
-
                         Server.getInstance().getLogger().warning(player.getName() + " sent a bad packet", e);
+
+                        Server.getInstance().getScheduler().scheduleTask(() -> {
+                            if (!player.isConnected()){
+                                return;
+                            }
+
+                            final PlayerHackDetectedEvent event = new PlayerHackDetectedEvent(
+                                player,
+                                PlayerHackDetectedEvent.HackType.BAD_PACKET
+                            );
+
+                            Server.getInstance().getPluginManager().callEvent(event);
+
+                            if (event.isKick()) {
+                                player.close("Bad Packet");
+                            }
+                        });
                         return;
                     }
                 }

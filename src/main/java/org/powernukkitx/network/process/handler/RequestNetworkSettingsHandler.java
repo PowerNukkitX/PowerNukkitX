@@ -60,12 +60,14 @@ public class RequestNetworkSettingsHandler implements PacketHandler<RequestNetwo
 
     private boolean addressBanCheck(Server server, BedrockServerSession session) {
         final String address = ((InetSocketAddress) session.getSocketAddress()).getAddress().getHostAddress();
-        if (server.getIPBans().isBanned(address)) {
-            final String reason = server.getIPBans().getEntires().get(address).getReason();
-            session.close(!reason.isEmpty() ? "You are banned. Reason: " + reason : "You are banned");
-            return true;
+        if (!server.getIPBans().isBanned(address)){
+            return false;
         }
-        return false;
+
+        final var entry = server.getIPBans().getEntires().get(address);
+        final String reason = entry != null ? entry.getReason() : null;
+        session.close(reason != null && !reason.isEmpty() ? "You are banned. Reason: " + reason : "You are banned");
+        return true;
     }
 
     @Override
