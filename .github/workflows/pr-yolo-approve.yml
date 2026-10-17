@@ -52,7 +52,7 @@ jobs:
 
       - name: Generate bot token
         if: steps.auth.outputs.allowed == 'true'
-        uses: actions/create-github-app-token@v2
+        uses: actions/create-github-app-token@v3
         id: app-token
         with:
           app-id: ${{ secrets.PNX_BOT_APP_ID }}
