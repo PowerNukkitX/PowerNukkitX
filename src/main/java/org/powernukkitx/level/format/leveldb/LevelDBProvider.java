@@ -16,6 +16,7 @@ import org.powernukkitx.level.format.ChunkSection;
 import org.powernukkitx.level.format.IChunk;
 import org.powernukkitx.level.format.LevelConfig;
 import org.powernukkitx.level.format.LevelProvider;
+import org.powernukkitx.level.format.palette.Palette;
 import org.powernukkitx.math.BlockVector3;
 import org.powernukkitx.math.BlockFace;
 import org.powernukkitx.math.Vector3;
@@ -361,11 +362,15 @@ public class LevelDBProvider implements LevelProvider {
                     }
                 }
 
-                // Write biomes
-                for (int i = 0; i < total; i++) {
-                    final ChunkSection section = sections[i];
+                // Write biomes. Unlike blocks, the reader expects one palette per section of the whole
+                // dimension, so anything above the top section just repeats the one below it
+                final int biomeSectionCount = unsafeChunk.getDimensionData().getChunkSectionCount();
+                for (int i = 0; i < biomeSectionCount; i++) {
+                    final ChunkSection section = i < total ? sections[i] : null;
                     if (section != null) {
                         section.biomes().writeToNetwork(byteBuf, Integer::intValue);
+                    } else if (i >= total && i > 0) {
+                        byteBuf.writeByte(Palette.COPY_LAST_FLAG_HEADER);
                     } else {
                         byteBuf.writeBytes(emptyBiomePayload());
                     }
