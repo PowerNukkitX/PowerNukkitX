@@ -110,6 +110,11 @@ public record PotionType(String name, String stringId, int id, int level, Potion
 
     public static final PotionType INFESTED = new PotionType("Infested", "minecraft:infested", 46, PotionEffectDefinition.INFESTED);
 
+    // The freezing effect is not implemented yet, so drinking one does nothing for now
+    public static final PotionType FREEZING = new PotionType("Freezing", "minecraft:freezing", 47, PotionEffectDefinition.EMPTY);
+
+    public static final PotionType FREEZING_LONG = new PotionType("Long Freezing", "minecraft:long_freezing", 48, PotionEffectDefinition.EMPTY);
+
     public List<Effect> getEffects(PotionApplicationMode mode) {
         return effects.getEffects(mode);
     }
