@@ -247,6 +247,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     /// static fields
     public boolean playedBefore;
     public boolean spawned = false;
+    public boolean motionSent;
     public volatile boolean locallyInitialized = false;
     public volatile boolean loggedIn = false;
     public final HashSet<String> achievements = new HashSet<>();
@@ -3695,6 +3696,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
                 packet.setTargetRuntimeID(this.runtimeId());
                 packet.setMotion(Vector3f.from(this.motionX, this.motionY, this.motionZ));
                 this.sendPacket(packet);  // Send it to self
+                this.motionSent = true;
             }
             if (this.motionY > 0) {
                 //todo: check this
@@ -3828,9 +3830,11 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
             }
 
             if (this.motionX != 0 || this.motionY != 0 || this.motionZ != 0) {
-                this.setMotion(new Vector3(motionX, motionY, motionZ));
+                if (!this.motionSent) this.setMotion(new Vector3(motionX, motionY, motionZ));
                 motionX = motionY = motionZ = 0;
             }
+
+            this.motionSent = false;
 
             while (!this.clientMovements.isEmpty()) {
                 this.handleMovement(this.clientMovements.poll());
