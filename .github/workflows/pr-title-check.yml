@@ -15,7 +15,7 @@ jobs:
       # no checkout here on purpose, this runs with base repo secrets for fork PRs too
       - name: Generate bot token
         id: app-token
-        uses: actions/create-github-app-token@v2
+        uses: actions/create-github-app-token@v3
         with:
           app-id: ${{ secrets.PNX_BOT_APP_ID }}
           private-key: ${{ secrets.PNX_BOT_PRIVATE_KEY }}
