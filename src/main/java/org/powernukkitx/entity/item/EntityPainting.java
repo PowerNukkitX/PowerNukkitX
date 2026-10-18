@@ -275,6 +275,7 @@ public class EntityPainting extends EntityHanging {
         BOUQUET("bouquet", 3, 3, predicateFor3WidthHeight),
         CAVEBIRD("cavebird", 3, 3, predicateFor3WidthHeight),
         COTAN("cotan", 3, 3, predicateFor3WidthHeight),
+        DENNIS("dennis", 3, 3, predicateFor3WidthHeight),
         ENDBOSS("endboss", 3, 3, predicateFor3WidthHeight),
         FERN("fern", 3, 3, predicateFor3WidthHeight),
         OWLEMONS("owlemons", 3, 3, predicateFor3WidthHeight),
