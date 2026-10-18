@@ -99,6 +99,18 @@ public final class ActorMigrationExecutor {
                     }
                 }
 
+                if ("minecraft:painting".equals(tag.getString("identifier"))) {
+                    boolean hadLegacyMotive = tag.contains("Motive");
+                    if (!LevelDBActorV3_1_0Migration.migrateLegacyPaintingMotif(tag)) {
+                        batch.delete(LevelDBActorStorage.getActorKey(actorStorageKey));
+                        continue;
+                    }
+                    if (hadLegacyMotive) {
+                        batch.put(LevelDBActorStorage.getActorKey(actorStorageKey),
+                                LevelDBMigrationChunkSerializer.writeLittleEndianCompound(tag));
+                    }
+                }
+
                 if (uniqueActorStorageKeys.add(actorStorageKey)) {
                     actorStorageKeys.add(actorStorageKey);
                 }
