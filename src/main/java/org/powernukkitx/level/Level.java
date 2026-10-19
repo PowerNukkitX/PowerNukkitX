@@ -1714,6 +1714,109 @@ public class Level implements Metadatable, LiquidUpdateAccess {
         }
     }
 
+    /**
+     * Creates a temporary physical chunk view for prewarming persisted chunks.
+     * The caller must close the view when the destination player view takes ownership.
+     *
+     * @return temporary chunk prewarm view
+     */
+    @ApiStatus.Internal
+    public ChunkPrewarmView beginChunkPrewarm() {
+        Preconditions.checkState(!this.isClosing(), "Level is closing");
+        return new ChunkPrewarmView(this);
+    }
+
+    /**
+     * Temporarily retains existing chunks for runtime CFRD and lighting initialization.
+     *
+     * @author Curse
+     */
+    @ApiStatus.Internal
+    public static final class ChunkPrewarmView implements AutoCloseable {
+        private final Level level;
+        private final LongOpenHashSet retained = new LongOpenHashSet();
+        private boolean closed;
+
+        private ChunkPrewarmView(Level level) {
+            this.level = level;
+        }
+
+        /**
+         * Retains a storage-resolved chunk without requesting new terrain generation.
+         *
+         * @return true if the persisted chunk was retained
+         */
+        public synchronized boolean retainLoadedChunk(int x, int z) {
+            if (closed || level.isClosing()) return false;
+
+            long hash = Level.chunkHash(x, z);
+            Chunk chunk;
+
+            synchronized (level) {
+                if (level.isClosing()) return false;
+
+                IChunk loaded = level.getChunkIfLoaded(x, z);
+                if (!(loaded instanceof Chunk candidate) || candidate.isDiscarded()
+                        || !candidate.isStorageResolved()
+                        || candidate.getGenerationState().getNativeId() < ChunkGenerationState.NEEDS_CFRD.getNativeId()) {
+                    return false;
+                }
+
+                if (!retained.add(hash)) return true;
+
+                synchronized (level.chunkViewReferences) {
+                    level.chunkViewReferences.addTo(hash, 1);
+                }
+                level.cancelUnloadChunkRequest(hash);
+                chunk = candidate;
+            }
+
+            try {
+                if (chunk.isGenerationComplete()) {
+                    chunk.setAvailable(true);
+                } else {
+                    level.chunkGenerationManager.onChunkViewAcquired(chunk);
+                    level.completeChunkViewAcquisition();
+                }
+                return true;
+            } catch (RuntimeException | Error e) {
+                retained.remove(hash);
+                level.releaseChunkView(hash);
+                throw e;
+            }
+        }
+
+        /**
+         * Returns whether a retained chunk can be published to the client.
+         *
+         * @return true if generation, lighting and lifecycle availability are ready
+         */
+        public synchronized boolean isReady(int x, int z) {
+            if (closed || !retained.contains(Level.chunkHash(x, z))) return false;
+
+            IChunk loaded = level.getChunkIfLoaded(x, z);
+            return loaded instanceof Chunk chunk
+                    && !chunk.isDiscarded()
+                    && chunk.isStorageResolved()
+                    && chunk.isInitiated()
+                    && chunk.isGenerationComplete()
+                    && chunk.isLightingReady()
+                    && chunk.isAvailable();
+        }
+
+        @Override
+        public synchronized void close() {
+            if (closed) return;
+            closed = true;
+
+            LongIterator iterator = retained.longIterator();
+            while (iterator.hasNext()) {
+                level.releaseChunkView(iterator.nextLong());
+            }
+            retained.clear();
+        }
+    }
+
     void retainChunkView(long hash) {
         boolean firstReference;
         synchronized (this.chunkViewReferences) {
