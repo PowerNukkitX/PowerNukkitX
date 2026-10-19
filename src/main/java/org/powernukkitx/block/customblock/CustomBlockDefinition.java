@@ -239,7 +239,7 @@ public class CustomBlockDefinition extends BlockDefinition {
         @Override
         public Builder friction(float value) {
             this.nbt.getCompound("components")
-                    .putCompound("minecraft:friction", new CompoundTag().putFloat("value", (float) value));
+                    .putCompound("minecraft:friction", new CompoundTag().putFloat("value", value));
             return super.friction(value);
         }
 
