@@ -1,7 +1,6 @@
 package org.powernukkitx.blockentity;
 
 import org.powernukkitx.Player;
-import org.powernukkitx.block.Block;
 import org.powernukkitx.block.BlockFrame;
 import org.powernukkitx.block.BlockID;
 import org.powernukkitx.entity.item.EntityItem;
@@ -89,9 +88,6 @@ public class BlockEntityItemFrame extends BlockEntitySpawnable {
 
     @Override
     public CompoundTag getSpawnCompound() {
-        if (!this.nbt.contains("Item")) {
-            this.setItem(new ItemBlock(Block.get(BlockID.AIR)), false);
-        }
         Item item = getItem();
         CompoundTag tag = super.getSpawnCompound();
 
