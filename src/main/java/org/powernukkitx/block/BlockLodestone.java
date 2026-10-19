@@ -27,8 +27,8 @@ import java.util.Objects;
 public class BlockLodestone extends BlockSolid implements BlockEntityHolder<BlockEntityLodestone> {
     public static final BlockProperties PROPERTIES = new BlockProperties(LODESTONE);
     public static final BlockDefinition DEFINITION = SOLID.toBuilder()
-            .hardness(2)
-            .resistance(3.5)
+            .hardness(2f)
+            .resistance(3.5f)
             .toolType(ItemTool.TYPE_PICKAXE)
             .toolTier(ItemTool.TIER_WOODEN)
             .canBePushed(false)

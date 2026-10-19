@@ -26,8 +26,8 @@ public class BlockCactus extends BlockTransparent implements BlockFlowerPot.Flow
     public static final BlockProperties PROPERTIES = new BlockProperties(CACTUS,
             AGE_16);
     public static final BlockDefinition DEFINITION = TRANSPARENT.toBuilder()
-            .hardness(0.4)
-            .resistance(2)
+            .hardness(0.4f)
+            .resistance(2f)
             .breaksWhenMoved(true)
             .sticksToPiston(false)
             .hasEntityCollision(true)

@@ -22,8 +22,8 @@ public class BlockStonecutterBlock extends BlockTransparent implements Faceable,
 
     public static final BlockProperties PROPERTIES = new BlockProperties(STONECUTTER_BLOCK, CommonBlockProperties.MINECRAFT_CARDINAL_DIRECTION);
     public static final BlockDefinition DEFINITION = TRANSPARENT.toBuilder()
-            .hardness(3.5)
-            .resistance(17.5)
+            .hardness(3.5f)
+            .resistance(17.5f)
             .toolType(ItemTool.TYPE_PICKAXE)
             .toolTier(ItemTool.TIER_WOODEN)
             .canBeActivated(true)

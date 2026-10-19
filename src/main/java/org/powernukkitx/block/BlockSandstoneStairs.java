@@ -9,8 +9,8 @@ import org.jetbrains.annotations.NotNull;
 public class BlockSandstoneStairs extends BlockStairs {
     public static final BlockProperties PROPERTIES = new BlockProperties(SANDSTONE_STAIRS, CommonBlockProperties.UPSIDE_DOWN_BIT, CommonBlockProperties.WEIRDO_DIRECTION, CommonBlockProperties.CORNER);
     public static final BlockDefinition DEFINITION = BlockStairs.DEFINITION.toBuilder()
-            .hardness(0.8)
-            .resistance(4)
+            .hardness(0.8f)
+            .resistance(4f)
             .toolType(ItemTool.TYPE_PICKAXE)
             .toolTier(ItemTool.TIER_WOODEN)
             .canHarvestWithHand(false)

@@ -7,7 +7,7 @@ import org.jetbrains.annotations.NotNull;
 public class BlockPolishedBlackstone extends BlockBlackstone {
     public static final BlockProperties PROPERTIES = new BlockProperties(POLISHED_BLACKSTONE);
     public static final BlockDefinition DEFINITION = BlockBlackstone.DEFINITION.toBuilder()
-            .hardness(1.5)
+            .hardness(1.5f)
             .canHarvestWithHand(false)
             .build();
 

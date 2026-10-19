@@ -22,8 +22,8 @@ public class BlockRedstoneLamp extends BlockSolid implements RedstoneComponent {
 
     public static final BlockProperties PROPERTIES = new BlockProperties(REDSTONE_LAMP);
     public static final BlockDefinition DEFINITION = SOLID.toBuilder()
-            .hardness(0.3D)
-            .resistance(1.5D)
+            .hardness(0.3f)
+            .resistance(1.5f)
             .toolType(ItemTool.TYPE_PICKAXE)
             .build();
 

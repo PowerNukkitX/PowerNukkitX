@@ -18,8 +18,8 @@ public class BlockWetSponge extends BlockSolid {
 
     public static final BlockProperties PROPERTIES = new BlockProperties(WET_SPONGE);
     public static final BlockDefinition DEFINITION = SOLID.toBuilder()
-            .hardness(0.6)
-            .resistance(3)
+            .hardness(0.6f)
+            .resistance(3f)
             .toolType(ItemTool.TYPE_HOE)
             .build();
 

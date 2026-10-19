@@ -19,7 +19,7 @@ public class BlockAndesiteWall extends BlockWallBase {
             CommonBlockProperties.WALL_POST_BIT
     );
     public static final BlockDefinition DEFINITION = BlockWallBase.DEFINITION.toBuilder()
-            .hardness(1.5)
+            .hardness(1.5f)
             .resistance(6)
             .toolTier(ItemTool.TIER_WOODEN)
             .build();

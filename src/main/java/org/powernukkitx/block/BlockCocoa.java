@@ -31,8 +31,8 @@ import static org.powernukkitx.block.property.CommonBlockProperties.DIRECTION;
 public class BlockCocoa extends BlockTransparent implements Faceable {
     public static final BlockProperties PROPERTIES = new BlockProperties(COCOA, AGE_3, DIRECTION);
     public static final BlockDefinition DEFINITION = TRANSPARENT.toBuilder()
-            .hardness(0.2)
-            .resistance(15)
+            .hardness(0.2f)
+            .resistance(15f)
             .toolType(ItemTool.TYPE_AXE)
             .breaksWhenMoved(true)
             .sticksToPiston(false)

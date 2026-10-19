@@ -27,8 +27,8 @@ import static org.powernukkitx.block.property.CommonBlockProperties.HONEY_LEVEL;
 public class BlockBeehive extends BlockSolid implements Faceable, BlockEntityHolder<BlockEntityBeehive> {
     public static final BlockProperties PROPERTIES = new BlockProperties(BEEHIVE, CommonBlockProperties.DIRECTION, HONEY_LEVEL);
     public static final BlockDefinition DEFINITION = SOLID.toBuilder()
-            .hardness(0.6)
-            .resistance(3)
+            .hardness(0.6f)
+            .resistance(3f)
             .toolType(ItemTool.TYPE_AXE)
             .burnChance(5)
             .burnAbility(20)

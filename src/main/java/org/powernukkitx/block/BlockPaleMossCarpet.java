@@ -16,7 +16,7 @@ public class BlockPaleMossCarpet extends BlockMossCarpet {
             CommonBlockProperties.PALE_MOSS_CARPET_SIDE_WEST,
             CommonBlockProperties.UPPER_BLOCK_BIT);
     public static final BlockDefinition DEFINITION = BlockMossCarpet.DEFINITION.toBuilder()
-            .resistance(0.1)
+            .resistance(0.1f)
             .build();
 
     @Override

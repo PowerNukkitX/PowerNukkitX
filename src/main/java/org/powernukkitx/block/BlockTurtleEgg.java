@@ -47,8 +47,8 @@ import static org.powernukkitx.block.property.enums.TurtleEggCount.FOUR_EGG;
 public class BlockTurtleEgg extends BlockFlowable {
     public static final BlockProperties PROPERTIES = new BlockProperties(TURTLE_EGG, CRACKED_STATE, TURTLE_EGG_COUNT);
     public static final BlockDefinition DEFINITION = FLOWABLE.toBuilder()
-            .hardness(0.5)
-            .resistance(2.5)
+            .hardness(0.5f)
+            .resistance(2.5f)
             .canPassThrough(false)
             .canBeActivated(true)
             .canSilkTouch(true)

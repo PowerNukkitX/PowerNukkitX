@@ -33,7 +33,7 @@ import static org.powernukkitx.math.BlockFace.AxisDirection.POSITIVE;
 public class BlockFrame extends BlockTransparent implements BlockEntityHolder<BlockEntityItemFrame>, Faceable {
     public static final BlockProperties PROPERTIES = new BlockProperties(FRAME, FACING_DIRECTION, ITEM_FRAME_MAP_BIT, ITEM_FRAME_PHOTO_BIT);
     public static final BlockDefinition DEFINITION = TRANSPARENT.toBuilder()
-            .hardness(0.25)
+            .hardness(0.25f)
             .canPassThrough(true)
             .breaksWhenMoved(true)
             .sticksToPiston(false)

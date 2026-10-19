@@ -8,8 +8,8 @@ import org.jetbrains.annotations.NotNull;
 public class BlockBeeNest extends BlockBeehive {
     public static final BlockProperties PROPERTIES = new BlockProperties(BEE_NEST, CommonBlockProperties.DIRECTION, CommonBlockProperties.HONEY_LEVEL);
     public static final BlockDefinition DEFINITION = BlockBeehive.DEFINITION.toBuilder()
-            .hardness(0.3)
-            .resistance(1.5)
+            .hardness(0.3f)
+            .resistance(1.5f)
             .burnChance(30)
             .burnAbility(60)
             .build();

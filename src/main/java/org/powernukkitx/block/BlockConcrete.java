@@ -9,8 +9,8 @@ import org.powernukkitx.item.ItemTool;
  */
 public abstract class BlockConcrete extends BlockSolid {
     public static final BlockDefinition DEFINITION = SOLID.toBuilder()
-            .hardness(1.8)
-            .resistance(9)
+            .hardness(1.8f)
+            .resistance(9f)
             .toolType(ItemTool.TYPE_PICKAXE)
             .toolTier(ItemTool.TIER_WOODEN)
             .build();

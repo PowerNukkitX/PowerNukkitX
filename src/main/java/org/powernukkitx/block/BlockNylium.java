@@ -18,8 +18,8 @@ import javax.annotation.Nullable;
 
 public abstract class BlockNylium extends BlockSolid implements Natural {
     public static final BlockDefinition DEFINITION = SOLID.toBuilder()
-            .hardness(0.4)
-            .resistance(0.4)
+            .hardness(0.4f)
+            .resistance(0.4f)
             .toolType(ItemTool.TYPE_PICKAXE)
             .burnChance(0)
             .burnAbility(0)

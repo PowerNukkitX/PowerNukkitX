@@ -31,8 +31,8 @@ import static org.powernukkitx.block.property.CommonBlockProperties.POWERED_SHEL
  */
 public abstract class AbstractBlockShelf extends BlockTransparent implements Faceable, BlockEntityHolder<BlockEntityShelf> {
     public static final BlockDefinition DEFINITION = TRANSPARENT.toBuilder()
-            .hardness(2)
-            .resistance(3)
+            .hardness(2f)
+            .resistance(3f)
             .canBeActivated(true)
             .hasComparatorInputOverride(true)
             .build();

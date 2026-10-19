@@ -51,8 +51,8 @@ import static org.powernukkitx.utils.Rail.Orientation.straightOrCurved;
 public class BlockRail extends BlockFlowable implements Faceable {
     public static final BlockProperties PROPERTIES = new BlockProperties(RAIL, RAIL_DIRECTION_10);
     public static final BlockDefinition DEFINITION = FLOWABLE.toBuilder()
-            .hardness(0.7)
-            .resistance(0.7)
+            .hardness(0.7f)
+            .resistance(0.7f)
             .canPassThrough(true)
             .toolType(ItemTool.TYPE_PICKAXE)
             .sticksToPiston(true)

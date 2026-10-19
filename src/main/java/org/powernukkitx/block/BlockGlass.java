@@ -11,8 +11,8 @@ import org.jetbrains.annotations.NotNull;
 public class BlockGlass extends BlockTransparent {
     public static final BlockProperties PROPERTIES = new BlockProperties(GLASS);
     public static final BlockDefinition DEFINITION = TRANSPARENT.toBuilder()
-            .hardness(0.3)
-            .resistance(0.3)
+            .hardness(0.3f)
+            .resistance(0.3f)
             .canSilkTouch(true)
             .build();
 

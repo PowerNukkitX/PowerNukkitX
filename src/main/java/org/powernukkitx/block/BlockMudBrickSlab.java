@@ -11,7 +11,7 @@ public class BlockMudBrickSlab extends BlockSlab {
 
     public static final BlockProperties PROPERTIES = new BlockProperties(MUD_BRICK_SLAB, CommonBlockProperties.MINECRAFT_VERTICAL_HALF);
     public static final BlockDefinition DEFINITION = BlockSlab.DEFINITION.toBuilder()
-            .hardness(1.5)
+            .hardness(1.5f)
             .resistance(3)
             .toolType(ItemTool.TYPE_PICKAXE)
             .toolTier(ItemTool.TIER_WOODEN)

@@ -20,8 +20,8 @@ import static org.powernukkitx.block.property.CommonBlockProperties.STABILITY_CH
 public class BlockScaffolding extends BlockFallable {
     public static final BlockProperties PROPERTIES = new BlockProperties(SCAFFOLDING, STABILITY, STABILITY_CHECK);
     public static final BlockDefinition DEFINITION = FALLABLE.toBuilder()
-            .hardness(0.5)
-            .resistance(0)
+            .hardness(0.5f)
+            .resistance(0f)
             .burnChance(60)
             .burnAbility(60)
             .canPassThrough(false)

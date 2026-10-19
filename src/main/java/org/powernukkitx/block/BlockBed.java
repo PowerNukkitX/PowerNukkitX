@@ -39,8 +39,8 @@ import static org.powernukkitx.block.property.CommonBlockProperties.OCCUPIED_BIT
 public class BlockBed extends BlockTransparent implements Faceable, BlockEntityHolder<BlockEntityBed> {
     public static final BlockProperties PROPERTIES = new BlockProperties(BED, DIRECTION, HEAD_PIECE_BIT, OCCUPIED_BIT);
     public static final BlockDefinition DEFINITION = TRANSPARENT.toBuilder()
-            .hardness(0.2)
-            .resistance(1)
+            .hardness(0.2f)
+            .resistance(1f)
             .breaksWhenMoved(true)
             .sticksToPiston(false)
             .canBeActivated(true)

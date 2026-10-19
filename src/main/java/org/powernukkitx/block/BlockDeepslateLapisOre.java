@@ -7,7 +7,7 @@ import org.jetbrains.annotations.NotNull;
 public class BlockDeepslateLapisOre extends BlockLapisOre {
     public static final BlockProperties PROPERTIES = new BlockProperties(DEEPSLATE_LAPIS_ORE);
     public static final BlockDefinition DEFINITION = BlockLapisOre.DEFINITION.toBuilder()
-            .hardness(4.5)
+            .hardness(4.5f)
             .build();
 
     @Override

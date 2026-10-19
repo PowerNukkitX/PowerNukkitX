@@ -7,7 +7,7 @@ import org.jetbrains.annotations.NotNull;
 public class BlockPolishedBlackstoneBricks extends BlockPolishedBlackstone {
     public static final BlockProperties PROPERTIES = new BlockProperties(POLISHED_BLACKSTONE_BRICKS);
     public static final BlockDefinition DEFINITION = BlockPolishedBlackstone.DEFINITION.toBuilder()
-            .hardness(1.5)
+            .hardness(1.5f)
             .build();
 
     @Override

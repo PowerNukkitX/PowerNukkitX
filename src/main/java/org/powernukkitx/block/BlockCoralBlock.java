@@ -15,8 +15,8 @@ import java.util.concurrent.ThreadLocalRandom;
 
 public abstract class BlockCoralBlock extends BlockSolid {
     public static final BlockDefinition DEFINITION = SOLID.toBuilder()
-            .hardness(1.5)
-            .resistance(6.0)
+            .hardness(1.5f)
+            .resistance(6.0f)
             .toolType(ItemTool.TYPE_PICKAXE)
             .canHarvestWithHand(false)
             .build();

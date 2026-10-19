@@ -12,8 +12,8 @@ import org.jetbrains.annotations.NotNull;
 public class BlockStone extends BlockSolid {
     public static final BlockProperties PROPERTIES = new BlockProperties(STONE);
     public static final BlockDefinition DEFINITION = SOLID.toBuilder()
-            .hardness(1.5)
-            .resistance(6)
+            .hardness(1.5f)
+            .resistance(6f)
             .toolType(ItemTool.TYPE_PICKAXE)
             .toolTier(ItemTool.TIER_WOODEN)
             .canSilkTouch(true)

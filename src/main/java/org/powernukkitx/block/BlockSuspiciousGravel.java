@@ -14,8 +14,8 @@ public class BlockSuspiciousGravel extends BlockBrushable {
 
     public static final BlockProperties PROPERTIES = new BlockProperties(SUSPICIOUS_GRAVEL, CommonBlockProperties.HANGING, CommonBlockProperties.BRUSHED_PROGRESS);
     public static final BlockDefinition DEFINITION = BlockBrushable.DEFINITION.toBuilder()
-            .hardness(0.25)
-            .resistance(1.25)
+            .hardness(0.25f)
+            .resistance(1.25f)
             .build();
 
     @Override

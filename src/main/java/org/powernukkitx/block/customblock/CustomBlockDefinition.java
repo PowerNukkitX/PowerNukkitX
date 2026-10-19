@@ -224,14 +224,6 @@ public class CustomBlockDefinition extends BlockDefinition {
         }
 
         /**
-         * @deprecated use {@link #friction(double)}.
-         */
-        @Deprecated(since = "3.1.0")
-        public Builder friction(float value) {
-            return this.friction((double) value);
-        }
-
-        /**
          * Enables step sensor logic (entity step-on/off).
          *
          * @deprecated use {@link #hasEntityStepSensor(boolean)}.
@@ -245,7 +237,7 @@ public class CustomBlockDefinition extends BlockDefinition {
          * Sets the friction value of the block. Default is 0.4.
          */
         @Override
-        public Builder friction(double value) {
+        public Builder friction(float value) {
             this.nbt.getCompound("components")
                     .putCompound("minecraft:friction", new CompoundTag().putFloat("value", (float) value));
             return super.friction(value);

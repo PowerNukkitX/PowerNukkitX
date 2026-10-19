@@ -16,8 +16,8 @@ import org.jetbrains.annotations.NotNull;
 public class BlockHayBlock extends BlockSolid {
     public static final BlockProperties PROPERTIES = new BlockProperties(HAY_BLOCK, CommonBlockProperties.DEPRECATED, CommonBlockProperties.PILLAR_AXIS);
     public static final BlockDefinition DEFINITION = SOLID.toBuilder()
-            .hardness(0.5)
-            .resistance(0.5)
+            .hardness(0.5f)
+            .resistance(0.5f)
             .toolType(ItemTool.TYPE_HOE)
             .burnChance(60)
             .burnAbility(20)

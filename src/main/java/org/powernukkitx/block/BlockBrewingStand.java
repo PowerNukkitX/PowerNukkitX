@@ -21,8 +21,8 @@ public class BlockBrewingStand extends BlockTransparent implements BlockEntityHo
 
     public static final BlockProperties PROPERTIES = new BlockProperties(BREWING_STAND, CommonBlockProperties.BREWING_STAND_SLOT_A_BIT, CommonBlockProperties.BREWING_STAND_SLOT_B_BIT, CommonBlockProperties.BREWING_STAND_SLOT_C_BIT);
     public static final BlockDefinition DEFINITION = TRANSPARENT.toBuilder()
-            .hardness(0.5)
-            .resistance(2.5)
+            .hardness(0.5f)
+            .resistance(2.5f)
             .toolType(ItemTool.TYPE_PICKAXE)
             .toolTier(ItemTool.TIER_WOODEN)
             .lightEmission(1)

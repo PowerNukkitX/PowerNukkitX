@@ -13,8 +13,8 @@ import static org.powernukkitx.block.property.CommonBlockProperties.PILLAR_AXIS;
 public class BlockInfestedDeepslate extends BlockSolid {
     public static final BlockProperties PROPERTIES = new BlockProperties(INFESTED_DEEPSLATE, PILLAR_AXIS);
     public static final BlockDefinition DEFINITION = SOLID.toBuilder()
-            .hardness(1.5)
-            .resistance(0.75)
+            .hardness(1.5f)
+            .resistance(0.75f)
             .toolType(ItemTool.TYPE_PICKAXE)
             .build();
 

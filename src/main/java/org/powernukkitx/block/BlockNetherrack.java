@@ -20,8 +20,8 @@ import java.util.concurrent.ThreadLocalRandom;
 public class BlockNetherrack extends BlockSolid {
     public static final BlockProperties PROPERTIES = new BlockProperties(NETHERRACK);
     public static final BlockDefinition DEFINITION = SOLID.toBuilder()
-            .hardness(0.4)
-            .resistance(0.4)
+            .hardness(0.4f)
+            .resistance(0.4f)
             .toolType(ItemTool.TYPE_PICKAXE)
             .toolTier(ItemTool.TIER_WOODEN)
             .canBeActivated(true)

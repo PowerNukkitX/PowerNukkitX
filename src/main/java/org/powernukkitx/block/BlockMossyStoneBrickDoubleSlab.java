@@ -10,9 +10,9 @@ import org.jetbrains.annotations.NotNull;
 public class BlockMossyStoneBrickDoubleSlab extends BlockDoubleSlabBase {
     public static final BlockProperties PROPERTIES = new BlockProperties(MOSSY_STONE_BRICK_DOUBLE_SLAB, CommonBlockProperties.MINECRAFT_VERTICAL_HALF);
     public static final BlockDefinition DEFINITION = BlockDoubleSlabBase.DEFINITION.toBuilder()
-            .hardness(1.5)
+            .hardness(1.5f)
             .toolType(ItemTool.TYPE_PICKAXE)
-            .resistance(6)
+            .resistance(6f)
             .build();
 
     @Override

@@ -17,8 +17,8 @@ import java.util.Objects;
 public class BlockCandleCake extends BlockTransparent {
     public static final BlockProperties PROPERTIES = new BlockProperties(CANDLE_CAKE, CommonBlockProperties.LIT);
     public static final BlockDefinition DEFINITION = TRANSPARENT.toBuilder()
-            .hardness(0.5)
-            .resistance(0.5)
+            .hardness(0.5f)
+            .resistance(0.5f)
             .breaksWhenMoved(true)
             .sticksToPiston(false)
             .canBeActivated(true)
