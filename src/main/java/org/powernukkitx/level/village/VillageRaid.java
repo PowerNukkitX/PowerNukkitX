@@ -39,6 +39,7 @@ public record VillageRaid(long gameTick, byte groupNumber, byte numberOfGroups, 
     /**
      * Creates a raid without saved individual health, for callers using the original constructor.
      */
+    @SuppressWarnings("PMD.ExcessiveParameterList") // Retains the original public constructor signature.
     public VillageRaid(long gameTick, byte groupNumber, byte numberOfGroups, byte numberOfRaiders,
                        List<Long> raiders, byte spawnFails, Vector3 spawnPosition, int state, int status,
                        long ticks, float totalMaxHealth) {
