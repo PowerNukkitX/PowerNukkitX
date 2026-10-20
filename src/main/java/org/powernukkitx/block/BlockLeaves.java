@@ -11,6 +11,7 @@ import org.powernukkitx.item.enchantment.Enchantment;
 import org.powernukkitx.level.Level;
 import org.powernukkitx.level.biome.BiomeID;
 import org.powernukkitx.math.BlockFace;
+import org.powernukkitx.math.SimpleAxisAlignedBB;
 import org.powernukkitx.utils.BlockColor;
 import org.powernukkitx.utils.Hash;
 import org.powernukkitx.block.definition.BlockDefinition;
@@ -137,17 +138,21 @@ public abstract class BlockLeaves extends BlockTransparent {
                 return type;
             }
         } else if (type == Level.BLOCK_UPDATE_NORMAL || type == Level.BLOCK_UPDATE_SCHEDULED) {
-            if (!isCheckDecay()) {
-                setCheckDecay(true);
-                getLevel().setBlock(this, this, false, false);
+            Level level = getLevel();
+            int x = getFloorX(), y = getFloorY(), z = getFloorZ();
+
+            if (!level.isAreaLoaded(new SimpleAxisAlignedBB(x - 2, y - 2, z - 2, x + 2, y + 2, z + 2))) {
+                return type;
             }
 
-            // Slowly propagates the need to update instead of peaking down the TPS for huge trees
-            for (BlockFace side : BlockFace.values()) {
-                Block other = getSide(side);
-                if (other instanceof BlockLeaves otherLeave) {
-                    if (!otherLeave.isCheckDecay()) {
-                        getLevel().scheduleUpdate(otherLeave, 2);
+            for (int dx = -1; dx <= 1; dx++) {
+                for (int dy = -1; dy <= 1; dy++) {
+                    for (int dz = -1; dz <= 1; dz++) {
+                        Block other = level.getBlock(x + dx, y + dy, z + dz, 0, false);
+                        if (other instanceof BlockLeaves leaves && !leaves.isCheckDecay()) {
+                            leaves.setCheckDecay(true);
+                            level.setBlock(leaves, leaves, false, false);
+                        }
                     }
                 }
             }

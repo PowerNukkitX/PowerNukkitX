@@ -49,8 +49,9 @@ import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
+import java.util.Set;
 import java.util.function.Supplier;
 
 /**
@@ -61,6 +62,14 @@ import java.util.function.Supplier;
 @Slf4j
 public class LevelDBChunkSerializer {
     public static final LevelDBChunkSerializer INSTANCE = new LevelDBChunkSerializer();
+
+    /**
+     * Identity used for large persisted tick-list deduplication.
+     *
+     * @author Curse
+     */
+    private record LoadedTickKey(int x, int y, int z, long time, String identifier) {
+    }
 
     private LevelDBChunkSerializer() {
     }
@@ -633,6 +642,8 @@ public class LevelDBChunkSerializer {
             long persistedCurrentTick = pendingTicks.getInt("currentTick");
             ListTag<CompoundTag> tickList = pendingTicks.getList("tickList", CompoundTag.class);
             var scheduler = chunk.getBlockUpdateScheduler();
+            Set<LoadedTickKey> seen = tickList.size() >= 2001 ? new HashSet<>() : null;
+            boolean deduplicated = false;
 
             for (CompoundTag tag : tickList.getAll()) {
                 BlockState blockState = resolveScheduledBlockState(tag.getCompound("blockState"));
@@ -643,9 +654,20 @@ public class LevelDBChunkSerializer {
                 int x = tag.getInt("x");
                 int y = tag.getInt("y");
                 int z = tag.getInt("z");
-                long delay = Math.max(1L, tag.getLong("time") - persistedCurrentTick);
+                long persistedTime = tag.getLong("time");
+
+                if (seen != null && !seen.add(new LoadedTickKey(x, y, z, persistedTime, blockState.getIdentifier()))) {
+                    deduplicated = true;
+                    continue;
+                }
+
+                long delay = Math.max(1L, persistedTime - persistedCurrentTick);
                 Block block = Block.get(blockState, level, x, y, z, 0);
                 scheduler.addLoaded(block, x, y, z, level.getCurrentTick() + delay, 0, true);
+            }
+
+            if (deduplicated) {
+                scheduler.markLoadedChanges();
             }
         }
 
@@ -656,6 +678,8 @@ public class LevelDBChunkSerializer {
             ListTag<CompoundTag> tickList = randomTicks.getList("tickList", CompoundTag.class);
             var scheduler = chunk.getRandomBlockUpdateScheduler();
             scheduler.setLastTick(persistedCurrentTick);
+            Set<LoadedTickKey> seen = tickList.size() >= 2001 ? new HashSet<>() : null;
+            boolean deduplicated = false;
 
             for (CompoundTag tag : tickList.getAll()) {
                 BlockState blockState = resolveScheduledBlockState(tag.getCompound("blockState"));
@@ -666,16 +690,27 @@ public class LevelDBChunkSerializer {
                 int x = tag.getInt("x");
                 int y = tag.getInt("y");
                 int z = tag.getInt("z");
+                long persistedTime = tag.getLong("time");
+
+                if (seen != null && !seen.add(new LoadedTickKey(x, y, z, persistedTime, blockState.getIdentifier()))) {
+                    deduplicated = true;
+                    continue;
+                }
+
                 Block block = Block.get(blockState, level, x, y, z, 0);
                 scheduler.addLoaded(
                         block,
                         x,
                         y,
                         z,
-                        Math.max(tag.getLong("time"), persistedCurrentTick + 1),
+                        Math.max(persistedTime, persistedCurrentTick + 1),
                         0,
                         true
                 );
+            }
+
+            if (deduplicated) {
+                scheduler.markLoadedChanges();
             }
         }
     }
