@@ -8,8 +8,8 @@ import org.jetbrains.annotations.NotNull;
 public class BlockCinnabar extends BlockSolid {
     public static final BlockProperties PROPERTIES = new BlockProperties(CINNABAR);
     public static final BlockDefinition DEFINITION = SOLID.toBuilder()
-            .hardness(1.5)
-            .resistance(6)
+            .hardness(1.5f)
+            .resistance(6f)
             .toolType(ItemTool.TYPE_PICKAXE)
             .toolTier(ItemTool.TIER_WOODEN)
             .canHarvestWithHand(false)

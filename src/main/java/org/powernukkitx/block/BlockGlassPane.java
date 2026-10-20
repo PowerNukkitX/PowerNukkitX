@@ -14,8 +14,8 @@ public class BlockGlassPane extends BlockThin {
 
     public static final BlockProperties PROPERTIES = new BlockProperties(GLASS_PANE, CommonBlockProperties.CONNECTION_EAST, CommonBlockProperties.CONNECTION_NORTH, CommonBlockProperties.CONNECTION_SOUTH, CommonBlockProperties.CONNECTION_WEST);
     public static final BlockDefinition DEFINITION = BlockThin.DEFINITION.toBuilder()
-            .hardness(0.3)
-            .resistance(1.5)
+            .hardness(0.3f)
+            .resistance(1.5f)
             .waterloggingLevel(1)
             .canSilkTouch(true)
             .build();

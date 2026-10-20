@@ -14,8 +14,8 @@ public class BlockBasalt extends BlockSolid {
 
     public static final BlockProperties PROPERTIES = new BlockProperties(BASALT, PILLAR_AXIS);
     public static final BlockDefinition DEFINITION = SOLID.toBuilder()
-            .hardness(1.25)
-            .resistance(4.2)
+            .hardness(1.25f)
+            .resistance(4.2f)
             .toolType(ItemTool.TYPE_PICKAXE)
             .toolTier(ItemTool.TIER_WOODEN)
             .build();

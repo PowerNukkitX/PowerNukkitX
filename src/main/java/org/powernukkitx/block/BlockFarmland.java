@@ -17,8 +17,8 @@ import org.jetbrains.annotations.NotNull;
 public class BlockFarmland extends BlockTransparent {
     public static final BlockProperties PROPERTIES = new BlockProperties(FARMLAND, CommonBlockProperties.MOISTURIZED_AMOUNT);
     public static final BlockDefinition DEFINITION = TRANSPARENT.toBuilder()
-            .hardness(0.6)
-            .resistance(3)
+            .hardness(0.6f)
+            .resistance(3f)
             .toolType(ItemTool.TYPE_SHOVEL)
             .isTransparent(true)
             .build();

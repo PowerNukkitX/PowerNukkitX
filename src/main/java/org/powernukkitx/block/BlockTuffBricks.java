@@ -8,8 +8,8 @@ import org.jetbrains.annotations.NotNull;
 public class BlockTuffBricks extends BlockSolid {
     public static final BlockProperties PROPERTIES = new BlockProperties(TUFF_BRICKS);
     public static final BlockDefinition DEFINITION = SOLID.toBuilder()
-            .hardness(1.5)
-            .resistance(6)
+            .hardness(1.5f)
+            .resistance(6f)
             .toolTier(ItemTool.TIER_WOODEN)
             .canHarvestWithHand(false)
             .build();

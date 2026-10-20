@@ -18,8 +18,8 @@ public class BlockDropper extends BlockDispenser {
 
     public static final BlockProperties PROPERTIES = new BlockProperties(DROPPER, FACING_DIRECTION, TRIGGERED_BIT);
     public static final BlockDefinition DEFINITION = BlockDispenser.DEFINITION.toBuilder()
-            .hardness(3.5)
-            .resistance(3.5)
+            .hardness(3.5f)
+            .resistance(3.5f)
             .toolType(ItemTool.TYPE_PICKAXE)
             .toolTier(ItemTool.TIER_WOODEN)
             .build();

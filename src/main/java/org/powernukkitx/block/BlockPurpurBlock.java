@@ -12,8 +12,8 @@ import static org.powernukkitx.block.property.CommonBlockProperties.PILLAR_AXIS;
 public class BlockPurpurBlock extends BlockSolid {
     public static final BlockProperties PROPERTIES = new BlockProperties(PURPUR_BLOCK, PILLAR_AXIS);
     public static final BlockDefinition DEFINITION = SOLID.toBuilder()
-            .hardness(1.5)
-            .resistance(30)
+            .hardness(1.5f)
+            .resistance(30f)
             .toolType(ItemTool.TYPE_PICKAXE)
             .toolTier(ItemTool.TIER_WOODEN)
             .build();

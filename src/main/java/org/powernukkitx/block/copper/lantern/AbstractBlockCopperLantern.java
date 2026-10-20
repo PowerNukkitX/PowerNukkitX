@@ -18,8 +18,8 @@ import javax.annotation.Nullable;
  */
 public abstract class AbstractBlockCopperLantern extends BlockLantern implements Oxidizable, Waxable {
     public static final BlockDefinition DEFINITION = BlockLantern.DEFINITION.toBuilder()
-            .hardness(3.5)
-            .resistance(3.5)
+            .hardness(3.5f)
+            .resistance(3.5f)
             .toolType(ItemTool.TYPE_NONE)
             .canBeActivated(true)
             .build();

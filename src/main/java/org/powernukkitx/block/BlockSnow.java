@@ -12,8 +12,8 @@ import org.jetbrains.annotations.NotNull;
 public class BlockSnow extends BlockSolid {
     public static final BlockProperties PROPERTIES = new BlockProperties(SNOW);
     public static final BlockDefinition DEFINITION = SOLID.toBuilder()
-            .hardness(0.6)
-            .resistance(1)
+            .hardness(0.6f)
+            .resistance(1f)
             .toolType(ItemTool.TYPE_SHOVEL)
             .canBeActivated(true)
             .canSilkTouch(true)

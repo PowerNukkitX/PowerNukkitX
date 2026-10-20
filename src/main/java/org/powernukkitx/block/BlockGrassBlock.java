@@ -24,7 +24,7 @@ import java.util.concurrent.ThreadLocalRandom;
 public class BlockGrassBlock extends BlockDirt {
     public static final BlockProperties PROPERTIES = new BlockProperties(GRASS_BLOCK);
     public static final BlockDefinition DEFINITION = BlockDirt.DEFINITION.toBuilder()
-            .resistance(0.6)
+            .resistance(0.6f)
             .canSilkTouch(true)
             .isFertilizable(true)
             .build();

@@ -26,8 +26,8 @@ public class BlockSculkShrieker extends BlockFlowable implements BlockEntityHold
 
     public static final BlockProperties PROPERTIES = new BlockProperties(SCULK_SHRIEKER, CommonBlockProperties.ACTIVE, CommonBlockProperties.CAN_SUMMON);
     public static final BlockDefinition DEFINITION = FLOWABLE.toBuilder()
-            .hardness(3.0)
-            .resistance(3)
+            .hardness(3.0f)
+            .resistance(3f)
             .toolType(ItemTool.TYPE_HOE)
             .canPassThrough(false)
             .canBePushed(false)

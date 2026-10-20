@@ -9,7 +9,7 @@ import org.jetbrains.annotations.NotNull;
 public class BlockDeepslateTileSlab extends BlockSlab {
     public static final BlockProperties PROPERTIES = new BlockProperties(DEEPSLATE_TILE_SLAB, CommonBlockProperties.MINECRAFT_VERTICAL_HALF);
     public static final BlockDefinition DEFINITION = BlockSlab.DEFINITION.toBuilder()
-            .hardness(3.5)
+            .hardness(3.5f)
             .resistance(6)
             .toolType(ItemTool.TYPE_PICKAXE)
             .toolTier(ItemTool.TIER_WOODEN)

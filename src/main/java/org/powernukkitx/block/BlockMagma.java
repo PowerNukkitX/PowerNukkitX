@@ -19,8 +19,8 @@ import org.jetbrains.annotations.NotNull;
 public class BlockMagma extends BlockSolid {
     public static final BlockProperties PROPERTIES = new BlockProperties(MAGMA);
     public static final BlockDefinition DEFINITION = SOLID.toBuilder()
-            .hardness(0.5)
-            .resistance(30)
+            .hardness(0.5f)
+            .resistance(30f)
             .toolType(ItemTool.TYPE_PICKAXE)
             .lightEmission(3)
             .canHarvestWithHand(false)

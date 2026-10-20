@@ -8,8 +8,8 @@ import org.jetbrains.annotations.NotNull;
 public class BlockDripstoneBlock extends BlockSolid {
     public static final BlockProperties PROPERTIES = new BlockProperties(DRIPSTONE_BLOCK);
     public static final BlockDefinition DEFINITION = SOLID.toBuilder()
-            .hardness(1.5)
-            .resistance(1)
+            .hardness(1.5f)
+            .resistance(1.0f)
             .toolType(ItemTool.TYPE_PICKAXE)
             .toolTier(ItemTool.TIER_WOODEN)
             .canHarvestWithHand(false)

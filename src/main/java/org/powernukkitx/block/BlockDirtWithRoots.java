@@ -19,8 +19,8 @@ import org.jetbrains.annotations.NotNull;
 public class BlockDirtWithRoots extends BlockDirt {
     public static final BlockProperties PROPERTIES = new BlockProperties(DIRT_WITH_ROOTS);
     public static final BlockDefinition DEFINITION = BlockDirt.DEFINITION.toBuilder()
-            .hardness(0.5)
-            .resistance(2.5)
+            .hardness(0.5f)
+            .resistance(2.5f)
             .toolType(ItemTool.TYPE_SHOVEL)
             .canBeActivated(true)
             .build();

@@ -8,7 +8,7 @@ import org.jetbrains.annotations.NotNull;
 public class BlockPolishedBlackstoneBrickStairs extends BlockPolishedBlackstoneStairs {
     public static final BlockProperties PROPERTIES = new BlockProperties(POLISHED_BLACKSTONE_BRICK_STAIRS, CommonBlockProperties.UPSIDE_DOWN_BIT, CommonBlockProperties.WEIRDO_DIRECTION, CommonBlockProperties.CORNER);
     public static final BlockDefinition DEFINITION = BlockPolishedBlackstoneStairs.DEFINITION.toBuilder()
-            .hardness(1.5)
+            .hardness(1.5f)
             .build();
 
     @Override

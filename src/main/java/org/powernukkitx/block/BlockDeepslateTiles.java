@@ -8,8 +8,8 @@ import org.jetbrains.annotations.NotNull;
 public class BlockDeepslateTiles extends BlockSolid {
     public static final BlockProperties PROPERTIES = new BlockProperties(DEEPSLATE_TILES);
     public static final BlockDefinition DEFINITION = SOLID.toBuilder()
-            .hardness(3.5)
-            .resistance(6)
+            .hardness(3.5f)
+            .resistance(6.0f)
             .toolType(ItemTool.TYPE_PICKAXE)
             .toolTier(ItemTool.TIER_WOODEN)
             .canHarvestWithHand(false)

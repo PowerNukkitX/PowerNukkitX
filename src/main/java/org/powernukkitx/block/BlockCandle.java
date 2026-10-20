@@ -25,8 +25,8 @@ import static org.powernukkitx.block.property.CommonBlockProperties.LIT;
 public class BlockCandle extends BlockFlowable {
     public static final BlockProperties PROPERTIES = new BlockProperties(CANDLE, CANDLES, LIT);
     public static final BlockDefinition DEFINITION = FLOWABLE.toBuilder()
-            .hardness(0.1)
-            .resistance(0.1)
+            .hardness(0.1f)
+            .resistance(0.1f)
             .canBeActivated(true)
             .build();
 

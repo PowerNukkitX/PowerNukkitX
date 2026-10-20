@@ -11,8 +11,8 @@ import static org.powernukkitx.block.property.CommonBlockProperties.HANGING;
 public class BlockSulfurSpike extends BlockPointedDripstone {
     public static final BlockProperties PROPERTIES = new BlockProperties(SULFUR_SPIKE, DRIPSTONE_THICKNESS, HANGING);
     public static final BlockDefinition DEFINITION = BlockPointedDripstone.DEFINITION.toBuilder()
-            .hardness(1.5)
-            .resistance(3)
+            .hardness(1.5f)
+            .resistance(3f)
             .toolTier(ItemTool.TIER_WOODEN)
             .canHarvestWithHand(false)
             .build();

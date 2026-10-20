@@ -10,8 +10,8 @@ import org.jetbrains.annotations.NotNull;
 public class BlockLightWeightedPressurePlate extends BlockPressurePlateBase {
     public static final BlockProperties PROPERTIES = new BlockProperties(LIGHT_WEIGHTED_PRESSURE_PLATE, CommonBlockProperties.REDSTONE_SIGNAL);
     public static final BlockDefinition DEFINITION = BlockPressurePlateBase.DEFINITION.toBuilder()
-            .hardness(0.5D)
-            .resistance(2.5D)
+            .hardness(0.5f)
+            .resistance(2.5f)
             .toolType(ItemTool.TYPE_PICKAXE)
             .toolTier(ItemTool.TIER_WOODEN)
             .build();

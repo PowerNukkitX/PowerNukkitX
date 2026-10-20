@@ -15,11 +15,11 @@ import org.jetbrains.annotations.NotNull;
 public class BlockIce extends BlockTransparent {
     public static final BlockProperties PROPERTIES = new BlockProperties(ICE);
     public static final BlockDefinition DEFINITION = TRANSPARENT.toBuilder()
-            .hardness(0.5)
-            .resistance(2.5)
+            .hardness(0.5f)
+            .resistance(2.5f)
             .toolType(ItemTool.TYPE_PICKAXE)
             .burnChance(-1)
-            .friction(0.98)
+            .friction(0.98f)
             .canSilkTouch(true)
             .build();
 

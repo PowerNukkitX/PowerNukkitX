@@ -24,7 +24,7 @@ public class BlockDaylightDetector extends BlockTransparent implements RedstoneC
 
     public static final BlockProperties PROPERTIES = new BlockProperties(DAYLIGHT_DETECTOR, CommonBlockProperties.REDSTONE_SIGNAL);
     public static final BlockDefinition DEFINITION = TRANSPARENT.toBuilder()
-            .hardness(0.2)
+            .hardness(0.2f)
             .toolType(ItemTool.TYPE_AXE)
             .canBeActivated(true)
             .isSolid(false)

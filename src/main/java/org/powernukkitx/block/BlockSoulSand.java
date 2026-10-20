@@ -15,8 +15,8 @@ import org.jetbrains.annotations.NotNull;
 public class BlockSoulSand extends BlockSolid {
     public static final BlockProperties PROPERTIES = new BlockProperties(SOUL_SAND);
     public static final BlockDefinition DEFINITION = SOLID.toBuilder()
-            .hardness(0.5)
-            .resistance(2.5)
+            .hardness(0.5f)
+            .resistance(2.5f)
             .toolType(ItemTool.TYPE_SHOVEL)
             .hasEntityCollision(true)
             .isSoulSpeedCompatible(true)

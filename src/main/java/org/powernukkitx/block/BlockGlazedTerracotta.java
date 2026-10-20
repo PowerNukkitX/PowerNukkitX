@@ -17,8 +17,8 @@ import static org.powernukkitx.block.property.CommonBlockProperties.FACING_DIREC
  */
 public abstract class BlockGlazedTerracotta extends BlockSolid implements Faceable {
     public static final BlockDefinition DEFINITION = SOLID.toBuilder()
-            .hardness(1.4)
-            .resistance(7)
+            .hardness(1.4f)
+            .resistance(7f)
             .toolType(ItemTool.TYPE_PICKAXE)
             .toolTier(ItemTool.TIER_WOODEN)
             .canBePushed(true)

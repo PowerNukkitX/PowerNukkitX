@@ -9,8 +9,8 @@ import org.jetbrains.annotations.NotNull;
 public class BlockSmoothQuartzStairs extends BlockStairs {
     public static final BlockProperties PROPERTIES = new BlockProperties(SMOOTH_QUARTZ_STAIRS, CommonBlockProperties.UPSIDE_DOWN_BIT, CommonBlockProperties.WEIRDO_DIRECTION, CommonBlockProperties.CORNER);
     public static final BlockDefinition DEFINITION = BlockStairs.DEFINITION.toBuilder()
-            .hardness(1.5)
-            .resistance(30)
+            .hardness(1.5f)
+            .resistance(30f)
             .toolType(ItemTool.TYPE_PICKAXE)
             .toolTier(ItemTool.TIER_WOODEN)
             .canHarvestWithHand(false)

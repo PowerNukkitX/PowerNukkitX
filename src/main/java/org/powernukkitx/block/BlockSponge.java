@@ -19,8 +19,8 @@ public class BlockSponge extends BlockSolid {
 
     public static final BlockProperties PROPERTIES = new BlockProperties(SPONGE);
     public static final BlockDefinition DEFINITION = SOLID.toBuilder()
-            .hardness(0.6)
-            .resistance(3)
+            .hardness(0.6f)
+            .resistance(3f)
             .toolType(ItemTool.TYPE_HOE)
             .build();
 

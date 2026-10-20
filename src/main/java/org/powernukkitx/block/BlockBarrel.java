@@ -26,8 +26,8 @@ import static org.powernukkitx.block.property.CommonBlockProperties.OPEN_BIT;
 public class BlockBarrel extends BlockSolid implements Faceable, BlockEntityHolder<BlockEntityBarrel> {
     public static final BlockProperties PROPERTIES = new BlockProperties(BARREL, FACING_DIRECTION, OPEN_BIT);
     public static final BlockDefinition DEFINITION = SOLID.toBuilder()
-            .hardness(2.5)
-            .resistance(12.5)
+            .hardness(2.5f)
+            .resistance(12.5f)
             .toolType(ItemTool.TYPE_AXE)
             .canBeActivated(true)
             .hasComparatorInputOverride(true)

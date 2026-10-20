@@ -7,7 +7,7 @@ import org.jetbrains.annotations.NotNull;
 public class BlockDeepslateRedstoneOre extends BlockRedstoneOre {
     public static final BlockProperties PROPERTIES = new BlockProperties(DEEPSLATE_REDSTONE_ORE);
     public static final BlockDefinition DEFINITION = BlockRedstoneOre.DEFINITION.toBuilder()
-            .hardness(4.5)
+            .hardness(4.5f)
             .build();
 
     @Override

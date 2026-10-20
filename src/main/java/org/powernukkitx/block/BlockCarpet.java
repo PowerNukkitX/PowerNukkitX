@@ -15,8 +15,8 @@ import org.jetbrains.annotations.NotNull;
  */
 public abstract class BlockCarpet extends BlockFlowable {
     public static final BlockDefinition DEFINITION = FLOWABLE.toBuilder()
-            .hardness(0.1)
-            .resistance(0.5)
+            .hardness(0.1f)
+            .resistance(0.5f)
             .canPassThrough(false)
             .waterloggingLevel(1)
             .build();

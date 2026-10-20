@@ -17,8 +17,8 @@ import java.util.Random;
 public class BlockGlowstone extends BlockTransparent {
     public static final BlockProperties PROPERTIES = new BlockProperties(GLOWSTONE);
     public static final BlockDefinition DEFINITION = TRANSPARENT.toBuilder()
-            .hardness(0.3)
-            .resistance(1.5)
+            .hardness(0.3f)
+            .resistance(1.5f)
             .burnChance(0)
             .burnAbility(0)
             .lightEmission(15)

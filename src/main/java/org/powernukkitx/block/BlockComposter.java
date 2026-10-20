@@ -26,8 +26,8 @@ import static org.powernukkitx.block.property.CommonBlockProperties.COMPOSTER_FI
 public class BlockComposter extends BlockSolid {
     public static final BlockProperties PROPERTIES = new BlockProperties(COMPOSTER, COMPOSTER_FILL_LEVEL);
     public static final BlockDefinition DEFINITION = SOLID.toBuilder()
-            .hardness(0.6)
-            .resistance(0.6)
+            .hardness(0.6f)
+            .resistance(0.6f)
             .toolType(ItemTool.TYPE_AXE)
             .canBeActivated(true)
             .hasComparatorInputOverride(true)
