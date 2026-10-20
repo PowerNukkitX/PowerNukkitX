@@ -637,6 +637,7 @@ public class LevelDBChunkSerializer {
             long persistedCurrentTick = pendingTicks.getInt("currentTick");
             ListTag<CompoundTag> tickList = pendingTicks.getList("tickList", CompoundTag.class);
             var scheduler = chunk.getBlockUpdateScheduler();
+            // Only deduplicate tick lists exceeding 2,000 entries; preserve duplicates in smaller lists.
             Set<LoadedTickKey> seen = tickList.size() >= 2001 ? new HashSet<>() : null;
             boolean deduplicated = false;
 
