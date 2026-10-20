@@ -4,6 +4,7 @@ import org.iq80.leveldb.DB;
 import org.iq80.leveldb.WriteBatch;
 import org.powernukkitx.level.DimensionData;
 import org.powernukkitx.level.DimensionEnum;
+import org.powernukkitx.level.format.ChunkSection;
 import org.powernukkitx.level.format.IChunk;
 import org.powernukkitx.level.format.leveldb.LevelDBStorage;
 import org.powernukkitx.level.util.LevelDBKeyUtil;
@@ -45,6 +46,7 @@ public final class BlockEntityMigrationExecutor {
             WriteBatch batch,
             IChunk chunk,
             CompoundTag extraData,
+            boolean pnxManagedStorage,
             Set<LevelDBBlockEntityV3_1_0Migration.Position> migratedNetherPortalBlocks,
             MigrationService migrationService,
             MigrationVersion currentVersion
@@ -107,7 +109,16 @@ public final class BlockEntityMigrationExecutor {
 
         migratedNetherPortalBlocks.addAll(migrated.netherPortalBlocks());
 
-        if (!migrated.changed()) return;
+        boolean restoredChests = false;
+        if (pnxManagedStorage) {
+            byte[] version = db.get(LevelDBKeyUtil.VERSION.getKey(chunkX, chunkZ, dimensionData));
+            if (version == null) version = db.get(LevelDBKeyUtil.LEGACY_VERSION.getKey(chunkX, chunkZ, dimensionData));
+            if (version != null && version.length == 1 && (version[0] & 0xff) < (IChunk.VERSION & 0xff)) {
+                restoredChests = restoreMissingLegacyPnxChests(chunk, migrated.blockEntities());
+            }
+        }
+
+        if (!migrated.changed() && !restoredChests) return;
 
         if (migrated.blockEntities().size() == 0) {
             batch.delete(key);
@@ -115,6 +126,41 @@ public final class BlockEntityMigrationExecutor {
         }
 
         batch.put(key, LevelDBMigrationChunkSerializer.writeLittleEndianCompounds(migrated.blockEntities()));
+    }
+
+    private static boolean restoreMissingLegacyPnxChests(IChunk chunk, List<CompoundTag> blockEntities) {
+        Set<LevelDBBlockEntityV3_1_0Migration.Position> occupied = new HashSet<>();
+        for (CompoundTag tag : blockEntities) {
+            occupied.add(new LevelDBBlockEntityV3_1_0Migration.Position(
+                    tag.getInt("x"), tag.getInt("y"), tag.getInt("z")));
+        }
+
+        boolean changed = false;
+        for (ChunkSection section : chunk.getSections()) {
+            if (section == null || section.isEmpty()) continue;
+
+            int baseY = section.y() << 4;
+            for (int index = 0; index < ChunkSection.SIZE; index++) {
+                String id = section.blockLayer()[0].get(index).getIdentifier();
+                if (!"minecraft:chest".equals(id) && !"minecraft:trapped_chest".equals(id)) continue;
+
+                int x = (chunk.getX() << 4) + ((index >> 8) & 15);
+                int y = baseY + (index & 15);
+                int z = (chunk.getZ() << 4) + ((index >> 4) & 15);
+                if (!occupied.add(new LevelDBBlockEntityV3_1_0Migration.Position(x, y, z))) continue;
+
+                blockEntities.add(new CompoundTag()
+                        .putString("id", "Chest")
+                        .putInt("x", x)
+                        .putInt("y", y)
+                        .putInt("z", z)
+                        .putInt("BlockEntityVersion", 0)
+                        .putByte("Findable", 0)
+                        .putList("Items", new ListTag<>(Tag.TAG_Compound)));
+                changed = true;
+            }
+        }
+        return changed;
     }
 
     private static boolean hasPersistedEndGatewayNear(DB db, DimensionData dimensionData, int blockX, int blockZ) throws IOException {
