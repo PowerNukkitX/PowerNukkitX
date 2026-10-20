@@ -63,11 +63,6 @@ import java.util.function.Supplier;
 public class LevelDBChunkSerializer {
     public static final LevelDBChunkSerializer INSTANCE = new LevelDBChunkSerializer();
 
-    /**
-     * Identity used for large persisted tick-list deduplication.
-     *
-     * @author Curse
-     */
     private record LoadedTickKey(int x, int y, int z, long time, String identifier) {
     }
 
