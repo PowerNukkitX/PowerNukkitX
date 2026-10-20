@@ -1830,7 +1830,7 @@ public abstract class Block extends Position implements Metadatable, AxisAligned
      * For custom blocks, can be set this by using the builder (isStepSensor).
      */
     public boolean hasEntityStepSensor() {
-        return definition.isHasEntityStepSensor();
+        return definition.hasEntityStepSensor();
     }
 
     public boolean canPassThrough() {
