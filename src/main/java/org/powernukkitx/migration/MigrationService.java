@@ -549,6 +549,7 @@ public final class MigrationService {
                         batch,
                         chunk,
                         extraData,
+                        pnxManagedStorage,
                         migratedNetherPortalBlocks,
                         this,
                         blockEntityVersion
