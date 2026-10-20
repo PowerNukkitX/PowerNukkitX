@@ -674,6 +674,7 @@ public class LevelDBChunkSerializer {
             ListTag<CompoundTag> tickList = randomTicks.getList("tickList", CompoundTag.class);
             var scheduler = chunk.getRandomBlockUpdateScheduler();
             scheduler.setLastTick(persistedCurrentTick);
+            // Only deduplicate tick lists exceeding 2,000 entries; preserve duplicates in smaller lists.
             Set<LoadedTickKey> seen = tickList.size() >= 2001 ? new HashSet<>() : null;
             boolean deduplicated = false;
 
