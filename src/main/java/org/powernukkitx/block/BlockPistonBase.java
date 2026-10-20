@@ -39,8 +39,8 @@ import java.util.concurrent.CopyOnWriteArrayList;
 @Slf4j
 public abstract class BlockPistonBase extends BlockTransparent implements Faceable, RedstoneComponent, BlockEntityHolder<BlockEntityPistonArm> {
     public static final BlockDefinition DEFINITION = TRANSPARENT.toBuilder()
-            .hardness(1.5)
-            .resistance(1.5)
+            .hardness(1.5f)
+            .resistance(1.5f)
             .isSolid(false)
             .waterloggingLevel(1)
             .build();

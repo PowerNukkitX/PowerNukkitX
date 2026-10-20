@@ -8,8 +8,8 @@ import org.jetbrains.annotations.NotNull;
 public class BlockDriedKelpBlock extends BlockSolid {
     public static final BlockProperties PROPERTIES = new BlockProperties(DRIED_KELP_BLOCK);
     public static final BlockDefinition DEFINITION = SOLID.toBuilder()
-            .hardness(0.5F)
-            .resistance(2.5)
+            .hardness(0.5f)
+            .resistance(2.5f)
             .build();
 
     @Override

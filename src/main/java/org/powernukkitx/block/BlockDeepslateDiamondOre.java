@@ -7,7 +7,7 @@ import org.jetbrains.annotations.NotNull;
 public class BlockDeepslateDiamondOre extends BlockDiamondOre {
     public static final BlockProperties PROPERTIES = new BlockProperties(DEEPSLATE_DIAMOND_ORE);
     public static final BlockDefinition DEFINITION = BlockDiamondOre.DEFINITION.toBuilder()
-            .hardness(4.5)
+            .hardness(4.5f)
             .build();
 
     @Override

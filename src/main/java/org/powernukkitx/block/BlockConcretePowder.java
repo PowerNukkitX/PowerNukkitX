@@ -16,8 +16,8 @@ import org.jetbrains.annotations.NotNull;
 
 public abstract class BlockConcretePowder extends BlockFallable {
     public static final BlockDefinition DEFINITION = FALLABLE.toBuilder()
-            .hardness(0.5)
-            .resistance(2.5)
+            .hardness(0.5f)
+            .resistance(2.5f)
             .toolType(ItemTool.TYPE_SHOVEL)
             .build();
     public BlockConcretePowder(BlockState blockState) {

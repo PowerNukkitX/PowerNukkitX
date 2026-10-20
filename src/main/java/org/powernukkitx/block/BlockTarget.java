@@ -31,8 +31,8 @@ import java.util.List;
 public class BlockTarget extends BlockSolid implements RedstoneComponent {
     public static final BlockProperties PROPERTIES = new BlockProperties(TARGET);
     public static final BlockDefinition DEFINITION = SOLID.toBuilder()
-            .hardness(0.5)
-            .resistance(0.5)
+            .hardness(0.5f)
+            .resistance(0.5f)
             .toolType(ItemTool.TYPE_HOE)
             .burnChance(0)
             .burnAbility(15)

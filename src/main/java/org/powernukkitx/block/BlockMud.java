@@ -8,8 +8,8 @@ import org.jetbrains.annotations.NotNull;
 public class BlockMud extends BlockSolid implements Natural {
     public static final BlockProperties PROPERTIES = new BlockProperties(MUD);
     public static final BlockDefinition DEFINITION = SOLID.toBuilder()
-            .hardness(0.5)
-            .resistance(0.5)
+            .hardness(0.5f)
+            .resistance(0.5f)
             .toolType(ItemTool.TYPE_SHOVEL)
             .build();
 

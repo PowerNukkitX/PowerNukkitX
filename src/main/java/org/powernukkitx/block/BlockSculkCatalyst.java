@@ -17,8 +17,8 @@ import javax.annotation.Nullable;
 public class BlockSculkCatalyst extends BlockSolid implements BlockEntityHolder<BlockEntitySculkCatalyst> {
     public static final BlockProperties PROPERTIES = new BlockProperties(SCULK_CATALYST, CommonBlockProperties.BLOOM);
     public static final BlockDefinition DEFINITION = SOLID.toBuilder()
-            .hardness(3.0)
-            .resistance(3)
+            .hardness(3.0f)
+            .resistance(3f)
             .toolType(ItemTool.TYPE_HOE)
             .lightEmission(6)
             .canBePushed(false)

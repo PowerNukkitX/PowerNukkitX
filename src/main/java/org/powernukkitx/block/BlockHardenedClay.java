@@ -8,8 +8,8 @@ import org.jetbrains.annotations.NotNull;
 public class BlockHardenedClay extends BlockSolid {
     public static final BlockProperties PROPERTIES = new BlockProperties(HARDENED_CLAY);
     public static final BlockDefinition DEFINITION = SOLID.toBuilder()
-            .hardness(1.25)
-            .resistance(7)
+            .hardness(1.25f)
+            .resistance(7f)
             .toolType(ItemTool.TYPE_PICKAXE)
             .toolTier(ItemTool.TIER_WOODEN)
             .canHarvestWithHand(false)

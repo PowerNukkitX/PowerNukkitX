@@ -10,7 +10,7 @@ public class BlockMossCarpet extends BlockCarpet {
 
     public static final BlockProperties PROPERTIES = new BlockProperties(MOSS_CARPET);
     public static final BlockDefinition DEFINITION = BlockCarpet.DEFINITION.toBuilder()
-            .resistance(0.1)
+            .resistance(0.1f)
             .build();
 
     @Override

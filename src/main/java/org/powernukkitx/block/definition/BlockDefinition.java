@@ -48,8 +48,8 @@ public class BlockDefinition {
     int maxStackSize;
     int waterloggingLevel;
 
-    double hardness;
-    double resistance;
-    double friction;
-    double passableFrictionFactor;
+    float hardness;
+    float resistance;
+    float friction;
+    float passableFrictionFactor;
 }

@@ -29,8 +29,8 @@ import java.util.concurrent.ThreadLocalRandom;
 public class BlockVine extends BlockTransparent {
     public static final BlockProperties PROPERTIES = new BlockProperties(VINE, CommonBlockProperties.VINE_DIRECTION_BITS);
     public static final BlockDefinition DEFINITION = TRANSPARENT.toBuilder()
-            .hardness(0.2)
-            .resistance(1)
+            .hardness(0.2f)
+            .resistance(1f)
             .toolType(ItemTool.TYPE_AXE)
             .canPassThrough(true)
             .breaksWhenMoved(true)

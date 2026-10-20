@@ -31,7 +31,7 @@ import static org.powernukkitx.block.property.CommonBlockProperties.UPDATE_BIT;
  */
 public abstract class BlockLeaves extends BlockTransparent {
     public static final BlockDefinition DEFINITION = TRANSPARENT.toBuilder()
-            .hardness(0.2)
+            .hardness(0.2f)
             .toolType(ItemTool.TYPE_HOE)
             .burnChance(30)
             .burnAbility(60)

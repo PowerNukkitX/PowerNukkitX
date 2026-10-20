@@ -23,8 +23,8 @@ public class BlockEnderChest extends BlockTransparent implements Faceable, Block
 
     public static final BlockProperties PROPERTIES = new BlockProperties(ENDER_CHEST, CommonBlockProperties.MINECRAFT_CARDINAL_DIRECTION);
     public static final BlockDefinition DEFINITION = TRANSPARENT.toBuilder()
-            .hardness(22.5)
-            .resistance(3000)
+            .hardness(22.5f)
+            .resistance(3000f)
             .toolType(ItemTool.TYPE_PICKAXE)
             .toolTier(ItemTool.TIER_WOODEN)
             .lightEmission(7)

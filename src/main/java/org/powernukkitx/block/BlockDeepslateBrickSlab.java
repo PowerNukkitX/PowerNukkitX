@@ -9,8 +9,8 @@ import org.jetbrains.annotations.NotNull;
 public class BlockDeepslateBrickSlab extends BlockSlab {
     public static final BlockProperties PROPERTIES = new BlockProperties(DEEPSLATE_BRICK_SLAB, CommonBlockProperties.MINECRAFT_VERTICAL_HALF);
     public static final BlockDefinition DEFINITION = BlockSlab.DEFINITION.toBuilder()
-            .hardness(3.5)
-            .resistance(6)
+            .hardness(3.5f)
+            .resistance(6.0f)
             .toolType(ItemTool.TYPE_PICKAXE)
             .toolTier(ItemTool.TIER_WOODEN)
             .canHarvestWithHand(false)

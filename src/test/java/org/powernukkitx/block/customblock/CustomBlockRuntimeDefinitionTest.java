@@ -85,7 +85,7 @@ public class CustomBlockRuntimeDefinitionTest {
         public CustomBlockDefinition getDefinition() {
             return CustomBlockDefinition.builder(this)
                     .destructibleByExplosion(17)
-                    .friction(0.5)
+                    .friction(0.5f)
                     .lightEmission(7)
                     .lightDampening(0)
                     .hasEntityStepSensor(true)

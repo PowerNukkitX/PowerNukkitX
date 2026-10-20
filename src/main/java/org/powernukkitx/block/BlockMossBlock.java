@@ -17,8 +17,8 @@ import java.util.Random;
 public class BlockMossBlock extends BlockSolid implements Natural {
     public static final BlockProperties PROPERTIES = new BlockProperties(MOSS_BLOCK);
     public static final BlockDefinition DEFINITION = SOLID.toBuilder()
-            .hardness(0.1)
-            .resistance(2.5)
+            .hardness(0.1f)
+            .resistance(2.5f)
             .toolType(ItemTool.TYPE_HOE)
             .canBeActivated(true)
             .isFertilizable(true)

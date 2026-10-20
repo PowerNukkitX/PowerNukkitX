@@ -10,11 +10,11 @@ public class BlockPolishedDioriteSlab extends BlockSlab {
 
     public static final BlockProperties PROPERTIES = new BlockProperties(POLISHED_DIORITE_SLAB, CommonBlockProperties.MINECRAFT_VERTICAL_HALF);
     public static final BlockDefinition DEFINITION = BlockSlab.DEFINITION.toBuilder()
-            .hardness(1.5)
+            .hardness(1.5f)
             .toolType(ItemTool.TYPE_PICKAXE)
             .toolTier(ItemTool.TIER_WOODEN)
             .canHarvestWithHand(false)
-            .resistance(6)
+            .resistance(6.0f)
             .build();
 
     public BlockPolishedDioriteSlab(BlockState blockState) {

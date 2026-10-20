@@ -12,8 +12,8 @@ import org.jetbrains.annotations.NotNull;
 public class BlockPrismarine extends BlockSolid {
     public static final BlockProperties PROPERTIES = new BlockProperties(PRISMARINE);
     public static final BlockDefinition DEFINITION = SOLID.toBuilder()
-            .hardness(1.5)
-            .resistance(30)
+            .hardness(1.5f)
+            .resistance(30f)
             .toolType(ItemTool.TYPE_PICKAXE)
             .toolTier(ItemTool.TIER_WOODEN)
             .canHarvestWithHand(false)

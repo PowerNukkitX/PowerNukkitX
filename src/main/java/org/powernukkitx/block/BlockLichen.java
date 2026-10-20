@@ -19,8 +19,8 @@ import java.util.stream.Stream;
 
 public abstract class BlockLichen extends BlockTransparent {
     public static final BlockDefinition DEFINITION = TRANSPARENT.toBuilder()
-            .hardness(0.2)
-            .resistance(1)
+            .hardness(0.2f)
+            .resistance(1f)
             .toolType(ItemTool.TYPE_AXE)
             .toolTier(ItemTool.TIER_WOODEN)
             .canPassThrough(true)

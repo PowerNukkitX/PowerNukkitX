@@ -120,6 +120,11 @@ public class EntityPainting extends EntityHanging {
         super(chunk, nbt);
     }
 
+    @Override
+    public BlockFace getDirection() {
+        return BlockFace.fromHorizontalIndex(this.direction);
+    }
+
     public static Motive getMotive(String name) {
         return Motive.BY_NAME.getOrDefault(name, Motive.KEBAB);
     }
@@ -156,9 +161,10 @@ public class EntityPainting extends EntityHanging {
     @Override
     protected void initEntity() {
         this.motive = getMotive(this.getNbt().getString("Motif"));
+        this.direction = this.getNbt().getByte("Direction");
 
         if (this.motive != null) {
-            BlockFace face = getHorizontalFacing();
+            BlockFace face = getDirection();
 
             Vector3 size = new Vector3(this.motive.width, this.motive.height, this.motive.width).multiply(0.5);
 
@@ -195,7 +201,7 @@ public class EntityPainting extends EntityHanging {
         packet.setTargetActorID(this.uniqueIdLong());
         packet.setTargetRuntimeID(this.runtimeId());
         packet.setPosition(Vector3f.from(this.x, this.y, this.z));
-        packet.setDirection(this.getDirection().getHorizontalIndex());
+        packet.setDirection(this.direction);
         packet.setMotif(this.getNbt().getString("Motif"));
         return packet;
     }
@@ -220,6 +226,7 @@ public class EntityPainting extends EntityHanging {
     public void saveNBT() {
         super.saveNBT();
         this.nbt.putString("Motif", this.motive.title);
+        this.nbt.putByte("Dir", (2 - this.direction) & 3);
     }
 
     @Override
@@ -232,7 +239,7 @@ public class EntityPainting extends EntityHanging {
     }
 
     public Motive getMotive() {
-        return Motive.BY_NAME.get(this.getNbt().getString("Motif"));
+        return this.motive;
     }
 
     @Override
@@ -268,6 +275,7 @@ public class EntityPainting extends EntityHanging {
         BOUQUET("bouquet", 3, 3, predicateFor3WidthHeight),
         CAVEBIRD("cavebird", 3, 3, predicateFor3WidthHeight),
         COTAN("cotan", 3, 3, predicateFor3WidthHeight),
+        DENNIS("dennis", 3, 3, predicateFor3WidthHeight),
         ENDBOSS("endboss", 3, 3, predicateFor3WidthHeight),
         FERN("fern", 3, 3, predicateFor3WidthHeight),
         OWLEMONS("owlemons", 3, 3, predicateFor3WidthHeight),

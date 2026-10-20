@@ -9,8 +9,8 @@ public class BlockSandstone extends BlockSolid {
 
     public static final BlockProperties PROPERTIES = new BlockProperties(SANDSTONE);
     public static final BlockDefinition DEFINITION = SOLID.toBuilder()
-            .hardness(0.8)
-            .resistance(0.8)
+            .hardness(0.8f)
+            .resistance(0.8f)
             .toolType(ItemTool.TYPE_PICKAXE)
             .toolTier(ItemTool.TIER_WOODEN)
             .canHarvestWithHand(false)

@@ -7,7 +7,7 @@ import org.jetbrains.annotations.NotNull;
 public class BlockDeepslateCopperOre extends BlockCopperOre {
     public static final BlockProperties PROPERTIES = new BlockProperties(DEEPSLATE_COPPER_ORE);
     public static final BlockDefinition DEFINITION = BlockCopperOre.DEFINITION.toBuilder()
-            .hardness(4.5)
+            .hardness(4.5f)
             .build();
 
     @Override

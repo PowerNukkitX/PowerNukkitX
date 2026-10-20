@@ -19,8 +19,8 @@ public class BlockSmithingTable extends BlockSolid implements BlockInventoryHold
 
     public static final BlockProperties PROPERTIES = new BlockProperties(SMITHING_TABLE);
     public static final BlockDefinition DEFINITION = SOLID.toBuilder()
-            .hardness(2.5)
-            .resistance(12.5)
+            .hardness(2.5f)
+            .resistance(12.5f)
             .toolType(ItemTool.TYPE_AXE)
             .burnChance(5)
             .canBeActivated(true)

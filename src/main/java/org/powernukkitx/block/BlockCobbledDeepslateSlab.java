@@ -9,11 +9,11 @@ import org.jetbrains.annotations.NotNull;
 public class BlockCobbledDeepslateSlab extends BlockSlab {
     public static final BlockProperties PROPERTIES = new BlockProperties(COBBLED_DEEPSLATE_SLAB, CommonBlockProperties.MINECRAFT_VERTICAL_HALF);
     public static final BlockDefinition DEFINITION = BlockSlab.DEFINITION.toBuilder()
-            .hardness(3.5)
+            .hardness(3.5f)
             .toolType(ItemTool.TYPE_PICKAXE)
             .toolTier(ItemTool.TIER_WOODEN)
             .canHarvestWithHand(false)
-            .resistance(6)
+            .resistance(6.0f)
             .build();
 
     @Override

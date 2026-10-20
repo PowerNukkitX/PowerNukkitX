@@ -12,8 +12,8 @@ import org.jetbrains.annotations.NotNull;
 public class BlockStonePressurePlate extends BlockPressurePlateBase {
     public static final BlockProperties PROPERTIES = new BlockProperties(STONE_PRESSURE_PLATE, CommonBlockProperties.REDSTONE_SIGNAL);
     public static final BlockDefinition DEFINITION = BlockPressurePlateBase.DEFINITION.toBuilder()
-            .hardness(0.5D)
-            .resistance(6)
+            .hardness(0.5f)
+            .resistance(6f)
             .toolType(ItemTool.TYPE_PICKAXE)
             .toolTier(ItemTool.TIER_WOODEN)
             .build();

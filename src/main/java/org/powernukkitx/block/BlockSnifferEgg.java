@@ -21,8 +21,8 @@ import java.util.concurrent.ThreadLocalRandom;
 public class BlockSnifferEgg extends BlockTransparent {
     public static final BlockProperties PROPERTIES = new BlockProperties(SNIFFER_EGG, CommonBlockProperties.CRACKED_STATE);
     public static final BlockDefinition DEFINITION = TRANSPARENT.toBuilder()
-            .hardness(0.5)
-            .resistance(0.5)
+            .hardness(0.5f)
+            .resistance(0.5f)
             .canSilkTouch(true)
             .build();
     private static final int REGULAR_HATCH_TIME_TICKS = 24000;

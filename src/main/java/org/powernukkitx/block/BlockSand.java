@@ -12,8 +12,8 @@ import org.jetbrains.annotations.NotNull;
 public class BlockSand extends BlockFallable implements Natural {
     public static final BlockProperties PROPERTIES = new BlockProperties(SAND);
     public static final BlockDefinition DEFINITION = FALLABLE.toBuilder()
-            .hardness(0.5)
-            .resistance(0.5)
+            .hardness(0.5f)
+            .resistance(0.5f)
             .toolType(ItemTool.TYPE_SHOVEL)
             .build();
 

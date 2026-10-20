@@ -9,8 +9,8 @@ import org.jetbrains.annotations.NotNull;
 public class BlockInfestedCobblestone extends BlockSolid {
     public static final BlockProperties PROPERTIES = new BlockProperties(INFESTED_COBBLESTONE);
     public static final BlockDefinition DEFINITION = SOLID.toBuilder()
-            .hardness(1)
-            .resistance(0.75)
+            .hardness(1f)
+            .resistance(0.75f)
             .toolType(ItemTool.TYPE_PICKAXE)
             .build();
 

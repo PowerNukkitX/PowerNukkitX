@@ -19,8 +19,8 @@ public class BlockGraniteWall extends BlockWallBase {
             CommonBlockProperties.WALL_POST_BIT
     );
     public static final BlockDefinition DEFINITION = BlockWallBase.DEFINITION.toBuilder()
-            .hardness(1.5)
-            .resistance(6)
+            .hardness(1.5f)
+            .resistance(6f)
             .toolTier(ItemTool.TIER_WOODEN)
             .build();
 

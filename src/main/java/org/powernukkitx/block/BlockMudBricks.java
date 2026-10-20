@@ -9,7 +9,7 @@ public class BlockMudBricks extends Block {
     public static final BlockProperties PROPERTIES = new BlockProperties(MUD_BRICKS);
     public static final BlockDefinition DEFINITION = DEFAULT_DEFINITION.toBuilder()
             .hardness(3)
-            .resistance(1.5)
+            .resistance(1.5f)
             .toolType(ItemTool.TYPE_PICKAXE)
             .toolTier(ItemTool.TIER_WOODEN)
             .build();

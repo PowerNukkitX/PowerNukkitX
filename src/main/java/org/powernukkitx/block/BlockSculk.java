@@ -13,8 +13,8 @@ import org.jetbrains.annotations.Nullable;
 public class BlockSculk extends BlockSolid {
     public static final BlockProperties PROPERTIES = new BlockProperties(SCULK);
     public static final BlockDefinition DEFINITION = SOLID.toBuilder()
-            .hardness(0.2)
-            .resistance(0.2)
+            .hardness(0.2f)
+            .resistance(0.2f)
             .toolType(ItemTool.TYPE_HOE)
             .toolTier(ItemTool.TIER_WOODEN)
             .canHarvestWithHand(false)

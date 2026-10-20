@@ -13,8 +13,8 @@ public class BlockSeaLantern extends BlockTransparent {
 
     public static final BlockProperties PROPERTIES = new BlockProperties(SEA_LANTERN);
     public static final BlockDefinition DEFINITION = TRANSPARENT.toBuilder()
-            .hardness(0.3)
-            .resistance(1.5)
+            .hardness(0.3f)
+            .resistance(1.5f)
             .lightEmission(15)
             .canSilkTouch(true)
             .build();

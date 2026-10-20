@@ -16,8 +16,8 @@ import java.util.concurrent.ThreadLocalRandom;
 public class BlockChorusPlant extends BlockTransparent {
     public static final BlockProperties PROPERTIES = new BlockProperties(CHORUS_PLANT);
     public static final BlockDefinition DEFINITION = TRANSPARENT.toBuilder()
-            .hardness(0.4)
-            .resistance(0.4)
+            .hardness(0.4f)
+            .resistance(0.4f)
             .toolType(ItemTool.TYPE_AXE)
             .breaksWhenMoved(true)
             .sticksToPiston(false)

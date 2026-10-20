@@ -13,8 +13,8 @@ import java.util.concurrent.ThreadLocalRandom;
 public class BlockGildedBlackstone extends BlockSolid {
     public static final BlockProperties PROPERTIES = new BlockProperties(GILDED_BLACKSTONE);
     public static final BlockDefinition DEFINITION = SOLID.toBuilder()
-            .hardness(1.5)
-            .resistance(6)
+            .hardness(1.5f)
+            .resistance(6f)
             .toolType(ItemTool.TYPE_PICKAXE)
             .canSilkTouch(true)
             .canHarvestWithHand(false)

@@ -22,8 +22,8 @@ public class BlockCraftingTable extends BlockSolid implements BlockInventoryHold
 
     public static final BlockProperties PROPERTIES = new BlockProperties(CRAFTING_TABLE);
     public static final BlockDefinition DEFINITION = SOLID.toBuilder()
-            .hardness(2.5)
-            .resistance(15)
+            .hardness(2.5f)
+            .resistance(15.0f)
             .toolType(ItemTool.TYPE_AXE)
             .canBeActivated(true)
             .build();

@@ -29,8 +29,8 @@ import static org.powernukkitx.math.AxisAlignedBB.collisionEpsilon;
 
 public abstract class BlockLiquid extends BlockTransparent {
     public static final BlockDefinition DEFINITION = TRANSPARENT.toBuilder()
-            .hardness(100d)
-            .resistance(500)
+            .hardness(100f)
+            .resistance(500f)
             .canPassThrough(true)
             .breaksWhenMoved(true)
             .sticksToPiston(false)

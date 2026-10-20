@@ -36,7 +36,7 @@ import java.util.concurrent.ThreadLocalRandom;
 public class BlockCrafter extends BlockSolid implements RedstoneComponent, BlockEntityHolder<BlockEntityCrafter> {
     public static final BlockProperties PROPERTIES = new BlockProperties(CRAFTER, CommonBlockProperties.CRAFTING, CommonBlockProperties.ORIENTATION, CommonBlockProperties.TRIGGERED_BIT);
     public static final BlockDefinition DEFINITION = SOLID.toBuilder()
-            .resistance(1.5D)
+            .resistance(1.5f)
             .toolType(ItemTool.TYPE_PICKAXE)
             .canBeActivated(true)
             .hasComparatorInputOverride(true)
