@@ -4,12 +4,21 @@ import org.powernukkitx.math.Vector3;
 import org.powernukkitx.nbt.tag.CompoundTag;
 import org.powernukkitx.nbt.tag.ListTag;
 import org.powernukkitx.nbt.tag.LongTag;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
+/**
+ * Raid state with health snapshots shared by successive states and persisted with the raider IDs.
+ *
+ * @param raiderHealth last known health by persistent actor ID; must not be null;
+ *                     shared across states when backed by a {@link ConcurrentHashMap}, otherwise copied
+ */
 public record VillageRaid(long gameTick, byte groupNumber, byte numberOfGroups, byte numberOfRaiders,
                           List<Long> raiders, byte spawnFails, Vector3 spawnPosition, int state, int status,
-                          long ticks, float totalMaxHealth) {
+                          long ticks, float totalMaxHealth, @NotNull Map<Long, Float> raiderHealth) {
     public static final int STATE_PREPARATION = 0;
     public static final int STATE_PICKING_SPAWN_POINT = 1;
     public static final int STATE_SPAWNING_GROUP = 2;
@@ -24,6 +33,17 @@ public record VillageRaid(long gameTick, byte groupNumber, byte numberOfGroups, 
 
     public VillageRaid {
         raiders = List.copyOf(raiders);
+        if (!(raiderHealth instanceof ConcurrentHashMap)) raiderHealth = new ConcurrentHashMap<>(raiderHealth);
+    }
+
+    /**
+     * Creates a raid without saved individual health, for callers using the original constructor.
+     */
+    public VillageRaid(long gameTick, byte groupNumber, byte numberOfGroups, byte numberOfRaiders,
+                       List<Long> raiders, byte spawnFails, Vector3 spawnPosition, int state, int status,
+                       long ticks, float totalMaxHealth) {
+        this(gameTick, groupNumber, numberOfGroups, numberOfRaiders, raiders, spawnFails, spawnPosition,
+                state, status, ticks, totalMaxHealth, new ConcurrentHashMap<>());
     }
 
     /**
@@ -70,22 +90,22 @@ public record VillageRaid(long gameTick, byte groupNumber, byte numberOfGroups, 
 
     public VillageRaid withState(int state) {
         return new VillageRaid(gameTick, groupNumber, numberOfGroups, numberOfRaiders, raiders, spawnFails,
-                spawnPosition, state, status, 0L, totalMaxHealth);
+                spawnPosition, state, status, 0L, totalMaxHealth, raiderHealth);
     }
 
     public VillageRaid withStatus(int status) {
         return new VillageRaid(gameTick, groupNumber, numberOfGroups, numberOfRaiders, raiders, spawnFails,
-                spawnPosition, STATE_FINISHED, status, ticks, totalMaxHealth);
+                spawnPosition, STATE_FINISHED, status, ticks, totalMaxHealth, raiderHealth);
     }
 
     public VillageRaid withTicks(long ticks) {
         return new VillageRaid(gameTick, groupNumber, numberOfGroups, numberOfRaiders, raiders, spawnFails,
-                spawnPosition, state, status, ticks, totalMaxHealth);
+                spawnPosition, state, status, ticks, totalMaxHealth, raiderHealth);
     }
 
     public VillageRaid withRaiders(List<Long> raiders) {
         return new VillageRaid(gameTick, groupNumber, numberOfGroups, numberOfRaiders, raiders, spawnFails,
-                spawnPosition, state, status, ticks, totalMaxHealth);
+                spawnPosition, state, status, ticks, totalMaxHealth, raiderHealth);
     }
 
     /**
@@ -93,7 +113,7 @@ public record VillageRaid(long gameTick, byte groupNumber, byte numberOfGroups, 
      */
     public VillageRaid withSpawnPoint(Vector3 spawnPosition, int spawnFails) {
         return new VillageRaid(gameTick, groupNumber, numberOfGroups, numberOfRaiders, raiders, (byte) spawnFails,
-                spawnPosition, state, status, ticks, totalMaxHealth);
+                spawnPosition, state, status, ticks, totalMaxHealth, raiderHealth);
     }
 
     /**
@@ -110,18 +130,31 @@ public record VillageRaid(long gameTick, byte groupNumber, byte numberOfGroups, 
                 tag.getByte("NumRaiders"), tag.getList("Raiders", LongTag.class).getAll().stream()
                 .map(LongTag::getData).toList(), tag.getByte("SpawnFails"),
                 new Vector3(tag.getFloat("SpawnX"), tag.getFloat("SpawnY"), tag.getFloat("SpawnZ")),
-                tag.getInt("State"), tag.getInt("Status"), tag.getLong("Ticks"), tag.getFloat("TotalMaxHealth"));
+                tag.getInt("State"), tag.getInt("Status"), tag.getLong("Ticks"), tag.getFloat("TotalMaxHealth"), readRaiderHealth(tag));
+    }
+
+    private static Map<Long, Float> readRaiderHealth(CompoundTag tag) {
+        Map<Long, Float> health = new ConcurrentHashMap<>();
+        for (CompoundTag entry : tag.getList("RaiderHealth", CompoundTag.class).getAll()) {
+            health.put(entry.getLong("ID"), entry.getFloat("Health"));
+        }
+        return health;
     }
 
     public CompoundTag toCompound() {
         ListTag<LongTag> raidersTag = new ListTag<>();
         raiders.forEach(id -> raidersTag.add(new LongTag(id)));
+        ListTag<CompoundTag> healthTag = new ListTag<>();
+        for (long id : raiders) {
+            Float health = raiderHealth.get(id);
+            if (health != null) healthTag.add(new CompoundTag().putLong("ID", id).putFloat("Health", health));
+        }
         CompoundTag raid = new CompoundTag().putLong("GameTick", gameTick).putByte("GroupNum", groupNumber)
                 .putByte("NumGroups", numberOfGroups).putByte("NumRaiders", numberOfRaiders)
                 .putList("Raiders", raidersTag).putByte("SpawnFails", spawnFails)
                 .putFloat("SpawnX", (float) spawnPosition.x).putFloat("SpawnY", (float) spawnPosition.y)
                 .putFloat("SpawnZ", (float) spawnPosition.z).putInt("State", state).putInt("Status", status)
-                .putLong("Ticks", ticks).putFloat("TotalMaxHealth", totalMaxHealth);
+                .putLong("Ticks", ticks).putFloat("TotalMaxHealth", totalMaxHealth).putList("RaiderHealth", healthTag);
         return new CompoundTag().putCompound("Raid", raid);
     }
 }

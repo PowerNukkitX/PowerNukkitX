@@ -67,7 +67,7 @@ class VillageManagerRaidTest {
     }
 
     @Test
-    void invalidVillageStopsItsRaidInTheSameTick() {
+    void invalidVillageLosesItsRaidAndStartsRaiderCelebration() {
         Level level = mock(Level.class);
         VillageManager manager = new VillageManager(level);
         Village village = manager.createVillage(new BlockVector3(0, 64, 0));
@@ -75,11 +75,98 @@ class VillageManagerRaidTest {
         EntityPillager raider = raider(village);
         when(level.getEntityByUniqueId(42L)).thenReturn(raider);
 
+        when(level.getPlayers()).thenReturn(new java.util.HashMap<>());
         manager.tick(1);
 
-        assertNull(village.raid());
+        assertEquals(VillageRaid.STATUS_LOSS, village.raid().status());
+        assertTrue(raider.getMemoryStorage().get(CoreMemoryTypes.CELEBRATING));
         verify(raider).setRaiding(false);
         verify(raider).setPersistent(false);
+        for (int tick = 0; tick <= VillageManager.CELEBRATION_DURATION; tick++) manager.tick(tick + 2);
+        assertNull(village.raid());
+    }
+
+    @Test
+    void removingDwellerUpdatesPopulationWithoutRemovingUnloadedNeighbours() {
+        Level level = mock(Level.class);
+        VillageManager manager = new VillageManager(level);
+        Village village = manager.createVillage(new BlockVector3(0, 64, 0));
+        manager.addDweller(village.uuid(), new VillageDwellers.Actor(1L, new BlockVector3(), 0L, null));
+        manager.addDweller(village.uuid(), new VillageDwellers.Actor(2L, new BlockVector3(), 0L, null));
+
+        manager.removeDweller(1L);
+        manager.removeDweller(1L);
+        assertEquals(1L, village.population());
+        assertTrue(manager.isDweller(2L));
+        manager.removeDweller(2L);
+        assertEquals(0L, village.population());
+        assertFalse(village.isValid());
+    }
+
+    @Test
+    void snapshotKeepsDamagedRaiderHealthAcrossPersistence() {
+        Level level = mock(Level.class);
+        VillageManager manager = new VillageManager(level);
+        Village village = manager.createVillage(new BlockVector3(0, 64, 0));
+        village.setRaid(VillageRaid.starting(0, 3, new Vector3()).withGroup(1, List.of(42L), 24f));
+        EntityPillager raider = raider(village);
+        when(raider.getHealth()).thenReturn(9f);
+
+        manager.rememberRaiderHealth(raider);
+        VillageRaid restored = VillageRaid.fromCompound(village.raid().toCompound());
+        assertEquals(9f, restored.raiderHealth().get(42L).floatValue());
+        assertEquals(0.375f, restored.bossBarProgress(restored.raiderHealth().get(42L)));
+    }
+
+    @Test
+    void bossBarKeepsUnloadedRaiderHealthAndRefreshesItOnReload() {
+        Level level = mock(Level.class);
+        VillageManager manager = new VillageManager(level);
+        Village village = manager.createVillage(new BlockVector3(0, 64, 0));
+        manager.addDweller(village.uuid(), new VillageDwellers.Actor(1L, new BlockVector3(), 0L, null));
+        village.pois().poi().add(new VillagePoiGroup(1L,
+                List.of(new VillagePoi(PoiType.HOME, new BlockVector3(0, 64, 0)))));
+        village.setRaid(VillageRaid.starting(0, 3, new Vector3()).withGroup(1, List.of(42L), 24f));
+        EntityPillager raider = raider(village);
+        when(raider.isAlive()).thenReturn(true);
+        when(raider.getHealth()).thenReturn(12f);
+        when(level.getEntityByUniqueId(42L)).thenReturn(raider);
+        org.powernukkitx.Player player = mock(org.powernukkitx.Player.class);
+        when(player.getX()).thenReturn(0.5);
+        when(player.getY()).thenReturn(0.5);
+        when(player.getZ()).thenReturn(0.5);
+        when(player.isConnected()).thenReturn(true);
+        when(player.getLevel()).thenReturn(level);
+        when(player.getUniqueId()).thenReturn(java.util.UUID.randomUUID());
+        when(level.getPlayers()).thenReturn(java.util.Map.of(7L, player));
+
+        manager.tick(1);
+        when(level.getEntityByUniqueId(42L)).thenReturn(null);
+        manager.tick(2);
+        assertEquals(List.of(42L), village.raid().raiders());
+        when(level.getEntityByUniqueId(42L)).thenReturn(raider);
+        when(raider.getHealth()).thenReturn(6f);
+        manager.tick(3);
+
+        var bars = org.mockito.ArgumentCaptor.forClass(org.powernukkitx.utils.DummyBossBar.class);
+        verify(player, times(3)).createBossBar(bars.capture());
+        assertEquals(50f, bars.getAllValues().get(0).getLength());
+        assertEquals(50f, bars.getAllValues().get(1).getLength());
+        assertEquals(25f, bars.getAllValues().get(2).getLength());
+    }
+
+    @Test
+    void reloadedRaiderCelebratesDuringDefeat() {
+        Level level = mock(Level.class);
+        VillageManager manager = new VillageManager(level);
+        Village village = manager.createVillage(new BlockVector3(0, 64, 0));
+        village.setRaid(VillageRaid.starting(0, 3, new Vector3())
+                .withGroup(1, List.of(42L), 24f).withStatus(VillageRaid.STATUS_LOSS));
+        EntityPillager raider = raider(village);
+
+        manager.restoreRaider(raider);
+        assertTrue(raider.getMemoryStorage().get(CoreMemoryTypes.CELEBRATING));
+        assertNull(raider.getMemoryStorage().get(CoreMemoryTypes.RAID_TARGET));
     }
 
     @Test

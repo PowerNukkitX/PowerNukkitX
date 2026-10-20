@@ -13,7 +13,7 @@ public final class Village {
     private VillageInfo info;
     private final VillagePlayers players;
     private final VillagePois pois;
-    private @Nullable VillageRaid raid;
+    private volatile @Nullable VillageRaid raid;
     private long bellRingTick;
     private final Long2ObjectMap<BlockVector3> raiderPositions = new Long2ObjectOpenHashMap<>();
 

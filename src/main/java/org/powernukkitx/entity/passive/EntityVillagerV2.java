@@ -672,6 +672,7 @@ public class EntityVillagerV2 extends EntityIntelligent implements InventoryHold
             } else if (source.getDamager() instanceof EntityZombie && shouldTransformToZombieVillager() && transformZombie()) return;
         }
         super.kill();
+        if (!isAlive()) getLevel().getVillageManager().removeDweller(uniqueIdLong());
     }
 
     private boolean shouldTransformToZombieVillager() {
@@ -977,6 +978,13 @@ public class EntityVillagerV2 extends EntityIntelligent implements InventoryHold
         this.nbt.putInt("maxTradeTier", this.tradeTier);
     }
 
+    /** Permanently removes this villager from its village's population before removing its actor. */
+    @Override
+    public void remove() {
+        if (getLevel() != null) getLevel().getVillageManager().removeDweller(uniqueIdLong());
+        super.remove();
+    }
+
     @Override
     public void close() {
         if (getLevel() != null && getMemoryStorage() != null) {
@@ -1120,6 +1128,7 @@ public class EntityVillagerV2 extends EntityIntelligent implements InventoryHold
             zombie.close();
             return false;
         } else {
+            getLevel().getVillageManager().removeDweller(uniqueIdLong());
             this.close();
             zombie.spawnToAll();
             this.level.addSound(this, Sound.MOB_VILLAGER_DEATH);

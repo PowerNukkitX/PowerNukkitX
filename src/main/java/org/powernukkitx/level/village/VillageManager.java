@@ -30,6 +30,7 @@ import org.powernukkitx.registry.Registries;
 import org.powernukkitx.utils.BossBarColor;
 import org.powernukkitx.utils.DummyBossBar;
 import org.cloudburstmc.protocol.bedrock.data.SoundEvent;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -254,6 +255,19 @@ public final class VillageManager {
         if (!village.info().initialized()) village.setInfo(withInitialized(village.info()));
     }
 
+    /**
+     * Removes a permanently lost villager from population tracking without loading chunks.
+     * Must not be called for an ordinary chunk unload.
+     *
+     * @param entityId persistent actor ID of the dead, removed or transformed villager
+     */
+    public synchronized void removeDweller(long entityId) {
+        for (Village village : villages.values()) {
+            village.dwellers().get(VillageDwellers.Role.INHABITANT).actors()
+                    .removeIf(actor -> actor.id() == entityId);
+        }
+    }
+
     public void addVillage(Village village) {
         Village previous = villages.put(village.uuid(), village);
         if (previous != null && previous != village) {
@@ -307,8 +321,11 @@ public final class VillageManager {
                 continue;
             }
             village.setRaid(tickRaid(village, raid));
-            setDwellersHiding(village, village.raid() != null);
+            setDwellersHiding(village, village.raid() != null && !village.raid().isFinished());
             updateBossBars(village);
+            if (village.raid() == null && village.houseCount() == 0) {
+                dissolveVillage(village);
+            }
         }
     }
 
@@ -360,14 +377,18 @@ public final class VillageManager {
 
     private @Nullable VillageRaid tickRaid(Village village, VillageRaid raid) {
         if (raid.isFinished()) {
+            if (raid.status() == VillageRaid.STATUS_LOSS && raid.ticks() < CELEBRATION_DURATION) {
+                return raid.withTicks(raid.ticks() + 1);
+            }
             removeBossBars(village);
-            expireRaiders(raid, raid.status() == VillageRaid.STATUS_LOSS);
+            if (raid.status() != VillageRaid.STATUS_LOSS) {
+                expireRaiders(raid, false);
+            }
             village.raiderPositions().clear();
             return null;
         }
         if (!village.isValid()) {
-            stopRaid(village);
-            return null;
+            return loseRaid(raid);
         }
         restoreRaiderTargets(village, raid);
         if (!hasPlayerInRaidBounds(village)) {
@@ -381,6 +402,11 @@ public final class VillageManager {
             case VillageRaid.STATE_AWARDING_REWARDS -> awardRewards(village, raid);
             default -> raid.withStatus(VillageRaid.STATUS_STOPPED);
         };
+    }
+
+    private VillageRaid loseRaid(VillageRaid raid) {
+        expireRaiders(raid, true);
+        return raid.withStatus(VillageRaid.STATUS_LOSS).withTicks(0);
     }
 
     private void playRaidHorn(Village village) {
@@ -436,7 +462,12 @@ public final class VillageManager {
     private VillageRaid tickSpawningGroup(Village village, VillageRaid raid) {
         List<Long> raiders = spawnGroup(village, raid);
         if (!raiders.isEmpty()) {
-            return raid.withGroup(raid.groupNumber() + 1, raiders, totalMaxHealth(raiders));
+            VillageRaid next = raid.withGroup(raid.groupNumber() + 1, raiders, totalMaxHealth(raiders));
+            for (long id : raiders) {
+                Entity raider = level.getEntityByUniqueId(id);
+                if (raider != null) next.raiderHealth().put(id, raider.getHealth());
+            }
+            return next;
         }
         int spawnFails = raid.spawnFails() + 1;
         return spawnFails > ALLOWED_SPAWN_FAILURES
@@ -452,6 +483,7 @@ public final class VillageManager {
             if (raider != null) {
                 if (raider.isClosed() || !raider.isAlive()) {
                     village.raiderPositions().remove(raiderId);
+                    raid.raiderHealth().remove(raiderId);
                     continue;
                 }
                 village.raiderPositions().put(raiderId, raider.asBlockVector3());
@@ -464,6 +496,7 @@ public final class VillageManager {
                 continue;
             }
             village.raiderPositions().remove(raiderId);
+            raid.raiderHealth().remove(raiderId);
         }
         if (!alive.isEmpty()) {
             long inPlay = raid.ticks() + 1;
@@ -699,9 +732,10 @@ public final class VillageManager {
         float health = 0f;
         for (long raiderId : raid.raiders()) {
             Entity raider = level.getEntityByUniqueId(raiderId);
-            if (raider != null && !raider.isClosed() && raider.isAlive()) {
-                health += raider.getHealth();
+            if (raider != null && !raider.isClosed()) {
+                raid.raiderHealth().put(raiderId, raider.isAlive() ? raider.getHealth() : 0f);
             }
+            health += raid.raiderHealth().getOrDefault(raiderId, 0f);
         }
         float length = Math.max(1f, raid.bossBarProgress(health) * 100f);
         for (Player player : level.getPlayers().values()) {
@@ -743,6 +777,11 @@ public final class VillageManager {
             return;
         }
         VillageRaid raid = village == null ? null : village.raid();
+        if (raid != null && raid.status() == VillageRaid.STATUS_LOSS
+                && raid.raiders().contains(raider.uniqueIdLong())) {
+            clearRaider(raider, true);
+            return;
+        }
         if (raid == null || raid.isFinished() || !raid.raiders().contains(raider.uniqueIdLong())) {
             clearRaider(raider, false);
             return;
@@ -750,6 +789,27 @@ public final class VillageManager {
         BlockVector3 center = village.center();
         raider.getMemoryStorage().put(CoreMemoryTypes.RAID_TARGET,
                 new Vector3(center.x + 0.5, center.y, center.z + 0.5));
+    }
+
+    /**
+     * Captures a loaded raider's health before saving or closing it. Does not load chunks.
+     * The health map also accepts snapshots from chunk save callbacks.
+     *
+     * @param raider entity whose current health must survive a chunk unload
+     */
+    public void rememberRaiderHealth(@NotNull EntityIntelligent raider) {
+        String villageId = raider.getNbt().getString("RaidVillageUUID");
+        if (villageId.isEmpty()) return;
+        Village village;
+        try {
+            village = villages.get(UUID.fromString(villageId));
+        } catch (IllegalArgumentException ignored) {
+            return;
+        }
+        VillageRaid raid = village == null ? null : village.raid();
+        if (raid != null && !raid.isFinished() && raid.raiders().contains(raider.uniqueIdLong())) {
+            raid.raiderHealth().put(raider.uniqueIdLong(), raider.getHealth());
+        }
     }
 
     private void restoreRaiderTargets(Village village, VillageRaid raid) {
@@ -850,6 +910,11 @@ public final class VillageManager {
     }
 
     private void dissolveVillage(Village village) {
+        VillageRaid raid = village.raid();
+        if (raid != null) {
+            if (!raid.isFinished()) village.setRaid(loseRaid(raid));
+            return;
+        }
         if (!removeVillage(village)) {
             return;
         }

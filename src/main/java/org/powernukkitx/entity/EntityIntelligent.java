@@ -108,7 +108,15 @@ public abstract class EntityIntelligent extends EntityPhysical implements Logica
     @Override
     public void saveNBT() {
         super.saveNBT();
+        getLevel().getVillageManager().rememberRaiderHealth(this);
         getBehaviorGroup().save(this);
+    }
+
+    /** Captures raid health before the loaded entity is detached from its level. */
+    @Override
+    public void close() {
+        if (getLevel() != null) getLevel().getVillageManager().rememberRaiderHealth(this);
+        super.close();
     }
 
     @Override

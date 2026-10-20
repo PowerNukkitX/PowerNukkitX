@@ -42,6 +42,17 @@ class VillageRaidTest {
     }
 
     @Test
+    void healthSnapshotsSurviveStateChangesAndResetForANewGroup() {
+        VillageRaid raid = VillageRaid.starting(0, 3, new Vector3()).withGroup(1, List.of(1L), 24f);
+        raid.raiderHealth().put(1L, 12f);
+        VillageRaid next = raid.withTicks(2).withRaiders(List.of(1L))
+                .withState(VillageRaid.STATE_GROUP_IN_PLAY).withSpawnPoint(new Vector3(), 1);
+        assertEquals(12f, next.raiderHealth().get(1L).floatValue());
+        assertEquals(12f, next.withStatus(VillageRaid.STATUS_LOSS).raiderHealth().get(1L).floatValue());
+        assertEquals(0, next.withGroup(2, List.of(2L), 24f).raiderHealth().size());
+    }
+
+    @Test
     void zeroMaximumHealthHasNoProgress() {
         VillageRaid raid = VillageRaid.starting(0, 3, new Vector3())
                 .withGroup(1, List.of(1L), 0f);
