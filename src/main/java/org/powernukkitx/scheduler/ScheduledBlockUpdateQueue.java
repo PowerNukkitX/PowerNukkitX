@@ -36,6 +36,10 @@ final class ScheduledBlockUpdateQueue {
         pending.add(update);
     }
 
+    synchronized void markLoadedChanges() {
+        storageChanges++;
+    }
+
     synchronized void requeue(ScheduledBlockUpdate update, long targetTick) {
         pending.add(new ScheduledBlockUpdate(
                 update.x,

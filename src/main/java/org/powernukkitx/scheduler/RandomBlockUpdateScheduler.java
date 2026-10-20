@@ -137,6 +137,14 @@ public class RandomBlockUpdateScheduler {
     }
 
     /**
+     * Marks a normalized loaded tick list for persistence.
+     */
+    public void markLoadedChanges() {
+        updates.markLoadedChanges();
+        chunk.setChanged(true);
+    }
+
+    /**
      * Returns whether a matching pending update exists.
      */
     public boolean contains(Vector3 pos, Block block) {
