@@ -640,8 +640,11 @@ public class Server {
 
         {//init
             CompletableFuture<Void> blockF = CompletableFuture.runAsync(Registries.BLOCK::init, computeThreadPool);
-            CompletableFuture<Void> itemF = CompletableFuture.runAsync(Registries.ITEM::init, computeThreadPool);
             CompletableFuture<Void> potionF = CompletableFuture.runAsync(Registries.POTION::init, computeThreadPool);
+            CompletableFuture<Void> effectF = CompletableFuture.runAsync(Registries.EFFECT::init, computeThreadPool);
+            CompletableFuture<Void> itemF = CompletableFuture.allOf(potionF, effectF)
+                .thenRunAsync(Registries.ITEM::init, computeThreadPool);
+
             CompletableFuture<Void> entityF = CompletableFuture.runAsync(Registries.ENTITY::init, computeThreadPool);
             CompletableFuture<Void> blockEntityF = CompletableFuture.runAsync(Registries.BLOCKENTITY::init, computeThreadPool);
             CompletableFuture<Void> itemRtIdF = CompletableFuture.runAsync(
@@ -660,7 +663,6 @@ public class Server {
             CompletableFuture<Void> populatorF = CompletableFuture.runAsync(Registries.POPULATOR::init, computeThreadPool);
             CompletableFuture<Void> genFeatF = CompletableFuture.runAsync(Registries.GENERATE_FEATURE::init, computeThreadPool);
             CompletableFuture<Void> structureSpawnOverrideF = CompletableFuture.runAsync(Registries.STRUCTURE_SPAWN_OVERRIDE::init, computeThreadPool);
-            CompletableFuture<Void> effectF = CompletableFuture.runAsync(Registries.EFFECT::init, computeThreadPool);
             CompletableFuture<Void> voxelF = CompletableFuture.runAsync(Registries.VOXEL_SHAPE::init, computeThreadPool);
             CompletableFuture<Void> disconnectF = CompletableFuture.runAsync(Registries.DISCONNECT_REASON::init, computeThreadPool);
             CompletableFuture<Void> trimF = CompletableFuture.runAsync(Registries.TRIM::init, computeThreadPool);
