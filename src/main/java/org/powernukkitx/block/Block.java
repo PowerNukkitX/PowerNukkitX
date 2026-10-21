@@ -1496,9 +1496,16 @@ public abstract class Block extends Position implements Metadatable, AxisAligned
                         if (!(v instanceof StringTag stringTag)) {
                             continue;
                         }
-                        Item entry = Item.get(stringTag.data);
-                        if (!entry.isNull() &&
-                                entry.getBlock().getId().equals(this.getId())) {
+                        String id = stringTag.data.contains(":") ? stringTag.data : "minecraft:" + stringTag.data;
+                        Block entry = Registries.BLOCK.get(id);
+                        if (entry == null) {
+                            Item item = Item.get(id);
+                            if (item.isNull()) {
+                                continue;
+                            }
+                            entry = item.getBlock();
+                        }
+                        if (entry.getId().equals(this.getId())) {
                             canBreak = true;
                             break;
                         }
