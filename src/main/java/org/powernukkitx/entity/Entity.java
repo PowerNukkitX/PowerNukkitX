@@ -2,10 +2,12 @@ package org.powernukkitx.entity;
 
 import org.powernukkitx.Player;
 import org.powernukkitx.PlayerHandle;
+import org.powernukkitx.AdventureSettings;
 import org.powernukkitx.Server;
 import org.powernukkitx.command.CommandSender;
 import org.powernukkitx.block.Block;
 import org.powernukkitx.block.BlockAir;
+import org.powernukkitx.block.BlockBorderBlock;
 import org.powernukkitx.block.BlockBubbleColumn;
 import org.powernukkitx.block.BlockEndPortal;
 import org.powernukkitx.block.BlockFence;
