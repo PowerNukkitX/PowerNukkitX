@@ -25,9 +25,10 @@ import io.netty.util.internal.EmptyArrays;
 import lombok.Getter;
 import lombok.Setter;
 import org.cloudburstmc.protocol.bedrock.data.command.CommandParamType;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -174,11 +175,13 @@ public abstract class Command {
     /**
      * Generates custom command data for a player, used for AvailableCommandsPacket.
      * Returns null if the player does not have permission for this command.
+     * Alias suggestions include only aliases that currently resolve to this command,
+     * together with its registered label. Call on the main server loop.
      *
      * @param player the player for whom to generate command data
      * @return a {@link CommandDataVersions} instance, or null if no permission
      */
-    public CommandDataVersions generateCustomCommandData(Player player) {
+    public @Nullable CommandDataVersions generateCustomCommandData(@NotNull Player player) {
         if (!this.testPermission(player)) {
             return null;
         }
@@ -188,12 +191,19 @@ public abstract class Command {
         NukkitCommandData customData = this.commandData.clone();
 
         if (getAliases().length > 0) {
-            List<String> aliases = new ArrayList<>(Arrays.asList(getAliases()));
-            if (!aliases.contains(this.name)) {
-                aliases.add(this.name);
+            final SimpleCommandMap commandMap = player.getServer().getCommandMap();
+            List<String> aliases = new ArrayList<>();
+            for (String alias : getAliases()) {
+                if (commandMap.getCommand(alias) != this) {
+                    continue;
+                }
+                aliases.add(alias);
+            }
+            if (!aliases.contains(this.label)) {
+                aliases.add(this.label);
             }
 
-            customData.aliases = new CommandEnum(this.name + "Aliases", aliases);
+            customData.aliases = new CommandEnum(this.label + "Aliases", aliases);
         }
 
         if (plugin == InternalPlugin.INSTANCE) {
