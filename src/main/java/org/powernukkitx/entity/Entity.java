@@ -2,12 +2,10 @@ package org.powernukkitx.entity;
 
 import org.powernukkitx.Player;
 import org.powernukkitx.PlayerHandle;
-import org.powernukkitx.AdventureSettings;
 import org.powernukkitx.Server;
 import org.powernukkitx.command.CommandSender;
 import org.powernukkitx.block.Block;
 import org.powernukkitx.block.BlockAir;
-import org.powernukkitx.block.BlockBorderBlock;
 import org.powernukkitx.block.BlockBubbleColumn;
 import org.powernukkitx.block.BlockEndPortal;
 import org.powernukkitx.block.BlockFence;
@@ -5891,22 +5889,11 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
         return this.blocksAround;
     }
 
-    private boolean canIgnoreBorderBlockCollision() {
-        if (!(this instanceof Player player)) {
-            return false;
-        }
-        return player.isCreative() || player.getAdventureSettings().get(AdventureSettings.Type.WORLD_BUILDER);
-    }
-
     public List<Block> getCollisionBlocks() {
         if (this.collisionBlocks == null) {
             this.collisionBlocks = new ArrayList<>();
-            boolean ignoreBorderBlocks = canIgnoreBorderBlockCollision();
 
             for (Block b : getBlocksAround()) {
-                if (ignoreBorderBlocks && b instanceof BlockBorderBlock) {
-                    continue;
-                }
                 if (b.collidesWithBB(this.getBoundingBox(), true)) {
                     this.collisionBlocks.add(b);
                 }
@@ -5920,12 +5907,8 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
     public List<Block> getTickCachedCollisionBlocks() {
         if (this.collisionBlocks == null) {
             this.collisionBlocks = new ArrayList<>();
-            boolean ignoreBorderBlocks = canIgnoreBorderBlockCollision();
 
             for (Block b : getTickCachedBlocksAround()) {
-                if (ignoreBorderBlocks && b instanceof BlockBorderBlock) {
-                    continue;
-                }
                 if (b.collidesWithBB(this.getBoundingBox(), true)) {
                     this.collisionBlocks.add(b);
                 }
