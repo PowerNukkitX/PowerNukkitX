@@ -5968,6 +5968,10 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         setOpenSignFront(null);
 
         this.setMotion(this.temporalVector.setComponents(0, 0, 0));
+        if (this.isCrawling()) {
+            this.setCrawling(false);
+            this.sendData(this);
+        }
 
         boolean switchLevel = false;
         if (!to.getLevel().equals(from.getLevel())) {
