@@ -13,6 +13,7 @@ import org.powernukkitx.event.entity.EntityDamageByEntityEvent;
 import org.powernukkitx.entity.passive.EntityParrot;
 import org.powernukkitx.entity.ai.route.posevaluator.ParrotPosEvaluator;
 import org.powernukkitx.math.Vector3;
+import org.powernukkitx.level.Level;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.concurrent.ThreadLocalRandom;
@@ -28,11 +29,23 @@ public class ParrotMovementExecutor implements IBehaviorExecutor, EntityControl 
     private int nextDestination;
     private int lookUntil;
     private Player lookingAt;
+    private Level lastLevel;
 
     @Override
     public boolean execute(@NotNull EntityIntelligent entity) {
         if (!(entity instanceof EntityParrot parrot)) return false;
         int tick = entity.level.getTick();
+        if (lastLevel != entity.level) {
+            lastLevel = entity.level;
+            nextSearch = tick;
+            nextDestination = tick;
+            lookUntil = tick;
+            following = null;
+            lookingAt = null;
+            roaming = false;
+            wasPanicking = false;
+            stop(entity);
+        }
         if (parrot.isRiding()) {
             stop(entity);
             return true;

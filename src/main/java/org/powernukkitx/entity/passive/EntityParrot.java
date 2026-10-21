@@ -30,6 +30,7 @@ import org.powernukkitx.entity.components.TameableComponent;
 import org.powernukkitx.item.Item;
 import org.powernukkitx.item.ItemID;
 import org.powernukkitx.level.format.IChunk;
+import org.powernukkitx.level.Level;
 import org.powernukkitx.nbt.tag.CompoundTag;
 import org.powernukkitx.utils.Utils;
 import org.jetbrains.annotations.NotNull;
@@ -181,6 +182,19 @@ public class EntityParrot extends EntityAnimal implements EntityFlyable, EntityC
                 .controllers(new ParrotFlightController(), new LookController(true, true))
                 .routeFinder(new ParrotRouteFinder(this))
                 .build();
+    }
+
+    /** Preserves remaining panic and shoulder delays when the destination uses a different tick counter. */
+    @Override
+    protected boolean switchLevel(Level targetLevel) {
+        int tick = getLevel().getTick();
+        int panicRemaining = Math.max(0, panicUntil - tick);
+        int mountRemaining = Math.max(0, mountAfter - tick);
+        if (!super.switchLevel(targetLevel)) return false;
+        int destinationTick = getLevel().getTick();
+        panicUntil = destinationTick + panicRemaining;
+        mountAfter = destinationTick + mountRemaining;
+        return true;
     }
 
     /** @return whether damage or fire currently makes this parrot flee */
