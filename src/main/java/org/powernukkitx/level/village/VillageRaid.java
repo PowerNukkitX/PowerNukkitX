@@ -120,6 +120,19 @@ public record VillageRaid(long gameTick, byte groupNumber, byte numberOfGroups, 
     }
 
     /**
+     * Includes recruited actors in the current wave's health and original actor count.
+     *
+     * @param raiders complete list of surviving and newly recruited persistent actor IDs
+     * @param recruits number of newly recruited actors
+     * @param maxHealth maximum health contributed by those recruits
+     * @return the current wave with its existing timer and health snapshots preserved
+     */
+    public VillageRaid withRecruits(List<Long> raiders, int recruits, float maxHealth) {
+        return new VillageRaid(gameTick, groupNumber, numberOfGroups, (byte) (numberOfRaiders + recruits),
+                raiders, spawnFails, spawnPosition, state, status, ticks, totalMaxHealth + maxHealth, raiderHealth);
+    }
+
+    /**
      * @param spawnFails how many times in a row no room was found for the current group
      */
     public VillageRaid withSpawnPoint(Vector3 spawnPosition, int spawnFails) {

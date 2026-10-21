@@ -47,6 +47,12 @@ public interface CoreMemoryTypes {
 
     MemoryType<Vector3> RAID_TARGET = new MemoryType<>("minecraft:raid_target");
 
+    /** Raider currently selected for a witch's supportive potion. */
+    MemoryType<Entity> RAID_HEAL_TARGET = new MemoryType<>("minecraft:raid_heal_target");
+
+    /** Level tick before which a witch cannot select another ally to heal. */
+    MemoryType<Long> RAID_HEAL_COOLDOWN = new MemoryType<>("minecraft:raid_heal_cooldown", 0L);
+
     MemoryType<Boolean> HIDING_FROM_RAID = new MemoryType<>("minecraft:hiding_from_raid", false);
 
     MemoryType<Boolean> CELEBRATING = new MemoryType<>("minecraft:celebrating", false);

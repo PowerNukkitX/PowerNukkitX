@@ -15,6 +15,7 @@ public final class Village {
     private final VillagePois pois;
     private volatile @Nullable VillageRaid raid;
     private long bellRingTick;
+    private int raidHelpTicks = VillageManager.RAID_HELP_INTERVAL;
     private final Long2ObjectMap<BlockVector3> raiderPositions = new Long2ObjectOpenHashMap<>();
 
     public Village(UUID uuid, VillageDwellers dwellers, VillageInfo info, VillagePlayers players,
@@ -35,7 +36,19 @@ public final class Village {
     public @Nullable VillageRaid raid() { return raid; }
 
     public void setInfo(VillageInfo info) { this.info = info; }
-    public void setRaid(@Nullable VillageRaid raid) { this.raid = raid; }
+    public void setRaid(@Nullable VillageRaid raid) {
+        if (this.raid == null || raid == null || this.raid.groupNumber() != raid.groupNumber()
+                || this.raid.state() != raid.state()) resetRaidHelp();
+        this.raid = raid;
+    }
+
+    void resetRaidHelp() { raidHelpTicks = VillageManager.RAID_HELP_INTERVAL; }
+
+    boolean tickRaidHelp() {
+        if (--raidHelpTicks > 0) return false;
+        resetRaidHelp();
+        return true;
+    }
 
     /**
      * @return the tick the bells of this village are due to ring again while a raid is being prepared

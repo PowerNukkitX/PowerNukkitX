@@ -22,6 +22,7 @@ import org.powernukkitx.level.format.IChunk;
 import org.powernukkitx.math.BlockFace;
 import org.powernukkitx.math.BlockVector3;
 import org.powernukkitx.math.Vector3;
+import org.powernukkitx.math.SimpleAxisAlignedBB;
 import org.powernukkitx.nbt.tag.CompoundTag;
 import org.powernukkitx.nbt.tag.ListTag;
 import org.powernukkitx.nbt.tag.Tag;
@@ -72,6 +73,9 @@ public final class VillageManager {
     public static final int RAID_SPAWN_ATTEMPTS = 10;
     public static final int VILLAGE_HERO_DURATION = 40 * 60 * 20;
     public static final int CELEBRATION_DURATION = 30 * 20;
+    public static final int RAID_HELP_INTERVAL = 600;
+    private static final int RAID_RECRUIT_INTERVAL = 20;
+    private static final int RAID_RECRUIT_RANGE = 16;
 
     private static final String[] RAIDER_TYPES = {
             EntityID.PILLAGER, EntityID.VINDICATOR, EntityID.RAVAGER, EntityID.WITCH, EntityID.EVOCATION_ILLAGER
@@ -465,9 +469,10 @@ public final class VillageManager {
 
     private VillageRaid tickSpawningGroup(Village village, VillageRaid raid) {
         List<Long> raiders = spawnGroup(village, raid);
-        if (!raiders.isEmpty()) {
-            VillageRaid next = raid.withGroup(raid.groupNumber(), raiders, totalMaxHealth(raiders));
-            for (long id : raiders) {
+        VillageRaid next = recruitRaiders(village,
+                raid.withGroup(raid.groupNumber(), raiders, totalMaxHealth(raiders)), true);
+        if (!next.raiders().isEmpty()) {
+            for (long id : next.raiders()) {
                 Entity raider = level.getEntityByUniqueId(id);
                 if (raider != null) next.raiderHealth().put(id, raider.getHealth());
             }
@@ -481,6 +486,9 @@ public final class VillageManager {
     }
 
     private VillageRaid tickGroupInPlay(Village village, VillageRaid raid) {
+        if (level.getCurrentTick() % RAID_RECRUIT_INTERVAL == 0) {
+            raid = recruitRaiders(village, raid, false);
+        }
         List<Long> alive = new ArrayList<>();
         for (long raiderId : raid.raiders()) {
             Entity raider = level.getEntityByUniqueId(raiderId);
@@ -503,6 +511,11 @@ public final class VillageManager {
             raid.raiderHealth().remove(raiderId);
         }
         if (!alive.isEmpty()) {
+            if (alive.size() < raid.raiders().size()) {
+                village.resetRaidHelp();
+            } else if (village.tickRaidHelp()) {
+                playRaidHelp(alive);
+            }
             long inPlay = raid.ticks() + 1;
             if (inPlay < RAID_TIMEOUT) {
                 return raid.withRaiders(alive).withTicks(inPlay);
@@ -523,6 +536,94 @@ public final class VillageManager {
             return raid.withRaiders(alive).withTicks(ticks);
         }
         return raid.completeGroup();
+    }
+
+    private void playRaidHelp(List<Long> raiders) {
+        Entity selected = null;
+        int count = 0;
+        for (long id : raiders) {
+            Entity raider = level.getEntityByUniqueId(id);
+            if (raider != null && raider.isAlive() && !raider.isClosed()
+                    && ThreadLocalRandom.current().nextInt(++count) == 0) selected = raider;
+        }
+        if (selected != null) level.addLevelSoundEvent(selected, SoundEvent.RAID_HORN);
+    }
+
+    private VillageRaid recruitRaiders(Village village, VillageRaid raid, boolean insideVillage) {
+        List<Long> members = new ArrayList<>(raid.raiders());
+        List<Entity> candidates = new ArrayList<>();
+        if (insideVillage) {
+            BlockVector3 min = village.info().boundsMin();
+            BlockVector3 max = village.info().boundsMax();
+            candidates.addAll(level.fastNearbyEntities(new SimpleAxisAlignedBB(
+                    min.x, min.y, min.z, max.x + 1, max.y + 1, max.z + 1), null, false));
+        } else {
+            for (long id : raid.raiders()) {
+                Entity member = level.getEntityByUniqueId(id);
+                if (member == null || !member.isAlive() || member.isClosed()) continue;
+                candidates.addAll(level.fastNearbyEntities(new SimpleAxisAlignedBB(
+                        member.x - RAID_RECRUIT_RANGE, member.y - RAID_RECRUIT_RANGE, member.z - RAID_RECRUIT_RANGE,
+                        member.x + RAID_RECRUIT_RANGE, member.y + RAID_RECRUIT_RANGE, member.z + RAID_RECRUIT_RANGE),
+                        member, false));
+            }
+        }
+        float maxHealth = 0;
+        int recruits = 0;
+        for (Entity candidate : candidates) {
+            if (!(candidate instanceof EntityIntelligent raider) || !isRaiderType(raider)
+                    || !raider.isAlive() || raider.isClosed() || raider.isBaby()
+                    || raider.getLevel() != level || members.contains(raider.uniqueIdLong())
+                    || !raider.getNbt().getString("RaidVillageUUID").isEmpty()
+                    || raider.getMemoryStorage().get(CoreMemoryTypes.CELEBRATING)) continue;
+            configureRaider(village, raider);
+            members.add(raider.uniqueIdLong());
+            raid.raiderHealth().put(raider.uniqueIdLong(), raider.getHealth());
+            village.raiderPositions().put(raider.uniqueIdLong(), raider.asBlockVector3());
+            maxHealth += raider.getMaxHealth();
+            recruits++;
+        }
+        return recruits == 0 ? raid : raid.withRecruits(members, recruits, maxHealth);
+    }
+
+    private static boolean isRaiderType(Entity entity) {
+        return switch (entity.getIdentifier()) {
+            case EntityID.PILLAGER, EntityID.VINDICATOR, EntityID.RAVAGER,
+                 EntityID.WITCH, EntityID.EVOCATION_ILLAGER -> true;
+            default -> false;
+        };
+    }
+
+    /**
+     * Checks membership of an ongoing raid in this level without loading chunks.
+     * Must be called on the owning level's tick thread.
+     *
+     * @param entity actor whose persistent ID and village association are checked
+     * @return whether the living actor belongs to an ongoing raid
+     */
+    public boolean isRaider(Entity entity) {
+        if (entity.getLevel() != level || !entity.isAlive() || entity.isClosed()) return false;
+        String villageId = entity.getNbt().getString("RaidVillageUUID");
+        if (villageId.isEmpty()) return false;
+        Village village;
+        try {
+            village = villages.get(UUID.fromString(villageId));
+        } catch (IllegalArgumentException ignored) {
+            return false;
+        }
+        VillageRaid raid = village == null ? null : village.raid();
+        return raid != null && raid.status() == VillageRaid.STATUS_ONGOING && !raid.isFinished()
+                && raid.raiders().contains(entity.uniqueIdLong());
+    }
+
+    private void configureRaider(Village village, Entity raider) {
+        BlockVector3 center = village.center();
+        if (raider instanceof EntityIntelligent intelligent) {
+            intelligent.getMemoryStorage().put(CoreMemoryTypes.RAID_TARGET,
+                    new Vector3(center.x + 0.5, center.y, center.z + 0.5));
+        }
+        if (raider instanceof EntityIllager illager) illager.setRaiding(true);
+        raider.getNbt().putString("RaidVillageUUID", village.uuid().toString());
+        raider.setPersistent(true);
     }
 
     private VillageRaid awardRewards(Village village, VillageRaid raid) {
@@ -654,8 +755,6 @@ public final class VillageManager {
     private List<Long> spawnGroup(Village village, VillageRaid raid) {
         int[] group = RAID_GROUPS[Math.min(raid.groupNumber(), RAID_GROUPS.length - 1)];
         Position spawnPosition = Position.fromObject(raid.spawnPosition(), level);
-        BlockVector3 center = village.center();
-        Vector3 target = new Vector3(center.x + 0.5, center.y, center.z + 0.5);
         List<Long> raiders = new ArrayList<>();
         List<EntityRavager> mounts = new ArrayList<>();
         List<Entity> riders = new ArrayList<>();
@@ -675,14 +774,7 @@ public final class VillageManager {
                     continue;
                 }
 
-                if (raider instanceof EntityIntelligent intelligent) {
-                    intelligent.getMemoryStorage().put(CoreMemoryTypes.RAID_TARGET, target);
-                }
-                if (raider instanceof EntityIllager illager) {
-                    illager.setRaiding(true);
-                }
-                raider.getNbt().putString("RaidVillageUUID", village.uuid().toString());
-                raider.setPersistent(true);
+                configureRaider(village, raider);
                 raider.spawnToAll();
                 raiders.add(raider.uniqueIdLong());
                 if (raider instanceof EntityRavager ravager) {
