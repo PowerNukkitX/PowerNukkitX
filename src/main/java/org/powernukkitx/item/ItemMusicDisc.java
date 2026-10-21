@@ -45,7 +45,7 @@ public abstract class ItemMusicDisc extends Item {
             case "record.creator_music_box" -> 73;
             case "record.precipice" -> 299;
             case "record.tears" -> 175;
-            case "record.bounce" -> 134;
+            case "record.bounce", "record.lava_chicken" -> 134;
             default -> 0;
         };
         return seconds * 20;

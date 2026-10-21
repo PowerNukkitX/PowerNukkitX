@@ -424,12 +424,13 @@ class EntityParrotTest {
     void nativeRecordDurationsCoverEveryRegisteredDisc() {
         for (String id : new String[]{"13", "cat", "blocks", "chirp", "far", "mall", "mellohi",
                 "stal", "strad", "ward", "11", "wait", "pigstep", "otherside", "5", "relic",
-                "creator", "creator_music_box", "precipice", "bounce"}) {
+                "creator", "creator_music_box", "precipice", "bounce", "lava_chicken"}) {
             ItemMusicDisc disc = assertInstanceOf(ItemMusicDisc.class, Item.get("minecraft:music_disc_" + id));
             assertTrue(disc.getDurationTicks() > 0, id);
         }
         assertEquals(3700, ((ItemMusicDisc) Item.get("minecraft:music_disc_cat")).getDurationTicks());
         assertEquals(2680, ((ItemMusicDisc) Item.get("minecraft:music_disc_bounce")).getDurationTicks());
+        assertEquals(2680, ((ItemMusicDisc) Item.get("minecraft:music_disc_lava_chicken")).getDurationTicks());
     }
 
     @Test
