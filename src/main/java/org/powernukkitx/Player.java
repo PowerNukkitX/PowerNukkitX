@@ -6896,13 +6896,21 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
             if (exp > 0 && !itemsWithMending.isEmpty()) {
                 int slot = itemsWithMending.get(ThreadLocalRandom.current().nextInt(itemsWithMending.size()));
                 Item toRepair = slot == -1 ? getOffhandInventory().getItem(0) : inventory.getItem(slot);
-                int repaired = (int) Math.min(toRepair.getDamage(), (long) exp * 2);
-                toRepair.setDamage(toRepair.getDamage() - repaired);
-                exp -= repaired / 2;
-                if (slot == -1) {
-                    getOffhandInventory().setItem(0, toRepair);
-                } else {
-                    inventory.setItem(slot, toRepair);
+                String itemId = toRepair.getId();
+                int previousDamage = toRepair.getDamage();
+                int repaired = (int) Math.min(previousDamage, (long) exp * 2);
+                toRepair.setDamage(previousDamage - repaired);
+                if (toRepair.getDamage() < previousDamage) {
+                    boolean applied = slot == -1
+                            ? getOffhandInventory().setItem(0, toRepair)
+                            : inventory.setItem(slot, toRepair);
+                    if (applied) {
+                        Item updated = slot == -1 ? getOffhandInventory().getItem(0) : inventory.getItem(slot);
+                        if (!updated.isNull() && itemId.equals(updated.getId())) {
+                            int actualRepair = Math.max(0, Math.min(repaired, previousDamage - updated.getDamage()));
+                            exp -= actualRepair / 2;
+                        }
+                    }
                 }
             }
 
