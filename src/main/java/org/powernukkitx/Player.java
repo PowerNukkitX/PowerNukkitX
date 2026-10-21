@@ -27,10 +27,13 @@ import org.cloudburstmc.netty.channel.nethernet.NetherNetChannel;
 import org.cloudburstmc.netty.channel.raknet.RakServerChannel;
 import org.cloudburstmc.netty.handler.codec.raknet.common.RakSessionCodec;
 import org.cloudburstmc.protocol.bedrock.BedrockServerSession;
+import org.powernukkitx.entity.components.RideableComponent;
+import org.powernukkitx.entity.passive.EntityParrot;
 import org.cloudburstmc.protocol.bedrock.data.*;
 import org.cloudburstmc.protocol.bedrock.data.actor.ActorDataTypes;
 import org.cloudburstmc.protocol.bedrock.data.actor.ActorEvent;
 import org.cloudburstmc.protocol.bedrock.data.actor.ActorFlags;
+import org.cloudburstmc.protocol.bedrock.data.actor.ActorLink;
 import org.cloudburstmc.protocol.bedrock.data.actor.PropertySyncData;
 import org.cloudburstmc.protocol.bedrock.data.command.CommandData;
 import org.cloudburstmc.protocol.bedrock.data.command.CommandEnumData;
@@ -292,6 +295,16 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     protected int clientRequestedChunkRadius;
     protected boolean initialRespawnSearchSent;
     protected boolean initialRespawnReady;
+    private static final RideableComponent PARROT_SHOULDERS =
+            new RideableComponent(0, true,
+                    RideableComponent.DismountMode.DEFAULT,
+                    Set.of("parrot_tame"), "", 0, true, true, 2,
+                    List.of(
+                            new RideableComponent.Seat(0, 0,
+                                    new org.powernukkitx.math.Vector3f(0.4f, -0.2f, -0.1f), 0f, null, null, null),
+                            new RideableComponent.Seat(1, 2,
+                                    new org.powernukkitx.math.Vector3f(-0.4f, -0.2f, -0.1f), 0f, null, null, null)));
+
     protected Position initialRespawnPosition;
     protected int viewDistance;
     protected Position spawnPoint;
@@ -990,7 +1003,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         if (endPortal) {//handle endPortal teleport
             if (!inEndPortal) {
                 inEndPortal = true;
-                if (this.getRiding() == null && this.getPassengers().isEmpty()) {
+                if (this.getRiding() == null && releaseShoulderParrots() && this.getPassengers().isEmpty()) {
                     EntityPortalEnterEvent ev = new EntityPortalEnterEvent(this, PortalType.END);
                     getServer().getPluginManager().callEvent(ev);
 
@@ -4789,6 +4802,8 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
             scoreboardManager.beforePlayerQuit(this);
         }
 
+        releaseShoulderParrots();
+
         //dismount horse
         if (this.riding != null && this.riding.isRideable()) {
             riding.dismountEntity(this);
@@ -5789,6 +5804,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         }
 
         if (super.attack(source)) {
+            releaseShoulderParrots();
             if (this.getLastDamageCause() == source && this.spawned) {
                 if (source instanceof EntityDamageByEntityEvent entityDamageByEntityEvent) {
                     // Save the entity that last attacked the player in lastBeAttackEntity
@@ -6636,6 +6652,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     @Override
     public boolean switchLevel(Level level) {
         Level oldLevel = this.level;
+        if (oldLevel != level && !releaseShoulderParrots()) return false;
         if (super.switchLevel(level)) {
             this.clientMovements.clear();
             Position spawn = level.getSpawnLocation();
@@ -7414,6 +7431,89 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
      */
     public String getXUID() {
         return Server.resolveXuid(this.info, this.server.getProxyAuthProvider());
+    }
+
+    /** @return the two shoulder seats reserved for tame parrots */
+    @Override
+    public @NotNull RideableComponent getComponentRideable() {
+        return PARROT_SHOULDERS;
+    }
+
+    /**
+     * Returns a shoulder's protocol offset without adding a vehicle base offset.
+     * @param seatIndex the shoulder index
+     * @param passenger the seated entity
+     * @return the passenger's seat offset
+     */
+    @Override
+    @NotNull
+    public org.powernukkitx.math.Vector3f getSeatOffsetFor(int seatIndex, @NotNull Entity passenger) {
+        if (passenger instanceof EntityParrot) {
+            return new org.powernukkitx.math.Vector3f(seatIndex == 0 ? 0.4f : -0.4f, -0.2f, -0.1f);
+        }
+        return super.getSeatOffsetFor(seatIndex, passenger);
+    }
+
+    @Override
+    protected void applySeatOffsets() {
+        super.applySeatOffsets();
+        for (Entity passenger : passengers) {
+            if (passenger instanceof EntityParrot) passenger.sendData(this);
+        }
+    }
+
+    @Override
+    protected void broadcastLinkPacket(Entity rider, ActorLinkType type, boolean riderInitiated) {
+        super.broadcastLinkPacket(rider, type, riderInitiated);
+        SetActorLinkPacket packet = new SetActorLinkPacket();
+        packet.setLink(new ActorLink(uniqueIdLong(), rider.uniqueIdLong(), type, false, riderInitiated, 0f));
+        sendPacket(packet);
+        if (rider instanceof EntityParrot && type != ActorLinkType.NONE) {
+            rider.sendData(getViewers().values().toArray(Player.EMPTY_ARRAY));
+            rider.sendData(this);
+        }
+    }
+
+    private boolean releaseShoulderParrots() {
+        if (passengers.isEmpty()) return true;
+        for (Entity passenger : List.copyOf(passengers)) {
+            if (passenger instanceof EntityParrot && !dismountEntity(passenger, true, false)) return false;
+        }
+        return true;
+    }
+
+    /**
+     * Applies the shoulder search delay and cleans up links when either endpoint disappears.
+     * Exit cancellation is respected while both the player and parrot remain available.
+     * @param entity the passenger to release
+     * @param sendLinks whether to send the link change to viewers
+     * @param riderInitiated whether the passenger initiated the dismount
+     * @return whether the passenger was released
+     */
+    @Override
+    public boolean dismountEntity(Entity entity, boolean sendLinks, boolean riderInitiated) {
+        boolean dismounted = super.dismountEntity(entity, sendLinks, riderInitiated);
+        if (!dismounted && entity instanceof EntityParrot && isPassenger(entity)
+                && (!isOnline() || entity.closed)) {
+            if (sendLinks) broadcastLinkPacket(entity, ActorLinkType.NONE, riderInitiated);
+            detachPassenger(entity);
+            updatePassengers(sendLinks, false);
+            dismounted = true;
+        }
+        if (dismounted && entity instanceof EntityParrot parrot) parrot.onShoulderDismounted();
+        return dismounted;
+    }
+
+    @Override
+    protected void updatePassengerPosition(Entity passenger) {
+        if (passenger instanceof EntityParrot) {
+            org.powernukkitx.math.Vector3f seat = passenger.getSeatPosition(passenger);
+            double angle = Math.toRadians(yaw);
+            passenger.setPosition(new Vector3(x + seat.x * Math.cos(angle) - seat.z * Math.sin(angle),
+                    y + getHeight() + seat.y, z + seat.x * Math.sin(angle) + seat.z * Math.cos(angle)));
+            return;
+        }
+        super.updatePassengerPosition(passenger);
     }
 
     /**

@@ -1672,7 +1672,8 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
                     new ActorLink(
                             this.riding.uniqueIdLong(),
                             this.uniqueIdLong(),
-                            ActorLinkType.RIDING,
+                            this.riding.passengers.indexOf(this) == this.riding.getControllingSeatIndex()
+                                    ? ActorLinkType.RIDING : ActorLinkType.PASSENGER,
                             true,
                             false,
                             0f
@@ -2881,6 +2882,7 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
 
     public void updatePassengers(boolean sendLinks, boolean riderInitiated) {
         if (passengers.isEmpty()) {
+            passengerCount = 0;
             refreshRideMemory();
             return;
         }
@@ -2889,6 +2891,7 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
             if (!passenger.isAlive()) dismountEntity(passenger, sendLinks, false);
         }
         if (passengers.isEmpty()) {
+            passengerCount = 0;
             refreshRideMemory();
             return;
         }
@@ -3211,15 +3214,7 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
             broadcastLinkPacket(entity, ActorLinkType.NONE, riderInitiated);
         }
 
-        entity.riding = null;
-        entity.setDataFlag(ActorFlags.RIDING, false);
-        entity.setSeatPosition(new Vector3f(), false);
-        entity.seatRawOffset = null;
-        passengers.remove(entity);
-
-        this.persistedActorLinkIds.remove(entity.uniqueIdLong());
-
-        markActorLinksDirty();
+        detachPassenger(entity);
 
         Vector3 dismount = resolveDismountPosition(entity);
         lookLocation.setComponents(dismount.x, dismount.y, dismount.z);
@@ -3237,6 +3232,21 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
 
         if (entity instanceof Player p) p.resetFallDistance();
         return true;
+    }
+
+    /**
+     * Clears an existing passenger link without firing events or moving the passenger.
+     * Used after an accepted dismount or when a vehicle can no longer carry its passenger.
+     * @param entity the passenger being detached
+     */
+    protected void detachPassenger(@NotNull Entity entity) {
+        entity.riding = null;
+        entity.setDataFlag(ActorFlags.RIDING, false);
+        entity.setSeatPosition(new Vector3f(), false);
+        entity.seatRawOffset = null;
+        passengers.remove(entity);
+        persistedActorLinkIds.remove(entity.uniqueIdLong());
+        markActorLinksDirty();
     }
 
     public RideableComponent.DismountMode getDismountMode() {
