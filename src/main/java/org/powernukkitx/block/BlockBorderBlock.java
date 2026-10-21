@@ -64,8 +64,8 @@ public class BlockBorderBlock extends BlockWallBase {
     @Override
     protected AxisAlignedBB recalculateBoundingBox() {
         AxisAlignedBB aabb = super.recalculateBoundingBox();
-        aabb.setMinY(Double.MIN_VALUE);
-        aabb.setMaxY(Double.MAX_VALUE);
+        aabb.setMinY(Double.NEGATIVE_INFINITY);
+        aabb.setMaxY(Double.POSITIVE_INFINITY);
         return aabb;
     }
 }
