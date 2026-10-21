@@ -1489,14 +1489,14 @@ public abstract class Block extends Position implements Metadatable, AxisAligned
                 Item itemInHand = player.getInventory().getItemInMainHand();
                 if(itemInHand.isNull()) return false;
 
-                CompoundTag tag = (CompoundTag) itemInHand.getNbtEntry("CanDestroy");
+                Tag tag = itemInHand.getNbtEntry("CanDestroy");
                 boolean canBreak = false;
-                if (tag instanceof List<?> list) {
-                    for (Object v : list) {
-                        if (!(v instanceof String stringTag)) {
+                if (tag instanceof ListTag<?> list) {
+                    for (Tag v : list.getAll()) {
+                        if (!(v instanceof StringTag stringTag)) {
                             continue;
                         }
-                        Item entry = Item.get(stringTag);
+                        Item entry = Item.get(stringTag.data);
                         if (!entry.isNull() &&
                                 entry.getBlock().getId().equals(this.getId())) {
                             canBreak = true;
