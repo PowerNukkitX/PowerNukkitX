@@ -13,6 +13,7 @@ import java.util.concurrent.ConcurrentHashMap;
 /**
  * Raid state with health snapshots shared by successive states and persisted with the raider IDs.
  *
+ * @param groupNumber zero-based index of the current or next group; equals the group count after the last group
  * @param raiderHealth last known health by persistent actor ID; must not be null;
  *                     shared across states when backed by a {@link ConcurrentHashMap}, otherwise copied
  */
@@ -24,7 +25,8 @@ public record VillageRaid(long gameTick, byte groupNumber, byte numberOfGroups, 
     public static final int STATE_SPAWNING_GROUP = 2;
     public static final int STATE_GROUP_IN_PLAY = 3;
     public static final int STATE_AWARDING_REWARDS = 4;
-    public static final int STATE_FINISHED = 5;
+    public static final int STATE_CELEBRATING = 5;
+    public static final int STATE_FINISHED = 6;
 
     public static final int STATUS_ONGOING = 0;
     public static final int STATUS_VICTORY = 1;
@@ -94,9 +96,17 @@ public record VillageRaid(long gameTick, byte groupNumber, byte numberOfGroups, 
                 spawnPosition, state, status, 0L, totalMaxHealth, raiderHealth);
     }
 
+    /**
+     * Enters the Bedrock result phase for victory or loss, or finishes immediately for other statuses.
+     * The new phase starts at tick zero.
+     *
+     * @param status result of the raid
+     * @return the raid in its result or finished phase
+     */
     public VillageRaid withStatus(int status) {
+        int nextState = status == STATUS_VICTORY || status == STATUS_LOSS ? STATE_CELEBRATING : STATE_FINISHED;
         return new VillageRaid(gameTick, groupNumber, numberOfGroups, numberOfRaiders, raiders, spawnFails,
-                spawnPosition, STATE_FINISHED, status, ticks, totalMaxHealth, raiderHealth);
+                spawnPosition, nextState, status, 0L, totalMaxHealth, raiderHealth);
     }
 
     public VillageRaid withTicks(long ticks) {
@@ -119,10 +129,28 @@ public record VillageRaid(long gameTick, byte groupNumber, byte numberOfGroups, 
 
     /**
      * Records a group that has just been placed, and moves the raid on to watching it.
+     *
+     * @param groupNumber zero-based index of the spawned group
+     * @param raiders persistent IDs of the spawned actors
+     * @param totalMaxHealth sum of the spawned actors' maximum health
+     * @return the raid watching the given group
      */
     public VillageRaid withGroup(int groupNumber, List<Long> raiders, float totalMaxHealth) {
         return new VillageRaid(gameTick, (byte) groupNumber, numberOfGroups, (byte) raiders.size(), raiders,
                 (byte) 0, spawnPosition, STATE_GROUP_IN_PLAY, status, 0L, totalMaxHealth);
+    }
+
+    /**
+     * Advances past a cleared group, using Bedrock's zero-based group numbering.
+     * Called after the completion delay on the level's tick thread.
+     *
+     * @return preparation for the next group, or the reward phase after the final group
+     */
+    public VillageRaid completeGroup() {
+        int nextGroup = groupNumber + 1;
+        return new VillageRaid(gameTick, (byte) nextGroup, numberOfGroups, numberOfRaiders, List.of(), spawnFails,
+                spawnPosition, nextGroup < numberOfGroups ? STATE_PREPARATION : STATE_AWARDING_REWARDS,
+                status, 0L, totalMaxHealth, raiderHealth);
     }
 
     public static VillageRaid fromCompound(CompoundTag root) {

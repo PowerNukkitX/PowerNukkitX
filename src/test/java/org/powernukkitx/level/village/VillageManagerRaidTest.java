@@ -16,6 +16,83 @@ import static org.mockito.Mockito.*;
 
 class VillageManagerRaidTest {
     @Test
+    void importedActiveGroupsAdvanceOnceAndFinalGroupAwardsOnlyOnce() {
+        org.powernukkitx.registry.Registries.EFFECT.init();
+        for (int group = 0; group < 3; group++) {
+            Level level = mock(Level.class);
+            VillageManager manager = new VillageManager(level);
+            Village village = manager.createVillage(new BlockVector3(0, 64, 0));
+            manager.addDweller(village.uuid(), new VillageDwellers.Actor(1L, new BlockVector3(), 0L, null));
+            village.pois().poi().add(new VillagePoiGroup(1L,
+                    List.of(new VillagePoi(PoiType.HOME, new BlockVector3(0, 64, 0)))));
+            org.powernukkitx.Player player = mock(org.powernukkitx.Player.class);
+            when(player.getX()).thenReturn(0.5);
+            when(player.getY()).thenReturn(0.5);
+            when(player.getZ()).thenReturn(0.5);
+            when(level.getPlayers()).thenReturn(java.util.Map.of(7L, player));
+            CompoundTag root = VillageRaidTest.bedrockRaid(3, 0, group, 39);
+            root.getCompound("Raid").putList("Raiders", new org.powernukkitx.nbt.tag.ListTag<>());
+            village.setRaid(VillageRaid.fromCompound(root));
+
+            manager.tick(1);
+
+            assertEquals(group + 1, village.raid().groupNumber());
+            if (group < 2) {
+                assertEquals(0, village.raid().state());
+                village.setRaid(VillageRaid.fromCompound(village.raid().toCompound()));
+                manager.tick(2);
+                assertEquals(group + 1, village.raid().groupNumber());
+                assertEquals(0, village.raid().state());
+            } else {
+                assertEquals(4, village.raid().state());
+                village.setRaid(VillageRaid.fromCompound(village.raid().toCompound()));
+                manager.tick(2);
+                assertEquals(5, village.raid().state());
+                assertEquals(1, village.raid().status());
+                village.setRaid(VillageRaid.fromCompound(village.raid().toCompound()));
+                manager.tick(3);
+                assertEquals(5, village.raid().state());
+                verify(player, times(1)).addEffect(any(org.powernukkitx.entity.effect.Effect.class));
+            }
+        }
+    }
+
+    @Test
+    void importedResultPhaseRetainsItsRemainingTimeWithoutAwardingAgain() {
+        for (int status : new int[]{VillageRaid.STATUS_VICTORY, VillageRaid.STATUS_LOSS}) {
+            Level level = mock(Level.class);
+            when(level.getPlayers()).thenReturn(java.util.Map.of());
+            VillageManager manager = new VillageManager(level);
+            Village village = manager.createVillage(new BlockVector3(0, 64, 0));
+            village.setRaid(VillageRaid.fromCompound(VillageRaidTest.bedrockRaid(5, status, 3, 598)));
+
+            manager.tick(1);
+            assertEquals(5, village.raid().state());
+            assertEquals(status, village.raid().status());
+            assertEquals(599L, village.raid().ticks());
+            village.setRaid(VillageRaid.fromCompound(village.raid().toCompound()));
+            manager.tick(2);
+            assertEquals(6, village.raid().state());
+            manager.tick(3);
+            assertNull(village.raid());
+            verify(level, never()).getServer();
+        }
+    }
+
+    @Test
+    void importedFinishedRaidIsRemovedWithoutStartingAnotherResultPhase() {
+        Level level = mock(Level.class);
+        VillageManager manager = new VillageManager(level);
+        Village village = manager.createVillage(new BlockVector3(0, 64, 0));
+        village.setRaid(VillageRaid.fromCompound(VillageRaidTest.bedrockRaid(6, 2, 3, 0)));
+
+        manager.tick(1);
+
+        assertNull(village.raid());
+        verify(level, never()).getServer();
+    }
+
+    @Test
     void reloadRestoresNavigationForAnActiveRaid() {
         Level level = mock(Level.class);
         VillageManager manager = new VillageManager(level);

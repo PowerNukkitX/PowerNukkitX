@@ -321,7 +321,8 @@ public final class VillageManager {
                 continue;
             }
             village.setRaid(tickRaid(village, raid));
-            setDwellersHiding(village, village.raid() != null && !village.raid().isFinished());
+            setDwellersHiding(village, village.raid() != null
+                    && village.raid().status() == VillageRaid.STATUS_ONGOING && !village.raid().isFinished());
             updateBossBars(village);
             if (village.raid() == null && village.houseCount() == 0) {
                 dissolveVillage(village);
@@ -377,15 +378,18 @@ public final class VillageManager {
 
     private @Nullable VillageRaid tickRaid(Village village, VillageRaid raid) {
         if (raid.isFinished()) {
-            if (raid.status() == VillageRaid.STATUS_LOSS && raid.ticks() < CELEBRATION_DURATION) {
-                return raid.withTicks(raid.ticks() + 1);
-            }
             removeBossBars(village);
             if (raid.status() != VillageRaid.STATUS_LOSS) {
                 expireRaiders(raid, false);
             }
             village.raiderPositions().clear();
             return null;
+        }
+        if (raid.state() == VillageRaid.STATE_CELEBRATING) {
+            long ticks = raid.ticks() + 1;
+            return ticks < CELEBRATION_DURATION
+                    ? raid.withTicks(ticks)
+                    : raid.withState(VillageRaid.STATE_FINISHED);
         }
         if (!village.isValid()) {
             return loseRaid(raid);
@@ -462,7 +466,7 @@ public final class VillageManager {
     private VillageRaid tickSpawningGroup(Village village, VillageRaid raid) {
         List<Long> raiders = spawnGroup(village, raid);
         if (!raiders.isEmpty()) {
-            VillageRaid next = raid.withGroup(raid.groupNumber() + 1, raiders, totalMaxHealth(raiders));
+            VillageRaid next = raid.withGroup(raid.groupNumber(), raiders, totalMaxHealth(raiders));
             for (long id : raiders) {
                 Entity raider = level.getEntityByUniqueId(id);
                 if (raider != null) next.raiderHealth().put(id, raider.getHealth());
@@ -518,29 +522,21 @@ public final class VillageManager {
         if (ticks < GROUP_COMPLETE_DELAY) {
             return raid.withRaiders(alive).withTicks(ticks);
         }
-        return raid.withRaiders(alive).withState(raid.groupNumber() < raid.numberOfGroups()
-                ? VillageRaid.STATE_PREPARATION
-                : VillageRaid.STATE_AWARDING_REWARDS);
+        return raid.completeGroup();
     }
 
     private VillageRaid awardRewards(Village village, VillageRaid raid) {
-        if (raid.ticks() == 0) {
-            playRaidHorn(village);
-            for (Player player : level.getPlayers().values()) {
-                if (isInsideRaidBounds(village, player)) {
-                    player.addEffect(Effect.get(EffectType.VILLAGE_HERO)
-                            .setDuration(VILLAGE_HERO_DURATION)
-                            .setVisible(true));
-                    player.sendEffectAnimation(EffectType.VILLAGE_HERO);
-                }
+        playRaidHorn(village);
+        for (Player player : level.getPlayers().values()) {
+            if (isInsideRaidBounds(village, player)) {
+                player.addEffect(Effect.get(EffectType.VILLAGE_HERO)
+                        .setDuration(VILLAGE_HERO_DURATION)
+                        .setVisible(true));
+                player.sendEffectAnimation(EffectType.VILLAGE_HERO);
             }
-            celebrate(village);
         }
-
-        long ticks = raid.ticks() + 1;
-        return ticks < CELEBRATION_DURATION
-                ? raid.withTicks(ticks)
-                : raid.withStatus(VillageRaid.STATUS_VICTORY);
+        celebrate(village);
+        return raid.withStatus(VillageRaid.STATUS_VICTORY);
     }
 
     private boolean hasPlayerInRaidBounds(Village village) {
@@ -777,12 +773,14 @@ public final class VillageManager {
             return;
         }
         VillageRaid raid = village == null ? null : village.raid();
-        if (raid != null && raid.status() == VillageRaid.STATUS_LOSS
+        if (raid != null && raid.state() == VillageRaid.STATE_CELEBRATING
+                && raid.status() == VillageRaid.STATUS_LOSS
                 && raid.raiders().contains(raider.uniqueIdLong())) {
             clearRaider(raider, true);
             return;
         }
-        if (raid == null || raid.isFinished() || !raid.raiders().contains(raider.uniqueIdLong())) {
+        if (raid == null || raid.isFinished() || raid.state() == VillageRaid.STATE_CELEBRATING
+                || !raid.raiders().contains(raider.uniqueIdLong())) {
             clearRaider(raider, false);
             return;
         }
@@ -852,6 +850,9 @@ public final class VillageManager {
         if (raid.status() == VillageRaid.STATUS_LOSS) {
             return "%raid.name - %raid.defeat";
         }
+        if (raid.status() == VillageRaid.STATUS_VICTORY) {
+            return "%raid.name - %raid.victory";
+        }
         return switch (raid.state()) {
             case VillageRaid.STATE_GROUP_IN_PLAY -> "%raid.name - %raid.progress " + raid.raiders().size();
             case VillageRaid.STATE_AWARDING_REWARDS -> "%raid.name - %raid.victory";
@@ -912,7 +913,7 @@ public final class VillageManager {
     private void dissolveVillage(Village village) {
         VillageRaid raid = village.raid();
         if (raid != null) {
-            if (!raid.isFinished()) village.setRaid(loseRaid(raid));
+            if (!raid.isFinished() && raid.status() == VillageRaid.STATUS_ONGOING) village.setRaid(loseRaid(raid));
             return;
         }
         if (!removeVillage(village)) {
