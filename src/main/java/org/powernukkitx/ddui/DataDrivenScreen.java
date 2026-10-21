@@ -43,6 +43,7 @@ public abstract class DataDrivenScreen extends ObjectProperty<Object> {
 
     private final Set<Player> viewers = Collections.newSetFromMap(new ConcurrentHashMap<>());
     private final Map<Player, Integer> playerFormIds = new ConcurrentHashMap<>();
+    private final Map<Player, Map<String, Integer>> pathUpdateCounts = new ConcurrentHashMap<>();
 
     protected final LayoutElement layout;
 
@@ -60,6 +61,7 @@ public abstract class DataDrivenScreen extends ObjectProperty<Object> {
                 DataDrivenScreen old = entry.getValue();
                 Integer oldFormId = old.playerFormIds.remove(player);
                 old.viewers.remove(player);
+                old.pathUpdateCounts.remove(player);
                 if (oldFormId != null) {
                     final ClientboundDataDrivenUICloseScreenPacket closePacket = new ClientboundDataDrivenUICloseScreenPacket();
                     closePacket.setFormId(oldFormId);
@@ -90,6 +92,7 @@ public abstract class DataDrivenScreen extends ObjectProperty<Object> {
 
         viewers.add(player);
         playerFormIds.put(player, formId);
+        pathUpdateCounts.put(player, new ConcurrentHashMap<>());
         PLAYER_DDUI_SCREENS.computeIfAbsent(player, k -> new ConcurrentHashMap<>()).put(formId, this);
     }
 
@@ -105,6 +108,7 @@ public abstract class DataDrivenScreen extends ObjectProperty<Object> {
     public void removeViewer(Player player) {
         Integer formId = playerFormIds.remove(player);
         viewers.remove(player);
+        pathUpdateCounts.remove(player);
         if (formId != null) {
             Map<Integer, DataDrivenScreen> screens = PLAYER_DDUI_SCREENS.get(player);
             if (screens != null) {
@@ -138,6 +142,43 @@ public abstract class DataDrivenScreen extends ObjectProperty<Object> {
         DataDrivenScreen screen = getActiveScreen(player);
         if (screen != null) {
             screen.close(player);
+        }
+    }
+
+    /**
+     * Accepts the next sequential client update for a path in this player's active screen.
+     */
+    public boolean acceptClientPathUpdate(Player player, String path, long propertyVersion, long pathVersion) {
+        if (propertyVersion != 1 || path == null || path.isEmpty() || pathVersion < 1 || pathVersion > Integer.MAX_VALUE) {
+            return false;
+        }
+
+        Map<String, Integer> counters = pathUpdateCounts.get(player);
+        if (counters == null) return false;
+
+        synchronized (counters) {
+            int current = counters.getOrDefault(path, 0);
+            if (pathVersion != (long) current + 1) return false;
+            counters.put(path, (int) pathVersion);
+            return true;
+        }
+    }
+
+    /**
+     * Reserves the next outbound path version, or returns -1 if the player is no longer viewing this screen.
+     */
+    public int nextPathUpdateCount(Player player, String path) {
+        if (path == null || path.isEmpty()) return -1;
+
+        Map<String, Integer> counters = pathUpdateCounts.get(player);
+        if (counters == null) return -1;
+
+        synchronized (counters) {
+            int current = counters.getOrDefault(path, 0);
+            if (current == Integer.MAX_VALUE) return -1;
+            int next = current + 1;
+            counters.put(path, next);
+            return next;
         }
     }
 

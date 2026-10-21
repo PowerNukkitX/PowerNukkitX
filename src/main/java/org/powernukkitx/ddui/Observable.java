@@ -7,6 +7,7 @@ import org.cloudburstmc.protocol.bedrock.data.ddui.DataStoreUpdate;
 import org.cloudburstmc.protocol.bedrock.packet.ClientboundDataStorePacket;
 
 import java.util.LinkedHashSet;
+import java.util.Objects;
 import java.util.Set;
 
 /**
@@ -32,6 +33,9 @@ public class Observable<T> {
     private final Set<Listener<T>> listeners = new LinkedHashSet<>();
     private T value;
     private static final ThreadLocal<Integer> SUPPRESS_OUTBOUND = ThreadLocal.withInitial(() -> 0);
+    private static final ThreadLocal<InboundUpdate> INBOUND_UPDATE = new ThreadLocal<>();
+
+    private record InboundUpdate(Player player, DataDrivenScreen screen, String path, Object value) {}
 
     public Observable(T value) {
         this.value = value;
@@ -58,16 +62,24 @@ public class Observable<T> {
             DataDrivenScreen screen = element.getRootScreen();
             if (screen == null) continue;
 
-            if (SUPPRESS_OUTBOUND.get() > 0) {
-                continue;
-            }
+            if (SUPPRESS_OUTBOUND.get() > 0) continue;
+
+            String path = element.getPath();
+            InboundUpdate inbound = INBOUND_UPDATE.get();
 
             for (Player viewer : screen.getAllViewers()) {
+                if (inbound != null && inbound.player() == viewer && inbound.screen() == screen && inbound.path().equals(path) && Objects.equals(inbound.value(), value)) {
+                    continue;
+                }
+
+                int pathCount = screen.nextPathUpdateCount(viewer, path);
+                if (pathCount < 0) continue;
+
                 final DataStoreUpdate update = new DataStoreUpdate();
 
                 update.setDataStoreName(screen.getIdentifier().split(":")[0]);
                 update.setProperty(screen.getClientProperty(viewer));
-                update.setPath(element.getPath());
+                update.setPath(path);
                 update.setType(
                         switch (value) {
                             case Boolean n -> DataStorePropertyType.BOOLEAN;
@@ -78,11 +90,28 @@ public class Observable<T> {
                 );
                 update.setData(value instanceof Number n ? n.doubleValue() : value);
                 update.setPropertyUpdateCount(1);
-                update.setPathUpdateCount(1);
+                update.setPathUpdateCount(pathCount);
 
                 ClientboundDataStorePacket cbDataStore = new ClientboundDataStorePacket();
                 cbDataStore.getUpdates().add(update);
                 viewer.sendPacket(cbDataStore);
+            }
+        }
+    }
+
+    /**
+     * Processes a client update without echoing unchanged input to its originating viewer.
+     */
+    public static void withInboundUpdate(Player player, DataDrivenScreen screen, String path, Object value, Runnable runnable) {
+        InboundUpdate previous = INBOUND_UPDATE.get();
+        INBOUND_UPDATE.set(new InboundUpdate(player, screen, path, value));
+        try {
+            runnable.run();
+        } finally {
+            if (previous == null) {
+                INBOUND_UPDATE.remove();
+            } else {
+                INBOUND_UPDATE.set(previous);
             }
         }
     }
