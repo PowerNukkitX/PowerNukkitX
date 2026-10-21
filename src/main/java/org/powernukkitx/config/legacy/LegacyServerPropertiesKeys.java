@@ -30,8 +30,7 @@ public enum LegacyServerPropertiesKeys {
     FORCE_RESOURCES("force-resources"),
     FORCE_RESOURCES_ALLOW_CLIENT_PACKS("force-resources-allow-client-packs"),
     XBOX_AUTH("xbox-auth"),
-    CHECK_LOGIN_TIME("check-login-time"),
-    NETWORK_ENCRYPTION("network-encryption");
+    CHECK_LOGIN_TIME("check-login-time");
 
     private final String key;
 

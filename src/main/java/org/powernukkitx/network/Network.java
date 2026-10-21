@@ -3,22 +3,13 @@ package org.powernukkitx.network;
 import com.google.common.base.Strings;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import io.netty.bootstrap.Bootstrap;
-import io.netty.buffer.ByteBuf;
-import io.netty.buffer.Unpooled;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelConfig;
 import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.EventLoopGroup;
-import io.netty.channel.epoll.Epoll;
-import io.netty.channel.epoll.EpollDatagramChannel;
-import io.netty.channel.epoll.EpollEventLoopGroup;
-import io.netty.channel.kqueue.KQueue;
-import io.netty.channel.kqueue.KQueueDatagramChannel;
-import io.netty.channel.kqueue.KQueueEventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
-import io.netty.channel.socket.DatagramChannel;
 import io.netty.channel.socket.nio.NioDatagramChannel;
 import lombok.Getter;
 import lombok.Setter;
@@ -33,23 +24,17 @@ import org.cloudburstmc.netty.util.nethernet.NetherNetLogging;
 import org.cloudburstmc.netty.util.nethernet.OperatorIdentity;
 import org.cloudburstmc.netty.util.nethernet.TokenTrust;
 import org.cloudburstmc.netty.util.nethernet.TrustedProxies;
-import org.cloudburstmc.netty.channel.raknet.RakChannelFactory;
-import org.cloudburstmc.netty.channel.raknet.RakServerChannel;
-import org.cloudburstmc.netty.channel.raknet.config.RakChannelOption;
-import org.cloudburstmc.netty.channel.raknet.config.RakServerCookieMode;
 import org.cloudburstmc.protocol.bedrock.BedrockPong;
 import org.cloudburstmc.protocol.bedrock.BedrockServerSession;
 import org.cloudburstmc.protocol.bedrock.codec.BedrockCodec;
 import org.cloudburstmc.protocol.bedrock.netty.codec.packet.BedrockPacketCodec;
-import org.cloudburstmc.protocol.bedrock.netty.codec.packet.BedrockPacketCodec_v3;
-import org.cloudburstmc.protocol.bedrock.netty.initializer.BedrockServerInitializer;
 import org.jetbrains.annotations.Nullable;
 import org.powernukkitx.Player;
 import org.powernukkitx.Server;
 import org.powernukkitx.config.category.NetworkSettings;
 import org.powernukkitx.config.category.network.NetherNetSettings;
-import org.powernukkitx.config.category.network.RakNetSettings;
 import org.powernukkitx.event.server.ServerBotnetAttackEvent;
+import org.powernukkitx.network.nethernet.GameOutcomeReporter;
 import org.powernukkitx.network.nethernet.NetherNetProvider;
 import org.powernukkitx.network.nethernet.NetherNetServerInitializer;
 import org.powernukkitx.network.nethernet.SignalingService;
@@ -68,11 +53,8 @@ import oshi.hardware.NetworkIF;
 import tel.schich.libdatachannel.LibDataChannelArchDetect;
 import tel.schich.libdatachannel.PeerConnectionConfiguration;
 
-import java.net.BindException;
-import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
-import java.net.SocketException;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.LinkedList;
@@ -100,8 +82,6 @@ public class Network implements NetworkInterface, SignalingService {
     private final AtomicReference<List<NetworkIF>> hardWareNetworkInterfaces = new AtomicReference<>(null);
     private final Map<InetSocketAddress, BedrockServerSession> sessionMap = new ConcurrentHashMap<>();
     private final Map<InetAddress, LocalDateTime> blockIpMap = new ConcurrentHashMap<>();
-    @Getter
-    private final NetworkSettings.TransportType transport;
     private final EventLoopGroup eventLoopGroup;
     private final @Nullable NetherNetHTTPServerSignaling signaling;
     private final @Nullable Channel channel;
@@ -137,7 +117,6 @@ public class Network implements NetworkInterface, SignalingService {
         }, true);
 
         final NetworkSettings net = server.getSettings().networkSettings();
-        this.transport = net.resolvedTransport();
         final BedrockCodec codec = NetworkConstants.CODEC;
         final InetSocketAddress bindAddress = new InetSocketAddress(
             Strings.isNullOrEmpty(this.server.getIp()) ? "0.0.0.0" : this.server.getIp(), this.server.getPort());
@@ -155,53 +134,6 @@ public class Network implements NetworkInterface, SignalingService {
             .version(codec.getMinecraftVersion())
             .ipv4Port(server.getPort())
             .ipv6Port(server.getPort());
-
-        if (this.transport == NetworkSettings.TransportType.RAKNET) {
-            Class<? extends DatagramChannel> oclass;
-            if (Epoll.isAvailable()) {
-                oclass = EpollDatagramChannel.class;
-                @SuppressWarnings("deprecation")
-                var group = new EpollEventLoopGroup(nettyThreadNumber, threadFactory);
-                this.eventLoopGroup = group;
-            } else if (KQueue.isAvailable()) {
-                oclass = KQueueDatagramChannel.class;
-                @SuppressWarnings("deprecation")
-                var group = new KQueueEventLoopGroup(nettyThreadNumber, threadFactory);
-                this.eventLoopGroup = group;
-            } else {
-                oclass = NioDatagramChannel.class;
-                @SuppressWarnings("deprecation")
-                var group = new NioEventLoopGroup(nettyThreadNumber, threadFactory);
-                this.eventLoopGroup = group;
-            }
-
-            checkPortAvailable(bindAddress);
-
-            this.signaling = null;
-            this.provider = null;
-            // Query rides the RakNet datagram channel, so it needs no listener of its own
-            this.queryChannel = null;
-            this.sessionInitializer = this.rakSessionInitializer(net);
-
-            final RakNetSettings rak = net.rakNetSettings();
-            this.channel = new ServerBootstrap()
-                .channelFactory(RakChannelFactory.server(oclass))
-                .option(RakChannelOption.RAK_ADVERTISEMENT, getAdvertisement())
-                .option(RakChannelOption.RAK_SUPPORTED_PROTOCOLS, new int[]{codec.getRaknetProtocolVersion()})
-                .option(RakChannelOption.RAK_PACKET_LIMIT, rak.packetLimit())
-                .option(RakChannelOption.RAK_SERVER_COOKIE_MODE, parseCookieMode(rak.cookieMode()))
-                .childOption(RakChannelOption.RAK_AUTO_FLUSH, rak.autoFlush())
-                .childOption(RakChannelOption.RAK_FLUSH_INTERVAL, rak.flushInterval())
-                .childOption(RakChannelOption.RAK_MAX_QUEUED_BYTES, rak.maxQueuedBytes())
-                .group(this.eventLoopGroup)
-                .childHandler(this.sessionInitializer)
-                .bind(bindAddress)
-                .syncUninterruptibly()
-                .channel();
-
-            log.info("RakNet listening on udp/{}", bindAddress.getPort());
-            return;
-        }
 
         // Signalling binds NIO channels of its own, so the group has to be NIO. Nothing hot runs on
         // it: the media is carried by the native ICE and DTLS stack on its own threads.
@@ -221,13 +153,7 @@ public class Network implements NetworkInterface, SignalingService {
                 + "Set network-settings.nethernet.udpPort to give it a fixed one", bindAddress.getPort());
         }
 
-        this.sessionInitializer =
-            new NetherNetServerInitializer(codec.getRaknetProtocolVersion(), log.isDebugEnabled()) {
-                @Override
-                protected void initSession(BedrockServerSession session) {
-                    Network.this.initSession(session);
-                }
-            };
+        this.sessionInitializer = this.netherNetInitializer(null);
 
         if (mode.binds()) {
             this.signaling = this.buildSignaling(settings, bindAddress, icePort, iceOnListenerPort, mode.builtin());
@@ -277,69 +203,17 @@ public class Network implements NetworkInterface, SignalingService {
     }
 
     /**
-     * The Bedrock pipeline as RakNet carries it: the stock initializer, with the debug packet codec
-     * and the bad-packet guard swapped in the way this server wants them.
+     * The Bedrock pipeline as NetherNet carries it. Only the provider passes a reporter, builtin
+     * signalling has nobody to tell how a join went.
      */
-    private ChannelHandler rakSessionInitializer(NetworkSettings net) {
-        final boolean query = net.enableQuery();
-        return new BedrockServerInitializer() {
-            @Override
-            protected void postInitChannel(Channel channel) {
-                if (query) {
-                    channel.pipeline().addLast("queryPacketCodec", new QueryPacketCodec())
-                        .addLast("queryPacketHandler", new QueryPacketHandler(
-                            sender -> Network.this.server.getQueryInformation()));
-                }
-            }
-
+    private ChannelHandler netherNetInitializer(@Nullable GameOutcomeReporter outcomes) {
+        return new NetherNetServerInitializer(NetworkConstants.CODEC.getRaknetProtocolVersion(), log.isDebugEnabled(),
+            outcomes) {
             @Override
             protected void initSession(BedrockServerSession session) {
-                session.getPeer().getChannel().pipeline().replace(
-                    BedrockPacketCodec.NAME,
-                    BedrockPacketCodec.NAME,
-                    new BedrockPacketCodec_v3(log.isDebugEnabled())
-                );
                 Network.this.initSession(session);
             }
         };
-    }
-
-    // Verifies the UDP port is free before RakNet binds, so the server refuses to start when another process holds it.
-    private void checkPortAvailable(InetSocketAddress address) {
-        try (DatagramSocket testSocket = new DatagramSocket(null)) {
-            testSocket.setReuseAddress(false);
-            testSocket.bind(address);
-        } catch (BindException e) {
-            throw new IllegalStateException("Server port " + address.getPort() + " is already in use by another process. Startup aborted.", e);
-        } catch (SocketException e) {
-            throw new IllegalStateException("Failed to verify availability of server port " + address.getPort() + ".", e);
-        }
-    }
-
-    /**
-     * Resolves the configured RakNet connection-cookie mode, falling back to {@link RakServerCookieMode#ACTIVE}
-     * (the RakNet default) for unknown or invalid values.
-     */
-    private RakServerCookieMode parseCookieMode(String mode) {
-        try {
-            RakServerCookieMode parsed = RakServerCookieMode.valueOf(mode.trim().toUpperCase(Locale.ROOT));
-            if (parsed != RakServerCookieMode.INVALID) {
-                return parsed;
-            }
-        } catch (IllegalArgumentException ignored) {
-        }
-        log.warn("Invalid network cookie-mode '{}', falling back to ACTIVE. Valid values: ACTIVE, OFFLOADED, OFFLOADED_PSK, OFF", mode);
-        return RakServerCookieMode.ACTIVE;
-    }
-
-    /**
-     * Retrieves the RakNet advertisement, which is what the client shows in its server list.
-     */
-    private ByteBuf getAdvertisement() {
-        if (this.state == NetworkState.STARTING || this.state == NetworkState.STOPPING) {
-            return Unpooled.EMPTY_BUFFER;
-        }
-        return this.pong.toByteBuf();
     }
 
     /**
@@ -353,7 +227,7 @@ public class Network implements NetworkInterface, SignalingService {
                 + "no players will arrive through it");
             return null;
         }
-        NetherNetProvider provider = new NetherNetProvider(this.server, this.sessionInitializer);
+        NetherNetProvider provider = new NetherNetProvider(this.server, this::netherNetInitializer);
         try {
             provider.start(settings, address, udpPort);
             return provider;
@@ -406,7 +280,7 @@ public class Network implements NetworkInterface, SignalingService {
                 // A dedicated media port is pinned by the channel initializer instead
                 .setIceOnLocalPort(icePort <= 0 && iceOnListenerPort)
                 .setTokenTrust(TokenTrust.ANY)
-                .setMotdProvider((host, client) -> Network.this.advertisement())
+                .setMotdProvider((host, peer, client) -> Network.this.advertisement())
                 .setPlayerFilter((host, player) -> Network.this.acceptsConnections() ? null : JoinRefusal.FULL)
                 .build();
         } catch (Exception e) {
@@ -700,9 +574,6 @@ public class Network implements NetworkInterface, SignalingService {
     @Override
     public void updatePong(BedrockPong pong) {
         this.pong = pong;
-        if (this.channel instanceof RakServerChannel rakChannel) {
-            rakChannel.config().setAdvertisement(this.getAdvertisement());
-        }
         if (this.signaling != null) {
             this.signaling.setAdvertisementData(this.advertisement());
         }
@@ -719,7 +590,7 @@ public class Network implements NetworkInterface, SignalingService {
         if (signaling == null) {
             return CompletableFuture.failedFuture(new IllegalStateException("NetherNet is not bound"));
         }
-        return signaling.acceptOffer(networkId, offer, clientAddress, null);
+        return signaling.acceptOffer(networkId, offer, clientAddress, null, null);
     }
 
     /**

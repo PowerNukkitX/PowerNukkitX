@@ -27,6 +27,8 @@ import org.apache.commons.lang3.reflect.FieldUtils;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.nio.file.Files;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.concurrent.ForkJoinPool;
@@ -145,6 +147,16 @@ public final class ServerMockFixture {
         // clash when Gradle runs the fork pool in parallel and the listener bind aborts startup.
         doReturn(0).when(server).getPort();
         doReturn("127.0.0.1").when(server).getIp();
+        // hmm, Network now loads the NetherNet identity from getDataPath() and a bare mock hands
+        // back null there. Temp dir so the generated PEM stays out of the checkout, keys/ isn't ignored
+        final File dataDir;
+        try {
+            dataDir = Files.createTempDirectory("pnx_fixture_data").toFile();
+        } catch (IOException e) {
+            throw new IllegalStateException(e);
+        }
+        Runtime.getRuntime().addShutdownHook(new Thread(() -> FileUtils.deleteQuietly(dataDir)));
+        doReturn(dataDir.getPath() + "/").when(server).getDataPath();
 
         final QueryRegenerateEvent queryRegenerateEvent = new QueryRegenerateEvent(server);
         doReturn(queryRegenerateEvent).when(server).getQueryInformation();

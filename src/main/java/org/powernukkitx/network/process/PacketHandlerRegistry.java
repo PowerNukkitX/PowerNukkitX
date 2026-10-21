@@ -18,7 +18,6 @@ public class PacketHandlerRegistry {
     static {
         register(RequestNetworkSettingsPacket.class, new RequestNetworkSettingsHandler());
         register(LoginPacket.class, new LoginHandler());
-        register(ClientToServerHandshakePacket.class, new ClientToServerHandshakeHandler());
         register(ResourcePackClientResponsePacket.class, new ResourcePackClientResponseHandler());
         register(ResourcePackChunkRequestPacket.class, new ResourcePackChunkRequestHandler());
         register(RequestChunkRadiusPacket.class, new RequestChunkRadiusHandler());

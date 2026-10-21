@@ -11,7 +11,6 @@ import org.cloudburstmc.protocol.bedrock.data.PlayStatus;
 import org.cloudburstmc.protocol.bedrock.data.auth.PlayerAuthenticationType;
 import org.cloudburstmc.protocol.bedrock.data.skin.Skin;
 import org.cloudburstmc.protocol.bedrock.packet.LoginPacket;
-import org.cloudburstmc.protocol.bedrock.packet.ServerToClientHandshakePacket;
 import org.cloudburstmc.protocol.bedrock.util.ChainValidationResult;
 import org.cloudburstmc.protocol.bedrock.util.EncryptionUtils;
 import org.jetbrains.annotations.Nullable;
@@ -31,7 +30,6 @@ import org.powernukkitx.network.process.auth.ClientChainData;
 import org.powernukkitx.network.process.auth.ClientSkinData;
 import org.powernukkitx.utils.SkinUtils;
 
-import javax.crypto.SecretKey;
 import java.security.GeneralSecurityException;
 import java.security.PublicKey;
 import java.util.List;
@@ -50,7 +48,7 @@ import java.util.function.Consumer;
  * state - the pre-login event, player count, whitelist and bans - on the event loop between them.
  * That ordering is deliberate: it matches the sequence used when this ran inline, so failures are
  * still reported in the same order, and a login the server is going to refuse anyway never pays
- * for the client JWT or the key exchange.
+ * for the client JWT.
  *
  * @author Kaooot
  */
@@ -164,19 +162,18 @@ public class LoginHandler implements PacketHandler<LoginPacket> {
         }
 
         offLoop(holder, server,
-            () -> validateClient(credentials, server, identityClaims),
+            () -> validateClient(credentials, identityClaims),
             client -> completeLogin(client, identityClaims, chain.signed(), holder, server));
     }
 
     /**
      * Ties the login chain to the identity that opened the transport.
      * <p>
-     * On RakNet the encryption handshake did this by itself: the session key came out of an ECDH
-     * against the chain's identity key, so only its holder could read what followed. NetherNet runs
-     * inside DTLS and skips that handshake, which leaves the chain unbound, and an unbound chain is
-     * replayable: anyone who captured one elsewhere could present it over a transport of their own.
-     * The signalling assertion is what binds it, because the peer proved it holds the key the
-     * assertion names before the transport was accepted.
+     * NetherNet runs inside DTLS and there is no Bedrock encryption handshake on top of it, so
+     * nothing else binds the chain, and an unbound chain is replayable: anyone who captured one
+     * elsewhere could present it over a transport of their own. The signalling assertion is what
+     * binds it, because the peer proved it holds the key the assertion names before the transport
+     * was accepted.
      * <p>
      * The binding is spent either way, so an admission never outlives the session it admitted.
      *
@@ -203,36 +200,19 @@ public class LoginHandler implements PacketHandler<LoginPacket> {
     }
 
     /**
-     * Verifies the client JWT and prepares the key exchange. Second off-loop step, reached only
-     * once the server has accepted the identity.
+     * Verifies the client JWT. Second off-loop step, reached only once the server has accepted the
+     * identity.
      */
-    private ClientOutcome validateClient(Credentials credentials, Server server, ChainValidationResult.IdentityClaims identityClaims) throws Exception {
+    private ClientOutcome validateClient(Credentials credentials, ChainValidationResult.IdentityClaims identityClaims) throws Exception {
         final ClientJwtValidationResult clientJwt = this.validateClientJwt(credentials.clientJwt(), identityClaims.parsedIdentityPublicKey());
         if (!clientJwt.isValid()) {
-            return new ClientOutcome(null, null, null, false);
+            return new ClientOutcome(null, null);
         }
-        EncryptionHandshake handshake = null;
-        boolean encryptionFailed = false;
-        if (server.enabledNetworkEncryption) {
-            try {
-                final PublicKey clientKey = EncryptionUtils.parseKey(identityClaims.identityPublicKey);
-                final var encryptionKeyPair = EncryptionUtils.createKeyPair();
-                final byte[] encryptionToken = EncryptionUtils.generateRandomToken();
-                handshake = new EncryptionHandshake(
-                    EncryptionUtils.getSecretKey(encryptionKeyPair.getPrivate(), clientKey, encryptionToken),
-                    EncryptionUtils.createHandshakeJwt(encryptionKeyPair, encryptionToken)
-                );
-            } catch (Exception e) {
-                log.debug("Failed to prepare the encryption handshake", e);
-                encryptionFailed = true;
-            }
-        }
-        return new ClientOutcome(clientJwt.getClientChainData(), clientJwt.getSkin(), handshake, encryptionFailed);
+        return new ClientOutcome(clientJwt.getClientChainData(), clientJwt.getSkin());
     }
 
     /**
-     * Answers the client: the remaining rejections, then either the encryption handshake or the
-     * resource pack stage.
+     * Answers the client: the remaining rejections, then the resource pack stage.
      */
     private void completeLogin(ClientOutcome client, ChainValidationResult.IdentityClaims identityClaims,
                                boolean signed, PlayerSessionHolder holder, Server server) {
@@ -249,27 +229,9 @@ public class LoginHandler implements PacketHandler<LoginPacket> {
 
         holder.setPlayerInfo(new Player.PlayerInfo(identityClaims, clientChainData, client.skin(), signed));
 
-        if (client.encryptionFailed()) {
-            holder.disconnect(DisconnectFailReason.UNKNOWN, "encryption error");
-            return;
-        }
-        if (client.encryption() != null) {
-            try {
-                final ServerToClientHandshakePacket pk = new ServerToClientHandshakePacket();
-                pk.setHandshakeWebToken(client.encryption().handshakeJwt());
-                holder.getSession().sendPacketImmediately(pk);
-                holder.getSession().enableEncryption(client.encryption().secretKey());
-            } catch (Exception e) {
-                log.debug("Failed to start the encrypted session", e);
-                holder.disconnect(DisconnectFailReason.UNKNOWN, "encryption error");
-                return;
-            }
-            holder.setState(SessionState.ENCRYPTION);
-        } else {
-            holder.sendPlayStatus(PlayStatus.LOGIN_SUCCESS);
-            holder.setState(SessionState.RESOURCE_PACK);
-            holder.sendResourcePacksInfo(server);
-        }
+        holder.sendPlayStatus(PlayStatus.LOGIN_SUCCESS);
+        holder.setState(SessionState.RESOURCE_PACK);
+        holder.sendResourcePacksInfo(server);
     }
 
     /**
@@ -384,20 +346,11 @@ public class LoginHandler implements PacketHandler<LoginPacket> {
     /**
      * Result of {@link #validateClient}.
      *
-     * @param clientChainData  {@code null} when the client JWT was rejected
-     * @param encryption       the prepared key exchange, or {@code null} when encryption is
-     *                         disabled, the JWT was rejected, or preparation failed
-     * @param encryptionFailed whether preparing the key exchange threw
+     * @param clientChainData {@code null} when the client JWT was rejected
      */
     private record ClientOutcome(
         @Nullable ClientChainData clientChainData,
-        @Nullable Skin skin,
-        @Nullable EncryptionHandshake encryption,
-        boolean encryptionFailed
+        @Nullable Skin skin
     ) {
-    }
-
-    /** Encryption material derived off the event loop, applied once back on it. */
-    private record EncryptionHandshake(SecretKey secretKey, String handshakeJwt) {
     }
 }
