@@ -35,7 +35,7 @@ import java.util.function.Supplier;
 
 @Slf4j
 public class Palette<V> {
-    protected static final byte COPY_LAST_FLAG_HEADER = (byte) (0x7F << 1) | 1;
+    public static final byte COPY_LAST_FLAG_HEADER = (byte) (0x7F << 1) | 1;
     private static final int INDEX_MAP_THRESHOLD = 16;
 
     protected final List<V> palette;
