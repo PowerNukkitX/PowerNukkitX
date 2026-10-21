@@ -6878,28 +6878,31 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
 
             //Mending
             ArrayList<Integer> itemsWithMending = new ArrayList<>();
-            for (int i = 0; i < 4; i++) {
-                if (inventory.getArmorItem(i).hasEnchantment(Enchantment.ID_MENDING)) {
-                    itemsWithMending.add(inventory.getSize() + i);
+            int[] equipmentSlots = {
+                    inventory.getHeldItemIndex(), -1,
+                    HumanInventory.ARMORS_INDEX, HumanInventory.ARMORS_INDEX + 1,
+                    HumanInventory.ARMORS_INDEX + 2, HumanInventory.ARMORS_INDEX + 3
+            };
+            for (int slot : equipmentSlots) {
+                Item equipped = slot == -1 ? getOffhandInventory().getItem(0) : inventory.getItem(slot);
+                if (equipped.hasEnchantment(Enchantment.ID_MENDING)
+                        && equipped.getMaxDurability() > 0
+                        && !equipped.isUnbreakable()
+                        && !equipped.getNbt().getBoolean("Unbreakable")
+                        && equipped.getDamage() > 0) {
+                    itemsWithMending.add(slot);
                 }
             }
-            if (inventory.getItemInMainHand().hasEnchantment(Enchantment.ID_MENDING)) {
-                itemsWithMending.add(inventory.getHeldItemIndex());
-            }
-            if (!itemsWithMending.isEmpty()) {
-                Random rand = new Random();
-                Integer itemToRepair = itemsWithMending.get(rand.nextInt(itemsWithMending.size()));
-                Item toRepair = inventory.getItem(itemToRepair);
-                if (toRepair instanceof ItemTool || toRepair instanceof ItemArmor) {
-                    if (toRepair.getDamage() > 0) {
-                        int dmg = toRepair.getDamage() - exp;
-                        if (dmg < 0) {
-                            exp = Math.abs(dmg);
-                            dmg = 0;
-                        }
-                        toRepair.setDamage(dmg);
-                        inventory.setItem(itemToRepair, toRepair);
-                    }
+            if (exp > 0 && !itemsWithMending.isEmpty()) {
+                int slot = itemsWithMending.get(ThreadLocalRandom.current().nextInt(itemsWithMending.size()));
+                Item toRepair = slot == -1 ? getOffhandInventory().getItem(0) : inventory.getItem(slot);
+                int repaired = (int) Math.min(toRepair.getDamage(), (long) exp * 2);
+                toRepair.setDamage(toRepair.getDamage() - repaired);
+                exp -= repaired / 2;
+                if (slot == -1) {
+                    getOffhandInventory().setItem(0, toRepair);
+                } else {
+                    inventory.setItem(slot, toRepair);
                 }
             }
 
