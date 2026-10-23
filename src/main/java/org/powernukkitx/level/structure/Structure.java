@@ -529,7 +529,7 @@ public class Structure extends AbstractStructure {
      * @return filtered structure for placement
      */
     public Structure filteredByIntegrity(float integrity, long seed) {
-        if (!(integrity < 100f)) return this;
+        if (Float.isNaN(integrity) || integrity >= 100f) return this;
 
         BlockState[][][][] selected = new BlockState[2][sizeX][sizeY][sizeZ];
         Map<Vector3, CompoundTag> selectedData = new HashMap<>();
@@ -609,7 +609,7 @@ public class Structure extends AbstractStructure {
     }
 
     private static boolean passesIntegrity(float integrity, int seed) {
-        if (!(integrity > 0f)) return false;
+        if (Float.isNaN(integrity) || integrity <= 0f) return false;
 
         int state = seed, state1 = 0;
         for (int i = 1; i <= 397; i++) {
