@@ -74,6 +74,35 @@ public class Xoroshiro128Test {
     }
 
     @Test
+    void nextIntMinMaxIncludesBothBounds() {
+        Xoroshiro128 r = new Xoroshiro128(7L);
+        boolean sawMin = false;
+        boolean sawMax = false;
+        for (int i = 0; i < 1000; i++) {
+            int v = r.nextInt(2, 5);
+            Assertions.assertTrue(v >= 2 && v <= 5, "value " + v);
+            sawMin |= v == 2;
+            sawMax |= v == 5;
+        }
+        Assertions.assertTrue(sawMin, "inclusive min never returned");
+        Assertions.assertTrue(sawMax, "inclusive max never returned");
+    }
+
+    @Test
+    void nextIntWithEqualBounds() {
+        Xoroshiro128 r = new Xoroshiro128(7L);
+        Assertions.assertEquals(7, r.nextInt(7, 7));
+    }
+
+    @Test
+    void nextIntOverFullIntRange() {
+        Xoroshiro128 r = new Xoroshiro128(7L);
+        for (int i = 0; i < 100; i++) {
+            r.nextInt(Integer.MIN_VALUE, Integer.MAX_VALUE);
+        }
+    }
+
+    @Test
     void nextBoundedInt() {
         Xoroshiro128 r = new Xoroshiro128(8L);
         for (int i = 0; i < 1000; i++) {
