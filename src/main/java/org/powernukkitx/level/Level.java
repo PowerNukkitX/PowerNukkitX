@@ -1827,10 +1827,23 @@ public class Level implements Metadatable, LiquidUpdateAccess {
             this.cancelUnloadChunkRequest(hash);
         }
 
-        reacquireChunkView(hash);
+        acquireChunkView(hash);
     }
 
+    /**
+     * Re-acquires a chunk the view already retains. A loaded chunk that finished generating and is
+     * available has nothing left to restore, so it is skipped: the view keeps it loaded, and its
+     * neighbours are re-evaluated whenever one of them advances.
+     */
     void reacquireChunkView(long hash) {
+        if (this.getPhysicalChunkIfLoaded(getHashX(hash), getHashZ(hash)) instanceof Chunk chunk
+                && !chunk.isDiscarded() && chunk.isGenerationComplete() && chunk.isAvailable()) {
+            return;
+        }
+        acquireChunkView(hash);
+    }
+
+    private void acquireChunkView(long hash) {
         int chunkX = getHashX(hash);
         int chunkZ = getHashZ(hash);
         IChunk acquired = this.requireProvider().acquireChunk(chunkX, chunkZ);
@@ -7141,16 +7154,11 @@ public class Level implements Metadatable, LiquidUpdateAccess {
     public boolean standable(Vector3 vec, boolean allowWaterUnder, boolean loadChunks) {
         Position pos = Position.fromObject(vec, this);
         Block blockUnder = pos.add(0, -1, 0).getLevelBlock(0, loadChunks);
+        if (blockUnder.canPassThrough() && !(allowWaterUnder && blockUnder instanceof BlockFlowingWater)) return false;
         Block block = pos.getLevelBlock(0, loadChunks);
+        if (!block.isAir() && !block.canPassThrough()) return false;
         Block blockUpper = pos.add(0, 1, 0).getLevelBlock(0, loadChunks);
-        if (!allowWaterUnder)
-            return !blockUnder.canPassThrough()
-                    && (block.isAir() || block.canPassThrough())
-                    && (blockUpper.isAir() || blockUpper.canPassThrough());
-        else
-            return (!blockUnder.canPassThrough() || blockUnder instanceof BlockFlowingWater)
-                    && (block.isAir() || block.canPassThrough())
-                    && (blockUpper.isAir() || blockUpper.canPassThrough());
+        return blockUpper.isAir() || blockUpper.canPassThrough();
     }
 
     public boolean isTicked() {
