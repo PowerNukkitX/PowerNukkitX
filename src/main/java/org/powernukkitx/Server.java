@@ -496,7 +496,7 @@ public class Server {
         }
 
         // A minimum of 1 is enforced to prevent invalid recursion values.
-        this.computeThreadPool = new ForkJoinPool(Math.min(0x7fff, Runtime.getRuntime().availableProcessors()), new ComputeThreadPoolThreadFactory(), null, false);
+        this.computeThreadPool = new ForkJoinPool(Math.min(0x7fff, Utils.backgroundPoolThreads()), new ComputeThreadPoolThreadFactory(), null, false);
 
         int chunkIoThreads = this.settings.chunkSettings().chunkIoThreads();
         if (chunkIoThreads <= 0) {
