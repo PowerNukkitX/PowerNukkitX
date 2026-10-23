@@ -8,6 +8,7 @@ import org.powernukkitx.blockentity.BlockEntityJukebox;
 import org.powernukkitx.item.Item;
 import org.powernukkitx.item.ItemBlock;
 import org.powernukkitx.item.ItemMusicDisc;
+import org.powernukkitx.item.customitem.ItemDataDriven;
 import org.powernukkitx.math.BlockFace;
 import org.jetbrains.annotations.NotNull;
 
@@ -67,7 +68,8 @@ public class BlockJukebox extends BlockSolid implements BlockEntityHolder<BlockE
             return true;
         }
 
-        if (!item.isNull() && item instanceof ItemMusicDisc) {
+        if (!item.isNull() && (item instanceof ItemMusicDisc
+                || (item instanceof ItemDataDriven dataDriven && dataDriven.getRecord() != null))) {
             Item record = item.clone();
             record.count = 1;
             item.count--;

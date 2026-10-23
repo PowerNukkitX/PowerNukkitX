@@ -13,6 +13,7 @@ import org.powernukkitx.inventory.HumanOffHandInventory;
 import org.powernukkitx.inventory.Inventory;
 import org.powernukkitx.item.Item;
 import org.powernukkitx.item.ItemShield;
+import org.powernukkitx.item.customitem.ItemDataDriven;
 import org.powernukkitx.item.enchantment.Enchantment;
 import org.powernukkitx.level.Sound;
 import org.powernukkitx.level.format.IChunk;
@@ -75,6 +76,9 @@ public abstract class EntityHumanType extends EntityCreature implements IHuman, 
         if (this.isClosed() || !this.isAlive()) {
             return false;
         }
+        if (absorbWithArmor(source)) {
+            return false;
+        }
 
         if (source.getCause() != DamageCause.VOID && source.getCause() != DamageCause.CUSTOM && source.getCause() != DamageCause.MAGIC && source.getCause() != DamageCause.HUNGER && source.getCause() != DamageCause.SONIC_BOOM) {
             int armorPoints = 0;
@@ -115,6 +119,26 @@ public abstract class EntityHumanType extends EntityCreature implements IHuman, 
         } else {
             return false;
         }
+    }
+
+    /**
+     * Lets worn armour from a behaviour pack that declares {@code minecraft:damage_absorption} take the damage
+     * into its durability, sparing the wearer entirely.
+     *
+     * @return whether a piece of armour absorbed the damage
+     */
+    private boolean absorbWithArmor(EntityDamageEvent source) {
+        for (int slot = 0; slot < 4; slot++) {
+            Item armor = this.inventory.getArmorItem(slot);
+            if (armor instanceof ItemDataDriven dataDriven && dataDriven.absorbs(source.getCause())) {
+                int damage = Math.max(1, Math.round(source.getFinalDamage()));
+                armor.setDamage(armor.getDamage() + damage);
+                boolean broken = armor.getMaxDurability() > 0 && armor.getDamage() >= armor.getMaxDurability();
+                this.inventory.setArmorItem(slot, broken ? Item.AIR : armor, true);
+                return true;
+            }
+        }
+        return false;
     }
 
     protected double calculateEnchantmentProtectionFactor(Item item, EntityDamageEvent source) {

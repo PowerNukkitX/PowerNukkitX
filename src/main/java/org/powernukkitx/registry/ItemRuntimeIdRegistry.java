@@ -201,6 +201,28 @@ public class ItemRuntimeIdRegistry implements IRegistry<String, Integer, Integer
         }
     }
 
+    /**
+     * Replaces the entry of an identifier already registered through
+     * {@link #registerCustomRuntimeItem(RuntimeEntry)}, so the item sent to clients under that identifier
+     * changes - from a block's item form to a component-based item, for instance - while existing
+     * references by identifier keep working.
+     *
+     * @throws RegisterException when nothing is registered under the identifier
+     */
+    public void replaceCustomRuntimeItem(RuntimeEntry entry) throws RegisterException {
+        RuntimeEntry previous = CUSTOM_REGISTRY.get(entry.identifier);
+        if (previous == null) {
+            throw new RegisterException("The item: " + entry.identifier + " has no runtime id to replace!");
+        }
+        CUSTOM_REGISTRY.put(entry.identifier, entry);
+        ID2NAME.remove(previous.runtimeId());
+        ID2NAME.put(entry.runtimeId(), entry.identifier);
+        ITEMDATA.removeIf(data -> data.identifier().equals(entry.identifier));
+        int version = entry.isComponent ? ItemVersionResolver.DATA_DRIVEN : ItemVersionResolver.NONE;
+        ITEMDATA.add(new ItemData(entry.identifier, entry.runtimeId, version, entry.isComponent));
+        ITEM_DATA_CHANGES.incrementAndGet();
+    }
+
     public class ItemVersionResolver {
         public static final int LEGACY = 0;
         public static final int DATA_DRIVEN = 1;
