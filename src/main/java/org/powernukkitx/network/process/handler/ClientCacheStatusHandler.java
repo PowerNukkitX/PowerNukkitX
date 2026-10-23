@@ -24,4 +24,11 @@ public class ClientCacheStatusHandler implements PacketHandler<ClientCacheStatus
     public boolean runsOnNetworkThread() {
         return true;
     }
+
+    // hmm, the client sends this during login, long before the player exists, and it only
+    // touches the session anyway
+    @Override
+    public boolean requiresPlayer() {
+        return false;
+    }
 }
