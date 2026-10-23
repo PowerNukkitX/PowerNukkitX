@@ -2195,7 +2195,7 @@ public class Level implements Metadatable, LiquidUpdateAccess {
             if (!this.updateEntities.isEmpty()) {
                 // skip unless previous tick's serial loop saw entity implementing EntityAsyncPrepare
                 if (this.hasAsyncPrepareEntities) {
-                    CompletableFuture.runAsync(() -> updateEntities.keySet()
+                    updateEntities.keySet()
                         .longParallelStream().forEach(id -> {
                             Entity entity = this.updateEntities.get(id);
                             if (entity != null && entity.isAlive() && entity.isInitialized() && entity instanceof EntityAsyncPrepare entityAsyncPrepare) {
@@ -2204,7 +2204,7 @@ public class Level implements Metadatable, LiquidUpdateAccess {
                                 } catch (Exception e) {
                                 }
                             }
-                        }), this.scheduler.getAsyncTaskThreadPool()).join();
+                        });
                 }
                 boolean seenAsyncPrepare = false;
                 var entityIterator = this.updateEntities.fastKeyIterator();
@@ -4485,8 +4485,23 @@ public class Level implements Metadatable, LiquidUpdateAccess {
         if (provider == null) {
             return;
         }
-        final IChunk chunk = provider.getLoadedChunk(chunkHash(chunkX, chunkZ));
-        if (chunk == null || !chunk.hasLegacyStates()) {
+        final long hash = chunkHash(chunkX, chunkZ);
+        final IChunk chunk = provider.getLoadedChunk(hash);
+        if (chunk == null) {
+            return;
+        }
+        if (chunk instanceof Chunk generated) {
+            final Boolean legacy = generated.tryHasLegacyStates();
+            if (legacy == null) {
+                synchronized (this.legacyStateChunks) {
+                    this.legacyStateChunks.add(hash);
+                }
+                return;
+            }
+            if (!legacy) {
+                return;
+            }
+        } else if (!chunk.hasLegacyStates()) {
             return;
         }
         // blocks on the chunk edge derive their state from the chunk next to it, so the chunk is

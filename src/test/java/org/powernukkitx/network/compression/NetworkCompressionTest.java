@@ -6,6 +6,7 @@ import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.netty.channel.embedded.EmbeddedChannel;
+import org.cloudburstmc.protocol.bedrock.netty.codec.compression.BatchCompression;
 import org.cloudburstmc.protocol.bedrock.netty.codec.compression.ZlibCompression;
 import org.cloudburstmc.protocol.common.util.Zlib;
 import org.junit.jupiter.api.Assertions;
@@ -31,7 +32,7 @@ class NetworkCompressionTest {
         return data;
     }
 
-    private static byte[] encode(ZlibCompression compression, ChannelHandlerContext ctx, byte[] data) throws Exception {
+    private static byte[] encode(BatchCompression compression, ChannelHandlerContext ctx, byte[] data) throws Exception {
         ByteBuf in = ctx.alloc().directBuffer(data.length).writeBytes(data);
         ByteBuf out = compression.encode(ctx, in);
         try {
@@ -85,6 +86,25 @@ class NetworkCompressionTest {
             Assertions.assertTrue(compressed.length <= SizedZlibCompression.deflateBound(size),
                 size + " bytes compressed to " + compressed.length);
         }
+        channel.finishAndReleaseAll();
+    }
+
+    @Test
+    void measuredCompressionReportsTheRatioOncePerWindow() throws Exception {
+        EmbeddedChannel channel = new EmbeddedChannel();
+        ChannelHandlerContext ctx = context(channel);
+        MeasuredCompression measured = new MeasuredCompression(new SizedZlibCompression(Zlib.RAW));
+        measured.setLevel(7);
+        MeasuredCompression.sampleRatio();
+
+        byte[] compressible = input(64_000, true);
+        byte[] compressed = encode(measured, ctx, compressible);
+        Assertions.assertArrayEquals(compressible, inflate(compressed, compressible.length));
+
+        double ratio = MeasuredCompression.sampleRatio();
+        Assertions.assertEquals((double) compressed.length / compressible.length, ratio, 1e-9);
+        Assertions.assertTrue(ratio < 0.1, "ratio " + ratio);
+        Assertions.assertTrue(MeasuredCompression.sampleRatio() < 0, "the window starts over after a sample");
         channel.finishAndReleaseAll();
     }
 

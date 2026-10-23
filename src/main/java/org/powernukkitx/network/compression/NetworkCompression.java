@@ -56,7 +56,7 @@ public final class NetworkCompression {
                 ? PacketCompressionAlgorithm.SNAPPY
                 : PacketCompressionAlgorithm.ZLIB;
 
-        BatchCompression compression = snappy ? new SnappyCompression() : newZlibCompression();
+        BatchCompression compression = new MeasuredCompression(snappy ? new SnappyCompression() : newZlibCompression());
         compression.setLevel(NukkitMath.clamp(settings.compressionLevel(), 0, 9));
 
         int threshold = settings.compressionThreshold();

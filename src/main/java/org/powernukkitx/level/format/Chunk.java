@@ -623,6 +623,34 @@ public class Chunk implements IChunk {
         return false;
     }
 
+    /**
+     * Like {@link #hasLegacyStates()}, but returns at once instead of waiting while a generation
+     * stage is writing the chunk's blocks.
+     *
+     * @return whether the chunk has legacy states, or {@code null} while its blocks are being written
+     */
+    @ApiStatus.Internal
+    public @Nullable Boolean tryHasLegacyStates() {
+        if (this.statesUpgraded) {
+            return Boolean.FALSE;
+        }
+        long stamp = blockLock.tryReadLock();
+        if (stamp == 0L) {
+            return null;
+        }
+        try {
+            for (ChunkSection section : this.sections) {
+                if (section != null && section.hasLegacyStates()) {
+                    return Boolean.TRUE;
+                }
+            }
+        } finally {
+            blockLock.unlockRead(stamp);
+        }
+        this.statesUpgraded = true;
+        return Boolean.FALSE;
+    }
+
     @Override
     public void markStatesUpgraded() {
         this.statesUpgraded = true;
