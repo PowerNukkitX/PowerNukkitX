@@ -153,6 +153,10 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
     protected Vector3 leashKnotPos = null;
     private Vector3 leashFollowTarget = null;
     private static final double LEASH_BREAK_DISTANCE = 10.0;
+    private static final long LEASH_HOLDER_RETRY_NANOS = 1_000_000_000L;
+    private static final long LEASH_HOLDER_TIMEOUT_NANOS = 5_000_000_000L;
+    private long leashHolderMissingNanos;
+    private long leashHolderRetryNanos;
 
     /**
      * The entity is this targeting to
@@ -5576,6 +5580,8 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
 
     public void setLeashedTo(@Nullable Entity holder) {
         final Entity previous = this.leashedTo;
+        this.leashHolderMissingNanos = 0;
+        this.leashHolderRetryNanos = 0;
         this.leashedTo = holder;
         this.leashHolderUuid = holder != null && !(holder instanceof EntityLeashKnot)
                 ? holder.getUniqueId()
@@ -5629,6 +5635,8 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
         this.leashedTo = null;
         this.leashHolderUuid = null;
         this.leashKnotPos = null;
+        this.leashHolderMissingNanos = 0;
+        this.leashHolderRetryNanos = 0;
         if (this.leashFollowTarget != null) {
             if (this instanceof EntityIntelligent intelligent) {
                 intelligent.setMoveTarget(null);
@@ -5663,7 +5671,8 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
                 if (this.level != null) {
                     this.level.addSound(this, Sound.LEASHKNOT_PLACE);
                 }
-                return true;
+                // The knot's existing lead is reused by the player.
+                return false;
             }
             return false;
         }
@@ -5682,6 +5691,18 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
         if (this.leashedTo == null || this.leashedTo.closed) {
             this.leashedTo = null;
             if (this.leashHolderUuid != null) {
+                // Use the configured tick duration so retries also respect custom tick rates.
+                final long elapsedNanos = Math.max(0, tickDiff) * this.getServer().getNanosPerTick();
+                this.leashHolderMissingNanos += elapsedNanos;
+                if (this.leashHolderMissingNanos >= LEASH_HOLDER_TIMEOUT_NANOS) {
+                    this.unleash(true);
+                    return;
+                }
+                this.leashHolderRetryNanos -= elapsedNanos;
+                if (this.leashHolderRetryNanos > 0) {
+                    return;
+                }
+                this.leashHolderRetryNanos = LEASH_HOLDER_RETRY_NANOS;
                 Entity holder = this.getServer().getPlayer(this.leashHolderUuid).orElse(null);
                 if (holder == null && this.level != null) {
                     final AxisAlignedBB search = this.boundingBox.grow(
@@ -5697,6 +5718,8 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
                     return;
                 }
                 this.leashedTo = holder;
+                this.leashHolderMissingNanos = 0;
+                this.leashHolderRetryNanos = 0;
                 this.setDataProperty(ActorDataTypes.LEASH_HOLDER, holder.getId());
             } else if (this.leashKnotPos != null) {
                 if (this.level == null) {
@@ -5705,13 +5728,21 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
                 final int bx = this.leashKnotPos.getFloorX();
                 final int by = this.leashKnotPos.getFloorY();
                 final int bz = this.leashKnotPos.getFloorZ();
-                final EntityLeashKnot knot = EntityLeashKnot.getKnotAt(this.level, bx, by, bz);
+                EntityLeashKnot knot = EntityLeashKnot.getKnotAt(this.level, bx, by, bz);
                 if (knot == null) {
-                    if (this.level.isChunkLoaded(bx >> 4, bz >> 4)
-                            && !(this.level.getBlock(this.leashKnotPos) instanceof BlockFence)) {
-                        this.unleash(true);
+                    if (!this.level.isChunkLoaded(bx >> 4, bz >> 4)) {
+                        return;
                     }
-                    return;
+                    final Block fence = this.level.getBlock(this.leashKnotPos);
+                    if (!(fence instanceof BlockFence)) {
+                        this.unleash(true);
+                        return;
+                    }
+                    knot = EntityLeashKnot.getOrCreate(fence);
+                    if (knot == null) {
+                        this.unleash(true);
+                        return;
+                    }
                 }
                 this.leashedTo = knot;
                 this.setDataProperty(ActorDataTypes.LEASH_HOLDER, knot.getId());
