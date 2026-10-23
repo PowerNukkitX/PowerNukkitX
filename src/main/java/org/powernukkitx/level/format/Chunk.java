@@ -152,6 +152,7 @@ public class Chunk implements IChunk {
     private volatile boolean discarded;
     private volatile boolean storageResolved = true;
     private volatile boolean statesUpgraded;
+    private volatile int lastViewRequestTick = Integer.MIN_VALUE;
     protected boolean isInitializing;
     protected List<CompoundTag> blockEntityNBT;
     protected List<CompoundTag> entityNBT;
@@ -446,6 +447,25 @@ public class Chunk implements IChunk {
     @ApiStatus.Internal
     public boolean isGenerationComplete() {
         return generationState.get() == ChunkGenerationState.COMPLETE;
+    }
+
+    /**
+     * Claims the generation view request of this chunk for a level tick. Every player waiting for
+     * an unfinished chunk asks for it again on each tick, and one request per tick already keeps
+     * its generation moving, so the others can be skipped.
+     * <p>
+     * Two threads may both claim the same tick; that only costs a duplicate request.
+     *
+     * @param tick the current tick of the chunk's level
+     * @return whether no request was claimed for this tick yet
+     */
+    @ApiStatus.Internal
+    public boolean claimViewRequest(int tick) {
+        if (this.lastViewRequestTick == tick) {
+            return false;
+        }
+        this.lastViewRequestTick = tick;
+        return true;
     }
 
     /**

@@ -7328,7 +7328,10 @@ public class Level implements Metadatable, LiquidUpdateAccess {
     @ApiStatus.Internal
     public boolean prepareChunkLightingForSend(int chunkX, int chunkZ, boolean force) {
         IChunk loadedChunk = getChunkIfLoaded(chunkX, chunkZ);
-        if (loadedChunk instanceof Chunk chunk && chunk.isGenerationComplete() && chunk.isLightingReady()) return true;
+        if (loadedChunk instanceof Chunk chunk) {
+            if (chunk.isGenerationComplete() && chunk.isLightingReady()) return true;
+            if (!force && !chunk.claimViewRequest(this.getTick())) return false;
+        }
 
         chunkGenerationManager.requestView(chunkX, chunkZ);
         return false;

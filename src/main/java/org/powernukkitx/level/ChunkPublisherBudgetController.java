@@ -429,7 +429,7 @@ public final class ChunkPublisherBudgetController {
     }
 
     private double getAccountedChunkBytes() {
-        return Math.max(DEFAULT_ACCOUNTED_CHUNK_BYTES, averageChunkBytes);
+        return averageChunkBytes;
     }
 
     private double getConfiguredPassesPerSecond() {

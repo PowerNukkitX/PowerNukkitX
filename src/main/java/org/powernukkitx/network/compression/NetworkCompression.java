@@ -7,7 +7,6 @@ import org.cloudburstmc.protocol.bedrock.data.PacketCompressionAlgorithm;
 import org.cloudburstmc.protocol.bedrock.netty.codec.compression.BatchCompression;
 import org.cloudburstmc.protocol.bedrock.netty.codec.compression.SimpleCompressionStrategy;
 import org.cloudburstmc.protocol.bedrock.netty.codec.compression.SnappyCompression;
-import org.cloudburstmc.protocol.bedrock.netty.codec.compression.ZlibCompression;
 import org.cloudburstmc.protocol.bedrock.packet.NetworkSettingsPacket;
 import org.cloudburstmc.protocol.common.util.Zlib;
 
@@ -26,7 +25,23 @@ public final class NetworkCompression {
      */
     private static final int PREFIXED_COMPRESSION_PROTOCOL = 649;
 
+    /**
+     * The {@code zlibProvider} value documented as the hardware-accelerated algorithm.
+     */
+    private static final int HARDWARE_ACCELERATED_PROVIDER = 3;
+
     private NetworkCompression() {
+    }
+
+    /**
+     * The zlib compression {@code network-settings.zlibProvider} selects: libdeflate for
+     * {@value #HARDWARE_ACCELERATED_PROVIDER} when it is available on this platform, zlib otherwise.
+     */
+    static BatchCompression newZlibCompression() {
+        final int provider = Server.getInstance().getSettings().networkSettings().zlibProvider();
+        return provider == HARDWARE_ACCELERATED_PROVIDER && LibdeflateZlibCompression.isAvailable()
+                ? new LibdeflateZlibCompression(Zlib.RAW)
+                : new SizedZlibCompression(Zlib.RAW);
     }
 
     /**
@@ -41,7 +56,7 @@ public final class NetworkCompression {
                 ? PacketCompressionAlgorithm.SNAPPY
                 : PacketCompressionAlgorithm.ZLIB;
 
-        BatchCompression compression = snappy ? new SnappyCompression() : new ZlibCompression(Zlib.RAW);
+        BatchCompression compression = snappy ? new SnappyCompression() : newZlibCompression();
         compression.setLevel(NukkitMath.clamp(settings.compressionLevel(), 0, 9));
 
         int threshold = settings.compressionThreshold();
