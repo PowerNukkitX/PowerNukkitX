@@ -302,7 +302,7 @@ public abstract class BaseInventory implements Inventory {
                     item.setCount(item.getCount() - diff);
                 }
             } else if (slot.isNull()) {
-                item.setCount(item.getCount() - Math.min(slot.getMaxStackSize(), this.getMaxStackSize()));
+                item.setCount(item.getCount() - Math.min(item.getMaxStackSize(), this.getMaxStackSize()));
             }
 
             if (item.getCount() <= 0) {
