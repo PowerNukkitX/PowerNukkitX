@@ -17,17 +17,32 @@ public class EffectSpeed extends Effect {
 
             Effect oldEffect = living.getEffect(this.getType());
             if (oldEffect != null) {
-                living.setMovementSpeed(living.getMovementSpeed() / (1 + 0.2f * oldEffect.getLevel()));
+                restoreSpeed(living, oldEffect.getLevel());
             }
 
-            living.setMovementSpeed(living.getMovementSpeed() * (1 + 0.2f * this.getLevel()));
+            living.setMovementSpeed(living.getMovementSpeed() * getSpeedFactor(this.getLevel()));
         }
     }
 
     @Override
     public void remove(Entity entity) {
         if (entity instanceof EntityLiving living) {
-            living.setMovementSpeed(living.getMovementSpeed() / (1 + 0.2f * this.getLevel()));
+            restoreSpeed(living, this.getLevel());
         }
+    }
+
+    private static void restoreSpeed(EntityLiving living, int level) {
+        living.setMovementSpeed(living.getMovementSpeed() / getSpeedFactor(level));
+    }
+
+    /**
+     * How much this effect scales the movement speed of whoever carries it. A level below 1, from
+     * a negative amplifier, counts as level 1.
+     *
+     * @param level the level of the effect
+     * @return the factor to apply to the movement speed, never below 1.2
+     */
+    public static float getSpeedFactor(int level) {
+        return 1 + 0.2f * Math.max(1, level);
     }
 }
