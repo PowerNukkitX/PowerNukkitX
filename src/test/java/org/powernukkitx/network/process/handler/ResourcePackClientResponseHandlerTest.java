@@ -1,11 +1,21 @@
 package org.powernukkitx.network.process.handler;
 
+import org.cloudburstmc.protocol.bedrock.data.DisconnectFailReason;
+import org.cloudburstmc.protocol.bedrock.data.ResourcePackResponse;
+import org.cloudburstmc.protocol.bedrock.packet.ResourcePackClientResponsePacket;
 import org.junit.jupiter.api.Test;
+import org.powernukkitx.Server;
+import org.powernukkitx.network.process.PlayerSessionHolder;
+import org.powernukkitx.network.process.SessionState;
 
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
+import static org.mockito.Mockito.when;
 
 /**
  * The entries of the client's downloading list are strings it chose, read while the session is
@@ -36,5 +46,22 @@ class ResourcePackClientResponseHandlerTest {
         assertNull(ResourcePackClientResponseHandler.parsePackId("../../etc/passwd"));
         assertNull(ResourcePackClientResponseHandler.parsePackId("e8a1f1d4-7f1a-4b2c-9c3d"));
         assertNull(ResourcePackClientResponseHandler.parsePackId("zzzzzzzz-zzzz-zzzz-zzzz-zzzzzzzzzzzz"));
+    }
+
+    @Test
+    void disconnectsOnADownloadingEntryThatHoldsNoPackId() {
+        final PlayerSessionHolder holder = mock(PlayerSessionHolder.class);
+        when(holder.getState()).thenReturn(SessionState.RESOURCE_PACK);
+        final Server server = mock(Server.class);
+
+        final ResourcePackClientResponsePacket packet = new ResourcePackClientResponsePacket();
+        packet.setResponse(ResourcePackResponse.DOWNLOADING);
+        packet.getDownloadingPacks().add("../../etc/passwd");
+
+        new ResourcePackClientResponseHandler().handle(packet, holder, server);
+
+        verify(holder).disconnect(DisconnectFailReason.RESOURCE_PACK_LOADING_FAILED);
+        // the malformed entry is rejected before the pack manager is ever asked for an id
+        verifyNoInteractions(server);
     }
 }

@@ -14,10 +14,9 @@ import org.cloudburstmc.protocol.bedrock.packet.ResourcePackClientResponsePacket
 import org.cloudburstmc.protocol.bedrock.packet.ResourcePackDataInfoPacket;
 import org.cloudburstmc.protocol.bedrock.packet.ResourcePackStackPacket;
 
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
+
 import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Set;
 import java.util.UUID;
 
 /**
@@ -34,15 +33,11 @@ public class ResourcePackClientResponseHandler implements PacketHandler<Resource
         switch (packet.getResponse()) {
             case CANCEL -> holder.disconnect(DisconnectFailReason.RESOURCE_PACK_PROBLEM);
             case DOWNLOADING -> {
-                final Set<UUID> answered = new HashSet<>();
                 for (String downloadingPack : packet.getDownloadingPacks()) {
                     final UUID uuid = parsePackId(downloadingPack);
-                    if (uuid == null){
+                    if (uuid == null) {
                         holder.disconnect(DisconnectFailReason.RESOURCE_PACK_LOADING_FAILED);
                         return;
-                    }
-                    if (!answered.add(uuid)){
-                        continue;
                     }
                     final ResourcePack resourcePack = server.getResourcePackManager().getPackById(uuid);
                     if (resourcePack == null) {
@@ -102,15 +97,15 @@ public class ResourcePackClientResponseHandler implements PacketHandler<Resource
      * @param downloadingPack the entry exactly as the client sent it
      * @return the pack id, or {@code null} when the entry does not hold one
      */
-    static @Nullable UUID parsePackId(@Nullable String downloadingPack){
-        if (downloadingPack == null){
+    static @Nullable UUID parsePackId(@Nullable String downloadingPack) {
+        if (downloadingPack == null) {
             return null;
         }
         final int separator = downloadingPack.indexOf('_');
         final String id = separator < 0 ? downloadingPack : downloadingPack.substring(0, separator);
         try {
             return UUID.fromString(id);
-        } catch (IllegalArgumentException e){
+        } catch (IllegalArgumentException e) {
             return null;
         }
     }
