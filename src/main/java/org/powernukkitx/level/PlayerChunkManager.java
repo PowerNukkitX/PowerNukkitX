@@ -302,6 +302,20 @@ public final class PlayerChunkManager {
         return distanceSquared < effectiveRadius * effectiveRadius;
     }
 
+    /**
+     * Returns whether an offset lies within {@link #SERVER_VIEW_PADDING} chunks, on both axes, of the
+     * view circle the padding surrounds. Each generation stage needs its full 3x3 neighbourhood one stage
+     * behind, so a chunk only completes once every chunk in the square around it is loaded. A circle
+     * padded by the same amount is that many chunks wide along the axes only, and leaves the diagonal rim
+     * of the view stuck before lighting.
+     */
+    private static boolean isInServerViewRadius(int offsetX, int offsetZ, int viewDistance) {
+        return isInChunkViewRadius(
+                Math.max(0, Math.abs(offsetX) - SERVER_VIEW_PADDING),
+                Math.max(0, Math.abs(offsetZ) - SERVER_VIEW_PADDING),
+                viewDistance - SERVER_VIEW_PADDING);
+    }
+
     private void removeOutOfRadiusChunks() {
         LongArrayList toRemove = null;
         LongIterator iter = sentChunks.longIterator();
@@ -607,7 +621,7 @@ public final class PlayerChunkManager {
 
         for (int dx = -viewDistance; dx <= viewDistance; dx++) {
             for (int dz = -viewDistance; dz <= viewDistance; dz++) {
-                if (!isInChunkViewRadius(dx, dz, viewDistance)) continue;
+                if (!isInServerViewRadius(dx, dz, viewDistance)) continue;
                 serverViewScratch.add(Level.chunkHash(centerX + dx, centerZ + dz));
             }
         }

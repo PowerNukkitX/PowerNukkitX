@@ -358,6 +358,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
      * drained in arrival order at the start of {@link #onUpdate}. See {@link #handlePacket}.
      */
     protected final Queue<BedrockPacket> inboundPackets = PlatformDependent.newMpscQueue();
+    private final AtomicBoolean inboundSignalled = new AtomicBoolean();
     private @Nullable Server.PreloadedPlayerData preloadedPlayerData;
     private Consumer<BedrockPacket> inboundProcessor;
     protected volatile String pendingClose;
@@ -1290,7 +1291,22 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     protected void handlePacket(BedrockPacket packet) {
         if (!this.inboundPackets.offer(packet)) {
             log.warn("Failed to enqueue inbound packet {} for player {}", packet.getClass().getSimpleName(), this.getName());
+            return;
         }
+        this.server.onInboundQueued(this);
+    }
+
+    /**
+     * Marks this player as waiting for the server's idle inbound handling.
+     *
+     * @return whether it was not marked yet, so the caller has to queue it
+     */
+    boolean claimInboundSignal() {
+        return this.inboundSignalled.compareAndSet(false, true);
+    }
+
+    void releaseInboundSignal() {
+        this.inboundSignalled.set(false);
     }
 
     protected void drainInboundPackets() {

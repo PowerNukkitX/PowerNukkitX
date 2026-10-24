@@ -3,6 +3,7 @@ package org.powernukkitx.entity.ai.route;
 import org.powernukkitx.Server;
 import org.powernukkitx.entity.ai.route.finder.IRouteFinder;
 import org.powernukkitx.math.Vector3;
+import org.powernukkitx.utils.Utils;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.concurrent.ForkJoinPool;
@@ -23,7 +24,7 @@ public class RouteFindingManager {
     protected final ForkJoinPool pool;
 
     protected RouteFindingManager() {
-        pool = new ForkJoinPool(Runtime.getRuntime().availableProcessors(), new RouteFindingPoolThreadFactory(), null, true);
+        pool = new ForkJoinPool(Utils.backgroundPoolThreads(), new RouteFindingPoolThreadFactory(), null, true);
     }
 
     public static RouteFindingManager getInstance() {

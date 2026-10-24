@@ -3,6 +3,7 @@ package org.powernukkitx;
 import com.google.common.base.Preconditions;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import eu.okaeri.configs.ConfigManager;
+import io.netty.util.internal.PlatformDependent;
 import it.unimi.dsi.fastutil.longs.LongArrayList;
 import it.unimi.dsi.fastutil.longs.LongList;
 import it.unimi.dsi.fastutil.longs.LongLists;
@@ -93,6 +94,7 @@ import org.powernukkitx.nbt.tag.FloatTag;
 import org.powernukkitx.nbt.tag.ListTag;
 import org.powernukkitx.nbt.tag.StringTag;
 import org.powernukkitx.nbt.tag.Tag;
+import org.powernukkitx.network.FlushablePeer;
 import org.powernukkitx.network.Network;
 import org.powernukkitx.network.NetworkConstants;
 import org.powernukkitx.network.NetworkInterface;
@@ -162,6 +164,7 @@ import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
+import java.util.concurrent.locks.LockSupport;
 import java.util.function.Function;
 
 /**
@@ -270,6 +273,8 @@ public class Server {
     public final String structurePath;
     private final Set<UUID> uniquePlayers = new HashSet<>();
     private final Map<InetSocketAddress, Player> players = new ConcurrentHashMap<>();
+    private final Queue<Player> idleInbound = PlatformDependent.newMpscQueue();
+    private volatile boolean waitingForTick;
     private final Map<UUID, Player> playerList = new ConcurrentHashMap<>();
     private final Map<UUID, Player> onlinePlayersView = Collections.unmodifiableMap(playerList);
     private final Map<Long, Player> playerListByUniqueId = new ConcurrentHashMap<>();
@@ -491,7 +496,7 @@ public class Server {
         }
 
         // A minimum of 1 is enforced to prevent invalid recursion values.
-        this.computeThreadPool = new ForkJoinPool(Math.min(0x7fff, Runtime.getRuntime().availableProcessors()), new ComputeThreadPoolThreadFactory(), null, false);
+        this.computeThreadPool = new ForkJoinPool(Math.min(0x7fff, Utils.backgroundPoolThreads()), new ComputeThreadPoolThreadFactory(), null, false);
 
         final boolean creativeInventoryEnabled = settings.gameplaySettings().enableCreativeInventory();
         final boolean recipesEnabled;
@@ -1287,8 +1292,12 @@ public class Server {
                     this.tick();
 
                     long nanosPerTick = getNanosPerTick();
-                    GameLoop.waitUntilNanos(this.nextTickNanos,
-                        nanosPerTick < GameLoop.SPIN_ACTIVATION_NANOS ? GameLoop.SPIN_MARGIN_NANOS : 0L);
+                    if (this.levelThreadMode || nanosPerTick < GameLoop.SPIN_ACTIVATION_NANOS) {
+                        GameLoop.waitUntilNanos(this.nextTickNanos,
+                            nanosPerTick < GameLoop.SPIN_ACTIVATION_NANOS ? GameLoop.SPIN_MARGIN_NANOS : 0L);
+                    } else {
+                        this.waitHandlingInbound(this.nextTickNanos);
+                    }
                 } catch (RuntimeException e) {
                     log.error("A RuntimeException happened while ticking the server", e);
                 }
@@ -1334,6 +1343,71 @@ public class Server {
                         level.getFolderPath(), Utils.getExceptionMessage(e)), e);
                     e.printStackTrace();
                 }
+            }
+        }
+    }
+
+    /**
+     * Waits for the next tick, handling inbound packets of spawned players as they arrive. Without
+     * it a packet that arrives just after a player was ticked waits for the whole idle part of the
+     * tick before anything reacts to it.
+     * <p>
+     * Only used when levels tick on this thread: the packets are handled on the thread that would
+     * otherwise handle them at the start of the player's next update, in the same order. The
+     * network threads wake this thread through {@link #onInboundQueued(Player)}; what arrived
+     * during the tick, after the player's update, is handled right at the start of the wait.
+     */
+    private void waitHandlingInbound(long deadlineNanos) {
+        this.waitingForTick = true;
+        try {
+            for (Player player : this.players.values()) {
+                if (player.spawned) {
+                    player.drainInboundPackets();
+                }
+            }
+            long remaining;
+            while (deadlineNanos - System.nanoTime() > 0) {
+                Player player;
+                while ((player = this.idleInbound.poll()) != null) {
+                    player.releaseInboundSignal();
+                    if (player.spawned) {
+                        player.drainInboundPackets();
+                    }
+                }
+                remaining = deadlineNanos - System.nanoTime();
+                if (remaining <= 0) {
+                    return;
+                }
+                LockSupport.parkNanos(remaining);
+                if (Thread.currentThread().isInterrupted()) {
+                    return;
+                }
+            }
+        } finally {
+            this.waitingForTick = false;
+        }
+    }
+
+    /**
+     * Called on a network thread after a packet was queued for {@code player}, see
+     * {@link #waitHandlingInbound(long)}. Does nothing while the tick runs, which handles the
+     * packet itself.
+     */
+    void onInboundQueued(Player player) {
+        if (this.waitingForTick && player.claimInboundSignal()) {
+            this.idleInbound.offer(player);
+            LockSupport.unpark(this.currentThread);
+        }
+    }
+
+    /**
+     * Writes what the tick queued for every player right away instead of on the next session
+     * timer, see {@link FlushablePeer}.
+     */
+    private void flushPlayerSessions() {
+        for (Player player : this.players.values()) {
+            if (player.getSession().getPeer() instanceof FlushablePeer peer) {
+                peer.flushQueued();
             }
         }
     }
@@ -1387,6 +1461,7 @@ public class Server {
         this.getScheduler().mainThreadHeartbeat((int) this.tickCounter);
 
         this.checkTickUpdates((int) this.tickCounter);
+        this.flushPlayerSessions();
 
         if (tickTime - this.lastTitleTickMillis >= 800) {
             this.lastTitleTickMillis = tickTime;
@@ -2594,7 +2669,7 @@ public class Server {
                 .add(new FloatTag(0)))
             .putFloat("FallDistance", 0)
             .putShort("Fire", 0)
-            .putShort("Air", 300)
+            .putShort("Air", 400)
             .putBoolean("OnGround", true)
             .putBoolean("Invulnerable", false)
             .putCompound("abilities", abilities)

@@ -1112,7 +1112,7 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
         this.portalCooldown = this.nbt.getInt("PortalCooldown");
 
         if (!this.nbt.contains("Air")) {
-            this.nbt.putShort("Air", 300);
+            this.nbt.putShort("Air", 400);
         }
         this.onGround = this.nbt.getBoolean("OnGround");
         this.invulnerable = this.nbt.getBoolean("Invulnerable");
@@ -6566,7 +6566,7 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
         if (this.getActorDataMap().getOrCreateFlags().contains(entityFlag) ^ value) {
             this.getActorDataMap().setFlag(entityFlag, value);
             if (send) {
-                sendData(this.hasSpawned.values().toArray(Player.EMPTY_ARRAY), this.getActorDataMap());
+                sendData(this.hasSpawned.values().toArray(Player.EMPTY_ARRAY), this.snapshotFlags());
             }
         }
     }
@@ -6582,7 +6582,7 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
      */
     public void setDataFlags(EnumSet<ActorFlags> entityFlags) {
         this.getActorDataMap().putFlags(entityFlags);
-        sendData(this.hasSpawned.values().toArray(Player.EMPTY_ARRAY), this.getActorDataMap());
+        sendData(this.hasSpawned.values().toArray(Player.EMPTY_ARRAY), this.snapshotFlags());
     }
 
     /**
@@ -6592,7 +6592,17 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
      */
     public void addDataFlags(EnumSet<ActorFlags> entityFlags) {
         this.getActorDataMap().getOrCreateFlags().addAll(entityFlags);
-        sendData(this.hasSpawned.values().toArray(Player.EMPTY_ARRAY), this.getActorDataMap());
+        sendData(this.hasSpawned.values().toArray(Player.EMPTY_ARRAY), this.snapshotFlags());
+    }
+
+    /**
+     * A copy of only this entity's flags, for telling viewers that its flags changed. The client
+     * applies a data packet as an update, so the rest of the data it already has stays as it is.
+     */
+    private ActorDataMap snapshotFlags() {
+        final ActorDataMap flags = new ActorDataMap();
+        flags.putFlags(EnumSet.copyOf(this.getActorDataMap().getOrCreateFlags()));
+        return flags;
     }
 
     public boolean getDataFlag(ActorFlags id) {
