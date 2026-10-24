@@ -20,6 +20,7 @@ import org.powernukkitx.entity.ai.evaluator.MemoryCheckNotEmptyEvaluator;
 import org.powernukkitx.entity.ai.evaluator.PassByTimeEvaluator;
 import org.powernukkitx.entity.ai.evaluator.RandomSoundEvaluator;
 import org.powernukkitx.entity.ai.executor.AnimalGrowExecutor;
+import org.powernukkitx.entity.ai.executor.CelebrateSurviveExecutor;
 import org.powernukkitx.entity.ai.executor.FlatRandomRoamExecutor;
 import org.powernukkitx.entity.ai.executor.FleeFromTargetExecutor;
 import org.powernukkitx.entity.ai.executor.MoveToTargetExecutor;
@@ -48,6 +49,7 @@ import org.powernukkitx.event.entity.EntityDamageByEntityEvent;
 import org.powernukkitx.event.entity.EntityDamageEvent;
 import org.powernukkitx.event.entity.EntityTransformEvent;
 import org.powernukkitx.inventory.EntityEquipmentInventory;
+import org.powernukkitx.inventory.request.CraftRecipeActionProcessor;
 import org.powernukkitx.inventory.InventoryHolder;
 import org.powernukkitx.inventory.InventorySlice;
 import org.powernukkitx.inventory.TradeInventory;
@@ -186,6 +188,13 @@ public class EntityVillagerV2 extends EntityIntelligent implements InventoryHold
                         .period(1200)
                 .coreBehavior(new PlaySoundExecutor(Sound.MOB_VILLAGER_IDLE, isBaby() ? 1.3f : 0.8f, isBaby() ? 1.7f : 1.2f, 1, 1))
                         .when(new RandomSoundEvaluator())
+                .behavior(new CelebrateSurviveExecutor(30 * 20, 40, 100))
+                        .when(entity -> getMemoryStorage().get(CoreMemoryTypes.CELEBRATING))
+                .behavior(new MoveToTargetExecutor(CoreMemoryTypes.OCCUPIED_BED, 0.24f, true))
+                        .when(all(
+                                entity -> getMemoryStorage().get(CoreMemoryTypes.HIDING_FROM_RAID),
+                                new MemoryCheckNotEmptyEvaluator(CoreMemoryTypes.OCCUPIED_BED)
+                        ))
                 .behavior(entity -> {
                     setMoveTarget(null);
                     setLookTarget(getTradeInventory().getViewers().stream().findFirst().get());
@@ -663,6 +672,7 @@ public class EntityVillagerV2 extends EntityIntelligent implements InventoryHold
             } else if (source.getDamager() instanceof EntityZombie && shouldTransformToZombieVillager() && transformZombie()) return;
         }
         super.kill();
+        if (!isAlive()) getLevel().getVillageManager().removeDweller(uniqueIdLong());
     }
 
     private boolean shouldTransformToZombieVillager() {
@@ -928,7 +938,10 @@ public class EntityVillagerV2 extends EntityIntelligent implements InventoryHold
                 CompoundTag buyA = tag.getCompound("buyA").copy();
                 float multiplier = 0;
                 if (tag.contains("priceMultiplierA")) multiplier = tag.getFloat("priceMultiplierA");
-                buyA.putByte("Count", Math.max(buyA.getByte("Count") - (int) (reputation * multiplier), 1));
+                int base = buyA.getByte("Count");
+                int reduction = (int) (reputation * multiplier)
+                        + CraftRecipeActionProcessor.heroDiscount(player, buyA);
+                buyA.putByte("Count", Math.max(base - reduction, 1));
                 tag.putCompound("buyA", buyA);
             }
             if (tag.contains("buyB")) {
@@ -963,6 +976,13 @@ public class EntityVillagerV2 extends EntityIntelligent implements InventoryHold
         this.maxTradeTier = maxTradeTier;
         this.setDataProperty(ActorDataTypes.MAX_TRADE_TIER, 5);
         this.nbt.putInt("maxTradeTier", this.tradeTier);
+    }
+
+    /** Permanently removes this villager from its village's population before removing its actor. */
+    @Override
+    public void remove() {
+        if (getLevel() != null) getLevel().getVillageManager().removeDweller(uniqueIdLong());
+        super.remove();
     }
 
     @Override
@@ -1108,6 +1128,7 @@ public class EntityVillagerV2 extends EntityIntelligent implements InventoryHold
             zombie.close();
             return false;
         } else {
+            getLevel().getVillageManager().removeDweller(uniqueIdLong());
             this.close();
             zombie.spawnToAll();
             this.level.addSound(this, Sound.MOB_VILLAGER_DEATH);

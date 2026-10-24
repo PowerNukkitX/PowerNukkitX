@@ -7,18 +7,23 @@ import org.powernukkitx.entity.ai.behaviorgroup.IBehaviorGroup;
 import org.powernukkitx.entity.ai.controller.LookController;
 import org.powernukkitx.entity.ai.controller.WalkController;
 import org.powernukkitx.entity.ai.evaluator.EntityCheckEvaluator;
+import org.powernukkitx.entity.ai.evaluator.MemoryCheckEmptyEvaluator;
 import org.powernukkitx.entity.ai.evaluator.MemoryCheckNotEmptyEvaluator;
 import org.powernukkitx.entity.ai.evaluator.RandomSoundEvaluator;
 import org.powernukkitx.entity.ai.executor.FlatRandomRoamExecutor;
+import org.powernukkitx.entity.ai.executor.MoveToTargetExecutor;
 import org.powernukkitx.entity.ai.executor.PlaySoundExecutor;
 import org.powernukkitx.entity.ai.executor.PotionThrowExecutor;
 import org.powernukkitx.entity.ai.executor.UsePotionExecutor;
+import org.powernukkitx.entity.ai.executor.RaiderCelebrationExecutor;
+import org.powernukkitx.entity.ai.executor.RaidHealingExecutor;
 import org.powernukkitx.entity.ai.memory.CoreMemoryTypes;
 import org.powernukkitx.entity.ai.route.finder.impl.SimpleFlatAStarRouteFinder;
 import org.powernukkitx.entity.ai.route.posevaluator.WalkingPosEvaluator;
 import org.powernukkitx.entity.ai.sensor.ISensor;
 import org.powernukkitx.entity.ai.sensor.NearestEntitySensor;
 import org.powernukkitx.entity.ai.sensor.NearestPlayerSensor;
+import org.powernukkitx.entity.ai.sensor.RaidHealingSensor;
 import org.powernukkitx.entity.components.HealthComponent;
 import org.powernukkitx.entity.components.MovementComponent;
 import org.powernukkitx.item.Item;
@@ -54,7 +59,15 @@ public class EntityWitch extends EntityMob implements EntityWalkable {
         return EntityAI.of(this)
                 .coreBehavior(new PlaySoundExecutor(Sound.MOB_WITCH_AMBIENT))
                         .when(new RandomSoundEvaluator())
+                .coreBehavior(new MoveToTargetExecutor(CoreMemoryTypes.RAID_TARGET, 0.3f, true))
+                        .when(all(new MemoryCheckNotEmptyEvaluator(CoreMemoryTypes.RAID_TARGET),
+                                new MemoryCheckEmptyEvaluator(CoreMemoryTypes.ATTACK_TARGET),
+                                new MemoryCheckEmptyEvaluator(CoreMemoryTypes.RAID_HEAL_TARGET)))
                 .coreBehavior(new FlatRandomRoamExecutor(0.3f, 12, 100, false, -1, true, 10))
+                        .when(new MemoryCheckEmptyEvaluator(CoreMemoryTypes.RAID_HEAL_TARGET))
+
+                .behavior(new RaiderCelebrationExecutor(Sound.MOB_WITCH_CELEBRATE, 30 * 20, 20, 50, 40, 100))
+                        .when(entity -> getMemoryStorage().get(CoreMemoryTypes.CELEBRATING))
                 .behavior(new UsePotionExecutor(0.3f, 30, 20))
                         .when(all(
                                 new MemoryCheckNotEmptyEvaluator(CoreMemoryTypes.LAST_BE_ATTACKED_TIME),
@@ -67,7 +80,10 @@ public class EntityWitch extends EntityMob implements EntityWalkable {
                         .when(new EntityCheckEvaluator(CoreMemoryTypes.NEAREST_GOLEM))
                 .behavior(new PotionThrowExecutor(CoreMemoryTypes.NEAREST_PLAYER, 0.3f, 15, true, 30, 20))
                         .when(new EntityCheckEvaluator(CoreMemoryTypes.NEAREST_PLAYER))
+                .behavior(new RaidHealingExecutor())
+                        .when(new EntityCheckEvaluator(CoreMemoryTypes.RAID_HEAL_TARGET))
                 .sensors(
+                        new RaidHealingSensor(),
                         new NearestPlayerSensor(16, 0, 20),
                         new NearestEntitySensor(EntityGolem.class, CoreMemoryTypes.NEAREST_GOLEM, 42, 0, ISensor.DEFAULT_TARGETING_PERIOD)
                 )
