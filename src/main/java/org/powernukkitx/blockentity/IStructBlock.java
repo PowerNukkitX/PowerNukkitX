@@ -6,6 +6,7 @@ public interface IStructBlock extends InventoryHolder {
     String TAG_CUSTOM_NAME = "CustomName";
     String TAG_ANIMATION_MODE = "animationMode";
     String TAG_ANIMATION_SECONDS = "animationSeconds";
+    String TAG_ANIMATION_TICKS = "animationTicks";
     String TAG_DATA = "data";
     String TAG_DATA_FIELD = "dataField";
     String TAG_IGNORE_ENTITIES = "ignoreEntities";

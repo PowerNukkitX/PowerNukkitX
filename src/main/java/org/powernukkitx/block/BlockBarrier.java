@@ -55,6 +55,6 @@ public class BlockBarrier extends BlockSolid {
 
     @Override
     public int getLightFilter() {
-        return 1;
+        return 0;
     }
 }

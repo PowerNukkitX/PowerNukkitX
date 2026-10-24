@@ -8,8 +8,10 @@ import org.cloudburstmc.nbt.NbtUtils;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.AtomicMoveNotSupportedException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
@@ -17,20 +19,44 @@ import java.util.concurrent.ConcurrentHashMap;
 @Slf4j
 public class StructureAPI {
     private static final Map<String, Structure> structureCache = new ConcurrentHashMap<>();
+    private static final Map<String, Structure> memoryStructures = new ConcurrentHashMap<>();
+    private static final Map<String, Long> templateRevisions = new ConcurrentHashMap<>();
+
+    /** Returns the current revision of a named template. */
+    public static long getTemplateRevision(String name) {
+        return templateRevisions.getOrDefault(name, 0L);
+    }
+
+    private static void templateChanged(String name) {
+        templateRevisions.merge(name, 1L, Long::sum);
+    }
+
 
     private static boolean isNameSafe(String name) {
-        if (name == null || name.isEmpty() || name.length() > 256) {
-            return false;
-        }
+        if (name == null || name.isEmpty() || name.length() > 256) return false;
+
         for (int i = 0; i < name.length(); i++) {
             char c = name.charAt(i);
             boolean allowed = (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || (c >= '0' && c <= '9')
-                    || c == '_' || c == '-' || c == '.' || c == ':';
-            if (!allowed) {
-                return false;
-            }
+                    || c == '_' || c == '-' || c == '.' || c == ':' || c == '/';
+            if (!allowed) return false;
         }
-        return !name.contains("..");
+
+        if (name.contains("..") || name.contains("//") || name.startsWith("/") || name.endsWith("/")) return false;
+
+        int separator = name.indexOf(':');
+        return separator < 0 || separator > 0 && separator < name.length() - 1
+                && name.lastIndexOf(':') == separator && name.charAt(separator + 1) != '/';
+    }
+
+    /**
+     * Validates a global structure identifier.
+     *
+     * @param name structure identifier
+     * @return whether the identifier is valid
+     */
+    public static boolean isValidName(String name) {
+        return isNameSafe(name);
     }
 
     private static File confine(File candidate) {
@@ -70,6 +96,22 @@ public class StructureAPI {
     }
 
     /**
+     * Saves a temporary structure accessible from every server world.
+     *
+     * @param structure structure to save
+     * @param name global structure name
+     */
+    public static void saveMemory(Structure structure, String name) {
+        if (!isNameSafe(name)) {
+            log.warn("Rejected structure name {}", name);
+            return;
+        }
+        memoryStructures.put(name, structure);
+        templateChanged(name);
+    }
+
+
+    /**
      * Same as {@link #load(String)}, but reads the file on the compute thread pool.
      * Completes immediately when the structure is already cached.
      *
@@ -78,6 +120,9 @@ public class StructureAPI {
      * or resolves outside the structure directory
      */
     public static CompletableFuture<Structure> loadAsync(String name) {
+        Structure memory = memoryStructures.get(name);
+        if (memory != null) return CompletableFuture.completedFuture(memory);
+
         Structure cached = structureCache.get(name);
         if (cached != null) {
             return CompletableFuture.completedFuture(cached);
@@ -86,6 +131,9 @@ public class StructureAPI {
     }
 
     public static Structure load(String name) {
+        Structure memory = memoryStructures.get(name);
+        if (memory != null) return memory;
+
         Structure cached = structureCache.get(name);
         if (cached != null) {
             return cached;
@@ -115,28 +163,55 @@ public class StructureAPI {
     }
 
     public static void save(Structure structure, String name) {
+        saveDisk(structure, name);
+    }
+
+    /**
+     * Saves a structure to persistent global storage.
+     *
+     * @param structure structure to save
+     * @param name global structure identifier
+     * @return whether the file was written successfully
+     */
+    public static boolean saveDisk(Structure structure, String name) {
         try {
-            File file = resolvePathNamespaced(name); // always save in namespace path
+            File file = resolvePathNamespaced(name);
             if (file == null) {
                 log.warn("Rejected structure name {}", name);
-                return;
+                return false;
             }
-            file.getParentFile().mkdirs();
+            Files.createDirectories(file.getParentFile().toPath());
 
-            try (var stream = Files.newOutputStream(file.toPath());
-                 var nbtOutputStream = NbtUtils.createWriterLE(stream)) {
-                nbtOutputStream.writeTag(structure.toNBT().toNetwork());
+            Path target = file.toPath();
+            Path temporary = Files.createTempFile(target.getParent(), file.getName(), ".saving");
+            try {
+                try (var stream = Files.newOutputStream(temporary);
+                     var nbtOutputStream = NbtUtils.createWriterLE(stream)) {
+                    nbtOutputStream.writeTag(structure.toNBT().toNetwork());
+                }
+
+                try {
+                    Files.move(temporary, target, StandardCopyOption.ATOMIC_MOVE, StandardCopyOption.REPLACE_EXISTING);
+                } catch (AtomicMoveNotSupportedException e) {
+                    Files.move(temporary, target, StandardCopyOption.REPLACE_EXISTING);
+                }
+            } finally {
+                Files.deleteIfExists(temporary);
             }
 
-            if (Server.getInstance().getSettings().gameplaySettings().cacheStructures()) {
-                structureCache.put(name, structure);
-            }
+            memoryStructures.remove(name);
+            structureCache.remove(name);
+            templateChanged(name);
+            return true;
         } catch (Exception e) {
             log.error("Cannot save structure {}", name, e);
+            return false;
         }
     }
 
     public static boolean exists(String name) {
+        if (memoryStructures.containsKey(name)) return true;
+
         File namespaced = resolvePathNamespaced(name);
         if (namespaced != null && namespaced.exists()) {
             return true;
@@ -147,6 +222,8 @@ public class StructureAPI {
 
     public static boolean delete(String name) {
         structureCache.remove(name);
+        memoryStructures.remove(name);
+        templateChanged(name);
 
         File file = resolvePathNamespaced(name);
         if (file == null || !file.exists()) {
