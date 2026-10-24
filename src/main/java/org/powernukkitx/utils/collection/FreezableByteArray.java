@@ -74,103 +74,72 @@ public final class FreezableByteArray implements ByteArrayWrapper, AutoFreezable
     }
 
     @Override
-    public void freeze() {
+    public synchronized void freeze() {
         if (getTemperature() > manager.getFreezingPoint()) return;
         if (!freezeStatus.compareAndSet(FreezeStatus.NONE, FreezeStatus.FREEZING)) return;
-        data = LZ4Freezer.compressor.compress(data);
-        freezeStatus.set(FreezeStatus.FREEZE);
+        try {
+            data = LZ4Freezer.compressor.compress(data.clone());
+            freezeStatus.set(FreezeStatus.FREEZE);
+        } catch (RuntimeException | Error e) {
+            freezeStatus.set(FreezeStatus.NONE);
+            throw e;
+        }
     }
 
     @Override
-    public void deepFreeze() {
+    public synchronized void deepFreeze() {
         if (getTemperature() > manager.getAbsoluteZero()) return;
-        // An already frozen array carries the same LZ4 block a deep freeze would produce, now that
-        // both stages share a compressor, so promote it instead of paying a decompress plus a
-        // recompress for an identical result.
+        // Both frozen states use the same compression format.
         if (freezeStatus.compareAndSet(FreezeStatus.FREEZE, FreezeStatus.DEEP_FREEZE)) return;
         if (!freezeStatus.compareAndSet(FreezeStatus.NONE, FreezeStatus.DEEP_FREEZING)) return;
-        data = LZ4Freezer.deepCompressor.compress(data);
-        freezeStatus.set(FreezeStatus.DEEP_FREEZE);
+        try {
+            data = LZ4Freezer.deepCompressor.compress(data.clone());
+            freezeStatus.set(FreezeStatus.DEEP_FREEZE);
+        } catch (RuntimeException | Error e) {
+            freezeStatus.set(FreezeStatus.NONE);
+            throw e;
+        }
     }
 
     @Override
-    public void thaw() {
-        while (freezeStatus.get() == FreezeStatus.THAWING || freezeStatus.get() == FreezeStatus.FREEZING || freezeStatus.get() == FreezeStatus.DEEP_FREEZING) {
+    public synchronized void thaw() {
+        FreezeStatus status = freezeStatus.get();
+        if (status == FreezeStatus.FREEZE || status == FreezeStatus.DEEP_FREEZE) {
+            freezeStatus.set(FreezeStatus.THAWING);
             try {
-                //noinspection BusyWait
-                Thread.sleep(0); // Put a safe-point here
-            } catch (InterruptedException ignore) {
-
+                data = LZ4Freezer.decompressor.decompress(data, rawLength);
+                freezeStatus.set(FreezeStatus.NONE);
+            } catch (RuntimeException | Error e) {
+                freezeStatus.set(status);
+                throw e;
             }
-        }
-        if (freezeStatus.get() == FreezeStatus.FREEZE || freezeStatus.get() == FreezeStatus.DEEP_FREEZE) {
-            data = LZ4Freezer.decompressor.decompress(data, rawLength);
-            freezeStatus.set(FreezeStatus.NONE);
         }
         if (getTemperature() < manager.getMeltingHeat()) setTemperature(manager.getMeltingHeat());
     }
 
     @Override
-    public byte[] getRawBytes() {
-        while (freezeStatus.get() == FreezeStatus.THAWING || freezeStatus.get() == FreezeStatus.FREEZING || freezeStatus.get() == FreezeStatus.DEEP_FREEZING) {
-            try {
-                //noinspection BusyWait
-                Thread.sleep(0); // Put a safe-point here
-            } catch (InterruptedException ignore) {
-
-            }
-        }
-        if (freezeStatus.get() != FreezeStatus.NONE) {
-            thaw();
-        }
+    public synchronized byte[] getRawBytes() {
+        if (freezeStatus.get() != FreezeStatus.NONE) thaw();
         warmer(manager.getBatchOperationHeat());
         return data;
     }
 
     @Override
-    public void setRawBytes(byte[] bytes) {
-        while (freezeStatus.get() == FreezeStatus.THAWING || freezeStatus.get() == FreezeStatus.FREEZING || freezeStatus.get() == FreezeStatus.DEEP_FREEZING) {
-            try {
-                //noinspection BusyWait
-                Thread.sleep(0); // Put a safe-point here
-            } catch (InterruptedException ignore) {
-
-            }
-        }
+    public synchronized void setRawBytes(byte[] bytes) {
         data = bytes;
         freezeStatus.set(FreezeStatus.NONE);
     }
 
     @Override
-    public byte getByte(int index) {
-        while (freezeStatus.get() == FreezeStatus.THAWING || freezeStatus.get() == FreezeStatus.FREEZING || freezeStatus.get() == FreezeStatus.DEEP_FREEZING) {
-            try {
-                //noinspection BusyWait
-                Thread.sleep(0); // Put a safe-point here
-            } catch (InterruptedException ignore) {
-
-            }
-        }
-        if (freezeStatus.get() != FreezeStatus.NONE) {
-            thaw();
-        }
+    public synchronized byte getByte(int index) {
+        if (freezeStatus.get() != FreezeStatus.NONE) thaw();
         warmer(manager.getSingleOperationHeat());
         return data[index];
     }
 
     @Override
-    public void setByte(int index, byte b) {
-        while (freezeStatus.get() == FreezeStatus.THAWING || freezeStatus.get() == FreezeStatus.FREEZING || freezeStatus.get() == FreezeStatus.DEEP_FREEZING) {
-            try {
-                //noinspection BusyWait
-                Thread.sleep(0); // Put a safe-point here
-            } catch (InterruptedException ignore) {
-
-            }
-        }
-        if (freezeStatus.get() != FreezeStatus.NONE) {
-            thaw();
-        }
+    public synchronized void setByte(int index, byte b) {
+        if (freezeStatus.get() != FreezeStatus.NONE) thaw();
         warmer(manager.getSingleOperationHeat());
         data[index] = b;
     }

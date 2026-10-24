@@ -4,7 +4,6 @@ import org.powernukkitx.block.property.type.BlockPropertyType;
 import org.powernukkitx.network.NetworkConstants;
 import org.powernukkitx.utils.HashUtils;
 import com.google.common.base.Preconditions;
-import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import lombok.extern.slf4j.Slf4j;
 import org.cloudburstmc.nbt.NbtMap;
 import org.jetbrains.annotations.UnmodifiableView;
@@ -12,6 +11,7 @@ import org.jetbrains.annotations.UnmodifiableView;
 import java.util.Arrays;
 import java.util.List;
 import java.util.TreeMap;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * @author Cool_Loong (Allay Project)
@@ -26,7 +26,7 @@ public record BlockStateImpl(String identifier,
 ) implements BlockState {
     private static final int UNKNOWN_BLOCK_HASH = -2;
 
-    static Int2ObjectOpenHashMap<BlockStateImpl> UNKNOWN_BLOCK_STATE_CACHE = new Int2ObjectOpenHashMap<>();
+    private static final ConcurrentHashMap<Integer, BlockStateImpl> UNKNOWN_BLOCK_STATE_CACHE = new ConcurrentHashMap<>();
 
     static BlockStateImpl makeUnknownBlockState(int hash, NbtMap blockTag) {
         return UNKNOWN_BLOCK_STATE_CACHE.computeIfAbsent(hash, h -> new BlockStateImpl(BlockID.UNKNOWN, UNKNOWN_BLOCK_HASH, (short) 0, new BlockPropertyType.BlockPropertyValue[0], NbtMap.builder()
