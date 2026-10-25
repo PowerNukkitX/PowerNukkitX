@@ -1442,10 +1442,6 @@ public final class BlockRegistry implements BlockID, IRegistry<String, Block, Cl
         register0(CINNABAR_BRICK_STAIRS, BlockCinnabarBrickStairs.class);
         register0(POLISHED_CINNABAR_STAIRS, BlockPolishedCinnabarStairs.class);
 
-        register0(DISC_PRESS, BlockDiscPress.class);
-        register0(ICE_CRYSTAL, BlockIceCrystal.class);
-        register0(ICICLE, BlockIcicle.class);
-
         loadDataDrivenProperties();
     }
 

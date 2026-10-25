@@ -2600,7 +2600,7 @@ public interface BlockID {
     String WAXED_EXPOSED_COPPER_BARS = "minecraft:waxed_exposed_copper_bars";
     String WAXED_WEATHERED_COPPER_BARS = "minecraft:waxed_weathered_copper_bars";
     String WAXED_OXIDIZED_COPPER_BARS = "minecraft:waxed_oxidized_copper_bars";
-    
+
     String COPPER_CHAIN = "minecraft:copper_chain";
     String EXPOSED_COPPER_CHAIN = "minecraft:exposed_copper_chain";
     String WEATHERED_COPPER_CHAIN = "minecraft:weathered_copper_chain";
@@ -2698,7 +2698,4 @@ public interface BlockID {
     String CINNABAR_STAIRS = "minecraft:cinnabar_stairs";
     String CINNABAR_BRICK_STAIRS = "minecraft:cinnabar_brick_stairs";
     String POLISHED_CINNABAR_STAIRS = "minecraft:polished_cinnabar_stairs";
-    String DISC_PRESS = "minecraft:disc_press";
-    String ICE_CRYSTAL = "minecraft:ice_crystal";
-    String ICICLE = "minecraft:icicle";
 }

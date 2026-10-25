@@ -64,8 +64,6 @@ public class PotionRegistry implements IRegistry<String, PotionType, PotionType>
         register0(PotionType.WEAVING);
         register0(PotionType.OOZING);
         register0(PotionType.INFESTED);
-        register0(PotionType.FREEZING);
-        register0(PotionType.FREEZING_LONG);
     }
 
     @Override

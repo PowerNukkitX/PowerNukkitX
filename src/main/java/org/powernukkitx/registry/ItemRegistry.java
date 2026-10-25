@@ -240,7 +240,6 @@ public final class ItemRegistry implements ItemID, IRegistry<String, Item, Class
             register(FOX_SPAWN_EGG, ItemFoxSpawnEgg.class);
             register(FRIEND_POTTERY_SHERD, ItemFriendPotterySherd.class);
             register(FROG_SPAWN_EGG, ItemFrogSpawnEgg.class);
-            register(FROSTBITE_SPAWN_EGG, ItemFrostbiteSpawnEgg.class);
             register(GHAST_SPAWN_EGG, ItemGhastSpawnEgg.class);
             register(GHAST_TEAR, ItemGhastTear.class);
             register(GLASS_BOTTLE, ItemGlassBottle.class);
@@ -517,7 +516,6 @@ public final class ItemRegistry implements ItemID, IRegistry<String, Item, Class
             register(SNOUT_ARMOR_TRIM_SMITHING_TEMPLATE, ItemSnoutArmorTrimSmithingTemplate.class);
             register(SNOW_GOLEM_SPAWN_EGG, ItemSnowGolemSpawnEgg.class);
             register(SNOWBALL, ItemSnowball.class);
-            register(ICE_BALL, ItemIceBall.class);
             register(SPARKLER, ItemSparkler.class);
             register(SPAWN_EGG, ItemSpawnEgg.class);
             register(SPIDER_EYE, ItemSpiderEye.class);

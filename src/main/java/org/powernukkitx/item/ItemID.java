@@ -1144,6 +1144,4 @@ public interface ItemID {
     String SULFUR_CUBE_SPAWN_EGG = "minecraft:sulfur_cube_spawn_egg";
     String MUSIC_DISC_BOUNCE = "minecraft:music_disc_bounce";
     String SULFUR_CUBE_BUCKET = "minecraft:sulfur_cube_bucket";
-    String FROSTBITE_SPAWN_EGG = "minecraft:frostbite_spawn_egg";
-    String ICE_BALL = "minecraft:ice_ball";
 }
