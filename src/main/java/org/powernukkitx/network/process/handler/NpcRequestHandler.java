@@ -21,11 +21,19 @@ public class NpcRequestHandler implements PacketHandler<NpcRequestPacket> {
     @Override
     public void handle(NpcRequestPacket packet, PlayerSessionHolder holder, Server server) {
         PlayerHandle playerHandle = holder.getPlayerHandle();
+        if (playerHandle == null || playerHandle.player == null) {
+            return;
+        }
         Player player = playerHandle.player;
         if (!player.spawned || !player.isAlive()) {
             return;
         }
-        if (packet.getSceneName().isEmpty() && player.level.getEntity(packet.getNpcRuntimeID()) instanceof EntityNpc npcEntity) {
+        String sceneName = packet.getSceneName();
+        if (sceneName != null && sceneName.length() > 256) {
+            return;
+        }
+
+        if (sceneName.isEmpty() && player.level.getEntity(packet.getNpcRuntimeID()) instanceof EntityNpc npcEntity) {
             if (!player.canInteract(npcEntity, 12)) {
                 return;
             }
@@ -43,11 +51,11 @@ public class NpcRequestHandler implements PacketHandler<NpcRequestPacket> {
             player.getServer().getPluginManager().callEvent(event);
             return;
         }
-        FormWindowDialog dialog = playerHandle.getDialogWindows().getIfPresent(packet.getSceneName());
+        FormWindowDialog dialog = playerHandle.getDialogWindows().getIfPresent(sceneName);
         if (dialog != null) {
             //remove the window from the map only if the requestType is EXECUTE_CLOSING_COMMANDS
             if (packet.getRequestType() == NpcRequestPacket.RequestType.EXECUTE_CLOSING_COMMANDS) {
-                playerHandle.getDialogWindows().invalidate(packet.getSceneName());
+                playerHandle.getDialogWindows().invalidate(sceneName);
             }
 
             FormResponseDialog response = new FormResponseDialog(packet, dialog);

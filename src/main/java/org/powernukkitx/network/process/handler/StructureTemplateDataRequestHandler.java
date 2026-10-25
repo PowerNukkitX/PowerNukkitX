@@ -22,7 +22,7 @@ public class StructureTemplateDataRequestHandler implements PacketHandler<Struct
     @Override
     public void handle(StructureTemplateDataRequestPacket packet, PlayerSessionHolder holder, Server server) {
         final Player player = holder.getPlayer();
-        if (!player.spawned || !player.isOp() || !player.isCreative()) {
+        if (player == null || !player.spawned || !player.isOp() || !player.isCreative()) {
             return;
         }
 

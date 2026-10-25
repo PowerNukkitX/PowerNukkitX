@@ -29,6 +29,9 @@ public class PlayerActionHandler implements PacketHandler<PlayerActionPacket> {
     @Override
     public void handle(PlayerActionPacket packet, PlayerSessionHolder holder, Server server) {
         PlayerHandle playerHandle = holder.getPlayerHandle();
+        if (playerHandle == null || playerHandle.player == null) {
+            return;
+        }
         Player player = playerHandle.player;
         if (!player.spawned || (!player.isAlive() && packet.getAction() != PlayerActionType.RESPAWN && packet.getAction() != PlayerActionType.CHANGE_DIMENSION_ACK)) {
             return;

@@ -1,5 +1,6 @@
 package org.powernukkitx.network.process.handler;
 
+import org.powernukkitx.Player;
 import org.powernukkitx.PlayerHandle;
 import org.powernukkitx.Server;
 import org.powernukkitx.event.player.PlayerServerSettingsRequestEvent;
@@ -18,6 +19,9 @@ public class ServerSettingsRequestHandler implements PacketHandler<ServerSetting
     @Override
     public void handle(ServerSettingsRequestPacket packet, PlayerSessionHolder holder, Server server) {
         final PlayerHandle playerHandle = holder.getPlayerHandle();
+        if (playerHandle == null || playerHandle.player == null) {
+            return;
+        }
         final PlayerServerSettingsRequestEvent settingsRequestEvent = new PlayerServerSettingsRequestEvent(playerHandle.player, new HashMap<>(playerHandle.getServerSettings()));
         server.getPluginManager().callEvent(settingsRequestEvent);
         if (!settingsRequestEvent.isCancelled()) {
@@ -26,7 +30,10 @@ public class ServerSettingsRequestHandler implements PacketHandler<ServerSetting
                 responsePacket.setFormID(id);
                 responsePacket.setFormData(window.toJson());
 
-                holder.getPlayer().sendPacket(responsePacket);
+                Player player = holder.getPlayer();
+                if (player != null) {
+                    player.sendPacket(responsePacket);
+                }
             });
         }
     }

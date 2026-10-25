@@ -23,6 +23,9 @@ public class RequestAbilityHandler implements PacketHandler<RequestAbilityPacket
     public void handle(RequestAbilityPacket packet, PlayerSessionHolder holder, Server server) {
         PlayerHandle playerHandle = holder.getPlayerHandle();
         Player player = playerHandle.player;
+        if (!player.spawned || !player.isAlive()) {
+            return;
+        }
         AbilitiesIndex ability = packet.getAbility();
         if (ability != AbilitiesIndex.FLYING) {
 //            log.info("[{}] has tried to trigger {} ability {}", player.getName(), ability, packet.isBoolValue() ? "on" : "off");

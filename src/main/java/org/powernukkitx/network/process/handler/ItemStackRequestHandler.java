@@ -67,6 +67,9 @@ public class ItemStackRequestHandler implements PacketHandler<ItemStackRequestPa
     @Override
     public void handle(ItemStackRequestPacket packet, PlayerSessionHolder holder, Server server) {
         final PlayerHandle playerHandle = holder.getPlayerHandle();
+        if (playerHandle == null || playerHandle.player == null) {
+            return;
+        }
         Player player = playerHandle.player;
 
         if (!player.spawned || !player.isAlive()) {

@@ -267,7 +267,11 @@ public class BlockEntityStructureBlock extends BlockEntitySpawnable implements I
         this.rotation = editorData.getStructureSettings().getRotation();
         this.seed = editorData.getStructureSettings().getIntegritySeed();
         this.showBoundingBox = editorData.isShouldShowBoundingBox();
-        this.structureName = editorData.getStructureName().getUnredacted();
+        String name = editorData.getStructureName().getUnredacted();
+        if (name == null || !StructureAPI.isValidName(name)) {
+            name = "";
+        }
+        this.structureName = name;
         this.offset = BlockVector3.fromNetwork(editorData.getStructureSettings().getStructureOffset());
         this.size = BlockVector3.fromNetwork(editorData.getStructureSettings().getStructureSize());
         this.lastTouchedPlayerId = player.uniqueIdLong();

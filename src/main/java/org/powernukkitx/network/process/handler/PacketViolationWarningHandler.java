@@ -21,7 +21,10 @@ public class PacketViolationWarningHandler implements PacketHandler<PacketViolat
     @Override
     public void handle(PacketViolationWarningPacket packet, PlayerSessionHolder holder, Server server) {
         final Player player = holder.getPlayer();
-        log.warn("Violation warning from {}: {}",
-                player != null ? player.getName() : holder.getSession().getSocketAddress(), packet);
+        String msg = String.valueOf(packet);
+        if (msg.length() > 512) {
+            msg = msg.substring(0, 512) + "...";
+        }
+        log.warn("Violation warning from {}: {}", player != null ? player.getName() : holder.getSession().getSocketAddress(), msg);
     }
 }

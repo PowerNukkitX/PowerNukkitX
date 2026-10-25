@@ -20,6 +20,9 @@ public class ShowCreditsHandler implements PacketHandler<ShowCreditsPacket> {
     public void handle(ShowCreditsPacket packet, PlayerSessionHolder holder, Server server) {
         if (packet.getCreditsState().equals(ShowCreditsPacket.CreditsState.END_CREDITS)) {
             PlayerHandle playerHandle = holder.getPlayerHandle();
+            if (playerHandle == null || playerHandle.player == null || !playerHandle.player.spawned || !playerHandle.player.isAlive()) {
+                return;
+            }
             if (playerHandle.getShowingCredits()) {
                 playerHandle.player.setShowingCredits(false);
                 playerHandle.player.setHasSeenCredits(true);

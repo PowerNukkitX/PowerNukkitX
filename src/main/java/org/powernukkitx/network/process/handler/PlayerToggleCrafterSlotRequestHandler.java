@@ -18,7 +18,7 @@ public class PlayerToggleCrafterSlotRequestHandler implements PacketHandler<Play
     @Override
     public void handle(PlayerToggleCrafterSlotRequestPacket packet, PlayerSessionHolder holder, Server server) {
         Player player = holder.getPlayer();
-        if (!player.spawned || !player.isAlive()) {
+        if (player == null || !player.spawned || !player.isAlive()) {
             return;
         }
 

@@ -75,7 +75,13 @@ public class NetworkPacketHandler implements BedrockPacketHandler {
             if (player != null && firePacketHandle(player, packet)) {
                 return PacketSignal.UNHANDLED;
             }
-            packetHandler.handle(packet, this.session, this.server);
+            try {
+                packetHandler.handle(packet, this.session, this.server);
+            } catch (Throwable t) {
+                log.warn("Exception while handling {} from {}", packet.getClass().getSimpleName(),
+                        this.session.getSession().getSocketAddress(), t);
+                // Do not close the session: a single bad packet must not take the connection down.
+            }
             return PacketSignal.HANDLED;
         }
         return BedrockPacketHandler.super.handlePacket(packet);
@@ -94,7 +100,13 @@ public class NetworkPacketHandler implements BedrockPacketHandler {
         if (packetHandler == null || firePacketHandle(player, packet)) {
             return;
         }
-        packetHandler.handle(packet, this.session, this.server);
+        try {
+            packetHandler.handle(packet, this.session, this.server);
+        } catch (Throwable t) {
+            log.warn("Exception while handling {} from {}", packet.getClass().getSimpleName(),
+                    this.session.getSession().getSocketAddress(), t);
+            // Do not close the session: a single bad packet must not take the connection down.
+        }
     }
 
     private void recordForBotnetDetection(BedrockPacket packet) {

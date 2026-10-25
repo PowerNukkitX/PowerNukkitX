@@ -19,6 +19,9 @@ public class EmoteHandler implements PacketHandler<EmotePacket> {
     @Override
     public void handle(EmotePacket packet, PlayerSessionHolder holder, Server server) {
         final PlayerHandle playerHandle = holder.getPlayerHandle();
+        if (playerHandle == null || playerHandle.player == null) {
+            return;
+        }
         if (!playerHandle.player.spawned) {
             return;
         }

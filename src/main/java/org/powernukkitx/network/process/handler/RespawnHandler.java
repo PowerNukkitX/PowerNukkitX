@@ -17,7 +17,7 @@ public class RespawnHandler implements PacketHandler<RespawnPacket> {
     @Override
     public void handle(RespawnPacket packet, PlayerSessionHolder holder, Server server) {
         Player player = holder.getPlayer();
-        if (!packet.getState().equals(PlayerRespawnState.CLIENT_READY_TO_SPAWN) || player.isAlive()) {
+        if (player == null || !packet.getState().equals(PlayerRespawnState.CLIENT_READY_TO_SPAWN) || player.isAlive()) {
             return;
         }
 

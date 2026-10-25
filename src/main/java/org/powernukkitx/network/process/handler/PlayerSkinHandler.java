@@ -23,6 +23,9 @@ public class PlayerSkinHandler implements PacketHandler<PlayerSkinPacket> {
     @Override
     public void handle(PlayerSkinPacket packet, PlayerSessionHolder holder, Server server) {
         PlayerHandle playerHandle = holder.getPlayerHandle();
+        if (playerHandle == null || playerHandle.player == null) {
+            return;
+        }
         Player player = playerHandle.player;
 
         if (!player.spawned || !player.isAlive()) {

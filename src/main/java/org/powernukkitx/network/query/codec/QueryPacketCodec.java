@@ -17,6 +17,11 @@ public class QueryPacketCodec extends MessageToMessageCodec<DatagramPacket, Dire
     private static final byte[] QUERY_SIGNATURE = new byte[]{(byte) 0xFE, (byte) 0xFD};
     private static final int HANDSHAKE = 0x09;
     private static final short STATISTICS = 0x00;
+    // session id for a handshake, session id + token for a statistics request. Anything shorter
+    // would make the packet's decode read past the end of a datagram an unauthenticated sender
+    // controls, so it is dropped here instead.
+    private static final int HANDSHAKE_BODY_BYTES = Integer.BYTES;
+    private static final int STATISTICS_BODY_BYTES = Integer.BYTES * 2;
 
     @Override
     protected void encode(ChannelHandlerContext channelHandlerContext, DirectAddressedQueryPacket packet, List<Object> list) throws Exception {
@@ -44,16 +49,23 @@ public class QueryPacketCodec extends MessageToMessageCodec<DatagramPacket, Dire
         if (Arrays.equals(prefix, QUERY_SIGNATURE)) {
             short id = buf.readUnsignedByte();
             QueryPacket networkPacket;
+            int requiredBytes;
             switch (id) {
                 case HANDSHAKE:
                     networkPacket = new HandshakePacket();
+                    requiredBytes = HANDSHAKE_BODY_BYTES;
                     break;
                 case STATISTICS:
                     networkPacket = new StatisticsPacket();
+                    requiredBytes = STATISTICS_BODY_BYTES;
                     break;
                 default:
                     buf.resetReaderIndex();
                     return;
+            }
+            if (buf.readableBytes() < requiredBytes) {
+                buf.resetReaderIndex();
+                return;
             }
             networkPacket.decode(buf);
             list.add(new DirectAddressedQueryPacket(networkPacket, packet.recipient(), packet.sender()));

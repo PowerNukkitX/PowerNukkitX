@@ -16,6 +16,9 @@ public class ContainerCloseHandler implements PacketHandler<ContainerClosePacket
     @Override
     public void handle(ContainerClosePacket packet, PlayerSessionHolder holder, Server server) {
         final Player player = holder.getPlayer();
+        if (player == null) {
+            return;
+        }
 
         if (!player.spawned) {
             this.sendClose(player, packet);

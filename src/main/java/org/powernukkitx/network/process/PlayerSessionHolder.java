@@ -502,7 +502,17 @@ public class PlayerSessionHolder {
      * Holds a packet that arrived while the player was being created, and handles it on the
      * level thread once the creation is done, in arrival order.
      */
+    /**
+     * Upper bound on the number of packets held back while a player is being created. A client that
+     * floods packets needing the player faster than it is spawned would otherwise grow this queue
+     * without limit; once full, further packets are dropped.
+     */
+    private static final int MAX_SPAWN_BACKLOG = 1024;
+
     void deferUntilSpawned(BedrockPacket packet) {
+        if (this.spawnBacklog.size() >= MAX_SPAWN_BACKLOG) {
+            return;
+        }
         this.spawnBacklog.add(packet);
         // The creation may have finished, and drained the backlog, while this packet was added
         if (!this.isSpawning()) {

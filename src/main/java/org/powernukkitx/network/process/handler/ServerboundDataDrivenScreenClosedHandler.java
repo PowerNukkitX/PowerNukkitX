@@ -15,6 +15,9 @@ public class ServerboundDataDrivenScreenClosedHandler implements PacketHandler<S
     @Override
     public void handle(ServerboundDataDrivenScreenClosedPacket packet, PlayerSessionHolder holder, Server server) {
         Player player = holder.getPlayer();
+        if (player == null || !player.spawned) {
+            return;
+        }
         DataDrivenScreen screen = DataDrivenScreen.getScreenByFormId(player, packet.getFormId());
         if (screen != null) {
             screen.removeViewer(player);

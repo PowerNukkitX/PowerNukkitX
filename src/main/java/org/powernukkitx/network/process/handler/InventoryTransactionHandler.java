@@ -64,10 +64,20 @@ public class InventoryTransactionHandler implements PacketHandler<InventoryTrans
     @Override
     public void handle(InventoryTransactionPacket packet, PlayerSessionHolder holder, Server server) {
         final PlayerHandle playerHandle = holder.getPlayerHandle();
+        if (playerHandle == null || playerHandle.player == null) {
+            return;
+        }
         Player player = playerHandle.player;
         final var transaction = packet.getTransaction();
         if (transaction == null || !player.spawned) {
             return;
+        }
+        try {
+            if (transaction.getActions() != null && transaction.getActions().getActions().size() > 128) {
+                log.debug("Player {} sent too many inventory actions", player.getName());
+                return;
+            }
+        } catch (Exception ignored) {
         }
 
         if (!player.isAlive()) {

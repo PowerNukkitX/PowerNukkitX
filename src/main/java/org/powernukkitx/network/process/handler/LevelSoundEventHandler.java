@@ -20,11 +20,14 @@ public class LevelSoundEventHandler implements PacketHandler<LevelSoundEventPack
     @Override
     public void handle(LevelSoundEventPacket packet, PlayerSessionHolder holder, Server server) {
         Player player = holder.getPlayer();
-        if (!player.spawned || !player.isAlive() || player.isSpectator()) {
+        if (player == null || !player.spawned || !player.isAlive() || player.isSpectator()) {
             return;
         }
 
         final PlayerHandle playerHandle = holder.getPlayerHandle();
+        if (playerHandle == null || playerHandle.player == null) {
+            return;
+        }
         if (!playerHandle.packetRateLimiter.tryWorldInteraction()) {
             return;
         }

@@ -16,7 +16,7 @@ public class SetDifficultyHandler implements PacketHandler<SetDifficultyPacket> 
     @Override
     public void handle(SetDifficultyPacket packet, PlayerSessionHolder holder, Server server) {
         PlayerHandle playerHandle = holder.getPlayerHandle();
-        if (!playerHandle.player.spawned || !playerHandle.player.hasPermission("nukkit.command.difficulty")) {
+        if (playerHandle == null || playerHandle.player == null || !playerHandle.player.spawned || !playerHandle.player.hasPermission("nukkit.command.difficulty")) {
             return;
         }
         server.setDifficulty(packet.getDifficulty());

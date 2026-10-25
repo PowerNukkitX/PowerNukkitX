@@ -23,7 +23,13 @@ public class PositionTrackingDBClientRequestHandler implements PacketHandler<Pos
     @Override
     public void handle(PositionTrackingDBClientRequestPacket packet, PlayerSessionHolder holder, Server server) {
         PlayerHandle playerHandle = holder.getPlayerHandle();
+        if (playerHandle == null || playerHandle.player == null) {
+            return;
+        }
         Player player = playerHandle.player;
+        if (!player.spawned || !player.isAlive()) {
+            return;
+        }
         try {
             PositionTracking positionTracking = player.getServer().getPositionTrackingService().startTracking(player, packet.getTrackingId(), true);
             if (positionTracking != null) return;
