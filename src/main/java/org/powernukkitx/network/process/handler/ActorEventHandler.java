@@ -17,6 +17,9 @@ public class ActorEventHandler implements PacketHandler<ActorEventPacket> {
     @Override
     public void handle(ActorEventPacket packet, PlayerSessionHolder holder, Server server) {
         final PlayerHandle playerHandle = holder.getPlayerHandle();
+        if (playerHandle == null || playerHandle.player == null) {
+            return;
+        }
         final Player player = playerHandle.player;
         if (!player.spawned || !player.isAlive()) {
             return;

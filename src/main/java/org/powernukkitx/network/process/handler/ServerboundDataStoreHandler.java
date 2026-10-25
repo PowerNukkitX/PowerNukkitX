@@ -34,15 +34,18 @@ public class ServerboundDataStoreHandler implements PacketHandler<ServerboundDat
         if (!dataStore.equals(update.getDataStoreName())) return;
         if (!screen.getClientProperty(player).equals(update.getProperty())) return;
 
-        DataDrivenProperty<?, ?> property = screen.resolvePath(update.getPath());
-        if (property == null || !property.getPath().equals(update.getPath())) return;
+        String path = update.getPath();
+        if (path == null || path.length() > 256) return;
+
+        DataDrivenProperty<?, ?> property = screen.resolvePath(path);
+        if (property == null || !property.getPath().equals(path)) return;
 
         Object value = normalizeValue(property, update.getData());
         if (value == null || !isWritable(property, value)) return;
 
-        if (!screen.acceptClientPathUpdate(player, update.getPath(), update.getPropertyUpdateCount(), update.getPathUpdateCount())) return;
+        if (!screen.acceptClientPathUpdate(player, path, update.getPropertyUpdateCount(), update.getPathUpdateCount())) return;
 
-        Observable.withInboundUpdate(player, screen, update.getPath(), value, () -> property.triggerListeners(player, value));
+        Observable.withInboundUpdate(player, screen, path, value, () -> property.triggerListeners(player, value));
     }
 
     private static Object normalizeValue(DataDrivenProperty<?, ?> property, Object data) {

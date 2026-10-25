@@ -16,6 +16,9 @@ public class SetPlayerGameTypeHandler implements PacketHandler<SetPlayerGameType
     @Override
     public void handle(SetPlayerGameTypePacket packet, PlayerSessionHolder holder, Server server) {
         PlayerHandle playerHandle = holder.getPlayerHandle();
+        if (playerHandle == null || playerHandle.player == null || !playerHandle.player.spawned) {
+            return;
+        }
         if (packet.getPlayerGameType().ordinal() != playerHandle.player.gamemode && playerHandle.player.hasPermission("nukkit.command.gamemode")) {
             playerHandle.player.setGamemode(switch (packet.getPlayerGameType()) {
                 case SURVIVAL, CREATIVE, ADVENTURE -> packet.getPlayerGameType().ordinal();

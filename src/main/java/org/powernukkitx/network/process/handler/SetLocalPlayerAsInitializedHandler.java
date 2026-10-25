@@ -1,5 +1,6 @@
 package org.powernukkitx.network.process.handler;
 
+import org.powernukkitx.Player;
 import org.powernukkitx.Server;
 import org.powernukkitx.network.process.PacketHandler;
 import org.powernukkitx.network.process.PlayerSessionHolder;
@@ -12,7 +13,11 @@ public class SetLocalPlayerAsInitializedHandler implements PacketHandler<SetLoca
 
     @Override
     public void handle(SetLocalPlayerAsInitializedPacket packet, PlayerSessionHolder holder, Server server) {
-        holder.getPlayer().onPlayerLocallyInitialized();
-        holder.getPlayer().scheduleUpdate();
+        Player player = holder.getPlayer();
+        if (player == null) {
+            return;
+        }
+        player.onPlayerLocallyInitialized();
+        player.scheduleUpdate();
     }
 }

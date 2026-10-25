@@ -17,6 +17,9 @@ public class RequestPermissionsHandler implements PacketHandler<RequestPermissio
     @Override
     public void handle(RequestPermissionsPacket packet, PlayerSessionHolder holder, Server server) {
         PlayerHandle playerHandle = holder.getPlayerHandle();
+        if (playerHandle == null || playerHandle.player == null) {
+            return;
+        }
         if (!playerHandle.player.isOp()) {
             PlayerHackDetectedEvent event = new PlayerHackDetectedEvent(playerHandle.player, PlayerHackDetectedEvent.HackType.PERMISSION_REQUEST);
             playerHandle.player.getServer().getPluginManager().callEvent(event);

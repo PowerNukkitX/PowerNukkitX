@@ -29,6 +29,7 @@ import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufOutputStream;
 import io.netty.buffer.ByteBufUtil;
 import io.netty.buffer.PooledByteBufAllocator;
+import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 
 import java.io.IOException;
 
@@ -38,6 +39,14 @@ import java.io.IOException;
  * @author Curse
  */
 public class SubChunkRequestHandler implements PacketHandler<SubChunkRequestPacket> {
+
+    /**
+     * Upper bound on the number of subchunks answered from one request. The protocol allows 8129
+     * offsets and every answered entry serializes a full subchunk, so a maximal request would cost
+     * tens of megabytes and a lot of level-thread time per packet. Legitimate clients only batch
+     * the sections around the player; anything beyond this is dropped and requested again later.
+     */
+    private static final int MAX_SUB_CHUNKS_PER_REQUEST = 1024;
 
     @Override
     public void handle(SubChunkRequestPacket packet, PlayerSessionHolder holder, Server server) {
@@ -97,8 +106,17 @@ public class SubChunkRequestHandler implements PacketHandler<SubChunkRequestPack
         responsePacket.setCacheEnabled(cacheEnabled);
 
         try {
+            final ObjectOpenHashSet<Vector3i> answeredPositions = new ObjectOpenHashSet<>();
             for (Vector3i offsetPos : packet.getSubChunkPosOffsetList()) {
+                if (answeredPositions.size() >= MAX_SUB_CHUNKS_PER_REQUEST) {
+                    break;
+                }
+
                 final Vector3i subChunkPos = centerPos.add(offsetPos);
+                if (!answeredPositions.add(subChunkPos)) {
+                    continue;
+                }
+
                 final int subChunkY = subChunkPos.getY();
 
                 if (subChunkY < dimensionData.getMinSectionY() || subChunkY > dimensionData.getMaxSectionY()) {

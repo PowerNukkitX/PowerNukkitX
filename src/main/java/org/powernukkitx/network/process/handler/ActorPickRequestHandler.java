@@ -24,6 +24,9 @@ public class ActorPickRequestHandler implements PacketHandler<ActorPickRequestPa
     @Override
     public void handle(ActorPickRequestPacket packet, PlayerSessionHolder holder, Server server) {
         final PlayerHandle playerHandle = holder.getPlayerHandle();
+        if (playerHandle == null || playerHandle.player == null) {
+            return;
+        }
         final Player player = playerHandle.player;
         if (!player.spawned || !player.isAlive()) {
             log.debug("Player {} tried to send an entity pick request while not spawned or dead", playerHandle.getUsername());

@@ -16,6 +16,9 @@ public class CommandRequestHandler implements PacketHandler<CommandRequestPacket
     @Override
     public void handle(CommandRequestPacket packet, PlayerSessionHolder holder, Server server) {
         final PlayerHandle playerHandle = holder.getPlayerHandle();
+        if (playerHandle == null || playerHandle.player == null) {
+            return;
+        }
         if (!playerHandle.packetRateLimiter.tryCommand()) {
             PlayerHackDetectedEvent event = new PlayerHackDetectedEvent(
                     playerHandle.player, PlayerHackDetectedEvent.HackType.COMMAND_SPAM);

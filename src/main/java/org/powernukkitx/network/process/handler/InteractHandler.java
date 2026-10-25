@@ -24,13 +24,21 @@ public class InteractHandler implements PacketHandler<InteractPacket> {
     @Override
     public void handle(InteractPacket packet, PlayerSessionHolder holder, Server server) {
         final Player player = holder.getPlayer();
-        if (!player.spawned || !player.isAlive()) {
+        if (player == null || !player.spawned || !player.isAlive()) {
             return;
         }
 
         Entity targetEntity = player.level.getEntity(packet.getTargetRuntimeID());
 
         if (targetEntity == null || !player.isAlive() || !targetEntity.isAlive()) {
+            return;
+        }
+
+        // Prevent interacting with entities that are too far away (anti-cheat / memory safety).
+        double dx = player.x - targetEntity.x;
+        double dy = player.y - targetEntity.y;
+        double dz = player.z - targetEntity.z;
+        if (dx * dx + dy * dy + dz * dz > 12 * 12) {
             return;
         }
 

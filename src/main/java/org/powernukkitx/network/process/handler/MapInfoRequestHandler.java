@@ -1,6 +1,7 @@
 package org.powernukkitx.network.process.handler;
 
 import org.powernukkitx.Player;
+import org.powernukkitx.PlayerHandle;
 import org.powernukkitx.Server;
 import org.powernukkitx.blockentity.BlockEntity;
 import org.powernukkitx.blockentity.BlockEntityItemFrame;
@@ -23,8 +24,15 @@ public class MapInfoRequestHandler implements PacketHandler<MapInfoRequestPacket
     @Override
     public void handle(MapInfoRequestPacket packet, PlayerSessionHolder holder, Server server) {
         Player player = holder.getPlayer();
+        if (player == null) {
+            return;
+        }
+        PlayerHandle playerHandle = holder.getPlayerHandle();
+        if (playerHandle == null) {
+            return;
+        }
 
-        if (!holder.getPlayerHandle().packetRateLimiter.tryWorldInteraction()) {
+        if (!playerHandle.packetRateLimiter.tryWorldInteraction()) {
             return;
         }
 

@@ -19,12 +19,18 @@ public class StructureBlockUpdateHandler implements PacketHandler<StructureBlock
     @Override
     public void handle(StructureBlockUpdatePacket packet, PlayerSessionHolder holder, Server server) {
         PlayerHandle playerHandle = holder.getPlayerHandle();
+        if (playerHandle == null || playerHandle.player == null || !playerHandle.player.spawned || !playerHandle.player.isAlive()) {
+            return;
+        }
         if (playerHandle.player.isOp() && playerHandle.player.isCreative()) {
             Vector3 blockPosition = new Vector3(
                     packet.getBlockPosition().getX(),
                     packet.getBlockPosition().getY(),
                     packet.getBlockPosition().getZ()
             );
+            if (!playerHandle.player.canInteract(blockPosition.add(0.5, 0.5, 0.5))) {
+                return;
+            }
             BlockEntity blockEntity = playerHandle.player.level.getBlockEntity(blockPosition);
             if (blockEntity instanceof BlockEntityStructureBlock structBlock) {
                 structBlock.updateSetting(playerHandle.player, packet);

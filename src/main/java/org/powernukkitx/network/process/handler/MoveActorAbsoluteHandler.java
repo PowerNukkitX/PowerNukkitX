@@ -22,6 +22,9 @@ public class MoveActorAbsoluteHandler implements PacketHandler<MoveActorAbsolute
     @Override
     public void handle(MoveActorAbsolutePacket packet, PlayerSessionHolder holder, Server server) {
         final PlayerHandle playerHandle = holder.getPlayerHandle();
+        if (playerHandle == null || playerHandle.player == null) {
+            return;
+        }
         Player player = playerHandle.player;
         if (!player.isAlive() || !player.spawned || player.getRiding() == null) {
             return;
@@ -33,6 +36,11 @@ public class MoveActorAbsoluteHandler implements PacketHandler<MoveActorAbsolute
         Vector3f rot = packet.getMoveData().getRotation();
         if (!Double.isFinite(pos.getX()) || !Double.isFinite(pos.getY()) || !Double.isFinite(pos.getZ()) || !Double.isFinite(rot.getX()) || !Double.isFinite(rot.getY()) || !Double.isFinite(rot.getZ())) {
             log.debug("Player {} sent invalid movement values (NaN or Infinite)", playerHandle.getUsername());
+            return;
+        }
+        final double maxCoord = 32_000_000d;
+        if (Math.abs(pos.getX()) > maxCoord || Math.abs(pos.getY()) > maxCoord || Math.abs(pos.getZ()) > maxCoord) {
+            log.debug("Player {} sent out-of-range movement values", playerHandle.getUsername());
             return;
         }
         Entity movedEntity = player.getLevel().getEntity(packet.getMoveData().getActorRuntimeID());

@@ -3345,6 +3345,10 @@ public class Server {
     }
 
     private boolean loadLevelInternal(String levelFolderName) {
+        if (levelFolderName == null || levelFolderName.isEmpty()
+                || levelFolderName.contains("..") || levelFolderName.contains("\0")) {
+            return false;
+        }
         LevelConfig levelConfig = getLevelConfig(levelFolderName);
         if (levelConfig == null) return false;
 

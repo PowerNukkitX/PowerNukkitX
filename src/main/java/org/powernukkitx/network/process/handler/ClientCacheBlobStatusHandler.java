@@ -9,6 +9,7 @@ import org.cloudburstmc.protocol.bedrock.packet.ClientCacheBlobStatusPacket;
 import org.cloudburstmc.protocol.bedrock.packet.ClientCacheMissResponsePacket;
 
 import io.netty.buffer.Unpooled;
+import it.unimi.dsi.fastutil.longs.LongOpenHashSet;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -18,6 +19,13 @@ import lombok.extern.slf4j.Slf4j;
  */
 @Slf4j
 public class ClientCacheBlobStatusHandler implements PacketHandler<ClientCacheBlobStatusPacket> {
+
+    /**
+     * Upper bound on the number of blobs re-sent for one status packet. The client may report up to
+     * 1536 misses, and a client that keeps reporting the same IDs makes the server resend the same
+     * subchunk payloads indefinitely, so only the first misses of a packet are served.
+     */
+    private static final int MAX_MISSING_BLOBS_PER_PACKET = 128;
 
     @Override
     public void handle(ClientCacheBlobStatusPacket packet, PlayerSessionHolder holder, Server server) {
@@ -29,8 +37,13 @@ public class ClientCacheBlobStatusHandler implements PacketHandler<ClientCacheBl
             ClientBlobCacheManager.acknowledge(holder.getSession(), packet.getFoundIds().getLong(i));
         }
 
-        for (int i = 0; i < packet.getMissingIds().size(); i++) {
+        final LongOpenHashSet handledIds = new LongOpenHashSet();
+        for (int i = 0; i < packet.getMissingIds().size() && handledIds.size() < MAX_MISSING_BLOBS_PER_PACKET; i++) {
             final long id = packet.getMissingIds().getLong(i);
+            if (!handledIds.add(id)) {
+                continue;
+            }
+
             final byte[] blob = ClientBlobCacheManager.get(holder.getSession(), id);
             ClientBlobCacheManager.acknowledge(holder.getSession(), id);
 

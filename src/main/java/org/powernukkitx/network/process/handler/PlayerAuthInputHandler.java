@@ -45,6 +45,13 @@ public class PlayerAuthInputHandler implements PacketHandler<PlayerAuthInputPack
             log.debug("Player {} sent invalid movement values (NaN or Infinite)", player.getName());
             return;
         }
+        // Reject positions far outside the world border to prevent chunk loading at extreme
+        // coordinates (and the integer overflow / memory pressure that comes with it).
+        final float maxCoord = 32_000_000f;
+        if (Math.abs(pos.getX()) > maxCoord || Math.abs(pos.getY()) > maxCoord || Math.abs(pos.getZ()) > maxCoord) {
+            log.debug("Player {} sent out-of-range movement values", player.getName());
+            return;
+        }
 
         handleBlockActionsAndItemStackRequest(packet, holder, server, player);
 
@@ -227,6 +234,10 @@ public class PlayerAuthInputHandler implements PacketHandler<PlayerAuthInputPack
     private static void handleBlockActionsAndItemStackRequest(PlayerAuthInputPacket packet, PlayerSessionHolder holder, Server server, Player player) {
         // the override toggle ensures that an external source implements server authoritative block breaking, defaults to false
         if (!packet.getPlayerBlockActions().isEmpty() && !server.getSettings().miscSettings().overrideServerAuthBlockBreaking()) {
+            if (packet.getPlayerBlockActions().size() > 64) {
+                log.debug("Player {} sent too many block actions ({})", player.getName(), packet.getPlayerBlockActions().size());
+                return;
+            }
             final PlayerHandle playerHandle = new PlayerHandle(player);
             for (PlayerBlockActionData action : packet.getPlayerBlockActions()) {
                 //hack Since version 1.19.70, the Creative Mode Sword client no longer sends PREDITIC_DESTROY_BLOCK, but still sends START_DESTROY_BLOCK, filtering out
@@ -305,6 +316,11 @@ public class PlayerAuthInputHandler implements PacketHandler<PlayerAuthInputPack
 
         if (!Float.isFinite(pos.x) || !Float.isFinite(pos.y) || !Float.isFinite(pos.z)) {
             log.debug("Player {} sent invalid position values (NaN or Infinite)", player.getName());
+            return;
+        }
+        final float maxCoord = 32_000_000f;
+        if (Math.abs(pos.x) > maxCoord || Math.abs(pos.y) > maxCoord || Math.abs(pos.z) > maxCoord) {
+            log.debug("Player {} sent out-of-range position values", player.getName());
             return;
         }
 

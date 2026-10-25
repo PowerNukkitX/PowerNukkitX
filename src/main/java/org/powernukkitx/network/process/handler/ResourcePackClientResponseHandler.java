@@ -32,11 +32,15 @@ public class ResourcePackClientResponseHandler implements PacketHandler<Resource
             case CANCEL -> holder.disconnect(DisconnectFailReason.RESOURCE_PACK_PROBLEM);
             case DOWNLOADING -> {
                 for (String downloadingPack : packet.getDownloadingPacks()) {
+                    final int separator = downloadingPack.indexOf('_');
+                    final String packId = separator == -1 ? downloadingPack : downloadingPack.substring(0, separator);
                     final UUID uuid;
-                    if (downloadingPack.contains("_")) {
-                        uuid = UUID.fromString(downloadingPack.split("_")[0]);
-                    } else {
-                        uuid = UUID.fromString(downloadingPack);
+                    try {
+                        uuid = UUID.fromString(packId);
+                    } catch (IllegalArgumentException e) {
+                        // The client controls this string; a malformed pack id must not be treated as a missing pack
+                        holder.disconnect(DisconnectFailReason.UNEXPECTED_PACKET);
+                        return;
                     }
                     final ResourcePack resourcePack = server.getResourcePackManager().getPackById(uuid);
                     if (resourcePack == null) {

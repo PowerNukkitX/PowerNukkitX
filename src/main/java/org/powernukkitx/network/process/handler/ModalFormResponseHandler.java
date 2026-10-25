@@ -32,6 +32,9 @@ public class ModalFormResponseHandler implements PacketHandler<ModalFormResponse
     @Override
     public void handle(ModalFormResponsePacket packet, PlayerSessionHolder holder, Server server) {
         final PlayerHandle playerHandle = holder.getPlayerHandle();
+        if (playerHandle == null || playerHandle.player == null) {
+            return;
+        }
         Player player = playerHandle.player;
         if (!player.spawned || !player.isAlive()) {
             return;

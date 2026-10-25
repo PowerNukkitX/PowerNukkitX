@@ -19,7 +19,7 @@ public class TextHandler implements PacketHandler<TextPacket> {
     @Override
     public void handle(TextPacket packet, PlayerSessionHolder holder, Server server) {
         PlayerHandle playerHandle = holder.getPlayerHandle();
-        if (!playerHandle.player.spawned || !playerHandle.player.isAlive()) {
+        if (playerHandle == null || playerHandle.player == null || !playerHandle.player.spawned || !playerHandle.player.isAlive()) {
             return;
         }
 

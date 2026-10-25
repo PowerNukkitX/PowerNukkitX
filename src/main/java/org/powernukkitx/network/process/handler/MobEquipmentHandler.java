@@ -22,6 +22,9 @@ public class MobEquipmentHandler implements PacketHandler<MobEquipmentPacket> {
     @Override
     public void handle(MobEquipmentPacket packet, PlayerSessionHolder holder, Server server) {
         final PlayerHandle playerHandle = holder.getPlayerHandle();
+        if (playerHandle == null || playerHandle.player == null) {
+            return;
+        }
         Player player = playerHandle.player;
         if (!player.spawned || !player.isAlive()) {
             return;

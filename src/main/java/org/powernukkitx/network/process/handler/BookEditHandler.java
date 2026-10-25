@@ -23,6 +23,9 @@ public class BookEditHandler implements PacketHandler<BookEditPacket> {
     @Override
     public void handle(BookEditPacket packet, PlayerSessionHolder holder, Server server) {
         final PlayerHandle playerHandle = holder.getPlayerHandle();
+        if (playerHandle == null || playerHandle.player == null) {
+            return;
+        }
         Player player = playerHandle.player;
 
         if (!player.spawned || !player.isAlive()) {

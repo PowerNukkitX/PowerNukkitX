@@ -20,7 +20,7 @@ public class LecternUpdateHandler implements PacketHandler<LecternUpdatePacket> 
     @Override
     public void handle(LecternUpdatePacket packet, PlayerSessionHolder holder, Server server) {
         final PlayerHandle playerHandle = holder.getPlayerHandle();
-        if (!playerHandle.player.spawned || !playerHandle.player.isAlive()) {
+        if (playerHandle == null || playerHandle.player == null || !playerHandle.player.spawned || !playerHandle.player.isAlive()) {
             return;
         }
         if (!playerHandle.packetRateLimiter.tryWorldInteraction()) {

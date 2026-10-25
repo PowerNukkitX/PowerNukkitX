@@ -25,6 +25,9 @@ public class BlockPickRequestHandler implements PacketHandler<BlockPickRequestPa
     @Override
     public void handle(BlockPickRequestPacket packet, PlayerSessionHolder holder, Server server) {
         final PlayerHandle playerHandle = holder.getPlayerHandle();
+        if (playerHandle == null || playerHandle.player == null) {
+            return;
+        }
         Player player = playerHandle.player;
 
         if (!player.spawned || !player.isAlive()) {
