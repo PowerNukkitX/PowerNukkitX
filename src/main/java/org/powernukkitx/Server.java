@@ -1839,6 +1839,7 @@ public class Server {
         entry.setActorUniqueID(entityId);
         entry.setPlayerName(name);
         entry.setXblXUID(xboxUserId);
+        entry.setPlayFabID(Objects.requireNonNullElse(skin.getSkin().getPlayFabId(), ""));
         entry.setPlatformOnlineID("");
         entry.setBuildPlatform(BuildPlatform.UNKNOWN);
         entry.setSerializedSkin(SkinConverter.toSerializedSkin(skin.getSkin(), skin.isTrusted()));
@@ -1908,6 +1909,7 @@ public class Server {
             entry.setActorUniqueID(value.getId());
             entry.setPlayerName(value.getName());
             entry.setXblXUID(value.getXUID());
+            entry.setPlayFabID(Objects.requireNonNullElse(value.getSkin().getSkin().getPlayFabId(), ""));
             entry.setPlatformOnlineID("");
             entry.setBuildPlatform(BuildPlatform.UNKNOWN);
             entry.setSerializedSkin(SkinConverter.toSerializedSkin(value.getSkin().getSkin(), value.getSkin().isTrusted()));
