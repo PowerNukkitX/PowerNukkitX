@@ -221,42 +221,15 @@ public class ItemCustomEntitySpawnEgg extends Item implements SpawnEggPickable {
         }
     }
 
-    /** Bind the resolved item id to this egg and seed PNX extra data. */
+    /** Bind the resolved item id to this egg. */
     public void resolveSpawnEgg(String resolvedId) {
         if (resolvedId == null || resolvedId.isBlank()) {
             return;
         }
 
-        String entityId = entityIdFromEggId(resolvedId);
-
         this.id = resolvedId.intern();
         this.identifier = new Identifier(resolvedId);
         this.name = null;
-
-        CompoundTag tag = this.getNbt();
-        if (tag == null) {
-            tag = new CompoundTag();
-        }
-
-        CompoundTag pnxExtra = tag.getCompound(ROOT_PNX_EXTRA);
-        if (pnxExtra == null) {
-            pnxExtra = new CompoundTag();
-        }
-
-        CompoundTag customEgg = pnxExtra.getCompound(COMP_CUSTOM_EGG);
-        if (customEgg == null) {
-            customEgg = new CompoundTag();
-        }
-
-        customEgg.putString(KEY_EGG_ID, resolvedId);
-        if (entityId != null && !entityId.isEmpty()) {
-            customEgg.putString(KEY_ENTITY_ID, entityId);
-        }
-
-        pnxExtra.putCompound(COMP_CUSTOM_EGG, customEgg);
-        tag.putCompound(ROOT_PNX_EXTRA, pnxExtra);
-
-        super.setNbt(tag);
     }
 
     @Override
