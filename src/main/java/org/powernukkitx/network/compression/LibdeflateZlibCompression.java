@@ -26,6 +26,15 @@ public final class LibdeflateZlibCompression extends ZlibCompression {
         protected LibdeflateCompressor[] initialValue() {
             return new LibdeflateCompressor[13];
         }
+
+        @Override
+        protected void onRemoval(LibdeflateCompressor[] compressors) {
+            for (LibdeflateCompressor compressor : compressors) {
+                if (compressor != null) {
+                    compressor.close();
+                }
+            }
+        }
     };
 
     private final SizedZlibCompression fallback;

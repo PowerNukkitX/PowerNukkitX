@@ -24,7 +24,7 @@ public class RouteFindingManager {
     protected final ForkJoinPool pool;
 
     protected RouteFindingManager() {
-        pool = new ForkJoinPool(Utils.backgroundPoolThreads(), new RouteFindingPoolThreadFactory(), null, true);
+        pool = new ForkJoinPool(Utils.backgroundPoolThreads(Server.getInstance() != null && Server.getInstance().isLevelThreadMode()), new RouteFindingPoolThreadFactory(), null, true);
     }
 
     public static RouteFindingManager getInstance() {

@@ -443,6 +443,7 @@ public class Level implements Metadatable, LiquidUpdateAccess {
     private final Long2IntMap chunkTickList = new Long2IntOpenHashMap();
     private final CircuitSystem circuitSystem = new CircuitSystem();
     private final LongSet legacyStateChunks = new LongOpenHashSet();
+    private final LongSet legacyStateRetries = new LongOpenHashSet();
     private final VibrationManager vibrationManager = new SimpleVibrationManager(this);
     private final VillageManager villageManager = new VillageManager(this);
     public boolean stopTime;
@@ -662,6 +663,9 @@ public class Level implements Metadatable, LiquidUpdateAccess {
                     try {
                         if (!this.players.isEmpty() || this.hasTickingAreas()) {
                             this.doTick(loop);
+                            for (Player player : this.players.values()) {
+                                player.flushOutbound();
+                            }
                         } else {
                             this.scheduler.mainThreadHeartbeat(loop.getTick());
                         }
@@ -4460,12 +4464,19 @@ public class Level implements Metadatable, LiquidUpdateAccess {
      */
     private void deriveLegacyChunkStates() {
         final long[] pending;
+        final long[] retries;
         synchronized (this.legacyStateChunks) {
-            if (this.legacyStateChunks.isEmpty()) {
+            if (this.legacyStateChunks.isEmpty() && this.legacyStateRetries.isEmpty()) {
                 return;
             }
             pending = this.legacyStateChunks.toLongArray();
+            retries = this.legacyStateRetries.toLongArray();
             this.legacyStateChunks.clear();
+            this.legacyStateRetries.clear();
+        }
+
+        for (long hash : retries) {
+            this.deriveChunkStates(getHashX(hash), getHashZ(hash));
         }
 
         for (long hash : pending) {
@@ -4494,7 +4505,7 @@ public class Level implements Metadatable, LiquidUpdateAccess {
             final Boolean legacy = generated.tryHasLegacyStates();
             if (legacy == null) {
                 synchronized (this.legacyStateChunks) {
-                    this.legacyStateChunks.add(hash);
+                    this.legacyStateRetries.add(hash);
                 }
                 return;
             }

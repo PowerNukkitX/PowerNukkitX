@@ -387,16 +387,18 @@ public class Utils {
     }
 
     /**
-     * Returns how many threads a pool that can keep every core busy should get: one fewer than the
-     * available processors on machines with more than two, the processor count otherwise. The network,
-     * compute and pathfinding pools each saturate the machine under load, and without a spare core
-     * the tick thread waits for a time slice behind them.
+     * Returns how many threads a pool that can keep every core busy should get. The network, compute
+     * and pathfinding pools each saturate the machine under load, and without a spare core the main
+     * tick thread waits for a time slice behind them, so when levels tick on the main thread they get
+     * one fewer than the available processors on machines with more than two. With level threads
+     * there is no single tick thread to keep a core for, and they get the processor count.
      *
+     * @param levelThreadMode whether levels tick on their own threads, see {@code level-settings.levelThread}
      * @return the thread count, at least 1
      */
-    public static int backgroundPoolThreads() {
+    public static int backgroundPoolThreads(boolean levelThreadMode) {
         final int processors = Runtime.getRuntime().availableProcessors();
-        return processors > 2 ? processors - 1 : processors;
+        return !levelThreadMode && processors > 2 ? processors - 1 : processors;
     }
 
     /**

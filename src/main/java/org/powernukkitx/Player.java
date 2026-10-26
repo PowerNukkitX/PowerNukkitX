@@ -170,6 +170,7 @@ import org.powernukkitx.nbt.tag.FloatTag;
 import org.powernukkitx.nbt.tag.ListTag;
 import org.powernukkitx.nbt.tag.StringTag;
 import org.powernukkitx.nbt.tag.Tag;
+import org.powernukkitx.network.FlushablePeer;
 import org.powernukkitx.network.primitiveshape.PrimitiveShapes;
 import org.powernukkitx.network.process.PacketHandler;
 import org.powernukkitx.network.process.PlayerSessionHolder;
@@ -526,6 +527,17 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     @NotNull
     public BedrockServerSession getSession() {
         return this.session;
+    }
+
+    /**
+     * Writes the packets queued for this player right away instead of on the session's own timer,
+     * see {@link FlushablePeer}. Safe to call from any thread.
+     */
+    @ApiStatus.Internal
+    public void flushOutbound() {
+        if (this.session.getPeer() instanceof FlushablePeer peer) {
+            peer.flushQueued();
+        }
     }
 
     /**

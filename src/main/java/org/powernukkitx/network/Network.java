@@ -125,7 +125,7 @@ public class Network implements NetworkInterface, SignalingService {
     private NetworkState state = NetworkState.STARTING;
 
     public Network(Server server) {
-        this(server, Utils.backgroundPoolThreads(), new ThreadFactoryBuilder().setNameFormat("Netty Server IO #%d").build());
+        this(server, Utils.backgroundPoolThreads(server.isLevelThreadMode()), new ThreadFactoryBuilder().setNameFormat("Netty Server IO #%d").build());
     }
 
     @SuppressWarnings("deprecation")

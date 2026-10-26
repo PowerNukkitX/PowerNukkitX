@@ -496,7 +496,7 @@ public class Server {
         }
 
         // A minimum of 1 is enforced to prevent invalid recursion values.
-        this.computeThreadPool = new ForkJoinPool(Math.min(0x7fff, Utils.backgroundPoolThreads()), new ComputeThreadPoolThreadFactory(), null, false);
+        this.computeThreadPool = new ForkJoinPool(Math.min(0x7fff, Utils.backgroundPoolThreads(this.settings.levelSettings().levelThread())), new ComputeThreadPoolThreadFactory(), null, false);
 
         int chunkIoThreads = this.settings.chunkSettings().chunkIoThreads();
         if (chunkIoThreads <= 0) {
@@ -1355,18 +1355,17 @@ public class Server {
         this.waitingForTick = true;
         try {
             for (Player player : this.players.values()) {
-                if (player.spawned) {
-                    player.drainInboundPackets();
+                if (deadlineNanos - System.nanoTime() <= 0) {
+                    return;
                 }
+                this.handleInboundNow(player);
             }
             long remaining;
             while (deadlineNanos - System.nanoTime() > 0) {
                 Player player;
-                while ((player = this.idleInbound.poll()) != null) {
+                while (deadlineNanos - System.nanoTime() > 0 && (player = this.idleInbound.poll()) != null) {
                     player.releaseInboundSignal();
-                    if (player.spawned) {
-                        player.drainInboundPackets();
-                    }
+                    this.handleInboundNow(player);
                 }
                 remaining = deadlineNanos - System.nanoTime();
                 if (remaining <= 0) {
@@ -1383,6 +1382,18 @@ public class Server {
     }
 
     /**
+     * Handles what a spawned player has queued and writes the replies right away, so they do not
+     * wait for the next tick's flush.
+     */
+    private void handleInboundNow(Player player) {
+        if (!player.spawned || player.inboundPackets.isEmpty()) {
+            return;
+        }
+        player.drainInboundPackets();
+        player.flushOutbound();
+    }
+
+    /**
      * Called on a network thread after a packet was queued for {@code player}, see
      * {@link #waitHandlingInbound(long)}. Does nothing while the tick runs, which handles the
      * packet itself.
@@ -1396,13 +1407,15 @@ public class Server {
 
     /**
      * Writes what the tick queued for every player right away instead of on the next session
-     * timer, see {@link FlushablePeer}.
+     * timer, see {@link FlushablePeer}. With level threads each level flushes its own players when
+     * its tick ends instead, since a flush from here would split a level's tick across batches.
      */
     private void flushPlayerSessions() {
+        if (this.levelThreadMode) {
+            return;
+        }
         for (Player player : this.players.values()) {
-            if (player.getSession().getPeer() instanceof FlushablePeer peer) {
-                peer.flushQueued();
-            }
+            player.flushOutbound();
         }
     }
 

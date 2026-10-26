@@ -37,7 +37,8 @@ public final class ChunkPublisherBudgetController {
     private static final double MIN_SAMPLED_CHUNK_BYTES = 1024d;
     private static final double MAX_SAMPLED_CHUNK_BYTES = 1024d * 1024d;
     private static final double CHUNK_BYTES_EWMA_ALPHA = 0.10d;
-    private static final double MIN_WIRE_RATIO = 0.01d;
+    private static final double MIN_WIRE_RATIO = 0.03d;
+    private static final double MIN_ACCOUNTED_CHUNK_BYTES = 256d;
     private static final double WIRE_RATIO_EWMA_ALPHA = 0.25d;
     private static final double GC_LIVE_SET_PRESSURE_START = 0.80d;
     private static final double GC_LIVE_SET_PRESSURE_HARD = 0.90d;
@@ -437,9 +438,11 @@ public final class ChunkPublisherBudgetController {
     /**
      * A chunk is charged what it costs on the link: its payload shrunk by the compression ratio
      * outbound batches are seeing. Until the first batch is compressed the raw payload is charged.
+     * The ratio covers every compressed batch, not only chunks, so the charge never drops below
+     * {@value #MIN_ACCOUNTED_CHUNK_BYTES} bytes and the token bucket keeps bounding a pass.
      */
     private double getAccountedChunkBytes() {
-        return averageChunkBytes * wireRatio;
+        return Math.max(MIN_ACCOUNTED_CHUNK_BYTES, averageChunkBytes * wireRatio);
     }
 
     private void sampleWireRatio() {
