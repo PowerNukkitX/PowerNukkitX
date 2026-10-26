@@ -1400,8 +1400,11 @@ public class Server {
      */
     void onInboundQueued(Player player) {
         if (this.waitingForTick && player.claimInboundSignal()) {
-            this.idleInbound.offer(player);
-            LockSupport.unpark(this.currentThread);
+            if (this.idleInbound.offer(player)) {
+                LockSupport.unpark(this.currentThread);
+            } else {
+                player.releaseInboundSignal();
+            }
         }
     }
 
