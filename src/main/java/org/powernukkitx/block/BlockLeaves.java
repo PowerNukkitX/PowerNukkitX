@@ -9,6 +9,7 @@ import org.powernukkitx.item.ItemID;
 import org.powernukkitx.item.ItemTool;
 import org.powernukkitx.item.enchantment.Enchantment;
 import org.powernukkitx.level.Level;
+import org.powernukkitx.level.format.IChunk;
 import org.powernukkitx.level.biome.BiomeID;
 import org.powernukkitx.math.BlockFace;
 import org.powernukkitx.math.SimpleAxisAlignedBB;
@@ -127,7 +128,7 @@ public abstract class BlockLeaves extends BlockTransparent {
             if (isCheckDecay()) {
                 if (isPersistent() || findLog(this, 7, null)) {
                     setCheckDecay(false);
-                    getLevel().setBlock(this, this, false, false);
+                    storeDecayBit(this);
                 } else {
                     LeavesDecayEvent ev = new LeavesDecayEvent(this);
                     Server.getInstance().getPluginManager().callEvent(ev);
@@ -151,7 +152,7 @@ public abstract class BlockLeaves extends BlockTransparent {
                         Block other = level.getBlock(x + dx, y + dy, z + dz, 0, false);
                         if (other instanceof BlockLeaves leaves && !leaves.isCheckDecay()) {
                             leaves.setCheckDecay(true);
-                            level.setBlock(leaves, leaves, false, false);
+                            storeDecayBit(leaves);
                         }
                     }
                 }
@@ -159,6 +160,17 @@ public abstract class BlockLeaves extends BlockTransparent {
             return type;
         }
         return type;
+    }
+
+    /**
+     * Stores a change to the decay-check bit without sending a block update. Clients render leaves the same either way,
+     * so sending it only costs bandwidth: one UpdateBlockPacket per flip, plus the six neighbours when anti-xray is on.
+     */
+    private static void storeDecayBit(BlockLeaves leaves) {
+        int x = leaves.getFloorX(), z = leaves.getFloorZ();
+        IChunk chunk = leaves.getLevel().getChunk(x >> 4, z >> 4);
+        chunk.setBlockState(x & 15, leaves.getFloorY(), z & 15, leaves.getBlockState(), leaves.layer);
+        chunk.setChanged();
     }
 
     private Boolean findLog(Block current, int distance, Long2LongMap visited) {
