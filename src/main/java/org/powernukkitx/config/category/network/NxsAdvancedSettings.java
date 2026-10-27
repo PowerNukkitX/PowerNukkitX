@@ -10,10 +10,6 @@ import lombok.experimental.Accessors;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-/**
- * NXS options most servers leave alone. Named like the advanced NXS options of Geyser and
- * WaterdogPE, so a fleet running all three reads the same.
- */
 @EqualsAndHashCode(callSuper = true)
 @Data
 @Accessors(fluent = true)
