@@ -51,6 +51,7 @@ import java.net.InetSocketAddress;
 import java.net.SocketAddress;
 import java.util.Collection;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
 
@@ -227,6 +228,7 @@ public class PlayerSessionHolder {
         playerListEntry.setActorUniqueID(this.player.getId());
         playerListEntry.setPlayerName(this.player.getName());
         playerListEntry.setXblXUID(this.player.getXUID());
+        playerListEntry.setPlayFabID(Objects.requireNonNullElse(this.player.getSkin().getSkin().getPlayFabId(), ""));
         playerListEntry.setPlatformOnlineID("");
         playerListEntry.setBuildPlatform(BuildPlatform.UNKNOWN);
         playerListEntry.setSerializedSkin(

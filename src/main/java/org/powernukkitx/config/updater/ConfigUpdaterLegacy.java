@@ -121,7 +121,6 @@ public class ConfigUpdaterLegacy implements ConfigUpdater.Updater {
                 .compressionBufferSize(netOld.compressionBufferSize())
                 .maxDecompressSize(netOld.maxDecompressSize())
                 .queryPlugins(baseOld.queryPlugins());
-        net.rakNetSettings().packetLimit(netOld.packetLimit());
 
         PerformanceSettings perf = settings.performanceSettings();
         LegacyServerSettings.FreezeArraySettings perfOld = legacyNukkit.freezeArraySettings();
@@ -169,7 +168,6 @@ public class ConfigUpdaterLegacy implements ConfigUpdater.Updater {
                 .allowClientPacks(oldProp.get(LegacyServerPropertiesKeys.FORCE_RESOURCES_ALLOW_CLIENT_PACKS, game.allowClientPacks()));
 
         net.enableQuery(oldProp.get(LegacyServerPropertiesKeys.ENABLE_QUERY, net.enableQuery()))
-                .networkEncryption(oldProp.get(LegacyServerPropertiesKeys.NETWORK_ENCRYPTION, net.networkEncryption()))
                 .checkLoginTime(oldProp.get(LegacyServerPropertiesKeys.CHECK_LOGIN_TIME, net.checkLoginTime()));
         settings.save();
     }

@@ -1,8 +1,6 @@
 package org.powernukkitx.network.nethernet;
 
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandler;
@@ -15,19 +13,18 @@ import org.cloudburstmc.netty.signaling.ProviderStateStore;
 import org.cloudburstmc.netty.signaling.ProviderTransport;
 import org.cloudburstmc.netty.signaling.ServerStatus;
 import org.cloudburstmc.netty.signaling.provider.NativeProviderHostFactory;
-import org.cloudburstmc.netty.signaling.provider.ProviderHostFactory;
 import org.cloudburstmc.netty.signaling.provider.ProviderRuntimeConfiguration;
 import org.cloudburstmc.netty.signaling.provider.ProviderShutdown;
 import org.powernukkitx.Server;
 import org.powernukkitx.config.category.network.NetherNetSettings;
+import org.powernukkitx.config.category.network.NxsAdvancedSettings;
 import org.powernukkitx.config.category.network.NxsSettings;
-import org.powernukkitx.network.NetworkConstants;
 
+import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.nio.file.Path;
-import java.util.Map;
-import java.util.Set;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Function;
 
 /**
  * Registers the server with an NXS provider, which then hands it players.
@@ -42,18 +39,20 @@ import java.util.concurrent.TimeUnit;
 @Slf4j
 public class NetherNetProvider implements AutoCloseable {
 
-    private static final String LABEL = "PowerNukkitX";
-    private static final Set<String> LOCAL_ORIGINS = Set.of("127.0.0.1", "localhost", "[::1]");
-
     private final Server server;
-    private final ChannelHandler sessionInitializer;
+    private final Function<GameOutcomeReporter, ChannelHandler> sessionInitializer;
+    private final GameOutcomeReporter gameOutcomes = new GameOutcomeReporter(this::reportGameOutcome);
 
     private EventLoopGroup group;
     private Channel channel;
-    private ProviderClient client;
+    private volatile ProviderClient client;
     private ProviderShutdown shutdown;
 
-    public NetherNetProvider(Server server, ChannelHandler sessionInitializer) {
+    /**
+     * @param sessionInitializer builds the session pipeline for admitted peers, wired to report
+     *                           game outcomes through the reporter it is handed
+     */
+    public NetherNetProvider(Server server, Function<GameOutcomeReporter, ChannelHandler> sessionInitializer) {
         this.server = server;
         this.sessionInitializer = sessionInitializer;
     }
@@ -65,14 +64,11 @@ public class NetherNetProvider implements AutoCloseable {
      *                 it is ephemeral
      */
     public void start(NetherNetSettings settings, InetSocketAddress address, int udpPort) throws Exception {
-        NxsSettings nxs = settings.nxsSettings();
         Path dataPath = Path.of(this.server.getDataPath());
 
         ProviderRuntimeConfiguration runtime = ProviderRuntimeConfiguration.resolve(
-            new ProviderRuntimeConfiguration.Settings(nxs.endpoint(), nxs.token(),
-                nxs.advertiseAddresses(), nxs.data()),
-            dataPath, address.getAddress().getHostAddress(), udpPort,
-            this.server.getMaxPlayers(), LABEL);
+            providerSettings(settings.nxsSettings()), dataPath, address.getAddress().getHostAddress(), udpPort,
+            this.server.getMaxPlayers());
 
         ProviderStateStore store = new ProviderStateStore(runtime.stateDirectory());
         ProviderTransport transport = null;
@@ -81,15 +77,9 @@ public class NetherNetProvider implements AutoCloseable {
                 .setNameFormat("NetherNet Provider - #%d").build());
             ServerBootstrap bootstrap = new ServerBootstrap()
                 .group(this.group)
-                .childHandler(this.sessionInitializer);
+                .childHandler(this.sessionInitializer.apply(this.gameOutcomes));
 
-            ProviderHostFactory.Host host = new NativeProviderHostFactory()
-                .open(bootstrap, new InetSocketAddress(runtime.bindAddress(), runtime.udpPort()),
-                    Map.of("stateDirectory", runtime.stateDirectory().toAbsolutePath().toString(),
-                        "profile", runtime.profile(),
-                        "advertisedEndpoints", runtime.encodedAdvertisedEndpoints(),
-                        "localDevelopment",
-                        Boolean.toString(LOCAL_ORIGINS.contains(runtime.origin().getHost()))))
+            NativeProviderHostFactory.Host host = NativeProviderHostFactory.open(bootstrap, runtime)
                 .toCompletableFuture().get(30, TimeUnit.SECONDS);
 
             this.channel = host.channel();
@@ -111,16 +101,47 @@ public class NetherNetProvider implements AutoCloseable {
             }
         }
 
-        this.client.start().whenComplete((registration, failure) -> {
+        ProviderClient client = this.client;
+        client.start().whenComplete((registration, failure) -> {
             if (failure != null) {
                 log.error("NetherNet provider registration failed, no players will arrive through it", failure);
                 this.close();
                 return;
             }
             log.info(registrationMessage(registration));
-            log.info("NetherNet client identities are authenticated by external signalling provider {}; "
+            // The provider may hand the operator a link, such as one to claim this server
+            client.operatorAction().thenAccept(action -> action.ifPresent(value ->
+                log.info("{} {}", value.text(), value.url())));
+            log.debug("NetherNet client identities are authenticated by external signalling provider {}; "
                 + "direct login keys are checked against its admission tickets", runtime.origin().getHost());
         });
+    }
+
+    /**
+     * Turns the nxs section of the config into what the provider runtime takes. Game outcomes are
+     * always on, since the server reports them itself.
+     *
+     * @throws IOException when the configured location is not one the provider understands
+     */
+    static ProviderRuntimeConfiguration.Settings providerSettings(NxsSettings nxs) throws IOException {
+        NxsAdvancedSettings advanced = nxs.advanced();
+        ProviderClient.Location location;
+        try {
+            location = ProviderClient.Location.of(advanced.location());
+        } catch (IllegalArgumentException invalid) {
+            throw new IOException("nethernet.nxs.advanced.location needs a two-letter country code, a latitude "
+                + "and longitude pair, or both; city is optional", invalid);
+        }
+        return ProviderRuntimeConfiguration.Settings.builder(nxs.endpoint())
+            .token(nxs.token())
+            .advertiseAddresses(nxs.advertiseAddresses())
+            .assistedJoins(advanced.assistedJoins())
+            .connectionChecks(advanced.connectionChecks())
+            .stunDiscovery(advanced.stunDiscovery())
+            .deregisterOnShutdown(advanced.deregisterOnShutdown())
+            .location(location)
+            .gameOutcomes(true)
+            .build();
     }
 
     @Override
@@ -151,9 +172,7 @@ public class NetherNetProvider implements AutoCloseable {
      * What the provider shows for this server, which is the same thing a player sees in the list.
      */
     private ServerStatus status() {
-        return new ServerStatus(this.server.getMotd(), NetworkConstants.CODEC.getProtocolVersion(),
-            NetworkConstants.CODEC.getMinecraftVersion(), this.server.getSubMotd(), this.players(),
-            this.server.getMaxPlayers(), 0);
+        return new ServerStatus(this.server.getMotd(), this.server.getSubMotd(), this.server.getMaxPlayers(), 0);
     }
 
     /**
@@ -161,26 +180,30 @@ public class NetherNetProvider implements AutoCloseable {
      * players here.
      */
     private ProviderClient.Health health(int capacity) {
-        int players = this.players();
-        double load = Math.min(1.0D, players / (double) Math.max(1, capacity));
-        return new ProviderClient.Health(true, this.accepting(), capacity, load, "nethernet",
-            this.server.getNukkitVersion(),
-            new ProviderClient.PlayerCount(players, System.currentTimeMillis()));
+        return new ProviderClient.Health(this.accepting(), capacity,
+            new ProviderClient.Software("PowerNukkitX", this.server.getNukkitVersion()),
+            new ProviderClient.ConnectedPlayers(this.players(), System.currentTimeMillis()));
+    }
+
+    private boolean reportGameOutcome(String ticketId, ProviderClient.GameOutcome outcome, String reason) {
+        ProviderClient client = this.client;
+        return client != null && client.reportGameOutcome(ticketId, outcome, reason);
     }
 
     private static void diagnostic(ProviderDiagnostic diagnostic) {
+        String message = "NXS: " + diagnostic.message();
         switch (diagnostic.level()) {
-            case DEBUG -> log.debug(diagnostic.message());
-            case INFO -> log.info(diagnostic.message());
-            case WARN -> log.warn(diagnostic.message());
+            case DEBUG -> log.debug(message);
+            case INFO -> log.info(message);
+            case WARN -> log.warn(message);
         }
     }
 
-    private static String registrationMessage(JsonObject registration) {
-        String instanceId = registration.get("instanceId").getAsString();
-        JsonElement address = registration.get("publicAddress");
-        if (address != null && !address.isJsonNull()) {
-            return "Provider address: " + address.getAsString() + " (instance " + instanceId + ")";
+    private static String registrationMessage(ProviderClient.Registration registration) {
+        String instanceId = registration.instanceId();
+        String address = registration.publicAddress();
+        if (address != null) {
+            return "Provider address: " + address + " (instance " + instanceId + ")";
         }
         return "Provider instance registered: " + instanceId
             + "; public addresses are managed on its attached Signal Servers";
@@ -191,8 +214,7 @@ public class NetherNetProvider implements AutoCloseable {
     }
 
     /**
-     * Whether the server wants more players, which is separate from whether it is healthy: a full
-     * server is working perfectly and simply has nowhere to put them.
+     * Whether the server has room for more players.
      */
     private boolean accepting() {
         return this.players() < this.server.getMaxPlayers();

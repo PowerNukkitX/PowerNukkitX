@@ -8,9 +8,7 @@ import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
 
 import java.util.ArrayList;
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
  * The NXS signalling provider, which finds players for this server rather than waiting for them to
@@ -27,6 +25,6 @@ public class NxsSettings extends OkaeriConfig {
     @Comment("pnx.settings.network.nethernet.nxs.advertiseaddresses")
     @CustomKey("advertise-addresses")
     List<String> advertiseAddresses = new ArrayList<>();
-    @Comment("pnx.settings.network.nethernet.nxs.data")
-    Map<String, String> data = new LinkedHashMap<>();
+    @Comment("pnx.settings.network.nethernet.nxs.advanced")
+    NxsAdvancedSettings advanced = new NxsAdvancedSettings();
 }

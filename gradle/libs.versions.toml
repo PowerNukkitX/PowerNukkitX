@@ -2,7 +2,7 @@
 # https://docs.gradle.org/current/userguide/platforms.html#sub::toml-dependencies-format
 
 [versions]
-pnx-gamedata                                    = "r-26_u5-SNAPSHOT"
+pnx-gamedata                                    = "r-26_u6-SNAPSHOT"
 libdeflate-java                                 = "0.0.3.PNX-SNAPSHOT"
 fastreflection                                  = "1.0.3"
 com-github-oshi-oshi-core                       = "7.5.0"
@@ -19,8 +19,8 @@ net-minecrell-terminalconsoleappender           = "1.3.0"
 net-sf-jopt-simple-jopt-simple                  = "5.0.4"
 log4j                                           = "2.26.1"
 org-bitbucket-b-c-jose4j                        = "0.9.6"
-org-cloudburstmc-netty                          = "2.0.0.CR4-20260922.202324-5"
-dev-opencollab-libdatachannel                   = "0.24.5.0-SNAPSHOT"
+org-cloudburstmc-netty                          = "2.0.0.CR6-20261026.130552-16"
+dev-opencollab-libdatachannel                   = "0.24.6.0-20261023.142230-9"
 org-jetbrains-annotations                       = "26.1.0"
 org-jline-jline-reader                          = "4.3.1"
 org-jline-jline-terminal                        = "4.3.1"
@@ -74,7 +74,6 @@ netty-handler        = { module = "io.netty:netty-handler",                     
 netty-codec          = { module = "io.netty:netty-codec",                           version.ref = "io-netty"                                        }
 netty-codec-http     = { module = "io.netty:netty-codec-http",                      version.ref = "io-netty"                                        }
 netty-codec-haproxy  = { module = "io.netty:netty-codec-haproxy",                   version.ref = "io-netty"                                        }
-netty-raknet         = { module = "org.cloudburstmc.netty:netty-transport-raknet",  version.ref = "org-cloudburstmc-netty"                          }
 netty-nethernet      = { module = "org.cloudburstmc.netty:netty-transport-nethernet", version.ref = "org-cloudburstmc-netty"                        }
 netty-signalling     = { module = "org.cloudburstmc.netty:netty-external-signaling", version.ref = "org-cloudburstmc-netty"                        }
 libdatachannel       = { module = "dev.opencollab:libdatachannel-java-arch-detect", version.ref = "dev-opencollab-libdatachannel"                   }
@@ -98,7 +97,7 @@ bedrock-connection   = { module = "org.powernukkitx.protocol:bedrock-connection"
 terminal        = ["jline-reader",      "jline-terminal",   "jline-terminaljni",    "consoleappender"   ]
 test            = ["junit", "junit-jupiter-engine", "mockito", "jmh-core", "jmh-generator"              ]
 netty           = ["netty-epoll",      "netty-kqueue",     "netty-handler"                              ]
-nethernet       = ["netty-nethernet",  "netty-signalling", "netty-raknet",     "netty-codec",  "netty-codec-http", "netty-codec-haproxy", "libdatachannel" ]
+nethernet       = ["netty-nethernet",  "netty-signalling", "netty-codec",  "netty-codec-http", "netty-codec-haproxy", "libdatachannel" ]
 compress        = ["snappy",            "lz4",              "libdeflate"                                ]
 leveldb         = ["leveldb",           "leveldb-api"                                                   ]
 logging         = ["log4j-slf4j2-impl", "log4j-core"                                                    ]

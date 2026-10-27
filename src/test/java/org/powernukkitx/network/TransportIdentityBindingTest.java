@@ -36,7 +36,7 @@ class TransportIdentityBindingTest {
         JwtClaims claims = new JwtClaims();
         claims.setClaim("cpk", Base64.getEncoder().encodeToString(key.getEncoded()));
         return new PlayerInfo("2535000000000000", "Tester", "1234567890",
-            new InetSocketAddress("127.0.0.1", 19132), claims);
+            new InetSocketAddress("127.0.0.1", 19132), null, claims);
     }
 
     private static Channel netherNetChannel() {
@@ -80,7 +80,7 @@ class TransportIdentityBindingTest {
 
     @Test
     void otherTransportsAreLeftAlone() throws Exception {
-        // RakNet bound the chain through the encryption handshake, so there is nothing to check
+        // A channel that never went through NetherNet signalling carries no binding to check
         assertNull(TransportIdentityBinding.mismatch(new EmbeddedChannel(), key()));
     }
 }

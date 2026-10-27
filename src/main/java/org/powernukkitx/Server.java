@@ -39,7 +39,6 @@ import org.powernukkitx.command.SimpleCommandMap;
 import org.powernukkitx.command.defaults.WorldCommand;
 import org.powernukkitx.command.function.FunctionManager;
 import org.powernukkitx.config.ServerSettings;
-import org.powernukkitx.config.category.NetworkSettings;
 import org.powernukkitx.config.YamlSnakeYamlConfigurer;
 import org.powernukkitx.config.updater.ConfigUpdater;
 import org.powernukkitx.console.NukkitConsole;
@@ -291,7 +290,6 @@ public class Server {
     private DB playerDataDB;
     private ProxyAuthProvider proxyAuthProvider;
     private FreezableArrayManager freezableArrayManager;
-    public boolean enabledNetworkEncryption;
 
     // default levels
     private Level defaultLevel = null;
@@ -432,16 +430,6 @@ public class Server {
         }
         ServerScheduler.WORKERS = poolSizeNumber;
         this.scheduler = new ServerScheduler();
-
-        // NetherNet carries the session inside DTLS and a real client answers ServerToClientHandshake
-        // in plaintext, so Bedrock packet encryption has no place on top of it.
-        final boolean netherNet = this.settings.networkSettings().resolvedTransport()
-            == NetworkSettings.TransportType.NETHERNET;
-        if (netherNet && this.settings.networkSettings().networkEncryption()) {
-            log.warn("network-settings.networkEncryption is ignored on the NetherNet transport, "
-                + "which is already encrypted");
-        }
-        this.enabledNetworkEncryption = !netherNet && this.settings.networkSettings().networkEncryption();
 
         this.experiments = new ArrayList<>();
         for (String experiment : settings.gameplaySettings().experiments())
@@ -1851,6 +1839,7 @@ public class Server {
         entry.setActorUniqueID(entityId);
         entry.setPlayerName(name);
         entry.setXblXUID(xboxUserId);
+        entry.setPlayFabID(Objects.requireNonNullElse(skin.getSkin().getPlayFabId(), ""));
         entry.setPlatformOnlineID("");
         entry.setBuildPlatform(BuildPlatform.UNKNOWN);
         entry.setSerializedSkin(SkinConverter.toSerializedSkin(skin.getSkin(), skin.isTrusted()));
@@ -1920,6 +1909,7 @@ public class Server {
             entry.setActorUniqueID(value.getId());
             entry.setPlayerName(value.getName());
             entry.setXblXUID(value.getXUID());
+            entry.setPlayFabID(Objects.requireNonNullElse(value.getSkin().getSkin().getPlayFabId(), ""));
             entry.setPlatformOnlineID("");
             entry.setBuildPlatform(BuildPlatform.UNKNOWN);
             entry.setSerializedSkin(SkinConverter.toSerializedSkin(value.getSkin().getSkin(), value.getSkin().isTrusted()));
