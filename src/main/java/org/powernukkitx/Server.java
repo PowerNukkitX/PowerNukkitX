@@ -2276,7 +2276,7 @@ public class Server {
      * @param info the player info
      */
     void updateName(Player.PlayerInfo info) {
-        var uniqueId = uuidFromXUID(info.getIdentityClaims().extraData.xuid);
+        var uniqueId = uuidFromXUID(resolveXuid(info, this.getProxyAuthProvider()));
         var name = info.getIdentityClaims().extraData.displayName;
 
         byte[] nameKey = PlayerDataKeys.name(name);
