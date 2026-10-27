@@ -185,6 +185,7 @@
   "pnx.settings.network.nethernet.udpport": "Dedicated UDP port for NetherNet media, multiplexing every peer over one socket. 0 gathers ICE on the server port when query is disabled, and on an ephemeral port per peer otherwise",
   "pnx.settings.network.nethernet.handshaketimeout": "Seconds a connection has to finish ICE and DTLS before it is dropped",
   "pnx.settings.network.nethernet.iceservers": "STUN and TURN servers ICE may use, such as stun:stun.l.google.com:19302. A server behind NAT needs one to put a reachable address in the offer. TURN credentials go in the URL, as turn:user:password@host:3478",
+  "pnx.settings.network.nethernet.stunservers": "STUN servers asked for this server's public address, which is then offered to every player, as stun:host:port. Needs a fixed UDP port for ICE and is not used when advertise-addresses is set. Empty turns discovery off",
   "pnx.settings.network.nethernet.advertiseaddresses": "Addresses to put in the ICE candidates clients connect to. Empty derives them from the bind address, which is usually what you want",
   "pnx.settings.network.nethernet.trustedproxies": "Addresses allowed to set X-Forwarded-For on signalling requests, as single hosts or CIDR ranges such as 10.0.0.0/8. An http or https entry is fetched and read as one address per line",
   "pnx.settings.network.nethernet.proxyprotocol": "Read a HAProxy PROXY header, v1 or v2, from signalling connections arriving from a trusted proxy. Connections without a header are still served",

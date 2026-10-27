@@ -20,6 +20,7 @@ import org.cloudburstmc.netty.channel.nethernet.signaling.NetherNetHTTPServerSig
 import org.cloudburstmc.netty.channel.nethernet.signaling.PongData;
 import org.cloudburstmc.netty.channel.nethernet.signaling.IceServerInfo;
 import org.cloudburstmc.netty.channel.nethernet.signaling.JoinRefusal;
+import org.cloudburstmc.netty.util.nethernet.IpRangeSet;
 import org.cloudburstmc.netty.util.nethernet.NetherNetLogging;
 import org.cloudburstmc.netty.util.nethernet.OperatorIdentity;
 import org.cloudburstmc.netty.util.nethernet.TokenTrust;
@@ -51,10 +52,10 @@ import org.powernukkitx.utils.Utils;
 import oshi.SystemInfo;
 import oshi.hardware.NetworkIF;
 import tel.schich.libdatachannel.LibDataChannelArchDetect;
-import tel.schich.libdatachannel.PeerConnectionConfiguration;
 
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
+import java.net.URI;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.LinkedList;
@@ -162,24 +163,31 @@ public class Network implements NetworkInterface, SignalingService {
                 ? new InetSocketAddress(bindAddress.getAddress(), settings.signalingPort())
                 : bindAddress;
 
-            this.channel = new ServerBootstrap()
+            final List<URI> iceServers = iceServers(settings);
+            final ServerBootstrap bootstrap = new ServerBootstrap()
                 .group(this.eventLoopGroup)
                 .channelFactory(NetherNetChannelFactory.server(this.signaling))
                 .option(NetherChannelOption.NETHER_SERVER_RTC_HANDSHAKE_TIMEOUT_SECONDS, settings.handshakeTimeout())
                 .handler(new ChannelInitializer<>() {
                     @Override
                     protected void initChannel(Channel channel) {
-                        if (icePort <= 0) {
+                        if (iceServers.isEmpty()) {
                             return;
                         }
-                        // Runs before the first connection, so every peer sees the pinned port
+                        // Runs before the first connection, so every peer gathers through them
                         ChannelConfig options = channel.config();
                         options.setOption(NetherChannelOption.NETHER_PEER_CONNECTION_CONFIG,
-                            pinIce(options.getOption(NetherChannelOption.NETHER_PEER_CONNECTION_CONFIG),
-                                bindAddress.getAddress(), icePort));
+                            options.getOption(NetherChannelOption.NETHER_PEER_CONNECTION_CONFIG)
+                                .withIceServers(iceServers));
                     }
                 })
-                .childHandler(this.sessionInitializer)
+                .childHandler(this.sessionInitializer);
+            if (icePort > 0) {
+                // The channel pins ICE here and hands it to signalling, which STUN discovery needs
+                bootstrap.option(NetherChannelOption.NETHER_SERVER_ICE_ADDRESS,
+                    new InetSocketAddress(bindAddress.getAddress(), icePort));
+            }
+            this.channel = bootstrap
                 .bind(signalingAddress)
                 .syncUninterruptibly()
                 .channel();
@@ -270,14 +278,20 @@ public class Network implements NetworkInterface, SignalingService {
             OperatorIdentity identity = ServerIdentityProvider.identity(this.server);
             log.info("NetherNet identifies this operator to players as {}", ServerIdentityProvider.domain(this.server));
 
+            IpRangeSet trustedProxies = TrustedProxies.parse(settings.trustedProxies());
+            // ok so STUN asks from the ICE port, without a fixed one there is nothing to discover
+            boolean fixedIcePort = icePort > 0 || iceOnListenerPort;
+            List<String> stunServers = stunServers(settings, fixedIcePort);
+            Set<String> advertised = advertisedAddresses(address, settings, !stunServers.isEmpty());
+
             return new NetherNetHTTPServerSignaling.Builder()
                 .setIdentity(identity)
                 .setServeHttp(serveHttp)
-                .setTrustedProxies(TrustedProxies.parse(settings.trustedProxies()))
-                .setProxyProtocol(settings.proxyProtocol())
-                .setAdvertisedAddresses(advertisedAddresses(address, settings))
-                .setIceServers(iceServers(settings))
-                // A dedicated media port is pinned by the channel initializer instead
+                .setForwardedForProxies(trustedProxies)
+                .setProxyProtocolProxies(settings.proxyProtocol() ? trustedProxies : IpRangeSet.empty())
+                .setAdvertisedAddresses(advertised)
+                .setStunServers(stunServers)
+                // A dedicated media port is handed to the channel as its ICE address instead
                 .setIceOnLocalPort(icePort <= 0 && iceOnListenerPort)
                 .setTokenTrust(TokenTrust.ANY)
                 .setMotdProvider((host, peer, client) -> Network.this.advertisement())
@@ -349,25 +363,47 @@ public class Network implements NetworkInterface, SignalingService {
      * The configured STUN and TURN servers, as one entry carrying every URL. Credentials belong in
      * the URL, which is the only place the configuration has to put them.
      */
-    private static List<IceServerInfo> iceServers(NetherNetSettings settings) {
+    private static List<URI> iceServers(NetherNetSettings settings) {
         List<String> urls = settings.iceServers();
         if (urls.isEmpty()) {
             return List.of();
         }
-        return List.of(new IceServerInfo.Builder().setUrls(List.copyOf(urls)).build());
+        return new IceServerInfo.Builder().setUrls(List.copyOf(urls)).build().toUris();
     }
 
     /**
-     * A dedicated media port multiplexes every peer over one socket. Without one, ICE gathers on
-     * the listener port when query is not holding its UDP side, and on ephemeral ports otherwise.
+     * The STUN servers asked for this machine's public address, which then goes into every answer.
+     * Advertised addresses already say what they would find, and the signalling refuses both.
      */
+    private static List<String> stunServers(NetherNetSettings settings, boolean fixedIcePort) {
+        List<String> servers = settings.stunServers().stream()
+            .map(String::trim)
+            .filter(server -> !server.isEmpty())
+            .distinct()
+            .toList();
+        if (servers.isEmpty() || !settings.advertiseAddresses().isEmpty()) {
+            return List.of();
+        }
+        if (!fixedIcePort) {
+            log.warn("NetherNet STUN discovery is off, as ICE has no fixed UDP port to ask from. "
+                + "Set network-settings.nethernet.udpPort to enable it");
+            return List.of();
+        }
+        return servers;
+    }
+
     /**
      * The addresses clients are told to connect to. Falling back to the bind address keeps a server
-     * bound to one public address from offering the internal addresses of its machine.
+     * bound to one public address from offering the internal addresses of its machine, unless STUN
+     * discovery is on, which finds better ones.
      */
-    private static Set<String> advertisedAddresses(InetSocketAddress address, NetherNetSettings settings) {
+    private static Set<String> advertisedAddresses(InetSocketAddress address, NetherNetSettings settings,
+                                                   boolean stunDiscovery) {
         if (!settings.advertiseAddresses().isEmpty()) {
             return Set.copyOf(settings.advertiseAddresses());
+        }
+        if (stunDiscovery) {
+            return Set.of();
         }
         InetAddress bound = address.getAddress();
         if (bound == null || bound.isAnyLocalAddress()) {
@@ -382,17 +418,6 @@ public class Network implements NetworkInterface, SignalingService {
             return 0;
         }
         return Math.max(port, 0);
-    }
-
-    private static PeerConnectionConfiguration pinIce(PeerConnectionConfiguration config, InetAddress host, int port) {
-        // A wildcard bind is left unset so ICE keeps gathering on every interface
-        if (host != null && !host.isAnyLocalAddress()) {
-            config = config.withBindAddress(host);
-        }
-        return config
-            .withEnableIceUdpMux(true)
-            .withPortRangeBegin(port)
-            .withPortRangeEnd(port);
     }
 
     record NetWorkStatisticData(long upload, long download) {
