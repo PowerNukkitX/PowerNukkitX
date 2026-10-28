@@ -38,7 +38,11 @@ public class Xoroshiro128 implements RandomSourceProvider {
 
     @Override
     public int nextInt(int min, int max) {
-        return min + (nextInt() % (max - min));
+        if (max <= min) {
+            return min;
+        }
+        long span = (long) max - min + 1L;
+        return (int) (min + Integer.toUnsignedLong(nextInt()) % span);
     }
 
     public int nextBoundedInt(int max) {
