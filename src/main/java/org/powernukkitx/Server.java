@@ -2079,6 +2079,7 @@ public class Server {
         entry.setActorUniqueID(entityId);
         entry.setPlayerName(name);
         entry.setXblXUID(xboxUserId);
+        entry.setPlayFabID(Objects.requireNonNullElse(skin.getSkin().getPlayFabId(), ""));
         entry.setPlatformOnlineID("");
         entry.setBuildPlatform(BuildPlatform.UNKNOWN);
         entry.setSerializedSkin(skin.toSerializedSkin());

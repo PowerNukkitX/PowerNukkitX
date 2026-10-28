@@ -3,18 +3,29 @@ package org.powernukkitx.block;
 import org.powernukkitx.block.definition.BlockDefinition;
 
 import org.powernukkitx.Player;
+import org.powernukkitx.block.property.type.BooleanPropertyType;
 import org.powernukkitx.item.Item;
 import org.powernukkitx.item.ItemID;
 import org.powernukkitx.item.ItemTool;
 import org.powernukkitx.level.Level;
 import org.powernukkitx.math.BlockFace;
+import org.powernukkitx.utils.LevelException;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
 import java.util.concurrent.ThreadLocalRandom;
+import java.util.function.Function;
 
-public class BlockChorusPlant extends BlockTransparent {
-    public static final BlockProperties PROPERTIES = new BlockProperties(CHORUS_PLANT);
+import static org.powernukkitx.block.property.CommonBlockProperties.CONNECTION_DOWN;
+import static org.powernukkitx.block.property.CommonBlockProperties.CONNECTION_EAST;
+import static org.powernukkitx.block.property.CommonBlockProperties.CONNECTION_NORTH;
+import static org.powernukkitx.block.property.CommonBlockProperties.CONNECTION_SOUTH;
+import static org.powernukkitx.block.property.CommonBlockProperties.CONNECTION_UP;
+import static org.powernukkitx.block.property.CommonBlockProperties.CONNECTION_WEST;
+
+public class BlockChorusPlant extends BlockTransparent implements StateDeriving {
+    public static final BlockProperties PROPERTIES = new BlockProperties(CHORUS_PLANT, CONNECTION_DOWN, CONNECTION_EAST,
+        CONNECTION_NORTH, CONNECTION_SOUTH, CONNECTION_UP, CONNECTION_WEST);
     public static final BlockDefinition DEFINITION = TRANSPARENT.toBuilder()
             .hardness(0.4f)
             .resistance(0.4f)
@@ -71,6 +82,55 @@ public class BlockChorusPlant extends BlockTransparent {
         return down.getId().equals(CHORUS_PLANT) || down.getId().equals(END_STONE);
     }
 
+    /**
+     * The state a chorus plant takes with the given neighbors, for code that places plants without
+     * going through block updates, like the End generator.
+     *
+     * @param neighbor the block id on each side of the plant
+     */
+    public static BlockState connectedState(Function<BlockFace, String> neighbor) {
+        BlockState state = PROPERTIES.getDefaultState();
+        for (BlockFace face : BlockFace.values()) {
+            if (connectsTo(neighbor.apply(face), face)) {
+                state = state.setPropertyValue(PROPERTIES, connection(face).createValue(true));
+            }
+        }
+        return state;
+    }
+
+    // Plants reach into other plants and flowers on every side, and down into the end stone they grow from
+    private static boolean connectsTo(String neighborId, BlockFace face) {
+        return neighborId.equals(CHORUS_PLANT) || neighborId.equals(CHORUS_FLOWER)
+            || face == BlockFace.DOWN && neighborId.equals(END_STONE);
+    }
+
+    private static BooleanPropertyType connection(BlockFace face) {
+        return switch (face) {
+            case DOWN -> CONNECTION_DOWN;
+            case UP -> CONNECTION_UP;
+            case NORTH -> CONNECTION_NORTH;
+            case SOUTH -> CONNECTION_SOUTH;
+            case WEST -> CONNECTION_WEST;
+            case EAST -> CONNECTION_EAST;
+        };
+    }
+
+    @Override
+    public boolean autoConfigureState() {
+        final short previous = this.blockstate.specialValue();
+        for (BlockFace face : BlockFace.values()) {
+            final boolean connected;
+            try {
+                connected = connectsTo(this.getSideAtLayer(0, face).getId(), face);
+            } catch (LevelException e) {
+                // the neighbor is outside a loaded chunk, keep what that side had
+                continue;
+            }
+            this.setPropertyValue(connection(face), connected);
+        }
+        return this.blockstate.specialValue() != previous;
+    }
+
     @Override
     public int onUpdate(int type) {
         if (type == Level.BLOCK_UPDATE_NORMAL) {
@@ -78,6 +138,10 @@ public class BlockChorusPlant extends BlockTransparent {
                 level.scheduleUpdate(this, 1);
                 return type;
             }
+            if (autoConfigureState()) {
+                level.setBlock(this, this, true);
+            }
+            return type;
         } else if (type == Level.BLOCK_UPDATE_SCHEDULED) {
             level.useBreakOn(this, null, null, true);
             return type;
@@ -91,6 +155,7 @@ public class BlockChorusPlant extends BlockTransparent {
         if (!isPositionValid()) {
             return false;
         }
+        autoConfigureState();
         return super.place(item, block, target, face, fx, fy, fz, player);
     }
 

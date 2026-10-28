@@ -675,7 +675,7 @@ public class LevelDBProvider implements LevelProvider {
 
                 // Write biomes
                 final var biomeSections = unsafeChunk.getBiomeSections();
-                for (int i = 0; i < total; i++) {
+                for (int i = 0; i < biomeSections.length; i++) {
                     biomeSections[i].writeToNetwork(byteBuf, Integer::intValue, i == 0 ? null : biomeSections[i - 1]);
                 }
 

@@ -7898,6 +7898,11 @@ public class Level implements Metadatable, LiquidUpdateAccess {
             block = this.getBlock(pos);
         }
 
+        // target is a power source for projectile hits, but it still conducts like any solid block
+        if (block instanceof BlockTarget) {
+            return Math.max(block.getWeakPower(face), this.getStrongPower(pos));
+        }
+
         return block.isNormalBlock() ? this.getStrongPower(pos) : block.getWeakPower(face);
     }
 

@@ -69,6 +69,7 @@ public final class PlayerListEncoder {
         entry.setActorUniqueID(player.uniqueIdLong());
         entry.setPlayerName(player.getName());
         entry.setXblXUID(player.getXUID());
+        entry.setPlayFabID(Objects.requireNonNullElse(player.getSkin().getSkin().getPlayFabId(), ""));
         entry.setPlatformOnlineID("");
         entry.setBuildPlatform(BuildPlatform.UNKNOWN);
         entry.setSerializedSkin(player.getSkin().toSerializedSkin());

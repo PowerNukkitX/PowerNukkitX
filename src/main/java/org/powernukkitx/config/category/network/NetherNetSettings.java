@@ -62,6 +62,9 @@ public class NetherNetSettings extends OkaeriConfig {
     @Comment("pnx.settings.network.nethernet.iceservers")
     @CustomKey("ice-servers")
     List<String> iceServers = new ArrayList<>();
+    @Comment("pnx.settings.network.nethernet.stunservers")
+    @CustomKey("stun-servers")
+    List<String> stunServers = new ArrayList<>(List.of("stun:stun.cloudflare.com:3478", "stun:stun.l.google.com:19302"));
     @Comment("pnx.settings.network.nethernet.advertiseaddresses")
     @CustomKey("advertise-addresses")
     List<String> advertiseAddresses = new ArrayList<>();

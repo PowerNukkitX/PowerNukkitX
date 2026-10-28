@@ -29,4 +29,6 @@ public class NxsSettings extends OkaeriConfig {
     List<String> advertiseAddresses = new ArrayList<>();
     @Comment("pnx.settings.network.nethernet.nxs.data")
     Map<String, String> data = new LinkedHashMap<>();
+    @Comment("pnx.settings.network.nethernet.nxs.advanced")
+    NxsAdvancedSettings advanced = new NxsAdvancedSettings();
 }

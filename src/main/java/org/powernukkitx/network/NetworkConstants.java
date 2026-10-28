@@ -1,6 +1,6 @@
 package org.powernukkitx.network;
 
-import org.cloudburstmc.protocol.bedrock.codec.v2192.Bedrock_v2192;
+import org.cloudburstmc.protocol.bedrock.codec.v2225.Bedrock_v2225;
 import org.powernukkitx.utils.SemVersion;
 import lombok.experimental.UtilityClass;
 import org.cloudburstmc.protocol.bedrock.codec.BedrockCodec;
@@ -12,7 +12,7 @@ import org.jetbrains.annotations.Nullable;
 @UtilityClass
 public class NetworkConstants {
 
-    public final BedrockCodec CODEC = Bedrock_v2192.CODEC.toBuilder().protocolVersion(2193).build();
+    public final BedrockCodec CODEC = Bedrock_v2225.CODEC;
 
     public final String DATA_FORMAT_VERSION = CODEC.getMinecraftVersion();
 
