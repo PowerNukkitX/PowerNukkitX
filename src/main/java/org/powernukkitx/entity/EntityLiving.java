@@ -1199,6 +1199,14 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
 
     @Override
     public boolean onInteract(Player player, Item item, Vector3 clickedPos) {
+        if (item != null && Item.LEAD.equals(item.getId()) && this.canBeLeashed()) {
+            if (player.isSneaking() && this.leashEntitiesHeldBy(player)) {
+                // Existing leads are transferred, so the held lead must not be consumed.
+                return false;
+            }
+            return this.useLeadOn(player);
+        }
+
         boolean superResult = super.onInteract(player, item, clickedPos);
         if (superResult) return true;
 
