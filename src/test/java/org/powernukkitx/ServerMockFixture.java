@@ -155,6 +155,7 @@ public final class ServerMockFixture {
         doReturn("1.0.0").when(server).getGitCommit();
         doReturn(100).when(server).getMaxPlayers();
         doReturn(false).when(server).hasWhitelist();
+        doReturn(null).when(server).getTickingAreaManager();
         // Port 0 lets the OS hand each test JVM its own free UDP port. A fixed port would
         // clash when Gradle runs the fork pool in parallel and the listener bind aborts startup.
         doReturn(0).when(server).getPort();

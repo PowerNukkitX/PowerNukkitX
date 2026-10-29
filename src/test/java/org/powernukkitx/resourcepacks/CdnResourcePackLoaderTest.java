@@ -9,9 +9,7 @@ import org.powernukkitx.resourcepacks.loader.CdnResourcePackLoader;
 import eu.okaeri.configs.ConfigManager;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.io.TempDir;
 
-import java.nio.file.Path;
 import java.util.List;
 import java.util.UUID;
 
@@ -23,9 +21,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  * ones that already carry their uuid, version and size.
  */
 class CdnResourcePackLoaderTest {
-
-    @TempDir
-    Path dir;
 
     @BeforeAll
     static void setup() {
@@ -67,13 +62,12 @@ class CdnResourcePackLoaderTest {
     @Test
     void survivesConfigRoundTrip() {
         UUID id = UUID.randomUUID();
-        Path config = dir.resolve("pnx.yml");
 
-        ServerSettings written = create(config);
+        ServerSettings written = create();
         written.gameplaySettings().cdnPacks().add(entry("https://cdn.example.com/pack.mcpack", id));
-        written.save();
 
-        ServerSettings read = create(config);
+        ServerSettings read = create();
+        read.load(written.saveToString());
 
         assertEquals(1, read.gameplaySettings().cdnPacks().size());
         CdnPackSettings entry = read.gameplaySettings().cdnPacks().getFirst();
@@ -83,13 +77,10 @@ class CdnResourcePackLoaderTest {
         assertTrue(entry.addonPack());
     }
 
-    private static ServerSettings create(Path config) {
+    private static ServerSettings create() {
         return ConfigManager.create(ServerSettings.class, it -> {
             it.withConfigurer(new YamlSnakeYamlConfigurer());
-            it.withBindFile(config);
             it.withRemoveOrphans(true);
-            it.saveDefaults();
-            it.load(true);
         });
     }
 
