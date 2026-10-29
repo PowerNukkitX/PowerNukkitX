@@ -4969,6 +4969,10 @@ public class Level implements Metadatable, LiquidUpdateAccess {
                         addSound(player, Sound.RANDOM_BREAK);
                         item = Item.AIR;
                     }
+                    if (item.canBePlaced() && data.getClientInteractPrediction() == ItemUsePredictedResult.SUCCESS) {
+                        sendBlocks(new Player[]{player}, new Block[]{target, block}, UpdateBlockPacket.FLAG_ALL_PRIORITY);
+                        sendBlocks(new Player[]{player}, new Block[]{target.getLevelBlockAtLayer(1), block.getLevelBlockAtLayer(1)}, UpdateBlockPacket.FLAG_ALL_PRIORITY, 1);
+                    }
                     return item;
                 }
 
