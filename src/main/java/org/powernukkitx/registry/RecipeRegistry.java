@@ -20,7 +20,6 @@ import org.powernukkitx.utils.MinecraftNamespaceComparator;
 import org.powernukkitx.utils.Utils;
 import com.google.common.collect.Collections2;
 import com.google.gson.Gson;
-import com.google.gson.internal.LinkedTreeMap;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import io.netty.util.collection.CharObjectHashMap;
@@ -887,7 +886,7 @@ public class RecipeRegistry implements IRegistry<String, Recipe, Recipe> {
 
                             Map<Character, ItemDescriptor> ingredients = new CharObjectHashMap<>();
 
-                            LinkedTreeMap<String, Object> inputs = (LinkedTreeMap<String, Object>) recipe.get("input");
+                            Map<String, Object> inputs = (Map<String, Object>) recipe.get("input");
 
                             for (Map.Entry<String, Object> inputData : inputs.entrySet()) {
                                 char patternKey = inputData.getKey().charAt(0);

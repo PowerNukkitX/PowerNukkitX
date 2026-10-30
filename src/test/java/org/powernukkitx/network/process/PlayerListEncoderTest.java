@@ -19,6 +19,7 @@ import java.util.List;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNotSame;
 import static org.junit.jupiter.api.Assertions.assertSame;
@@ -28,6 +29,18 @@ class PlayerListEncoderTest {
     @BeforeAll
     static void boot() {
         ServerMockFixture.boot();
+    }
+
+    @Test
+    void includesPlayFabIdentityInPlayerListEntries() {
+        final Player player = player("Alice", 1, Color.WHITE);
+        Mockito.when(player.getSkin()).thenReturn(new Skin(protocolSkin("Alice").toBuilder()
+            .playFabId("playfab-alice").build(), true));
+        assertEquals("playfab-alice", PlayerListEncoder.addEntry(player).getPlayFabID());
+
+        Mockito.when(player.getSkin()).thenReturn(new Skin(protocolSkin("Alice").toBuilder()
+            .playFabId(null).build(), true));
+        assertEquals("", PlayerListEncoder.addEntry(player).getPlayFabID());
     }
 
     @Test

@@ -16,10 +16,11 @@ import java.util.Set;
 import lombok.experimental.UtilityClass;
 
 /**
- * Resolves block state hashes written before 1.26.50 gave fences and stairs their shape properties.
+ * Resolves block state hashes written before 1.26.50 gave fences and stairs their shape properties,
+ * or before 1.26.60 did the same for chorus plants, fire and redstone wire.
  * <p>
- * Only the defaults are mapped. A state that had a shape set was not expressible before 1.26.50, so
- * no old hash can point at it.
+ * Only the defaults are mapped. A state that had a shape set was not expressible back then, so no
+ * old hash can point at it.
  * <p>
  *
  * @author xRookieFight
@@ -33,15 +34,16 @@ public class LegacyBlockStateHashes {
     static {
         RESHAPED_BLOCKS.addAll(BlockStateUpdater_1_26_50.CONNECTION_BLOCKS);
         RESHAPED_BLOCKS.addAll(BlockStateUpdater_1_26_50.CORNER_BLOCKS);
+        RESHAPED_BLOCKS.addAll(BlockStateUpdater_1_26_60.ADDED_PROPERTIES.keySet());
     }
 
-    private static final Set<String> ADDED_PROPERTIES = Set.of(
-        BlockStateUpdater_1_26_50.CONNECTION_PROPERTIES[0],
-        BlockStateUpdater_1_26_50.CONNECTION_PROPERTIES[1],
-        BlockStateUpdater_1_26_50.CONNECTION_PROPERTIES[2],
-        BlockStateUpdater_1_26_50.CONNECTION_PROPERTIES[3],
-        BlockStateUpdater_1_26_50.CORNER_PROPERTY
-    );
+    private static final Set<String> ADDED_PROPERTIES = new HashSet<>();
+
+    static {
+        ADDED_PROPERTIES.addAll(List.of(BlockStateUpdater_1_26_50.CONNECTION_PROPERTIES));
+        ADDED_PROPERTIES.add(BlockStateUpdater_1_26_50.CORNER_PROPERTY);
+        BlockStateUpdater_1_26_60.ADDED_PROPERTIES.values().forEach(properties -> ADDED_PROPERTIES.addAll(properties.keySet()));
+    }
 
     private static volatile Int2ObjectMap<BlockState> byLegacyHash;
 

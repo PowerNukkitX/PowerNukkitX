@@ -22,7 +22,11 @@ public class ConfigUpdater_3_1_0 implements ConfigUpdater.Updater {
                 "chunk-settings.perTickSend",
                 "chunk-settings.convertBDSChunks",
                 "chunk-settings.lightUpdates",
-                "level-settings.fieldOfView"
+                "level-settings.fieldOfView",
+                "network-settings.transport",
+                "network-settings.raknet",
+                "network-settings.networkEncryption",
+                "network-settings.nethernet.nxs.data"
         }) {
             if (view.exists(key)) {
                 view.remove(key);

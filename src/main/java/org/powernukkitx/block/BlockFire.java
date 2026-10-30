@@ -20,6 +20,7 @@ import org.powernukkitx.level.Level;
 import org.powernukkitx.math.AxisAlignedBB;
 import org.powernukkitx.math.BlockFace;
 import org.powernukkitx.math.Vector3;
+import org.powernukkitx.utils.LevelException;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -27,12 +28,18 @@ import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
 
 import static org.powernukkitx.block.property.CommonBlockProperties.AGE_16;
+import static org.powernukkitx.block.property.CommonBlockProperties.CONNECTION_EAST;
+import static org.powernukkitx.block.property.CommonBlockProperties.CONNECTION_NORTH;
+import static org.powernukkitx.block.property.CommonBlockProperties.CONNECTION_SOUTH;
+import static org.powernukkitx.block.property.CommonBlockProperties.CONNECTION_UP;
+import static org.powernukkitx.block.property.CommonBlockProperties.CONNECTION_WEST;
 
 /**
  * @author MagicDroidX (Nukkit Project)
  */
-public class BlockFire extends BlockFlowable {
-    public static final BlockProperties PROPERTIES = new BlockProperties(FIRE, AGE_16);
+public class BlockFire extends BlockFlowable implements StateDeriving {
+    public static final BlockProperties PROPERTIES = new BlockProperties(FIRE, AGE_16, CONNECTION_EAST, CONNECTION_NORTH,
+        CONNECTION_SOUTH, CONNECTION_UP, CONNECTION_WEST);
     public static final BlockDefinition DEFINITION = FLOWABLE.toBuilder()
             .lightEmission(15)
             .canBeReplaced(true)
@@ -118,8 +125,14 @@ public class BlockFire extends BlockFlowable {
                 if (!event.isCancelled()) {
                     level.setBlock(this, event.getNewState(), true);
                 }
-            } else if (this.level.gameRules.getBoolean(GameRule.DO_FIRE_TICK) && !level.isUpdateScheduled(this, this)) {
-                level.scheduleUpdate(this, tickRate());
+            } else {
+                if (this.autoConfigureState()) {
+                    // only the drawn shape changed, the neighbors have nothing to react to
+                    level.setBlock(this, this, true, false);
+                }
+                if (this.level.gameRules.getBoolean(GameRule.DO_FIRE_TICK) && !level.isUpdateScheduled(this, this)) {
+                    level.scheduleUpdate(this, tickRate());
+                }
             }
 
             //check for rain on the first placement
@@ -274,6 +287,39 @@ public class BlockFire extends BlockFlowable {
             chance = Math.max(chance, block.north().getBurnChance());
             return chance;
         }
+    }
+
+    /**
+     * Fire standing on something it can sit on draws as a plain flame. Otherwise it clings to every
+     * flammable neighbor, the way it does on the side of a wooden wall.
+     * <p>
+     * Soul fire has no shape, so it is left alone.
+     */
+    @Override
+    public boolean autoConfigureState() {
+        if (!this.getProperties().containProperty(CONNECTION_UP)) {
+            return false;
+        }
+        final boolean up, north, south, west, east;
+        try {
+            final Block down = this.down();
+            final boolean grounded = this.isBlockTopFacingSurfaceSolid(down) || down.getBurnChance() > 0;
+            up = !grounded && this.up().getBurnChance() > 0;
+            north = !grounded && this.north().getBurnChance() > 0;
+            south = !grounded && this.south().getBurnChance() > 0;
+            west = !grounded && this.west().getBurnChance() > 0;
+            east = !grounded && this.east().getBurnChance() > 0;
+        } catch (LevelException e) {
+            // a neighbor is outside a loaded chunk, try again on the next update
+            return false;
+        }
+        final short previous = this.blockstate.specialValue();
+        this.setPropertyValue(CONNECTION_UP, up);
+        this.setPropertyValue(CONNECTION_NORTH, north);
+        this.setPropertyValue(CONNECTION_SOUTH, south);
+        this.setPropertyValue(CONNECTION_WEST, west);
+        this.setPropertyValue(CONNECTION_EAST, east);
+        return this.blockstate.specialValue() != previous;
     }
 
     public boolean canNeighborBurn() {
