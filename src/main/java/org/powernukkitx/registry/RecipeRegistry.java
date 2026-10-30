@@ -32,6 +32,7 @@ import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.cloudburstmc.protocol.bedrock.packet.CraftingDataPacket;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -587,6 +588,46 @@ public class RecipeRegistry implements IRegistry<String, Recipe, Recipe> {
             }
         }
         this.unlockIndex.index(recipe);
+    }
+
+    /**
+     * Removes the recipe registered under {@code key}, together with the copies this registry keeps
+     * under {@code key#...} for the further blocks a smelting recipe applies to. Clients only see the
+     * change once the crafting data packet is rebuilt.
+     *
+     * @param key the key the recipe was registered under
+     * @return how many recipes were removed, 0 when none was registered under the key
+     */
+    public int unregister(@NotNull String key) {
+        String variantPrefix = key + "#";
+        List<String> keys = new ArrayList<>();
+        for (String registered : allRecipeMaps.keySet()) {
+            if (registered.equals(key) || registered.startsWith(variantPrefix)) {
+                keys.add(registered);
+            }
+        }
+        for (String registered : keys) {
+            Recipe recipe = allRecipeMaps.remove(registered);
+            Int2ObjectArrayMap<Set<Recipe>> byIngredientCount = recipeMaps.get(recipe.getType());
+            if (byIngredientCount != null) {
+                Set<Recipe> recipes = byIngredientCount.get(recipe.getIngredients().size());
+                if (recipes != null) {
+                    recipes.remove(recipe);
+                }
+            }
+            switch (recipe) {
+                case CraftingRecipe craftingRecipe -> networkIdRecipeMap.remove(craftingRecipe.getNetId());
+                case SmithingTransformRecipe smithingTransformRecipe -> networkIdRecipeMap.remove(smithingTransformRecipe.getNetId());
+                case SmithingTrimRecipe smithingTrimRecipe -> networkIdRecipeMap.remove(smithingTrimRecipe.getNetId());
+                case MultiRecipe multiRecipe -> networkIdRecipeMap.remove(multiRecipe.getNetId());
+                default -> {
+                }
+            }
+            recipeXpMap.removeDouble(recipe);
+            unlockIndex.remove(recipe.getRecipeId());
+            --RECIPE_COUNT;
+        }
+        return keys.size();
     }
 
     public void register(Recipe recipe) {

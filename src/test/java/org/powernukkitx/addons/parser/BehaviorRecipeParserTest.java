@@ -25,6 +25,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNotSame;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -75,6 +77,28 @@ class BehaviorRecipeParserTest {
         assertNotEquals(table.getNetId(), custom.getNetId());
         assertSame(table, Registries.RECIPE.getRecipeByNetworkId(table.getNetId()));
         assertTrue(tracker.isEmpty(), "a key symbol the pattern does not use is ignored, not rejected");
+    }
+
+    @Test
+    void replacesVanillaRecipeOfTheSameIdentifier() {
+        Registries.RECIPE.init();
+        Recipe vanilla = Registries.RECIPE.get("minecraft:jukebox_from_crimson_planks");
+        assertNotNull(vanilla, "the vanilla jukebox recipe is registered");
+
+        assertEquals(1, parse("""
+                { "format_version": "1.12", "minecraft:recipe_shapeless": {
+                  "description": { "identifier": "minecraft:jukebox_from_crimson_planks" },
+                  "tags": [ "crafting_table" ],
+                  "ingredients": [ { "item": "minecraft:dirt" } ],
+                  "result": { "item": "minecraft:jukebox" } } }
+                """));
+
+        CraftingRecipe replaced = assertInstanceOf(CraftingRecipe.class, Registries.RECIPE.get("minecraft:jukebox_from_crimson_planks"));
+        assertNotSame(vanilla, replaced);
+        assertEquals(1, replaced.getIngredients().size());
+        assertNull(Registries.RECIPE.getRecipeByNetworkId(((CraftingRecipe) vanilla).getNetId()),
+                "the vanilla recipe is gone, not kept next to the pack's");
+        assertTrue(tracker.isEmpty());
     }
 
     @Test

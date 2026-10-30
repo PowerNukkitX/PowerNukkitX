@@ -53,6 +53,8 @@ import java.util.function.Consumer;
  * several tags registers one recipe per tag. A crafting recipe's {@code unlock} conditions decide when it
  * appears in the recipe book; without them it is always unlocked.
  * <p>
+ * A recipe whose {@code minecraft:} identifier names a vanilla recipe replaces it.
+ * <p>
  * Recipes are registered after the vanilla set, so the caller must rebuild the crafting data
  * packet with {@link RecipeRegistry#rebuildPacket()} once every pack has been read. Anything
  * else - other recipe types, an unknown station, an ingredient that is not registered - is
@@ -370,6 +372,9 @@ public final class BehaviorRecipeParser {
     }
 
     private int register(String packName, String key, Recipe recipe) {
+        if (key.startsWith("minecraft:") && key.indexOf('#') < 0) {
+            Registries.RECIPE.unregister(key);
+        }
         try {
             Registries.RECIPE.register(key, recipe);
             return 1;
