@@ -606,18 +606,13 @@ public class Chunk implements IChunk {
 
     @Override
     public boolean hasLegacyStates() {
-        if (this.statesUpgraded) {
+        if (this.statesUpgraded || this.sections.length == 0) {
             return false;
         }
-        long stamp = blockLock.readLock();
-        try {
-            for (ChunkSection section : this.sections) {
-                if (section != null && section.hasLegacyStates()) {
-                    return true;
-                }
+        for (ChunkSection section : this.sections) {
+            if (section != null && section.hasLegacyStates()) {
+                return true;
             }
-        } finally {
-            blockLock.unlockRead(stamp);
         }
         this.statesUpgraded = true;
         return false;
