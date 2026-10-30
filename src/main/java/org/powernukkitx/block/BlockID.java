@@ -2600,7 +2600,7 @@ public interface BlockID {
     String WAXED_EXPOSED_COPPER_BARS = "minecraft:waxed_exposed_copper_bars";
     String WAXED_WEATHERED_COPPER_BARS = "minecraft:waxed_weathered_copper_bars";
     String WAXED_OXIDIZED_COPPER_BARS = "minecraft:waxed_oxidized_copper_bars";
-    
+
     String COPPER_CHAIN = "minecraft:copper_chain";
     String EXPOSED_COPPER_CHAIN = "minecraft:exposed_copper_chain";
     String WEATHERED_COPPER_CHAIN = "minecraft:weathered_copper_chain";

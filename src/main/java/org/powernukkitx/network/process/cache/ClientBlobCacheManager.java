@@ -3,10 +3,7 @@ package org.powernukkitx.network.process.cache;
 import com.github.benmanes.caffeine.cache.Cache;
 import com.github.benmanes.caffeine.cache.Caffeine;
 import io.netty.buffer.ByteBuf;
-import org.cloudburstmc.netty.channel.raknet.config.RakChannelOption;
 import org.cloudburstmc.protocol.bedrock.BedrockServerSession;
-import org.powernukkitx.network.NetworkInterface.NetworkPressure;
-import org.powernukkitx.network.RakNetNetworkMetrics;
 
 import java.time.Duration;
 import java.util.ArrayList;
@@ -221,17 +218,7 @@ public final class ClientBlobCacheManager {
      * @return the requested value
      */
     public static int getMaximumConcurrentTransfers(BedrockServerSession session) {
-        final var metrics = session.getPeer().getChannel().config().getOption(RakChannelOption.RAK_METRICS);
-        final NetworkPressure pressure = metrics instanceof RakNetNetworkMetrics networkMetrics
-                ? networkMetrics.getNetworkPressure()
-                : NetworkPressure.UNKNOWN;
-
-        return switch (pressure) {
-            case UNRESTRICTED -> 200;
-            case LOW -> 100;
-            case MEDIUM -> 40;
-            case UNKNOWN, HIGH -> 20;
-        };
+        return 20;
     }
 
     /**

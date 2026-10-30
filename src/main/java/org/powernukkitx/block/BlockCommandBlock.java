@@ -108,7 +108,7 @@ public class BlockCommandBlock extends BlockSolid implements Faceable, BlockEnti
         }
         BlockEntityCommandBlock tile = this.getOrCreateBlockEntity();
         tile.spawnTo(player);
-        player.addWindow(tile.getInventory());
+        tile.getInventory().open(player);
         return true;
     }
 

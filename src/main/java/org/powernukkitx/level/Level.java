@@ -74,6 +74,7 @@ import org.powernukkitx.level.generator.holder.ObjectHolder;
 import org.powernukkitx.level.particle.DestroyBlockParticle;
 import org.powernukkitx.level.particle.Particle;
 import org.powernukkitx.level.redstone.circuit.CircuitSystem;
+import org.powernukkitx.level.structure.StructureNeighborUpdates;
 import org.powernukkitx.level.updater.chunk.NeighborAwareChunkUpgrader;
 import org.powernukkitx.level.util.EntityQueryUtils;
 import org.powernukkitx.level.util.SimpleTickCachedBlockStore;
@@ -6878,6 +6879,7 @@ public class Level implements Metadatable, LiquidUpdateAccess {
         }
 
         NeighborAwareChunkUpgrader.tryUpgradeAround(this, x, z);
+        StructureNeighborUpdates.retryAround(this, x, z);
         this.tickChunkCacheDirty = true;
         synchronized (this.legacyStateChunks) {
             this.legacyStateChunks.add(index);
@@ -7931,6 +7933,11 @@ public class Level implements Metadatable, LiquidUpdateAccess {
             block = b;
         } else {
             block = this.getBlock(pos);
+        }
+
+        // target is a power source for projectile hits, but it still conducts like any solid block
+        if (block instanceof BlockTarget) {
+            return Math.max(block.getWeakPower(face), this.getStrongPower(pos));
         }
 
         return block.isNormalBlock() ? this.getStrongPower(pos) : block.getWeakPower(face);

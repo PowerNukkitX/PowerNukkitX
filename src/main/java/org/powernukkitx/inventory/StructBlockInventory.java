@@ -167,7 +167,7 @@ public class StructBlockInventory implements Inventory {
 
     @Override
     public Set<Player> getViewers() {
-        return Collections.emptySet();
+        return this.viewers;
     }
 
     @Override
@@ -201,10 +201,6 @@ public class StructBlockInventory implements Inventory {
 
     @Override
     public boolean open(Player who) {
-        if (who.getWindowId(this) != -1) {//todo hack, ContainerClosePacket no longer triggers for command block and struct block, finding the correct way to close them
-            who.removeWindow(this);
-        }
-
         InventoryOpenEvent ev = new InventoryOpenEvent(this, who);
         who.getServer().getPluginManager().callEvent(ev);
         if (ev.isCancelled()) {

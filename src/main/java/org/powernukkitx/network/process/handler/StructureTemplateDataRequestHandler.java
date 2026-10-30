@@ -12,16 +12,12 @@ import org.cloudburstmc.protocol.bedrock.packet.StructureTemplateDataRequestPack
 import org.cloudburstmc.protocol.bedrock.packet.StructureTemplateDataResponsePacket;
 import org.powernukkitx.plugin.InternalPlugin;
 
-import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
-
 /**
  * @author Kaooot
  */
 
 @Slf4j
 public class StructureTemplateDataRequestHandler implements PacketHandler<StructureTemplateDataRequestPacket> {
-    private static final Set<Long> PENDING_REQUESTS = ConcurrentHashMap.newKeySet();
 
     @Override
     public void handle(StructureTemplateDataRequestPacket packet, PlayerSessionHolder holder, Server server) {
@@ -30,40 +26,29 @@ public class StructureTemplateDataRequestHandler implements PacketHandler<Struct
             return;
         }
 
-        final long playerId = player.runtimeId();
-        if (!PENDING_REQUESTS.add(playerId)) {
-            player.sendPacket(createResponse(packet, null));
-            return;
-        }
-
         final String structureName = packet.getStructureName();
+        if (structureName == null || structureName.isBlank()) return;
+
         StructureAPI.loadAsync(structureName)
-            .thenApply(structure -> createResponse(packet, structure))
-            .whenComplete((responsePacket, error) -> server.getScheduler().scheduleTask(InternalPlugin.INSTANCE, () -> {
-                PENDING_REQUESTS.remove(playerId);
-                if (!player.isOnline()) {
-                    return;
-                }
+            .thenApply(structure -> structure == null ? null : createResponse(packet, structure))
+            .whenComplete((responsePacket, error) -> {
                 if (error != null) {
                     log.debug("Failed to load structure {} for {}", structureName, player.getName(), error);
-                    player.sendPacket(createResponse(packet, null));
                     return;
                 }
-                player.sendPacket(responsePacket);
-            }));
+                if (responsePacket == null) return;
+                server.getScheduler().scheduleTask(InternalPlugin.INSTANCE, () -> {
+                    if (player.isOnline()) player.sendPacket(responsePacket);
+                });
+            });
     }
 
     private static StructureTemplateDataResponsePacket createResponse(StructureTemplateDataRequestPacket packet, Structure structure) {
         final StructureTemplateDataResponsePacket responsePacket = new StructureTemplateDataResponsePacket();
         responsePacket.setStructureName(packet.getStructureName());
-
-        if (structure == null) {
-            responsePacket.setResponseType(StructureTemplateResponseType.NONE);
-            return responsePacket;
-        }
+        responsePacket.setSave(true);
 
         responsePacket.setStructureNBT(structure.toNBT().toNetwork());
-        responsePacket.setSave(true);
         responsePacket.setResponseType(switch (packet.getRequestedOperation()) {
             case QUERY_SAVED_STRUCTURE -> StructureTemplateResponseType.QUERY;
             case EXPORT_FROM_SAVED_MODE, EXPORT_FROM_LOAD_MODE -> StructureTemplateResponseType.EXPORT;

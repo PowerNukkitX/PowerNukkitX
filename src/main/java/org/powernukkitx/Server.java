@@ -391,7 +391,6 @@ public class Server {
     private final ConcurrentHashMap<UUID, PlayerDataWrites> playerDataWrites = new ConcurrentHashMap<>();
     private ProxyAuthProvider proxyAuthProvider;
     private FreezableArrayManager freezableArrayManager;
-    public boolean enabledNetworkEncryption;
 
     // default levels
     private Level defaultLevel = null;
@@ -498,6 +497,35 @@ public class Server {
         // A minimum of 1 is enforced to prevent invalid recursion values.
         this.computeThreadPool = new ForkJoinPool(Math.min(0x7fff, Utils.backgroundPoolThreads(this.settings.levelSettings().levelThread())), new ComputeThreadPoolThreadFactory(), null, false);
 
+        final boolean creativeInventoryEnabled = settings.gameplaySettings().enableCreativeInventory();
+        final boolean recipesEnabled;
+        {
+            boolean recipes = settings.gameplaySettings().enableRecipes();
+            if (recipes && !creativeInventoryEnabled) {
+                log.warn("gameplay-settings: enableRecipes was forced to false because enableCreativeInventory is false (the recipe registry depends on the creative registry)");
+                recipes = false;
+            }
+            recipesEnabled = recipes;
+        }
+
+        final boolean useRegistryCache = settings.performanceSettings().registryCacheEnabled()
+            && creativeInventoryEnabled && recipesEnabled;
+        if (settings.performanceSettings().registryCacheEnabled() && !useRegistryCache) {
+            log.info("Registry cache is bypassed because the creative inventory or recipe registry is disabled by gameplay settings");
+        }
+
+        final RegistryCache registryCache;
+        Path registryCachePath = Path.of(settings.performanceSettings().registryCachePath());
+        {
+            RegistryCache cache = null;
+            if (useRegistryCache) {
+                cache = RegistryCache.tryLoad(registryCachePath);
+            }
+            registryCache = cache;
+        }
+
+        CompletableFuture<Void> registriesF = startRegistries(registryCache, creativeInventoryEnabled, recipesEnabled);
+
         int chunkIoThreads = this.settings.chunkSettings().chunkIoThreads();
         if (chunkIoThreads <= 0) {
             chunkIoThreads = Math.max(2, Runtime.getRuntime().availableProcessors() / 2);
@@ -514,7 +542,7 @@ public class Server {
             levelWorkerThreads = Math.max(2, Runtime.getRuntime().availableProcessors());
         }
         ScheduledThreadPoolExecutor levelTickPool = new ScheduledThreadPoolExecutor(
-                levelWorkerThreads, r -> new Thread(r, "Level Worker"));
+            levelWorkerThreads, r -> new Thread(r, "Level Worker"));
         levelTickPool.setRemoveOnCancelPolicy(true);
         this.levelTickExecutor = levelTickPool;
 
@@ -555,16 +583,6 @@ public class Server {
         }
         ServerScheduler.WORKERS = poolSizeNumber;
         this.scheduler = new ServerScheduler();
-
-        // NetherNet carries the session inside DTLS and a real client answers ServerToClientHandshake
-        // in plaintext, so Bedrock packet encryption has no place on top of it.
-        final boolean netherNet = this.settings.networkSettings().resolvedTransport()
-            == NetworkSettings.TransportType.NETHERNET;
-        if (netherNet && this.settings.networkSettings().networkEncryption()) {
-            log.warn("network-settings.networkEncryption is ignored on the NetherNet transport, "
-                + "which is already encrypted");
-        }
-        this.enabledNetworkEncryption = !netherNet && this.settings.networkSettings().networkEncryption();
 
         this.experiments = new ArrayList<>();
         for (String experiment : settings.gameplaySettings().experiments())
@@ -607,34 +625,7 @@ public class Server {
 
         // Initialize metrics
         if (this.settings.miscSettings().enableMetrics()) {
-            NukkitMetrics.startNow();
-        }
-
-        final boolean creativeInventoryEnabled = settings.gameplaySettings().enableCreativeInventory();
-        final boolean recipesEnabled;
-        {
-            boolean recipes = settings.gameplaySettings().enableRecipes();
-            if (recipes && !creativeInventoryEnabled) {
-                log.warn("gameplay-settings: enableRecipes was forced to false because enableCreativeInventory is false (the recipe registry depends on the creative registry)");
-                recipes = false;
-            }
-            recipesEnabled = recipes;
-        }
-
-        final boolean useRegistryCache = settings.performanceSettings().registryCacheEnabled()
-                && creativeInventoryEnabled && recipesEnabled;
-        if (settings.performanceSettings().registryCacheEnabled() && !useRegistryCache) {
-            log.info("Registry cache is bypassed because the creative inventory or recipe registry is disabled by gameplay settings");
-        }
-
-        final RegistryCache registryCache;
-        Path registryCachePath = Path.of(settings.performanceSettings().registryCachePath());
-        {
-            RegistryCache cache = null;
-            if (useRegistryCache) {
-                cache = RegistryCache.tryLoad(registryCachePath);
-            }
-            registryCache = cache;
+            CompletableFuture.runAsync(NukkitMetrics::startNow, computeThreadPool);
         }
 
         try {
@@ -643,76 +634,12 @@ public class Server {
             throw new IllegalStateException("Failed to migrate structure storage", e);
         }
 
-        {//init
-            CompletableFuture<Void> blockF = CompletableFuture.runAsync(Registries.BLOCK::init, computeThreadPool);
-            CompletableFuture<Void> potionF = CompletableFuture.runAsync(Registries.POTION::init, computeThreadPool);
-            CompletableFuture<Void> effectF = CompletableFuture.runAsync(Registries.EFFECT::init, computeThreadPool);
-            CompletableFuture<Void> itemF = CompletableFuture.allOf(potionF, effectF)
-                .thenRunAsync(Registries.ITEM::init, computeThreadPool);
-
-            CompletableFuture<Void> entityF = CompletableFuture.runAsync(Registries.ENTITY::init, computeThreadPool);
-            CompletableFuture<Void> blockEntityF = CompletableFuture.runAsync(Registries.BLOCKENTITY::init, computeThreadPool);
-            CompletableFuture<Void> itemRtIdF = CompletableFuture.runAsync(
-                registryCache != null
-                    ? () -> registryCache.restoreItemRuntimeId(Registries.ITEM_RUNTIMEID)
-                    : Registries.ITEM_RUNTIMEID::init,
-                computeThreadPool);
-            CompletableFuture<Void> biomeF = CompletableFuture.runAsync(
-                registryCache != null
-                    ? () -> registryCache.restoreBiome(Registries.BIOME)
-                    : Registries.BIOME::init,
-                computeThreadPool);
-            CompletableFuture<Void> fuelF = CompletableFuture.runAsync(Registries.FUEL::init, computeThreadPool);
-            CompletableFuture<Void> generatorF = CompletableFuture.runAsync(Registries.GENERATOR::init, computeThreadPool);
-            CompletableFuture<Void> genStageF = CompletableFuture.runAsync(Registries.GENERATE_STAGE::init, computeThreadPool);
-            CompletableFuture<Void> populatorF = CompletableFuture.runAsync(Registries.POPULATOR::init, computeThreadPool);
-            CompletableFuture<Void> genFeatF = CompletableFuture.runAsync(Registries.GENERATE_FEATURE::init, computeThreadPool);
-            CompletableFuture<Void> structureSpawnOverrideF = CompletableFuture.runAsync(Registries.STRUCTURE_SPAWN_OVERRIDE::init, computeThreadPool);
-            CompletableFuture<Void> voxelF = CompletableFuture.runAsync(Registries.VOXEL_SHAPE::init, computeThreadPool);
-            CompletableFuture<Void> disconnectF = CompletableFuture.runAsync(Registries.DISCONNECT_REASON::init, computeThreadPool);
-            CompletableFuture<Void> trimF = CompletableFuture.runAsync(Registries.TRIM::init, computeThreadPool);
-
-            CompletableFuture<Void> blockStateF = blockF.thenRunAsync(
-                registryCache != null
-                    ? registryCache::restoreBlockStateColors
-                    : Registries.BLOCKSTATE::init,
-                computeThreadPool);
-            CompletableFuture<Void> structureF = blockF.thenRunAsync(Registries.STRUCTURE::init, computeThreadPool);
-            CompletableFuture<Void> creativeF = creativeInventoryEnabled
-                    ? CompletableFuture.allOf(itemF, blockStateF, potionF, entityF, itemRtIdF)
-                            .thenRunAsync(
-                                    registryCache != null
-                                            ? () -> registryCache.restoreCreative(Registries.CREATIVE)
-                                            : Registries.CREATIVE::init,
-                                    computeThreadPool)
-                    : CompletableFuture.runAsync(Registries.CREATIVE::initDisabled, computeThreadPool);
-            CompletableFuture<Void> recipeF = recipesEnabled
-                    ? creativeF.thenRunAsync(
-                            registryCache != null
-                                    ? () -> Registries.RECIPE.init(registryCache.getRecipePktBytes())
-                                    : Registries.RECIPE::init,
-                            computeThreadPool)
-                    : CompletableFuture.runAsync(Registries.RECIPE::initDisabled, computeThreadPool);
-
-            CompletableFuture.allOf(potionF, entityF, blockEntityF, itemRtIdF, biomeF,
-                fuelF, generatorF, genStageF, populatorF, genFeatF, structureF, structureSpawnOverrideF, effectF,
-                creativeF, recipeF, voxelF, disconnectF, trimF).join();
-
-            if (useRegistryCache && registryCache == null) {
-                RegistryCache.save(registryCachePath);
-            }
-
-            Profession.init();
-            Updater updater = BlockStateUpdaterBase.INSTANCE;
-            Enchantment.init();
-            Attribute.init();
-            BlockComposter.init();
-            DispenseBehaviorRegister.init();
+        registriesF.join();
+        if (useRegistryCache && registryCache == null) {
+            RegistryCache.save(registryCachePath);
         }
 
-        if (settings.gameplaySettings().enableEducation()) {
-            Education.enable();
-        }
+        if (settings.gameplaySettings().enableEducation()) Education.enable();
 
         freezableArrayManager = new FreezableArrayManager(
             this.settings.performanceSettings().enable(),
@@ -768,8 +695,8 @@ public class Server {
             actorUniqueIdManager = new ActorUniqueIdManager(serverDataDB);
 
             migrationService.migrateLegacyPositionTracking(
-                    Path.of(this.dataPath, "services", "position_tracking_db"),
-                    serverDataDB
+                Path.of(this.dataPath, "services", "position_tracking_db"),
+                serverDataDB
             );
 
             if (players.exists()) {
@@ -796,6 +723,7 @@ public class Server {
             new ZippedResourcePackLoader(new File(PowerNukkitX.DATA_PATH, "resource_packs")),
             new JarPluginResourcePackLoader(new File(this.pluginPath)),
             new CdnResourcePackLoader(this.settings.gameplaySettings()));
+
         this.commandMap = new SimpleCommandMap(this);
         this.pluginManager = new PluginManager(this, this.commandMap);
         this.pluginManager.subscribeToPermission(Server.BROADCAST_CHANNEL_ADMINISTRATIVE, this.consoleSender);
@@ -804,10 +732,12 @@ public class Server {
 
         log.debug("Loading position tracking service");
         this.positionTrackingService = new PositionTrackingService(serverDataDB);
+
         this.pluginManager.loadInternalPlugin();
 
         this.serverID = UUID.randomUUID();
         this.pluginManager.loadPlugins(this.pluginPath);
+
         {// trim
             Registries.POTION.trim();
             Registries.ENTITY.trim();
@@ -836,8 +766,8 @@ public class Server {
 
         try {
             boolean scoreboardMigrated = this.migrationService.migrateWorlds(
-                    this.serverDataDB,
-                    this.actorUniqueIdManager::assignPlayer
+                this.serverDataDB,
+                this.actorUniqueIdManager::assignPlayer
             );
 
             if (scoreboardMigrated) {
@@ -889,6 +819,71 @@ public class Server {
         Runtime.getRuntime().addShutdownHook(new Thread(this::shutdown));
         this.start();
     }
+
+    private CompletableFuture<Void> startRegistries(RegistryCache registryCache, boolean creativeInventoryEnabled, boolean recipesEnabled) {
+        CompletableFuture<Void> blockF = CompletableFuture.runAsync(Registries.BLOCK::init, computeThreadPool);
+        CompletableFuture<Void> potionF = CompletableFuture.runAsync(Registries.POTION::init, computeThreadPool);
+        CompletableFuture<Void> effectF = CompletableFuture.runAsync(Registries.EFFECT::init, computeThreadPool);
+        CompletableFuture<Void> itemF = CompletableFuture.allOf(potionF, effectF)
+            .thenRunAsync(Registries.ITEM::init, computeThreadPool);
+
+        CompletableFuture<Void> entityF = CompletableFuture.runAsync(Registries.ENTITY::init, computeThreadPool);
+        CompletableFuture<Void> blockEntityF = CompletableFuture.runAsync(Registries.BLOCKENTITY::init, computeThreadPool);
+        CompletableFuture<Void> itemRtIdF = CompletableFuture.runAsync(registryCache != null
+                ? () -> registryCache.restoreItemRuntimeId(Registries.ITEM_RUNTIMEID)
+                : Registries.ITEM_RUNTIMEID::init,
+            computeThreadPool);
+        CompletableFuture<Void> biomeF = CompletableFuture.runAsync(registryCache != null
+                ? () -> registryCache.restoreBiome(Registries.BIOME)
+                : Registries.BIOME::init,
+            computeThreadPool);
+        CompletableFuture<Void> fuelF = CompletableFuture.runAsync(Registries.FUEL::init, computeThreadPool);
+        CompletableFuture<Void> generatorF = CompletableFuture.runAsync(Registries.GENERATOR::init, computeThreadPool);
+        CompletableFuture<Void> genStageF = CompletableFuture.runAsync(Registries.GENERATE_STAGE::init, computeThreadPool);
+        CompletableFuture<Void> populatorF = CompletableFuture.runAsync(Registries.POPULATOR::init, computeThreadPool);
+        CompletableFuture<Void> genFeatF = CompletableFuture.runAsync(Registries.GENERATE_FEATURE::init, computeThreadPool);
+        CompletableFuture<Void> structureSpawnOverrideF = CompletableFuture.runAsync(Registries.STRUCTURE_SPAWN_OVERRIDE::init, computeThreadPool);
+        CompletableFuture<Void> voxelF = CompletableFuture.runAsync(Registries.VOXEL_SHAPE::init, computeThreadPool);
+        CompletableFuture<Void> disconnectF = CompletableFuture.runAsync(Registries.DISCONNECT_REASON::init, computeThreadPool);
+        CompletableFuture<Void> trimF = CompletableFuture.runAsync(Registries.TRIM::init, computeThreadPool);
+
+        CompletableFuture<Void> blockStateF = blockF.thenRunAsync(registryCache != null
+                ? registryCache::restoreBlockStateColors
+                : Registries.BLOCKSTATE::init,
+            computeThreadPool);
+        CompletableFuture<Void> structureF = blockF.thenRunAsync(Registries.STRUCTURE::init, computeThreadPool);
+        CompletableFuture<Void> creativeF = creativeInventoryEnabled
+            ? CompletableFuture.allOf(itemF, blockStateF, potionF, entityF, itemRtIdF)
+            .thenRunAsync(registryCache != null
+                          ? () -> registryCache.restoreCreative(Registries.CREATIVE)
+                          : Registries.CREATIVE::init,
+                computeThreadPool)
+            : CompletableFuture.runAsync(Registries.CREATIVE::initDisabled, computeThreadPool);
+        CompletableFuture<Void> recipeF = recipesEnabled
+            ? creativeF.thenRunAsync(registryCache != null
+                                     ? () -> Registries.RECIPE.init(registryCache.getRecipePktBytes())
+                                     : Registries.RECIPE::init,
+            computeThreadPool)
+            : CompletableFuture.runAsync(Registries.RECIPE::initDisabled, computeThreadPool);
+
+        CompletableFuture<Void> miscF = CompletableFuture.runAsync(() -> {
+            Profession.init();
+            Updater updater = BlockStateUpdaterBase.INSTANCE;
+            Enchantment.init();
+            Attribute.init();
+        }, computeThreadPool);
+
+        CompletableFuture<Void> dispenseF = CompletableFuture.allOf(blockF, itemF)
+            .thenRunAsync(() -> {
+                BlockComposter.init();
+                DispenseBehaviorRegister.init();
+            }, computeThreadPool);
+
+        return CompletableFuture.allOf(potionF, entityF, blockEntityF, itemRtIdF, biomeF,
+            fuelF, generatorF, genStageF, populatorF, genFeatF, structureF, structureSpawnOverrideF, effectF,
+            creativeF, recipeF, voxelF, disconnectF, trimF, miscF, dispenseF);
+    }
+
 
     private boolean convertLegacyConfiguration() {
         File oldNukkitYml = new File(this.dataPath + "nukkit.yml");
@@ -2164,6 +2159,7 @@ public class Server {
         entry.setActorUniqueID(entityId);
         entry.setPlayerName(name);
         entry.setXblXUID(xboxUserId);
+        entry.setPlayFabID(Objects.requireNonNullElse(skin.getSkin().getPlayFabId(), ""));
         entry.setPlatformOnlineID("");
         entry.setBuildPlatform(BuildPlatform.UNKNOWN);
         entry.setSerializedSkin(skin.toSerializedSkin());

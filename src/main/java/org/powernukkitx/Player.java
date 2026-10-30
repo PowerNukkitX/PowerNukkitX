@@ -24,8 +24,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.cloudburstmc.math.vector.Vector3f;
 import org.cloudburstmc.math.vector.Vector3i;
 import org.cloudburstmc.netty.channel.nethernet.NetherNetChannel;
-import org.cloudburstmc.netty.channel.raknet.RakServerChannel;
-import org.cloudburstmc.netty.handler.codec.raknet.common.RakSessionCodec;
 import org.cloudburstmc.protocol.bedrock.BedrockServerSession;
 import org.powernukkitx.entity.components.RideableComponent;
 import org.powernukkitx.entity.passive.EntityParrot;
@@ -115,6 +113,7 @@ import org.powernukkitx.event.entity.EntityDamageEvent.DamageCause;
 import org.powernukkitx.event.entity.EntityPortalEnterEvent;
 import org.powernukkitx.event.entity.EntityPortalEnterEvent.PortalType;
 import org.powernukkitx.event.entity.ProjectileLaunchEvent;
+import org.powernukkitx.event.inventory.InventoryCloseEvent;
 import org.powernukkitx.event.inventory.InventoryPickupArrowEvent;
 import org.powernukkitx.event.inventory.InventoryPickupTridentEvent;
 import org.powernukkitx.event.player.*;
@@ -130,6 +129,7 @@ import org.powernukkitx.inventory.EntityHandItem;
 import org.powernukkitx.inventory.HumanInventory;
 import org.powernukkitx.inventory.Inventory;
 import org.powernukkitx.inventory.PlayerCursorInventory;
+import org.powernukkitx.inventory.StructBlockInventory;
 import org.powernukkitx.inventory.fake.FakeInventory;
 import org.powernukkitx.inventory.fake.FakeInventoryType;
 import org.powernukkitx.item.Item;
@@ -3406,18 +3406,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
      */
     public long getPing() {
         final Channel channel = this.session.getPeer().getChannel();
-        if (channel instanceof NetherNetChannel netherNet) {
-            return netherNet.getPing();
-        }
-        if (!(channel.parent() instanceof RakServerChannel rakServerChannel)) {
-            return -1;
-        }
-        var childChannel = rakServerChannel.getChildChannel(getSocketAddress());
-        if (childChannel == null) {
-            return -1;
-        }
-        var rakSessionCodec = childChannel.rakPipeline().get(RakSessionCodec.class);
-        return rakSessionCodec == null ? -1 : rakSessionCodec.getPing();
+        return channel instanceof NetherNetChannel netherNet ? netherNet.getPing() : -1;
     }
 
     public boolean sleepOn(Vector3 pos) {
@@ -6272,9 +6261,18 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
      * @return the allocated window ID
      */
     public int allocateInventoryWindowId() {
-        this.windowsCnt = (byte) Math.max(1, ++this.windowsCnt % 100);
-        this.inventoryWindowId = this.windowsCnt;
+        this.inventoryWindowId = (byte) allocateTransientWindowId();
         return this.inventoryWindowId;
+    }
+
+    /**
+     * Allocates a transient container window ID without registering an inventory.
+     *
+     * @return the allocated window ID
+     */
+    public int allocateTransientWindowId() {
+        this.windowsCnt = (byte) Math.max(1, ++this.windowsCnt % 100);
+        return this.windowsCnt;
     }
 
     /**
@@ -6308,8 +6306,8 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
      * @return The unique identifier assigned to the window if successfully added and opened; -1 if the window fails to be added.
      */
     public int addWindow(@NotNull Inventory inventory) {
-        if (getTopWindow().isPresent() || inventoryOpen) return -1;
         Preconditions.checkNotNull(inventory);
+        if (getTopWindow().isPresent() || inventoryOpen) return -1;
         if (this.windows.containsKey(inventory)) {
             return this.windows.get(inventory);
         }
@@ -6388,6 +6386,21 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
             this.windows.remove(inventory);
             updateTrackingPositions(true);
         }
+    }
+
+    /**
+     * Completes a Structure Block editor window already closed by the client, without sending another close packet.
+     *
+     * @param inventory the Structure Block editor associated with the client update packet
+     */
+    public void finishEditorWindow(@NotNull Inventory inventory) {
+        Preconditions.checkArgument(inventory instanceof StructBlockInventory);
+        if (!this.windows.containsKey(inventory)) return;
+
+        server.getPluginManager().callEvent(new InventoryCloseEvent(inventory, this));
+        inventory.getViewers().remove(this);
+        this.windows.remove(inventory);
+        updateTrackingPositions(true);
     }
 
     /**

@@ -16,8 +16,11 @@ import org.powernukkitx.level.Position;
 import org.powernukkitx.level.format.IChunk;
 import org.powernukkitx.level.structure.Structure;
 import org.powernukkitx.level.structure.StructureAPI;
+import org.powernukkitx.level.structure.StructureAnimationTask;
 import org.powernukkitx.math.BlockVector3;
 import org.powernukkitx.nbt.tag.CompoundTag;
+import org.powernukkitx.nbt.tag.IntTag;
+
 
 import java.util.HashSet;
 
@@ -62,10 +65,14 @@ public class BlockEntityStructureBlock extends BlockEntitySpawnable implements I
         } else {
             this.animationSeconds = 0f;
         }
+        if (nbtMap.get(TAG_ANIMATION_TICKS) instanceof IntTag) {
+            this.animationSeconds = Math.max(this.animationSeconds, nbtMap.getInt(TAG_ANIMATION_TICKS) / 20f);
+        }
+
         if (this.nbt.contains(TAG_DATA)) {
             this.data = StructureBlockType.from(nbtMap.getInt(TAG_DATA));
         } else {
-            this.data = StructureBlockType.from(0);
+            this.data = StructureBlockType.SAVE;
         }
         if (this.nbt.contains(TAG_DATA_FIELD)) {
             this.dataField = nbtMap.getString(TAG_DATA_FIELD);
@@ -248,6 +255,7 @@ public class BlockEntityStructureBlock extends BlockEntitySpawnable implements I
         var editorData = packet.getStructureData();
         this.animationMode = editorData.getStructureSettings().getAnimationMode();
         this.animationSeconds = editorData.getStructureSettings().getAnimationSeconds();
+        this.nbt.remove(TAG_ANIMATION_TICKS);
         this.data = editorData.getStructureBlockType();
         this.dataField = editorData.getDataField();
         this.ignoreEntities = editorData.getStructureSettings().isShouldIgnoreEntities();
@@ -268,6 +276,26 @@ public class BlockEntityStructureBlock extends BlockEntitySpawnable implements I
         if (packet.isTrigger()) onPower();
     }
 
+    /**
+     * Executes the structure operation only when redstone power rises.
+     *
+     * @param powered whether the structure block currently receives power
+     */
+    public void updateRedstonePower(boolean powered) {
+        if (this.isPowered == powered) return;
+
+        this.isPowered = powered;
+        this.setDirty();
+
+        if (powered) {
+            if (data == StructureBlockType.SAVE && redstoneSaveMode == StructureRedstoneSaveMode.from(0)) {
+                saveStructure(true);
+            } else {
+                onPower();
+            }
+        }
+    }
+
     public void onPower() {
         if (data == StructureBlockType.LOAD) placeStructure();
         else if (data == StructureBlockType.SAVE) saveStructure();
@@ -279,6 +307,8 @@ public class BlockEntityStructureBlock extends BlockEntitySpawnable implements I
 
         if (structure == null) return;
 
+        structure = structure.filteredByIntegrity(integrity, seed);
+
         if (rotation != Rotation.NONE)
             structure = structure.rotate(rotation);
 
@@ -286,10 +316,22 @@ public class BlockEntityStructureBlock extends BlockEntitySpawnable implements I
             structure = structure.mirror(mirror);
 
         BlockVector3 pos = this.getBlock().asBlockVector3().add(offset);
-        structure.place(Position.fromObject(pos.asVector3(), this.getLevel()), !ignoreEntities);
+        Position destination = Position.fromObject(pos.asVector3(), this.getLevel());
+        int durationTicks = (int) Math.floor(animationSeconds * 20f);
+        if (removeBlocks || animationMode == null || animationMode.ordinal() == 0 || durationTicks <= 0) {
+            structure.place(destination, !ignoreEntities, removeBlocks);
+        } else {
+            destination.getLevel().getScheduler().scheduleRepeatingTask(new StructureAnimationTask(structure, destination,
+                    !ignoreEntities, animationMode.ordinal(), durationTicks, structureName,
+                    StructureAPI.getTemplateRevision(structureName)), 1);
+        }
     }
 
     public void saveStructure() {
+        saveStructure(false);
+    }
+
+    private void saveStructure(boolean memory) {
         int structureStartX = (int) this.getBlock().getX() + offset.x;
         int structureStartY = (int) this.getBlock().getY() + offset.y;
         int structureStartZ = (int) this.getBlock().getZ() + offset.z;
@@ -304,7 +346,11 @@ public class BlockEntityStructureBlock extends BlockEntitySpawnable implements I
                 !ignoreEntities
         );
 
-        StructureAPI.save(structure, structureName);
+        if (memory) {
+            StructureAPI.saveMemory(structure, structureName);
+        } else {
+            StructureAPI.save(structure, structureName);
+        }
     }
 
     @Override

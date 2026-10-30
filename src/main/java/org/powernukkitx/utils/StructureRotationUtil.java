@@ -17,14 +17,6 @@ import lombok.experimental.UtilityClass;
 import java.util.EnumMap;
 
 import static org.powernukkitx.block.property.CommonBlockProperties.*;
-import static org.powernukkitx.block.property.CommonBlockProperties.HUGE_MUSHROOM_BITS;
-import static org.powernukkitx.block.property.CommonBlockProperties.MINECRAFT_CARDINAL_DIRECTION;
-import static org.powernukkitx.block.property.CommonBlockProperties.PILLAR_AXIS;
-import static org.powernukkitx.block.property.CommonBlockProperties.VINE_DIRECTION_BITS;
-import static org.powernukkitx.block.property.CommonBlockProperties.WALL_CONNECTION_TYPE_EAST;
-import static org.powernukkitx.block.property.CommonBlockProperties.WALL_CONNECTION_TYPE_NORTH;
-import static org.powernukkitx.block.property.CommonBlockProperties.WALL_CONNECTION_TYPE_SOUTH;
-import static org.powernukkitx.block.property.CommonBlockProperties.WALL_CONNECTION_TYPE_WEST;
 import static org.powernukkitx.block.property.enums.TorchFacingDirection.EAST;
 import static org.powernukkitx.block.property.enums.TorchFacingDirection.NORTH;
 import static org.powernukkitx.block.property.enums.TorchFacingDirection.SOUTH;
@@ -105,6 +97,10 @@ public class StructureRotationUtil {
                         : rotateFacingDirectionClockwise90(state.getPropertyValue(FACING_DIRECTION));
                 var rotated = FACING_DIRECTION.createValue(rotatedFacing);
                 states.set(idx, rotated);
+            } else if (type == MINECRAFT_FACING_DIRECTION) {
+                BlockFace facing = state.getPropertyValue(MINECRAFT_FACING_DIRECTION);
+                states.set(idx, MINECRAFT_FACING_DIRECTION.createValue(
+                        facing.getAxis().isHorizontal() ? facing.rotateY() : facing));
             } else if (type == ROTATION && block instanceof BlockJigsaw) {
                 var rotated = ROTATION.createValue(rotateJigsawRotationClockwise90(state.getPropertyValue(ROTATION)));
                 states.set(idx, rotated);
@@ -298,6 +294,9 @@ public class StructureRotationUtil {
                 states.set(idx, mirrored);
             } else if (type == FACING_DIRECTION) {
                 states.set(idx, FACING_DIRECTION.createValue(mirrorFacingDirectionX(state.getPropertyValue(FACING_DIRECTION))));
+            } else if (type == MINECRAFT_FACING_DIRECTION) {
+                BlockFace facing = state.getPropertyValue(MINECRAFT_FACING_DIRECTION);
+                states.set(idx, MINECRAFT_FACING_DIRECTION.createValue(mirrorFaceX(facing)));
             } else if (type == ROTATION && block instanceof BlockJigsaw) {
                 var mirrored = ROTATION.createValue((4 - (state.getPropertyValue(ROTATION) & 0x3)) & 0x3);
                 states.set(idx, mirrored);
