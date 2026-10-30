@@ -132,17 +132,18 @@ final class ClientItemComponents {
                 yield sounds;
             }
             case "minecraft:piercing_weapon" -> {
-                CompoundTag reach = range(json.get("reach"), 0f, 3f);
-                CompoundTag creativeReach = json.has("creative_reach") ? range(json.get("creative_reach"), 0f, 3f) : reach.copy();
-                yield new CompoundTag(new LinkedHashMap<>())
-                        .putCompound("creative_reach", creativeReach)
-                        .putFloat("hitbox_margin", asFloat(json.get("hitbox_margin"), 0f))
-                        .putCompound("reach", reach);
+                CompoundTag weapon = new CompoundTag(new LinkedHashMap<>());
+                if (json.has("creative_reach")) {
+                    weapon.putCompound("creative_reach", range(json.get("creative_reach"), 0f, 3f));
+                }
+                yield weapon.putFloat("hitbox_margin", asFloat(json.get("hitbox_margin"), 0f))
+                        .putCompound("reach", range(json.get("reach"), 0f, 3f));
             }
             case "minecraft:kinetic_weapon" -> {
-                CompoundTag reach = range(json.get("reach"), 0f, 3f);
-                CompoundTag weapon = new CompoundTag(new LinkedHashMap<>())
-                        .putCompound("creative_reach", json.has("creative_reach") ? range(json.get("creative_reach"), 0f, 3f) : reach.copy());
+                CompoundTag weapon = new CompoundTag(new LinkedHashMap<>());
+                if (json.has("creative_reach")) {
+                    weapon.putCompound("creative_reach", range(json.get("creative_reach"), 0f, 3f));
+                }
                 putConditions(weapon, "damage_conditions", json.get("damage_conditions"));
                 weapon.putFloat("damage_modifier", asFloat(json.get("damage_modifier"), 0f))
                         .putFloat("damage_multiplier", asFloat(json.get("damage_multiplier"), 1f))
@@ -150,7 +151,7 @@ final class ClientItemComponents {
                 putConditions(weapon, "dismount_conditions", json.get("dismount_conditions"));
                 weapon.putFloat("hitbox_margin", asFloat(json.get("hitbox_margin"), 0f));
                 putConditions(weapon, "knockback_conditions", json.get("knockback_conditions"));
-                weapon.putCompound("reach", reach);
+                weapon.putCompound("reach", range(json.get("reach"), 0f, 3f));
                 yield new CompoundTag().putCompound("minecraft:kinetic_weapon", weapon);
             }
             default -> null;

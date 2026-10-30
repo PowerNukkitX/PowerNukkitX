@@ -21,6 +21,7 @@ import org.powernukkitx.nbt.tag.CompoundTag;
 import org.powernukkitx.nbt.tag.ListTag;
 import org.powernukkitx.nbt.tag.Tag;
 import org.powernukkitx.registry.ItemRegistry;
+import org.powernukkitx.utils.BlockColor;
 
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMaps;
@@ -263,6 +264,7 @@ public class BlockDataDriven extends Block implements CustomBlock, BlockFlowerPo
      *                          of the same identifier, or null when the block does not form corners
      * @param liquid            how water treats the block, or null for the defaults
      * @param wireStepsDown     whether redstone wire on top of the block connects down its sides
+     * @param mapTint           the biome tint maps multiply the block's map colour by
      */
     public record Behavior(@Nullable InstrumentSound instrumentSound,
                            @Nullable PlacementFilter placementFilter, @NotNull TraitPlacement traitPlacement,
@@ -271,10 +273,10 @@ public class BlockDataDriven extends Block implements CustomBlock, BlockFlowerPo
                            @Nullable Boolean redstoneConductor, @Nullable ConnectionRule connectionRule,
                            @Nullable RedstoneProducer redstoneProducer, @Nullable MultiBlock multiBlock,
                            boolean cardinalConnections, @Nullable List<PlacementFilter.BlockMatcher> cornerWith,
-                           @Nullable LiquidRule liquid, boolean wireStepsDown) {
+                           @Nullable LiquidRule liquid, boolean wireStepsDown, @NotNull BlockColor.Tint mapTint) {
 
         public static final Behavior DEFAULT = new Behavior(null, null, TraitPlacement.NONE, List.of(), null,
-                ChestObstruction.SHAPE, false, null, null, null, null, false, null, null, true);
+                ChestObstruction.SHAPE, false, null, null, null, null, false, null, null, true, BlockColor.Tint.NONE);
 
         public Behavior {
             itemSpeeds = List.copyOf(itemSpeeds);
@@ -598,6 +600,42 @@ public class BlockDataDriven extends Block implements CustomBlock, BlockFlowerPo
      */
     @Override
     public Item[] getDrops(Item item) {
+        return getDrops(item, 0);
+    }
+
+    /**
+     * The drops when an explosion destroys the block. A pack loot table's {@code explosion_decay} keeps
+     * each item with a chance of one in {@code explosionRadius}; a block without a table drops as
+     * {@link #getDrops(Item)} does.
+     *
+     * @param item            the tool the drops are rolled for
+     * @param explosionRadius the radius of the explosion
+     * @return the drops, empty when nothing survived
+     */
+    public Item[] getExplosionDrops(Item item, double explosionRadius) {
+        return getDrops(item, explosionRadius);
+    }
+
+    /**
+     * {@inheritDoc}
+     * <p>
+     * A {@code tint_method} on the pack's {@code minecraft:map_color} multiplies the colour by that tint of
+     * the biome the block is in.
+     */
+    @Override
+    public BlockColor getColor() {
+        BlockColor color = super.getColor();
+        BlockColor.Tint tint = spec.behavior().mapTint();
+        if (tint == BlockColor.Tint.NONE) {
+            return color;
+        }
+        BlockColor biome = new BlockColor(0, 0, 0);
+        biome.applyTint(level.getBiomeId(getFloorX(), getFloorY(), getFloorZ()), tint);
+        return new BlockColor(color.getRed() * biome.getRed() / 255, color.getGreen() * biome.getGreen() / 255,
+                color.getBlue() * biome.getBlue() / 255, color.getAlpha());
+    }
+
+    private Item[] getDrops(Item item, double explosionRadius) {
         String table = spec.lootTableByState().get(this.blockstate.blockStateHash());
         if (table == null) {
             table = spec.lootTable();
@@ -609,7 +647,7 @@ public class BlockDataDriven extends Block implements CustomBlock, BlockFlowerPo
         if (loot == null) {
             return Item.EMPTY_ARRAY;
         }
-        return loot.generate(ThreadLocalRandom.current(), item).toArray(Item.EMPTY_ARRAY);
+        return loot.generate(ThreadLocalRandom.current(), item, explosionRadius).toArray(Item.EMPTY_ARRAY);
     }
 
     /**
@@ -969,6 +1007,14 @@ public class BlockDataDriven extends Block implements CustomBlock, BlockFlowerPo
      */
     public boolean allowsWireToStepDown() {
         return spec.behavior().wireStepsDown();
+    }
+
+    /**
+     * @return whether the pack's {@code minecraft:placement_filter} decides where the block may be placed;
+     * the server then checks placements itself instead of relying on the client's prediction
+     */
+    public boolean hasPlacementFilter() {
+        return spec.behavior().placementFilter() != null;
     }
 
     /**

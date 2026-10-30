@@ -17,6 +17,7 @@ import org.powernukkitx.math.BlockFace;
 import org.powernukkitx.nbt.tag.CompoundTag;
 import org.powernukkitx.nbt.tag.ListTag;
 import org.powernukkitx.registry.Registries;
+import org.powernukkitx.utils.BlockColor;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
@@ -167,6 +168,16 @@ class BehaviorBlockParserTest {
         assertEquals(0x6, material.getByte("packed_bools"));
         assertEquals(0.5f, material.getFloat("ambient_occlusion"));
         assertEquals(0.5f, components.getCompound("minecraft:transformation").getFloat("RYP"));
+    }
+
+    @Test
+    void readsMapColorTintMethod() {
+        BlockDataDriven.Spec tinted = parse(block("pnxtest:tinted_map", "",
+                "{ \"minecraft:map_color\": { \"color\": \"#ba8524\", \"tint_method\": \"default_foliage\" } }", "[]"));
+        BlockDataDriven.Spec plain = parse(block("pnxtest:plain_map", "", "{ \"minecraft:map_color\": \"#ba8524\" }", "[]"));
+
+        assertEquals(BlockColor.Tint.DEFAULT_FOLIAGE, tinted.behavior().mapTint());
+        assertEquals(BlockColor.Tint.NONE, plain.behavior().mapTint());
     }
 
     @Test

@@ -4,6 +4,7 @@ import org.powernukkitx.ServerMockFixture;
 import org.powernukkitx.addons.AddonFeatureTracker;
 import org.powernukkitx.item.Item;
 import org.powernukkitx.item.ItemID;
+import org.powernukkitx.item.ItemSuspiciousStew;
 import org.powernukkitx.item.enchantment.Enchantment;
 import org.powernukkitx.loot.LootTable;
 import org.powernukkitx.loot.LootTableRegistry;
@@ -221,6 +222,32 @@ class LootTableParserTest {
                 """);
 
         assertEquals(ItemID.RAW_IRON, table.generate(new Random(1)).getFirst().getId());
+        assertTrue(tracker.isEmpty());
+    }
+
+    @Test
+    void explosionDecayThinsStacksOnlyForExplosions() {
+        LootTable table = parse("""
+                { "pools": [ { "rolls": 1, "entries": [ { "type": "item", "name": "minecraft:stick",
+                  "functions": [ { "function": "set_count", "count": 64 }, { "function": "explosion_decay" } ] } ] } ] }
+                """);
+
+        assertEquals(64, table.generate(new Random(1)).getFirst().getCount());
+        int kept = table.generate(new Random(1), null, 4).getFirst().getCount();
+        assertTrue(kept > 0 && kept < 64, "about a quarter of the stack survives a radius 4 explosion, got " + kept);
+        assertTrue(table.generate(new Random(1), null, 1.0e9).isEmpty(), "an emptied stack is not dropped");
+        assertTrue(tracker.isEmpty());
+    }
+
+    @Test
+    void stewEffectSetsTheStewGivingIt() {
+        LootTable table = parse("""
+                { "pools": [ { "rolls": 1, "entries": [ { "type": "item", "name": "minecraft:suspicious_stew",
+                  "functions": [ { "function": "set_stew_effect", "effects": [ { "id": 20 }, { "id": 99 } ] } ] } ] } ] }
+                """);
+
+        Item stew = table.generate(new Random(1)).getFirst();
+        assertEquals(20, ItemSuspiciousStew.getEffect(stew.getDamage()).getId(), "wither is the only listed effect a stew gives");
         assertTrue(tracker.isEmpty());
     }
 

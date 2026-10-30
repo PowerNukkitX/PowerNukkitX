@@ -26,10 +26,11 @@ import java.util.Map;
  * {@code set_count}, {@code set_data}, {@code set_damage}, {@code set_name}, {@code set_lore},
  * {@code specific_enchants}, {@code enchant_randomly}, {@code enchant_with_levels},
  * {@code random_aux_value}, {@code looting_enchant}, {@code set_potion}, {@code set_actor_id},
- * {@code set_ominous_bottle_amplifier} and {@code random_dye} functions, and the
+ * {@code set_ominous_bottle_amplifier}, {@code set_stew_effect} and {@code random_dye} functions, and the
  * {@code random_difficulty_chance} condition. Looting is read from the tool the table is rolled for.
- * {@code explosion_decay} and {@code furnace_smelt} are accepted but change nothing: they apply to drops
- * blown up by an explosion and to entities that die burning, and no caller rolls a table for either yet.
+ * {@code explosion_decay} thins out drops a block's table yields when an explosion destroys it.
+ * {@code furnace_smelt} is accepted but changes nothing: it applies to entities that die burning, and no
+ * caller rolls a table for one yet.
  * <p>
  * Anything else is recorded on the {@link AddonFeatureTracker}. A condition that cannot be
  * evaluated, or a {@code match_tool} requirement that cannot be checked, never holds: loot gated
@@ -154,6 +155,7 @@ public final class LootTableParser {
                     case "set_ominous_bottle_amplifier" -> itemFunctions.add(new LootTable.SetOminousBottleAmplifier(
                             parseRange(function.get("amplifier"), new LootTable.NumberRange(0, 0))));
                     case "random_dye" -> itemFunctions.add(new LootTable.RandomDye());
+                    case "set_stew_effect" -> itemFunctions.add(new LootTable.SetStewEffect(stewEffects(function.get("effects"))));
                     case "enchant_random_gear" -> itemFunctions.add(new LootTable.EnchantRandomGear(asFloat(function.get("chance"), 1f)));
                     case "random_block_state" -> {
                         String state = optString(function, "block_state");
@@ -174,7 +176,8 @@ public final class LootTableParser {
                             itemFunctions.add(new LootTable.FillContainer(table));
                         }
                     }
-                    case "explosion_decay", "furnace_smelt" -> {
+                    case "explosion_decay" -> itemFunctions.add(new LootTable.ExplosionDecay());
+                    case "furnace_smelt" -> {
                     }
                     default -> tracker.reportUnsupported(packName, "loot-function", functionName);
                 }
@@ -182,6 +185,18 @@ public final class LootTableParser {
         }
         return new LootTable.Entry(entryType, optString(entryJson, "name"), weight, count, data, displayName, lore, conditions,
                 itemFunctions);
+    }
+
+    private static List<Integer> stewEffects(@Nullable JsonElement effects) {
+        List<Integer> ids = new ArrayList<>();
+        if (effects != null && effects.isJsonArray()) {
+            for (JsonElement effect : effects.getAsJsonArray()) {
+                if (effect.isJsonObject() && effect.getAsJsonObject().has("id")) {
+                    ids.add(asInt(effect.getAsJsonObject().get("id"), -1));
+                }
+            }
+        }
+        return ids;
     }
 
     private List<LootTable.Condition> parseConditions(String packName, @Nullable JsonElement element) {

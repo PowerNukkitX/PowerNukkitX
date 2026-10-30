@@ -47,6 +47,7 @@ public class BundleInventory extends BaseInventory {
             Item item = ItemHelper.read(compound);
             this.setItemInternal(compound.getByte("Slot"), item);
         }
+        holder.setNbt(tag);
     }
 
     @Override

@@ -8,6 +8,7 @@ import org.powernukkitx.item.Item;
 import org.powernukkitx.item.ItemBanner;
 import org.powernukkitx.item.ItemBlock;
 import org.powernukkitx.item.ItemID;
+import org.powernukkitx.item.ItemSuspiciousStew;
 import org.powernukkitx.item.ItemWrittenBook;
 import org.powernukkitx.item.enchantment.Enchantment;
 import org.powernukkitx.item.enchantment.EnchantmentHelper;
@@ -240,7 +241,8 @@ public record LootTable(List<Pool> pools) {
      */
     public sealed interface ItemFunction permits SpecificEnchants, EnchantRandomly, EnchantWithLevels,
             RandomAuxValue, SetDamage, LootingEnchant, SetPotion, SetActorId, SetOminousBottleAmplifier, RandomDye,
-            EnchantRandomGear, RandomBlockState, SetBannerDetails, SetBookContents, SetArmorTrim, FillContainer {
+            EnchantRandomGear, RandomBlockState, SetBannerDetails, SetBookContents, SetArmorTrim, FillContainer,
+            ExplosionDecay, SetStewEffect {
 
         /**
          * @param item   the item so far; may be changed in place
@@ -373,6 +375,37 @@ public record LootTable(List<Pool> pools) {
             }
             egg.setCount(item.getCount());
             return egg;
+        }
+    }
+
+    /**
+     * Makes a suspicious stew give one of the listed effects, picked at random, by setting the aux value of
+     * a stew that gives it. Effects no stew gives are skipped; with none left, any stew effect is picked.
+     *
+     * @param effectIds the numeric ids of the effects to pick from
+     */
+    public record SetStewEffect(@NotNull List<Integer> effectIds) implements ItemFunction {
+
+        public SetStewEffect {
+            effectIds = List.copyOf(effectIds);
+        }
+
+        @Override
+        public @NotNull Item apply(@NotNull Item item, @NotNull Random random, @Nullable Item tool) {
+            if (!ItemID.SUSPICIOUS_STEW.equals(item.getId())) {
+                return item;
+            }
+            List<Integer> metas = new ArrayList<>(effectIds.size());
+            for (int effectId : effectIds) {
+                int meta = ItemSuspiciousStew.getMeta(effectId);
+                if (meta >= 0) {
+                    metas.add(meta);
+                }
+            }
+            item.setDamage(metas.isEmpty()
+                    ? random.nextInt(ItemSuspiciousStew.MAX_META + 1)
+                    : metas.get(random.nextInt(metas.size())));
+            return item;
         }
     }
 
@@ -528,6 +561,38 @@ public record LootTable(List<Pool> pools) {
             if (item instanceof ItemWrittenBook book) {
                 return book.writeBook(author, title, pages.toArray(new String[0]));
             }
+            return item;
+        }
+    }
+
+    /**
+     * Keeps each item of the stack with a chance of one in the radius of the explosion the loot is rolled
+     * for. Loot rolled for anything but an explosion keeps the whole stack.
+     *
+     * @see #generate(Random, Item, double)
+     */
+    public record ExplosionDecay() implements ItemFunction {
+
+        @Override
+        public @NotNull Item apply(@NotNull Item item, @NotNull Random random, @Nullable Item tool) {
+            return item;
+        }
+
+        /**
+         * @param radius the explosion radius; at most 1 keeps the whole stack
+         * @return {@code item} with the surviving count, which may be 0
+         */
+        @NotNull Item decay(@NotNull Item item, @NotNull Random random, double radius) {
+            if (radius <= 1) {
+                return item;
+            }
+            int kept = 0;
+            for (int i = 0; i < item.getCount(); i++) {
+                if (random.nextDouble() * radius < 1) {
+                    kept++;
+                }
+            }
+            item.setCount(kept);
             return item;
         }
     }
@@ -712,12 +777,27 @@ public record LootTable(List<Pool> pools) {
      * @return the generated stacks, empty when nothing was rolled; never null
      */
     public @NotNull List<Item> generate(@NotNull Random random, @Nullable Item tool) {
+        return generate(random, tool, 0);
+    }
+
+    /**
+     * Rolls every pool of this table for a block an explosion destroyed, so {@link ExplosionDecay} thins
+     * out the stacks.
+     *
+     * @param random          the random source to draw from
+     * @param tool            the item the loot is generated for, as tool conditions see it; null for an
+     *                        empty hand
+     * @param explosionRadius the radius of the explosion; 0 when the loot is not rolled for one
+     * @return the generated stacks, empty when nothing was rolled or survived; never null
+     * @see #generate(Random, Item)
+     */
+    public @NotNull List<Item> generate(@NotNull Random random, @Nullable Item tool, double explosionRadius) {
         List<Item> result = new ArrayList<>();
-        generateInto(random, tool, result, 0);
+        generateInto(random, tool, explosionRadius, result, 0);
         return result;
     }
 
-    private void generateInto(Random random, @Nullable Item tool, List<Item> result, int depth) {
+    private void generateInto(Random random, @Nullable Item tool, double explosionRadius, List<Item> result, int depth) {
         if (depth > MAX_NESTING_DEPTH) {
             log.warn("Loot table nesting deeper than {}, aborting generation", MAX_NESTING_DEPTH);
             return;
@@ -736,7 +816,7 @@ public record LootTable(List<Pool> pools) {
                     case EMPTY -> {
                     }
                     case ITEM -> {
-                        Item item = createItem(entry, random, tool);
+                        Item item = createItem(entry, random, tool, explosionRadius);
                         if (item != null && !item.isNull() && item.getCount() > 0) {
                             result.add(item);
                         }
@@ -744,7 +824,7 @@ public record LootTable(List<Pool> pools) {
                     case LOOT_TABLE -> {
                         LootTable nested = LootTableRegistry.get(entry.name());
                         if (nested != null) {
-                            nested.generateInto(random, tool, result, depth + 1);
+                            nested.generateInto(random, tool, explosionRadius, result, depth + 1);
                         } else {
                             log.debug("Referenced loot table {} is not registered", entry.name());
                         }
@@ -804,7 +884,7 @@ public record LootTable(List<Pool> pools) {
         return candidates.getLast();
     }
 
-    private static @Nullable Item createItem(Entry entry, Random random, @Nullable Item tool) {
+    private static @Nullable Item createItem(Entry entry, Random random, @Nullable Item tool, double explosionRadius) {
         Item item = Item.get(entry.name());
         if (item.isNull()) {
             log.debug("Loot table references unknown item {}", entry.name());
@@ -821,7 +901,9 @@ public record LootTable(List<Pool> pools) {
             item.setLore(entry.lore().toArray(new String[0]));
         }
         for (ItemFunction function : entry.functions()) {
-            item = function.apply(item, random, tool);
+            item = function instanceof ExplosionDecay decay
+                    ? decay.decay(item, random, explosionRadius)
+                    : function.apply(item, random, tool);
         }
         return item;
     }

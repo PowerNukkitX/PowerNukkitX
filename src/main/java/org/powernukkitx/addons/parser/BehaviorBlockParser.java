@@ -27,6 +27,7 @@ import org.powernukkitx.plugin.InternalPlugin;
 import org.powernukkitx.registry.BlockRegistry;
 import org.powernukkitx.registry.RegisterException;
 import org.powernukkitx.registry.Registries;
+import org.powernukkitx.utils.BlockColor;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
@@ -271,7 +272,21 @@ public final class BehaviorBlockParser {
                 traitStates(traits, "minecraft:connection").contains("minecraft:cardinal_connections"),
                 cornerWith(packName, traits),
                 liquidRule(components.get("minecraft:liquid_detection")),
-                wireStepsDown);
+                wireStepsDown,
+                mapTint(components.get("minecraft:map_color")));
+    }
+
+    private static BlockColor.Tint mapTint(@Nullable JsonElement mapColor) {
+        if (mapColor == null || !mapColor.isJsonObject()) {
+            return BlockColor.Tint.NONE;
+        }
+        String method = optString(mapColor.getAsJsonObject(), "tint_method");
+        for (BlockColor.Tint tint : BlockColor.Tint.values()) {
+            if (tint != BlockColor.Tint.NONE && tint.name().equalsIgnoreCase(method)) {
+                return tint;
+            }
+        }
+        return BlockColor.Tint.NONE;
     }
 
     /**
@@ -421,7 +436,7 @@ public final class BehaviorBlockParser {
         Set<BlockFace> strong = faces(producer.get("strongly_powered_face"));
         return new BlockDataDriven.RedstoneProducer(Math.clamp(asInt(producer.get("power"), 0), 0, 15),
                 strong.isEmpty() ? null : strong.iterator().next(), connected,
-                asBoolean(producer.get("transform_relative"), false));
+                asBoolean(producer.get("transform_relative"), true));
     }
 
     static Set<BlockFace> faces(@Nullable JsonElement element) {

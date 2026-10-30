@@ -7,6 +7,7 @@ import org.powernukkitx.PlayerHandle;
 import org.powernukkitx.Server;
 import org.powernukkitx.api.NonComputationAtomic;
 import org.powernukkitx.block.*;
+import org.powernukkitx.block.customblock.BlockDataDriven;
 import org.powernukkitx.block.customblock.CustomBlock;
 import org.powernukkitx.block.customblock.CustomBlockDefinition;
 import org.powernukkitx.block.customblock.CustomBlockDefinition.BlockTickSettings;
@@ -5023,10 +5024,18 @@ public class Level implements Metadatable, LiquidUpdateAccess {
             }
         }
 
-        if (data.getClientInteractPrediction() == ItemUsePredictedResult.SUCCESS) {
+        if (data.getClientInteractPrediction() == ItemUsePredictedResult.SUCCESS || isPlacementFiltered(item)) {
             return placeBlock(item, face, fx, fy, fz, player, playSound, block, target);
         }
         return item;
+    }
+
+    /**
+     * Clients predict a pack block's placement filter as failing where the dedicated server, which decides
+     * by the filter itself, places the block. Such placements are left to the filter.
+     */
+    private static boolean isPlacementFiltered(Item item) {
+        return item.canBePlaced() && item.getBlock() instanceof BlockDataDriven dataDriven && dataDriven.hasPlacementFilter();
     }
 
     private Block beforePlaceBlock(Item item, BlockFace face, Block block, Block target) {

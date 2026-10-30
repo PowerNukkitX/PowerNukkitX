@@ -165,6 +165,21 @@ class BehaviorItemParserTest {
     }
 
     @Test
+    void storageItemSendsItsBundleId() {
+        String id = "pnxtest:networked_pouch";
+        register(id, """
+                { "minecraft:storage_item": { "max_slots": 8 } }
+                """);
+        ItemDataDrivenStorage pouch = assertInstanceOf(ItemDataDrivenStorage.class, Item.get(id));
+
+        pouch.getInventory();
+
+        Item sent = Item.get(id);
+        sent.setNbtBytes(pouch.getNbtBytes());
+        assertEquals(pouch.getBundleId(), sent.getNbt().getInt("bundle_id"), "clients address the contents by this id");
+    }
+
+    @Test
     void readsPiercingWeapon() {
         String id = "pnxtest:parsed_spear";
 

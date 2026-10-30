@@ -237,6 +237,16 @@ public class ItemDataDriven extends Item implements CustomItem {
     /**
      * {@inheritDoc}
      * <p>
+     * A {@code minecraft:kinetic_weapon} is used by holding it, so using it in the air starts that use.
+     */
+    @Override
+    public boolean onClickAir(Player player, Vector3 directionVector) {
+        return serverComponents.kineticWeapon() != null || super.onClickAir(player, directionVector);
+    }
+
+    /**
+     * {@inheritDoc}
+     * <p>
      * A {@code minecraft:kinetic_weapon} hits the targets in its reach once its delay has passed. Speeds are
      * taken along the player's view in blocks per second: the player's own, from its last movement or from
      * what it rides, and the speed at which it closes in on each target. Damage is that closing speed times

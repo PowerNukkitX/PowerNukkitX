@@ -1,6 +1,7 @@
 package org.powernukkitx.addons.parser;
 
 import org.powernukkitx.addons.AddonFeatureTracker;
+import org.powernukkitx.item.customitem.data.CreativeCategory;
 import org.powernukkitx.network.protocol.types.inventory.creative.CreativeCustomGroups;
 import org.powernukkitx.registry.CreativeItemRegistry;
 import org.powernukkitx.registry.Registries;
@@ -15,10 +16,12 @@ import java.util.Locale;
 /**
  * Turns a behaviour pack's {@code item_catalog/crafting_item_catalog.json} into creative inventory groups.
  * <p>
- * Each group the catalog names is created in its category unless a group of that name exists already,
- * and the pack's items and blocks listed in it are moved into it. The groups are injected, and the items
- * moved, when the server finalises the creative inventory after plugins have loaded, so the catalog may
- * list content any pack or plugin registers. Vanilla items listed in a catalog keep their own group.
+ * Each group the catalog names is created in its category unless a group of that name exists already, in
+ * which case the groups merge, and the pack's items and blocks listed in it are moved into it. Items listed
+ * in a group without a {@code group_identifier} join the category's ungrouped items. Listed items appear
+ * in the order the catalogs list them, after the group's existing items. The groups are injected, and the
+ * items moved, when the server finalises the creative inventory after plugins have loaded, so the catalog
+ * may list content any pack or plugin registers. Vanilla items listed in a catalog keep their own place.
  */
 public final class ItemCatalogParser {
 
@@ -65,21 +68,29 @@ public final class ItemCatalogParser {
         JsonObject identifier = group.getAsJsonObject("group_identifier");
         String name = identifier == null ? "" : stringOf(identifier.get("name"));
         JsonElement items = group.get("items");
-        if (name.isEmpty() || items == null || !items.isJsonArray()) {
+        if (items == null || !items.isJsonArray() || (identifier != null && name.isEmpty())) {
             return 0;
         }
-        String groupName = CreativeGroupNames.normalize(name);
-        if (Registries.CREATIVE.getGroupIndexByName(groupName) < 0) {
+        String groupName = name.isEmpty() ? null : CreativeGroupNames.normalize(name);
+        if (groupName != null && Registries.CREATIVE.getGroupIndexByName(groupName) < 0) {
             String icon = stringOf(identifier.get("icon"));
             CreativeCustomGroups.define(category, groupName, icon.isEmpty() ? "minecraft:stone" : icon);
         }
         int assigned = 0;
         for (JsonElement item : items.getAsJsonArray()) {
             String id = item.isJsonObject() ? stringOf(item.getAsJsonObject().get("name")) : stringOf(item);
-            if (CreativeItemRegistry.CUSTOM_ITEM_IDENTIFIERS.contains(id)) {
-                CreativeItemRegistry.ITEM_GROUP_MAP.put(id, groupName);
-                assigned++;
+            if (!CreativeItemRegistry.CUSTOM_ITEM_IDENTIFIERS.contains(id)) {
+                continue;
             }
+            if (groupName == null) {
+                CreativeItemRegistry.ITEM_GROUP_MAP.remove(id);
+                CreativeItemRegistry.ITEM_CATEGORY_MAP.put(id, CreativeCategory.valueOf(category.name()));
+            } else {
+                CreativeItemRegistry.ITEM_CATEGORY_MAP.remove(id);
+                CreativeItemRegistry.ITEM_GROUP_MAP.put(id, groupName);
+            }
+            CreativeItemRegistry.ITEM_ORDER_MAP.putIfAbsent(id, CreativeItemRegistry.ITEM_ORDER_MAP.size());
+            assigned++;
         }
         return assigned;
     }

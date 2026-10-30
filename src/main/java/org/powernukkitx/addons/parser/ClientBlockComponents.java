@@ -175,8 +175,10 @@ final class ClientBlockComponents {
     }
 
     /**
-     * Without {@code connected_faces} every face is connected. The dedicated server derives
-     * {@code allowPowerDown} from the up face and {@code allowPowerUp} from the down face.
+     * Without {@code connected_faces} every face is connected, and without {@code transform_relative} the
+     * faces turn with the block. The dedicated server sends {@code allowPowerDown} set and
+     * {@code allowPowerUp} clear whatever the faces are, and leaves {@code strongly_powered_face} out when
+     * the pack does.
      */
     static @Nullable CompoundTag redstoneProducer(JsonElement value) {
         if (!value.isJsonObject()) {
@@ -190,13 +192,16 @@ final class ClientBlockComponents {
                 faceList.add(new StringTag(face.getName()));
             }
         }
-        return new CompoundTag(new LinkedHashMap<>())
-                .putByte("allowPowerDown", connected.contains(BlockFace.UP) ? 1 : 0)
-                .putByte("allowPowerUp", connected.contains(BlockFace.DOWN) ? 1 : 0)
+        CompoundTag producer = new CompoundTag(new LinkedHashMap<>())
+                .putByte("allowPowerDown", 1)
+                .putByte("allowPowerUp", 0)
                 .putList("connected_faces", faceList)
-                .putByte("power", Math.clamp(asInt(json.get("power"), 0), 0, 15))
-                .putString("strongly_powered_face", optString(json, "strongly_powered_face").toLowerCase(Locale.ENGLISH))
-                .putByte("transform_relative", asBoolean(json.get("transform_relative"), false) ? 1 : 0);
+                .putByte("power", Math.clamp(asInt(json.get("power"), 0), 0, 15));
+        String strongFace = optString(json, "strongly_powered_face");
+        if (!strongFace.isEmpty()) {
+            producer.putString("strongly_powered_face", strongFace.toLowerCase(Locale.ENGLISH));
+        }
+        return producer.putByte("transform_relative", asBoolean(json.get("transform_relative"), true) ? 1 : 0);
     }
 
     static @Nullable CompoundTag support(JsonElement value) {

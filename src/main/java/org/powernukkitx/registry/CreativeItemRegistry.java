@@ -54,6 +54,17 @@ public class CreativeItemRegistry implements ItemID, IRegistry<Integer, Item, It
     static final ObjectLinkedOpenHashSet<CreativeGroupInfoPayload> GROUPS = new ObjectLinkedOpenHashSet<>();
     public static final ObjectLinkedOpenHashSet<CreativeItemEntryPayload> ITEM_DATA = new ObjectLinkedOpenHashSet<>();
     public static final Map<String, String> ITEM_GROUP_MAP = new HashMap<>();
+    /**
+     * Custom items an item catalog lists outside any group, to the category whose ungrouped items they join.
+     * Cleared once the creative inventory is finalised.
+     */
+    public static final Map<String, CreativeCategory> ITEM_CATEGORY_MAP = new HashMap<>();
+    /**
+     * Custom items in the order item catalogs list them, as positions starting at 0. Listed items keep this
+     * order within their group; items no catalog lists follow them. Cleared once the creative inventory is
+     * finalised.
+     */
+    public static final Map<String, Integer> ITEM_ORDER_MAP = new HashMap<>();
     public static final Set<String> CUSTOM_ITEM_IDENTIFIERS = new HashSet<>();
     static final Map<CreativeCategory, Map<String, Integer>> CATEGORY_GROUP_INDEX_MAP = new HashMap<>();
     private static final Map<String, BlockState> ITEM_BLOCK_STATES = new HashMap<>();
