@@ -591,7 +591,6 @@ public final class ChunkGenerationManager {
         }
 
         if (chunk.getGenerationState() == ChunkGenerationState.NEEDS_GENERATION) {
-            // onChunkViewAcquired already established current-chunk identity.
             enqueueStableStateChecked(chunk, ChunkGenerationState.NEEDS_GENERATION);
         } else {
             reevaluateAround(chunk.getX(), chunk.getZ());
@@ -626,7 +625,6 @@ public final class ChunkGenerationManager {
     }
 
     private void enqueueStableState(Chunk chunk) {
-        // Ignore states without a task before doing the expensive physical-identity lookup.
         ChunkGenerationState state = chunk.getGenerationState();
         if (state.isActive() || !tasksByState.containsKey(state)) return;
         if (!isCurrentChunk(chunk)) return;
@@ -661,7 +659,6 @@ public final class ChunkGenerationManager {
             driveDependencies(chunk);
             return;
         }
-        // Dependencies are rechecked by refill() immediately before dispatch.
         enqueueStableStateChecked(chunk, state);
     }
 
@@ -713,8 +710,6 @@ public final class ChunkGenerationManager {
     }
 
     private void reevaluateAround(int chunkX, int chunkZ) {
-        // Do not perform 9 x up to 9 neighborhood reads on the main thread.
-        // Multiple notifications for the same area collapse into one scheduler pass.
         dirtyCenters.add(new SpatialKey(Level.chunkHash(chunkX, chunkZ)));
         schedule();
     }
@@ -722,8 +717,6 @@ public final class ChunkGenerationManager {
     private void processReevaluations() {
         if (dirtyCenters.isEmpty()) return;
 
-        // The 3x3 neighborhoods from adjacent centers often overlap heavily.
-        // Deduplicate target coordinates before touching the chunk provider.
         LongOpenHashSet affected = new LongOpenHashSet();
         for (SpatialKey center : dirtyCenters) {
             if (!dirtyCenters.remove(center)) continue;
@@ -809,7 +802,6 @@ public final class ChunkGenerationManager {
         if (level.isClosing()) return;
         schedulerRequested.set(true);
 
-        // Never run a potentially expensive refill/sort on the caller (often the main thread).
         if (!schedulerRunning.compareAndSet(false, true)) return;
         try {
             executor.execute(this::runScheduler);
@@ -824,6 +816,7 @@ public final class ChunkGenerationManager {
     private void runScheduler() {
         try {
             do {
+                if (level.isClosing()) return;
                 schedulerRequested.set(false);
                 refill();
             } while (schedulerRequested.get() && !level.isClosing());
@@ -831,13 +824,13 @@ public final class ChunkGenerationManager {
             log.error("Chunk generation scheduler failed for level '{}'", level.getFolderName(), throwable);
         } finally {
             schedulerRunning.set(false);
-            // A request may have arrived between the final check and releasing ownership.
             if (schedulerRequested.get() && !level.isClosing()) schedule();
         }
     }
 
     private void refill() {
-        // Also process dirty neighborhoods when the generation pipeline is full.
+        if (level.isClosing()) return;
+
         processReevaluations();
 
         final int active = inFlight.get();
@@ -876,8 +869,6 @@ public final class ChunkGenerationManager {
                 continue;
             }
 
-            // Normal stages 2/4/6/8 already test the complete required physical neighborhood.
-            // Keep the fallback for nonstandard stages, where that is not guaranteed.
             int stateId = request.state.getNativeId();
             boolean needsExtraPhysicalCheck = stateId >= 2
                 && stateId != 2 && stateId != 4 && stateId != 6 && stateId != 8;
@@ -923,8 +914,9 @@ public final class ChunkGenerationManager {
             }
         }
 
-        // A completed task / new chunk / new demand triggers a new pass.
-        // Avoid immediate, potentially infinite rescheduling when nothing can launch.
+        if (inFlight.get() == 0 && pendingCount.get() > 0) {
+            schedulerRequested.set(true);
+        }
     }
 
     private Chunk resolveChunk(GenerationRequest request) {
@@ -956,6 +948,7 @@ public final class ChunkGenerationManager {
         final GenerationRequest request = candidate.request();
         final Chunk chunk = candidate.chunk();
         final ChunkGenerationTask task = candidate.task();
+        if (level.isClosing()) return false;
         if (!isCurrentChunk(chunk)) return false;
         if (!chunk.compareAndSetGenerationState(task.stableState(), task.activeState())) return false;
 
@@ -1277,9 +1270,7 @@ public final class ChunkGenerationManager {
                 Comparator.comparingInt(Candidate::priority);
     }
 
-    /** Hash used by the separate dirty-neighborhood set; generation requests use primitive long keys. */
     private static int spatialHash(long chunkHash) {
-        // MurmurHash3 finalization avoids Long.hashCode()'s X/Z XOR collisions.
         long hash = chunkHash;
         hash ^= hash >>> 33;
         hash *= 0xff51afd7ed558ccdL;
