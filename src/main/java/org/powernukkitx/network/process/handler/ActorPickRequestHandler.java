@@ -29,7 +29,7 @@ public class ActorPickRequestHandler implements PacketHandler<ActorPickRequestPa
             log.debug("Player {} tried to send an entity pick request while not spawned or dead", playerHandle.getUsername());
             return;
         }
-        final Entity entity = player.level.getEntity(packet.getActorID());
+        final Entity entity = player.level.getEntityByUniqueId(packet.getActorID());
         if (entity == null) {
             log.debug("{}: Entity pick request contained an invalid entity", playerHandle.getUsername());
             return;
