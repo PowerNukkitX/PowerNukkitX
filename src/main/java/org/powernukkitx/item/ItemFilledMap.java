@@ -22,6 +22,7 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
+import java.util.concurrent.ThreadLocalRandom;
 
 @Slf4j
 public class ItemFilledMap extends Item {
@@ -30,6 +31,11 @@ public class ItemFilledMap extends Item {
             .maxStackSize(1)
             .build();
 
+    /**
+     * @deprecated no longer used, map ids are random now. A counter restarted at
+     * every boot handed out the ids of maps already stored in the world again.
+     */
+    @Deprecated
     public static int mapCount = 0;
     // not very pretty but definitely better than before.
     private BufferedImage image;
@@ -46,8 +52,12 @@ public class ItemFilledMap extends Item {
         super(FILLED_MAP, meta, count, "Map", DEFINITION);
         updateName();
         if (!hasNbt() || !getNbt().contains("map_uuid")) {
-            this.setNbt(getOrCreateNbt().putLong("map_uuid", mapCount++));
+            this.setNbt(getOrCreateNbt().putLong("map_uuid", newMapId()));
         }
+    }
+
+    private static long newMapId() {
+        return ThreadLocalRandom.current().nextLong(1, Long.MAX_VALUE);
     }
 
     @Override
