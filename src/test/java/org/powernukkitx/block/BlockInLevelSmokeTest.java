@@ -1,7 +1,10 @@
 package org.powernukkitx.block;
 
 import org.powernukkitx.ServerMockFixture;
+import org.powernukkitx.Player;
+import org.powernukkitx.inventory.HumanInventory;
 import org.powernukkitx.item.Item;
+import org.powernukkitx.nbt.tag.CompoundTag;
 import org.powernukkitx.level.Level;
 import org.powernukkitx.math.Vector3;
 import org.powernukkitx.registry.Registries;
@@ -10,6 +13,9 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 import java.util.Set;
+
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 /**
  * Level-backed block smoke pass. Places every registered block state into the real
@@ -25,6 +31,31 @@ public class BlockInLevelSmokeTest {
     static void boot() {
         ServerMockFixture.boot();
         level = ServerMockFixture.level;
+    }
+
+    @Test
+    void adventureCanDestroyAcceptsOnlyListedBlocks() {
+        Player player = mock(Player.class);
+        HumanInventory inventory = mock(HumanInventory.class);
+        when(player.isAdventure()).thenReturn(true);
+        when(player.getInventory()).thenReturn(inventory);
+        Vector3 pos = new Vector3(0, level.getMinHeight(), 0);
+        level.setBlock(pos, Block.get(BlockID.STONE));
+        Block stone = level.getBlock(pos);
+        Item pickaxe = Item.get("minecraft:stone_pickaxe");
+        when(inventory.getItemInMainHand()).thenReturn(pickaxe);
+
+        pickaxe.setCanDestroy(new Block[]{Block.get(BlockID.STONE)});
+        Assertions.assertTrue(stone.isBlockChangeAllowed(player));
+
+        pickaxe.setCanDestroy(new Block[]{Block.get(BlockID.DIRT)});
+        Assertions.assertFalse(stone.isBlockChangeAllowed(player));
+
+        pickaxe.setNbt(new CompoundTag());
+        Assertions.assertFalse(stone.isBlockChangeAllowed(player));
+
+        pickaxe.setNbt(new CompoundTag().putCompound("CanDestroy", new CompoundTag()));
+        Assertions.assertFalse(stone.isBlockChangeAllowed(player));
     }
 
     @Test
