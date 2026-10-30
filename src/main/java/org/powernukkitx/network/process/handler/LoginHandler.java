@@ -10,7 +10,6 @@ import org.cloudburstmc.protocol.bedrock.data.PlayStatus;
 import org.cloudburstmc.protocol.bedrock.data.auth.PlayerAuthenticationType;
 import org.cloudburstmc.protocol.bedrock.data.skin.Skin;
 import org.cloudburstmc.protocol.bedrock.packet.LoginPacket;
-import org.cloudburstmc.protocol.bedrock.packet.ServerToClientHandshakePacket;
 import org.cloudburstmc.protocol.bedrock.util.ChainValidationResult;
 import org.cloudburstmc.protocol.bedrock.util.EncryptionUtils;
 import org.jetbrains.annotations.Nullable;
@@ -31,7 +30,6 @@ import org.powernukkitx.network.process.auth.ClientChainData;
 import org.powernukkitx.network.process.auth.ClientSkinData;
 import org.powernukkitx.utils.SkinUtils;
 
-import javax.crypto.SecretKey;
 import java.security.GeneralSecurityException;
 import java.security.PublicKey;
 import java.util.List;
@@ -176,7 +174,7 @@ public class LoginHandler implements PacketHandler<LoginPacket> {
         }
 
         offLoop(holder, server,
-            () -> validateClient(credentials, server, identityClaims),
+            () -> validateClient(credentials, identityClaims),
             client -> completeLogin(client, identityClaims, chain.signed(), holder, server));
     }
 
@@ -215,36 +213,19 @@ public class LoginHandler implements PacketHandler<LoginPacket> {
     }
 
     /**
-     * Verifies the client JWT and prepares the key exchange. Second off-loop step, reached only
-     * once the server has accepted the identity.
+     * Verifies the client JWT. Second off-loop step, reached only once the server has accepted the
+     * identity.
      */
-    private ClientOutcome validateClient(Credentials credentials, Server server, ChainValidationResult.IdentityClaims identityClaims) throws Exception {
+    private ClientOutcome validateClient(Credentials credentials, ChainValidationResult.IdentityClaims identityClaims) throws Exception {
         final ClientJwtValidationResult clientJwt = this.validateClientJwt(credentials.clientJwt(), identityClaims.parsedIdentityPublicKey());
         if (!clientJwt.isValid()) {
-            return new ClientOutcome(null, null, null, false);
+            return new ClientOutcome(null, null);
         }
-        EncryptionHandshake handshake = null;
-        boolean encryptionFailed = false;
-        if (server.enabledNetworkEncryption) {
-            try {
-                final PublicKey clientKey = EncryptionUtils.parseKey(identityClaims.identityPublicKey);
-                final var encryptionKeyPair = EncryptionUtils.createKeyPair();
-                final byte[] encryptionToken = EncryptionUtils.generateRandomToken();
-                handshake = new EncryptionHandshake(
-                    EncryptionUtils.getSecretKey(encryptionKeyPair.getPrivate(), clientKey, encryptionToken),
-                    EncryptionUtils.createHandshakeJwt(encryptionKeyPair, encryptionToken)
-                );
-            } catch (Exception e) {
-                log.debug("Failed to prepare the encryption handshake", e);
-                encryptionFailed = true;
-            }
-        }
-        return new ClientOutcome(clientJwt.getClientChainData(), clientJwt.getSkin(), handshake, encryptionFailed);
+        return new ClientOutcome(clientJwt.getClientChainData(), clientJwt.getSkin());
     }
 
     /**
-     * Answers the client: the remaining rejections, then either the encryption handshake or the
-     * resource pack stage.
+     * Answers the client: the remaining rejections, then the resource pack stage.
      */
     private void completeLogin(ClientOutcome client, ChainValidationResult.IdentityClaims identityClaims,
                                boolean signed, PlayerSessionHolder holder, Server server) {
@@ -264,27 +245,9 @@ public class LoginHandler implements PacketHandler<LoginPacket> {
 
         holder.setPlayerInfo(new Player.PlayerInfo(identityClaims, clientChainData, client.skin(), signed));
 
-        if (client.encryptionFailed()) {
-            holder.disconnect(DisconnectFailReason.UNKNOWN, "encryption error");
-            return;
-        }
-        if (client.encryption() != null) {
-            try {
-                final ServerToClientHandshakePacket pk = new ServerToClientHandshakePacket();
-                pk.setHandshakeWebToken(client.encryption().handshakeJwt());
-                holder.getSession().sendPacketImmediately(pk);
-                holder.getSession().enableEncryption(client.encryption().secretKey());
-            } catch (Exception e) {
-                log.debug("Failed to start the encrypted session", e);
-                holder.disconnect(DisconnectFailReason.UNKNOWN, "encryption error");
-                return;
-            }
-            holder.setState(SessionState.ENCRYPTION);
-        } else {
-            holder.sendPlayStatus(PlayStatus.LOGIN_SUCCESS);
-            holder.setState(SessionState.RESOURCE_PACK);
-            holder.sendResourcePacksInfo(server);
-        }
+        holder.sendPlayStatus(PlayStatus.LOGIN_SUCCESS);
+        holder.setState(SessionState.RESOURCE_PACK);
+        holder.sendResourcePacksInfo(server);
     }
 
     /**
@@ -404,21 +367,12 @@ public class LoginHandler implements PacketHandler<LoginPacket> {
     /**
      * Result of {@link #validateClient}.
      *
-     * @param clientChainData  {@code null} when the client JWT was rejected
-     * @param encryption       the prepared key exchange, or {@code null} when encryption is
-     *                         disabled, the JWT was rejected, or preparation failed
-     * @param encryptionFailed whether preparing the key exchange threw
+     * @param clientChainData {@code null} when the client JWT was rejected
      */
     private record ClientOutcome(
         @Nullable ClientChainData clientChainData,
-        @Nullable Skin skin,
-        @Nullable EncryptionHandshake encryption,
-        boolean encryptionFailed
+        @Nullable Skin skin
     ) {
-    }
-
-    /** Encryption material derived off the event loop, applied once back on it. */
-    private record EncryptionHandshake(SecretKey secretKey, String handshakeJwt) {
     }
 
     @Override

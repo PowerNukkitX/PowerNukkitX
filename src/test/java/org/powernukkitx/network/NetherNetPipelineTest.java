@@ -58,6 +58,14 @@ class NetherNetPipelineTest {
     }
 
     @Test
+    void malformedPacketGuardSitsAfterTheDecoders() {
+        List<String> names = initialized().pipeline().names();
+        int guard = names.indexOf("malformed-packet-guard");
+        assertEquals(true, guard > names.indexOf(BedrockPacketCodec.NAME));
+        assertEquals(true, guard > names.indexOf(BedrockPeer.NAME));
+    }
+
+    @Test
     void reportsOutcomesOnlyWhenTheProviderAsks() {
         assertNull(initialized().pipeline().get(GameOutcomeReporter.HANDLER_NAME));
 

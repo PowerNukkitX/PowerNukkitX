@@ -76,6 +76,7 @@ public abstract class NetherNetServerInitializer extends BedrockServerInitialize
             channel.pipeline().addBefore(BedrockPeer.NAME, GameOutcomeReporter.HANDLER_NAME,
                 this.outcomes.observer(protocol -> protocol == NetworkConstants.CODEC.getProtocolVersion()));
         }
+        channel.pipeline().addLast(MalformedPacketGuard.NAME, new MalformedPacketGuard());
     }
 
     @Override

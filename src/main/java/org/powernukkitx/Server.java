@@ -386,7 +386,6 @@ public class Server {
     private final ConcurrentHashMap<UUID, PlayerDataWrites> playerDataWrites = new ConcurrentHashMap<>();
     private ProxyAuthProvider proxyAuthProvider;
     private FreezableArrayManager freezableArrayManager;
-    public boolean enabledNetworkEncryption;
 
     // default levels
     private Level defaultLevel = null;
@@ -579,16 +578,6 @@ public class Server {
         }
         ServerScheduler.WORKERS = poolSizeNumber;
         this.scheduler = new ServerScheduler();
-
-        // NetherNet carries the session inside DTLS and a real client answers ServerToClientHandshake
-        // in plaintext, so Bedrock packet encryption has no place on top of it.
-        final boolean netherNet = this.settings.networkSettings().resolvedTransport()
-            == NetworkSettings.TransportType.NETHERNET;
-        if (netherNet && this.settings.networkSettings().networkEncryption()) {
-            log.warn("network-settings.networkEncryption is ignored on the NetherNet transport, "
-                + "which is already encrypted");
-        }
-        this.enabledNetworkEncryption = !netherNet && this.settings.networkSettings().networkEncryption();
 
         this.experiments = new ArrayList<>();
         for (String experiment : settings.gameplaySettings().experiments())
