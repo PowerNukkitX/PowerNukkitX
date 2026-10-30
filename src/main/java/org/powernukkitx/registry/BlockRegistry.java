@@ -1647,23 +1647,17 @@ public final class BlockRegistry implements BlockID, IRegistry<String, Block, Cl
      * @param prototype       an instance carrying the {@link CustomBlockDefinition} to register
      * @param blockProperties the block's state definition
      * @param factory         creates block instances for a given state
-     * @throws RegisterException when the identifier is already registered, or when any of its states
-     *                           hashes the same as a state of another block. Clients compute these hashes
-     *                           themselves and key their palette by them, so a collision cannot be worked
-     *                           around server-side and would fail the client on join; every state is checked
-     *                           before any registry is touched, so a rejected block leaves nothing behind
+     * <p>
+     * A state whose hash equals that of another block's state is left out: the hash keeps resolving to
+     * the block that registered it first, and a warning names both states. Clients compute these hashes
+     * themselves, so the collision cannot be resolved server-side; the dedicated server loads such a block too.
+     *
+     * @throws RegisterException when the identifier is already registered
      */
     public void registerCustomBlockDefinition(@NotNull Plugin plugin, @NotNull CustomBlock prototype,
                                               @NotNull BlockProperties blockProperties,
                                               @NotNull BlockFactory factory) throws RegisterException {
         String key = blockProperties.getIdentifier();
-        for (BlockState state : blockProperties.getSpecialValueMap().values()) {
-            BlockState existing = Registries.BLOCKSTATE.get(state.blockStateHash());
-            if (existing != null && !existing.getIdentifier().equals(key)) {
-                throw new RegisterException("Block state hash collision registering " + key
-                        + ": " + state + " collides with " + existing);
-            }
-        }
         if (CACHE_CONSTRUCTORS.putIfAbsent(key, factory) != null) {
             throw new RegisterException("This custom block has already been registered with the identifier: " + key);
         }
@@ -1689,10 +1683,16 @@ public final class BlockRegistry implements BlockID, IRegistry<String, Block, Cl
         }
         KEYSET.add(key);
         PROPERTIES.put(key, blockProperties);
-        blockProperties.getSpecialValueMap().values().forEach(state -> {
+        for (BlockState state : blockProperties.getSpecialValueMap().values()) {
+            BlockState existing = Registries.BLOCKSTATE.get(state.blockStateHash());
+            if (existing != null && !existing.getIdentifier().equals(key)) {
+                log.warn("Block state {} hashes the same as {} and is left out; the hash keeps resolving to {}",
+                        state, existing, existing.getIdentifier());
+                continue;
+            }
             Registries.BLOCKSTATE.registerInternal(state);
             CACHE_CONSTRUCTORS_BY_HASH.putIfAbsent(state.blockStateHash(), factory);
-        });
+        }
         registerAliases(key, prototype.toBlock());
     }
 
