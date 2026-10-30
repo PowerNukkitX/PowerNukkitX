@@ -1,4 +1,4 @@
-package org.powernukkitx.loot;
+package org.powernukkitx.level.loot;
 
 import org.powernukkitx.Server;
 import org.powernukkitx.block.Block;
@@ -18,6 +18,8 @@ import org.powernukkitx.nbt.tag.CompoundTag;
 import org.powernukkitx.nbt.tag.ListTag;
 import org.powernukkitx.nbt.tag.Tag;
 import org.powernukkitx.network.protocol.types.BannerPattern;
+import org.powernukkitx.registry.LootTableRegistry;
+import org.powernukkitx.registry.Registries;
 import org.powernukkitx.utils.DyeColor;
 import org.powernukkitx.utils.ItemHelper;
 import org.powernukkitx.utils.random.NukkitRandom;
@@ -625,7 +627,7 @@ public record LootTable(List<Pool> pools) {
 
         @Override
         public @NotNull Item apply(@NotNull Item item, @NotNull Random random, @Nullable Item tool) {
-            LootTable contents = LootTableRegistry.get(table);
+            LootTable contents = Registries.LOOT_TABLE.get(table);
             int[] depth = DEPTH.get();
             if (contents == null || depth[0] >= MAX_NESTING_DEPTH) {
                 return item;
@@ -822,7 +824,7 @@ public record LootTable(List<Pool> pools) {
                         }
                     }
                     case LOOT_TABLE -> {
-                        LootTable nested = LootTableRegistry.get(entry.name());
+                        LootTable nested = Registries.LOOT_TABLE.get(entry.name());
                         if (nested != null) {
                             nested.generateInto(random, tool, explosionRadius, result, depth + 1);
                         } else {

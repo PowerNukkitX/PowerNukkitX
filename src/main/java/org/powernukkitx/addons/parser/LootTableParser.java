@@ -1,7 +1,7 @@
 package org.powernukkitx.addons.parser;
 
 import org.powernukkitx.addons.AddonFeatureTracker;
-import org.powernukkitx.loot.LootTable;
+import org.powernukkitx.level.loot.LootTable;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;

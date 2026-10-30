@@ -1,8 +1,9 @@
-package org.powernukkitx.loot;
+package org.powernukkitx.level.loot;
 
 import org.powernukkitx.ServerMockFixture;
 import org.powernukkitx.item.Item;
 import org.powernukkitx.item.ItemID;
+import org.powernukkitx.registry.Registries;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
@@ -111,7 +112,7 @@ class LootTableTest {
 
     @Test
     void resolvesNestedTableThroughRegistry() {
-        LootTableRegistry.register("pnxtest/nested_inner", single(item(ItemID.EMERALD, 1, 1, 1)));
+        Registries.LOOT_TABLE.register("pnxtest/nested_inner", single(item(ItemID.EMERALD, 1, 1, 1)));
         LootTable outer = single(new LootTable.Entry(LootTable.EntryType.LOOT_TABLE,
                 "pnxtest/nested_inner", 1, LootTable.NumberRange.ONE, null, null, null, List.of()));
 
@@ -134,7 +135,7 @@ class LootTableTest {
         String path = "pnxtest/recursive";
         LootTable recursive = single(new LootTable.Entry(LootTable.EntryType.LOOT_TABLE,
                 path, 1, LootTable.NumberRange.ONE, null, null, null, List.of()));
-        LootTableRegistry.register(path, recursive);
+        Registries.LOOT_TABLE.register(path, recursive);
 
         assertTrue(recursive.generate(new Random(4)).isEmpty(), "a cycle must terminate, not overflow");
     }
@@ -169,16 +170,16 @@ class LootTableTest {
     @Test
     void registryLookupToleratesPathSpellings() {
         LootTable table = single(item(ItemID.STICK, 1, 1, 1));
-        LootTableRegistry.register("loot_tables/pnxtest/spelling.json", table);
+        Registries.LOOT_TABLE.register("loot_tables/pnxtest/spelling.json", table);
 
-        assertNotNull(LootTableRegistry.get("pnxtest/spelling"));
-        assertNotNull(LootTableRegistry.get("loot_tables/pnxtest/spelling"));
-        assertNotNull(LootTableRegistry.get("pnxtest/spelling.json"));
-        assertNotNull(LootTableRegistry.get("minecraft:loot_tables/pnxtest/spelling.json"));
-        assertNotNull(LootTableRegistry.get("PNXTest/Spelling"));
-        assertNotNull(LootTableRegistry.get("loot_tables\\pnxtest\\spelling.json"));
-        assertTrue(LootTableRegistry.contains("pnxtest/spelling"));
-        assertFalse(LootTableRegistry.contains("pnxtest/other"));
+        assertNotNull(Registries.LOOT_TABLE.get("pnxtest/spelling"));
+        assertNotNull(Registries.LOOT_TABLE.get("loot_tables/pnxtest/spelling"));
+        assertNotNull(Registries.LOOT_TABLE.get("pnxtest/spelling.json"));
+        assertNotNull(Registries.LOOT_TABLE.get("minecraft:loot_tables/pnxtest/spelling.json"));
+        assertNotNull(Registries.LOOT_TABLE.get("PNXTest/Spelling"));
+        assertNotNull(Registries.LOOT_TABLE.get("loot_tables\\pnxtest\\spelling.json"));
+        assertTrue(Registries.LOOT_TABLE.contains("pnxtest/spelling"));
+        assertFalse(Registries.LOOT_TABLE.contains("pnxtest/other"));
     }
 
     private static LootTable.Entry conditioned(String id, int weight, LootTable.Condition... conditions) {

@@ -10,8 +10,7 @@ import org.powernukkitx.block.customblock.PlacementFilter;
 import org.powernukkitx.block.property.type.BlockPropertyType;
 import org.powernukkitx.item.Item;
 import org.powernukkitx.item.ItemID;
-import org.powernukkitx.loot.LootTable;
-import org.powernukkitx.loot.LootTableRegistry;
+import org.powernukkitx.level.loot.LootTable;
 import org.powernukkitx.math.AxisAlignedBB;
 import org.powernukkitx.math.BlockFace;
 import org.powernukkitx.nbt.tag.CompoundTag;
@@ -296,8 +295,8 @@ class BehaviorBlockParserTest {
 
     @Test
     void dropsFromLootTableChosenPerState() {
-        LootTableRegistry.register("loot_tables/pnxtest/base.json", singleItemTable(ItemID.STICK));
-        LootTableRegistry.register("loot_tables/pnxtest/ripe.json", singleItemTable(ItemID.DIAMOND));
+        Registries.LOOT_TABLE.register("loot_tables/pnxtest/base.json", singleItemTable(ItemID.STICK));
+        Registries.LOOT_TABLE.register("loot_tables/pnxtest/ripe.json", singleItemTable(ItemID.DIAMOND));
         BlockDataDriven.Spec spec = parse(block("pnxtest:loot_block",
                 ", \"states\": { \"pnxtest:ripe\": [false, true] }",
                 "{ \"minecraft:loot\": \"loot_tables/pnxtest/base.json\" }",

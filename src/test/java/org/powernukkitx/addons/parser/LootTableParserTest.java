@@ -6,10 +6,10 @@ import org.powernukkitx.item.Item;
 import org.powernukkitx.item.ItemID;
 import org.powernukkitx.item.ItemSuspiciousStew;
 import org.powernukkitx.item.enchantment.Enchantment;
-import org.powernukkitx.loot.LootTable;
-import org.powernukkitx.loot.LootTableRegistry;
+import org.powernukkitx.level.loot.LootTable;
 import org.powernukkitx.nbt.tag.CompoundTag;
 import org.powernukkitx.nbt.tag.ListTag;
+import org.powernukkitx.registry.Registries;
 import org.powernukkitx.utils.ItemHelper;
 
 import com.google.gson.JsonParser;
@@ -93,7 +93,7 @@ class LootTableParserTest {
 
     @Test
     void fillsContainerFromAnotherTable() {
-        LootTableRegistry.register("loot_tables/pnxtest/box_contents.json", parse(LEAVES));
+        Registries.LOOT_TABLE.register("loot_tables/pnxtest/box_contents.json", parse(LEAVES));
         LootTable table = parse("""
                 { "pools": [ { "rolls": 1, "entries": [ { "type": "item", "name": "minecraft:undyed_shulker_box",
                   "functions": [ { "function": "fill_container", "loot_table": "loot_tables/pnxtest/box_contents.json" } ] } ] } ] }

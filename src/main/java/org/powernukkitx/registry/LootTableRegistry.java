@@ -1,4 +1,6 @@
-package org.powernukkitx.loot;
+package org.powernukkitx.registry;
+
+import org.powernukkitx.level.loot.LootTable;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -11,7 +13,7 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * Global registry of {@link LootTable}s by path.
+ * Registry of {@link LootTable}s by path, filled by the behavior packs that are loaded.
  * <p>
  * Tables are addressed the way behavior packs reference them, by pack-relative path such
  * as {@code loot_tables/blocks/garden_gnome.json}. Lookups are deliberately forgiving,
@@ -22,14 +24,39 @@ import java.util.concurrent.ConcurrentHashMap;
  * Registration and lookup are safe from any thread, so tables may be generated from level
  * tick code while another pack is still loading.
  */
-public final class LootTableRegistry {
+public class LootTableRegistry implements IRegistry<String, LootTable, LootTable> {
 
     private static final String PATH_PREFIX = "loot_tables/";
     private static final String FILE_SUFFIX = ".json";
 
     private static final Map<String, LootTable> TABLES = new ConcurrentHashMap<>();
 
-    private LootTableRegistry() {
+    /**
+     * Does nothing: there are no built-in tables, packs register theirs as they load.
+     */
+    @Override
+    public void init() {
+    }
+
+    /**
+     * @param path the table's path in any of the accepted spellings
+     * @return the table, or null when no table is registered under that path
+     */
+    @Override
+    public @Nullable LootTable get(@NotNull String path) {
+        return TABLES.get(normalize(path));
+    }
+
+    @Override
+    public void trim() {
+    }
+
+    /**
+     * Drops every registered table, so the packs loaded afterwards register theirs afresh.
+     */
+    @Override
+    public void reload() {
+        TABLES.clear();
     }
 
     /**
@@ -38,19 +65,12 @@ public final class LootTableRegistry {
      * @param path  the table's path in any of the accepted spellings
      * @param table the table to register
      */
-    public static void register(@NotNull String path, @NotNull LootTable table) {
+    @Override
+    public void register(@NotNull String path, @NotNull LootTable table) {
         TABLES.put(normalize(path), table);
     }
 
-    /**
-     * @param path the table's path in any of the accepted spellings
-     * @return the table, or null when no table is registered under that path
-     */
-    public static @Nullable LootTable get(@NotNull String path) {
-        return TABLES.get(normalize(path));
-    }
-
-    public static boolean contains(@NotNull String path) {
+    public boolean contains(@NotNull String path) {
         return TABLES.containsKey(normalize(path));
     }
 
@@ -59,20 +79,12 @@ public final class LootTableRegistry {
      * registered afterwards appear in it
      */
     @UnmodifiableView
-    public static Set<String> getPaths() {
+    public Set<String> getPaths() {
         return Collections.unmodifiableSet(TABLES.keySet());
     }
 
-    public static int size() {
+    public int size() {
         return TABLES.size();
-    }
-
-    /**
-     * Drops every registered table. Intended for a reload, which re-registers the tables
-     * of the packs that are loaded afterwards.
-     */
-    public static void clear() {
-        TABLES.clear();
     }
 
     private static String normalize(String path) {

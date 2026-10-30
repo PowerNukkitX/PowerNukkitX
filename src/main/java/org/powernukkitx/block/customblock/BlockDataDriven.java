@@ -10,8 +10,7 @@ import org.powernukkitx.block.BlockState;
 import org.powernukkitx.block.property.type.BlockPropertyType;
 import org.powernukkitx.item.Item;
 import org.powernukkitx.level.Level;
-import org.powernukkitx.loot.LootTable;
-import org.powernukkitx.loot.LootTableRegistry;
+import org.powernukkitx.level.loot.LootTable;
 import org.powernukkitx.math.AxisAlignedBB;
 import org.powernukkitx.math.BlockFace;
 import org.powernukkitx.math.SimpleAxisAlignedBB;
@@ -21,6 +20,7 @@ import org.powernukkitx.nbt.tag.CompoundTag;
 import org.powernukkitx.nbt.tag.ListTag;
 import org.powernukkitx.nbt.tag.Tag;
 import org.powernukkitx.registry.ItemRegistry;
+import org.powernukkitx.registry.Registries;
 import org.powernukkitx.utils.BlockColor;
 
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
@@ -34,7 +34,6 @@ import java.util.BitSet;
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -643,7 +642,7 @@ public class BlockDataDriven extends Block implements CustomBlock, BlockFlowerPo
         if (table == null) {
             return super.getDrops(item);
         }
-        LootTable loot = LootTableRegistry.get(table);
+        LootTable loot = Registries.LOOT_TABLE.get(table);
         if (loot == null) {
             return Item.EMPTY_ARRAY;
         }

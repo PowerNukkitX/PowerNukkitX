@@ -6,7 +6,6 @@ import org.powernukkitx.addons.parser.BehaviorItemParser;
 import org.powernukkitx.addons.parser.BehaviorRecipeParser;
 import org.powernukkitx.addons.parser.ItemCatalogParser;
 import org.powernukkitx.addons.parser.LootTableParser;
-import org.powernukkitx.loot.LootTableRegistry;
 import org.powernukkitx.registry.Registries;
 import org.powernukkitx.resourcepacks.ResourcePack;
 import org.powernukkitx.resourcepacks.ResourcePackManager;
@@ -212,7 +211,7 @@ public final class AddonManager {
             }
             JsonObject root = readJson(zip, entryName, pack.getPackName());
             if (root != null) {
-                LootTableRegistry.register(entryName, lootTableParser.parse(pack.getPackName(), root));
+                Registries.LOOT_TABLE.register(entryName, lootTableParser.parse(pack.getPackName(), root));
                 count++;
             }
         }
