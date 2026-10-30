@@ -100,11 +100,11 @@ public class CustomBlockDefinition extends BlockDefinition {
 
     /**
      * @return whether this block reacts to entities stepping on/off it.
-     * @deprecated use {@link #isHasEntityStepSensor()}.
+     * @deprecated use {@link #hasEntityStepSensor()}.
      */
     @Deprecated(since = "3.1.0")
     public boolean isStepSensor() {
-        return isHasEntityStepSensor();
+        return hasEntityStepSensor();
     }
 
     private static Movable resolveMovable(CompoundTag nbt) {
@@ -226,14 +226,6 @@ public class CustomBlockDefinition extends BlockDefinition {
         }
 
         /**
-         * @deprecated use {@link #friction(double)}.
-         */
-        @Deprecated(since = "3.1.0")
-        public Builder friction(float value) {
-            return this.friction((double) value);
-        }
-
-        /**
          * Enables step sensor logic (entity step-on/off).
          *
          * @deprecated use {@link #hasEntityStepSensor(boolean)}.
@@ -244,12 +236,13 @@ public class CustomBlockDefinition extends BlockDefinition {
         }
 
         /**
-         * Sets the friction value of the block. Default is 0.4.
+         * Same as {@link #friction(float)}. The client only reads a float here, so the value gets narrowed
+         * before it is sent, prefer the float overload.
          */
         @Override
-        public Builder friction(double value) {
+        public Builder friction(float value) {
             this.nbt.getCompound("components")
-                    .putCompound("minecraft:friction", new CompoundTag().putFloat("value", (float) value));
+                    .putCompound("minecraft:friction", new CompoundTag().putFloat("value", value));
             return super.friction(value);
         }
 

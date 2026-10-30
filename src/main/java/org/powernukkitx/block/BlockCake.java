@@ -21,8 +21,8 @@ import static org.powernukkitx.block.property.CommonBlockProperties.BITE_COUNTER
 public class BlockCake extends BlockTransparent {
     public static final BlockProperties PROPERTIES = new BlockProperties(CAKE, BITE_COUNTER);
     public static final BlockDefinition DEFINITION = TRANSPARENT.toBuilder()
-            .hardness(0.5)
-            .resistance(0.5)
+            .hardness(0.5f)
+            .resistance(0.5f)
             .breaksWhenMoved(true)
             .sticksToPiston(false)
             .canBeActivated(true)

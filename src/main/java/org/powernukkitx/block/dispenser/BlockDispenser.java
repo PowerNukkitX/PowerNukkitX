@@ -47,8 +47,8 @@ public class BlockDispenser extends BlockSolid implements RedstoneComponent, Fac
 
     public static final BlockProperties PROPERTIES = new BlockProperties(DISPENSER, FACING_DIRECTION, CommonBlockProperties.TRIGGERED_BIT);
     public static final BlockDefinition DEFINITION = SOLID.toBuilder()
-            .hardness(3.5)
-            .resistance(3.5)
+            .hardness(3.5f)
+            .resistance(3.5f)
             .toolType(ItemTool.TYPE_PICKAXE)
             .toolTier(ItemTool.TIER_WOODEN)
             .canBeActivated(true)

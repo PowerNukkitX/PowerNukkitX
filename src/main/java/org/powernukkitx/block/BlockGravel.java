@@ -15,8 +15,8 @@ import org.jetbrains.annotations.NotNull;
 public class BlockGravel extends BlockFallable implements Natural {
     public static final BlockProperties PROPERTIES = new BlockProperties(GRAVEL);
     public static final BlockDefinition DEFINITION = FALLABLE.toBuilder()
-            .hardness(0.6)
-            .resistance(3)
+            .hardness(0.6f)
+            .resistance(3f)
             .toolType(ItemTool.TYPE_SHOVEL)
             .canSilkTouch(true)
             .build();

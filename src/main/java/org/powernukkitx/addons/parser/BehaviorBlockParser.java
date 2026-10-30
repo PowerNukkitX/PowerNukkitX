@@ -686,7 +686,7 @@ public final class BehaviorBlockParser {
         switch (key) {
             case "minecraft:destructible_by_mining" -> builder.destructibleByMining(miningSeconds(value));
             case "minecraft:destructible_by_explosion" -> builder.destructibleByExplosion(explosionResistance(value));
-            case "minecraft:friction" -> builder.friction(Math.min(asDouble(value, 0.4), 0.9));
+            case "minecraft:friction" -> builder.friction(Math.min(asFloat(value, 0.4f), 0.9f));
             case "minecraft:light_dampening", "minecraft:block_light_absorption" -> builder.lightDampening(asInt(value, 15));
             case "minecraft:light_emission" -> builder.lightEmission(asInt(value, 0));
             case "minecraft:display_name" -> {
@@ -1026,8 +1026,8 @@ public final class BehaviorBlockParser {
             }
             case "minecraft:geometry" -> putIfPresent(target, key, ClientBlockComponents.geometry(value));
             case "minecraft:friction" -> {
-                double friction = Math.min(asDouble(value, 0.4), 0.9);
-                target.putCompound(key, new CompoundTag().putFloat("value", (float) friction));
+                float friction = Math.min(asFloat(value, 0.4f), 0.9f);
+                target.putCompound(key, new CompoundTag().putFloat("value", friction));
                 serverValues.add(builder -> builder.friction(friction));
             }
             case "minecraft:light_dampening" -> {
@@ -1203,14 +1203,6 @@ public final class BehaviorBlockParser {
     static float asFloat(@Nullable JsonElement element, float fallback) {
         try {
             return element != null && element.isJsonPrimitive() ? element.getAsFloat() : fallback;
-        } catch (RuntimeException e) {
-            return fallback;
-        }
-    }
-
-    private static double asDouble(@Nullable JsonElement element, double fallback) {
-        try {
-            return element != null && element.isJsonPrimitive() ? element.getAsDouble() : fallback;
         } catch (RuntimeException e) {
             return fallback;
         }

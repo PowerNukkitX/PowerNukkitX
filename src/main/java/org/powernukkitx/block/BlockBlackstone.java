@@ -9,8 +9,8 @@ import org.jetbrains.annotations.NotNull;
 public class BlockBlackstone extends BlockSolid {
     public static final BlockProperties PROPERTIES = new BlockProperties(BLACKSTONE);
     public static final BlockDefinition DEFINITION = SOLID.toBuilder()
-            .hardness(1.5)
-            .resistance(6)
+            .hardness(1.5f)
+            .resistance(6f)
             .toolType(ItemTool.TYPE_PICKAXE)
             .toolTier(ItemTool.TIER_WOODEN)
             .canHarvestWithHand(false)

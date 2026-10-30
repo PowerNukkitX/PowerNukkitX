@@ -19,6 +19,7 @@ import org.powernukkitx.level.format.ChunkSection;
 import org.powernukkitx.level.format.IChunk;
 import org.powernukkitx.level.format.IChunkBuilder;
 import org.powernukkitx.level.format.LevelProvider;
+import org.powernukkitx.level.format.bitarray.BitArrayVersion;
 import org.powernukkitx.level.format.leveldb.LevelDBChunkSerializer;
 import org.powernukkitx.level.format.palette.Palette;
 import org.powernukkitx.level.util.LevelDBKeyUtil;
@@ -251,7 +252,7 @@ public final class LevelDBMigrationChunkSerializer {
             LevelDBChunkSerializer.INSTANCE.deserializeBlock(db, builder);
             deserializeLegacyHeightAndBiome(db, builder);
         } else {
-            deserializeHeightAndBiome(db, builder);
+            deserializeHeightAndBiome(db, builder, !pnxManagedStorage);
             LevelDBChunkSerializer.INSTANCE.deserializeBlock(db, builder);
         }
 
@@ -374,14 +375,14 @@ public final class LevelDBMigrationChunkSerializer {
     }
 
     @SuppressWarnings("unchecked")
-    private static void deserializeHeightAndBiome(DB db, IChunkBuilder builder) {
+    private static void deserializeHeightAndBiome(DB db, IChunkBuilder builder, boolean bdsStorage) {
         ByteBuf heightAndBiomesBuffer = null;
         try {
             DimensionData dimensionInfo = builder.getDimensionData();
             int sectionCount = dimensionInfo.getChunkSectionCount();
             Palette<Integer>[] biomeSections = (Palette<Integer>[]) new Palette<?>[sectionCount];
             for (int i = 0; i < sectionCount; i++) {
-                biomeSections[i] = new Palette<>(BiomeID.PLAINS);
+                biomeSections[i] = new Palette<>(BiomeID.PLAINS, BitArrayVersion.V0);
             }
 
             builder.biomeSections(biomeSections);
@@ -396,6 +397,15 @@ public final class LevelDBMigrationChunkSerializer {
                 builder.heightMap(heights);
                 Palette<Integer> lastPalette = null;
                 for (Palette<Integer> biomePalette : biomeSections) {
+                    if (bdsStorage) {
+                        int header = heightAndBiomesBuffer.getUnsignedByte(heightAndBiomesBuffer.readerIndex());
+                        // Native BDS 0xFE/0xFF denotes absent biome storage, not copy-previous.
+                        if (header == 0xfe || header == 0xff) {
+                            heightAndBiomesBuffer.skipBytes(1);
+                            continue;
+                        }
+                    }
+
                     biomePalette.readFromStorageRuntime(heightAndBiomesBuffer, Integer::valueOf, lastPalette);
                     lastPalette = biomePalette;
                 }

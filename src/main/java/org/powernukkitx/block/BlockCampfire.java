@@ -38,6 +38,7 @@ import javax.annotation.Nullable;
 import java.util.Objects;
 
 import static org.powernukkitx.block.property.CommonBlockProperties.EXTINGUISHED;
+import static org.powernukkitx.math.AxisAlignedBB.collisionEpsilon;
 
 
 @Slf4j
@@ -153,10 +154,7 @@ public class BlockCampfire extends BlockTransparent implements Faceable, BlockEn
             return;
         }
 
-        if (entity.hasEffect(EffectType.FIRE_RESISTANCE)
-                || entity instanceof EntityProjectile
-                || !entity.attack(getDamageEvent(entity))
-                || !entity.isAlive()) {
+        if (entity.hasEffect(EffectType.FIRE_RESISTANCE) || entity instanceof EntityProjectile) {
             return;
         }
 
@@ -251,7 +249,11 @@ public class BlockCampfire extends BlockTransparent implements Faceable, BlockEn
 
     @Override
     protected AxisAlignedBB recalculateCollisionBoundingBox() {
-        return new SimpleAxisAlignedBB(x, y, z, x + 1, y + 1, z + 1);
+        double epsilonX = collisionEpsilon(this.x);
+        double epsilonZ = collisionEpsilon(this.z);
+        return new SimpleAxisAlignedBB(
+                this.x + 0.0625 + epsilonX, this.y, this.z + 0.0625 + epsilonZ,
+                this.x + 0.9375 - epsilonX, this.y + 0.45, this.z + 0.9375 - epsilonZ);
     }
 
     public boolean isExtinguished() {

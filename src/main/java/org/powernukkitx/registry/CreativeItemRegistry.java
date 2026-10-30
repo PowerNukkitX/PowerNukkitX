@@ -104,6 +104,10 @@ public class CreativeItemRegistry implements ItemID, IRegistry<Integer, Item, It
                 int groupIndex = ((Number) tag.getOrDefault("group_index", -1)).intValue();
                 byte[] nbt = tag.containsKey("nbt_b64") ? Base64.getDecoder().decode(tag.get("nbt_b64").toString()) : EmptyArrays.EMPTY_BYTES;
                 String name = tag.get("id").toString();
+                // the dump can carry education blocks, which are not registered unless education is on
+                if (BlockRegistry.shouldSkip(name)) {
+                    continue;
+                }
                 Item item = Item.get(name, damage, 1, nbt, false);
                 item.setNbtBytes(nbt);
                 if (item.isNull() || (item.isBlock() && item.getBlockUnsafe().isAir())) {

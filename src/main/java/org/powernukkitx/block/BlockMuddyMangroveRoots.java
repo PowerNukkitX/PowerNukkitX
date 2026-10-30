@@ -13,8 +13,8 @@ import org.jetbrains.annotations.Nullable;
 public class BlockMuddyMangroveRoots extends BlockSolid implements Natural {
     public static final BlockProperties PROPERTIES = new BlockProperties(MUDDY_MANGROVE_ROOTS, CommonBlockProperties.PILLAR_AXIS);
     public static final BlockDefinition DEFINITION = SOLID.toBuilder()
-            .hardness(0.7)
-            .resistance(0.7)
+            .hardness(0.7f)
+            .resistance(0.7f)
             .toolTier(ItemTool.TYPE_SHOVEL)
             .isTransparent(true)
             .build();

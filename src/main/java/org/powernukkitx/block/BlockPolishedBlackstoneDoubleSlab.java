@@ -9,8 +9,8 @@ import org.jetbrains.annotations.NotNull;
 public class BlockPolishedBlackstoneDoubleSlab extends BlockDoubleSlabBase {
     public static final BlockProperties PROPERTIES = new BlockProperties(POLISHED_BLACKSTONE_DOUBLE_SLAB, CommonBlockProperties.MINECRAFT_VERTICAL_HALF);
     public static final BlockDefinition DEFINITION = BlockDoubleSlabBase.DEFINITION.toBuilder()
-            .hardness(2)
-            .resistance(6.0)
+            .hardness(2f)
+            .resistance(6.0f)
             .toolType(ItemTool.TYPE_PICKAXE)
             .canHarvestWithHand(false)
             .build();

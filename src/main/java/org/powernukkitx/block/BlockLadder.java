@@ -18,8 +18,8 @@ import org.jetbrains.annotations.NotNull;
 public class BlockLadder extends BlockTransparent implements Faceable {
     public static final BlockProperties PROPERTIES = new BlockProperties(LADDER, CommonBlockProperties.FACING_DIRECTION);
     public static final BlockDefinition DEFINITION = TRANSPARENT.toBuilder()
-            .hardness(0.4)
-            .resistance(2)
+            .hardness(0.4f)
+            .resistance(2f)
             .toolType(ItemTool.TYPE_AXE)
             .breaksWhenMoved(true)
             .sticksToPiston(false)

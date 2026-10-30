@@ -152,6 +152,7 @@ public class Chunk implements IChunk {
     private volatile boolean discarded;
     private volatile boolean storageResolved = true;
     private volatile boolean statesUpgraded;
+    private volatile int lastViewRequestTick = Integer.MIN_VALUE;
     protected boolean isInitializing;
     protected List<CompoundTag> blockEntityNBT;
     protected List<CompoundTag> entityNBT;
@@ -449,6 +450,25 @@ public class Chunk implements IChunk {
     }
 
     /**
+     * Claims the generation view request of this chunk for a level tick. Every player waiting for
+     * an unfinished chunk asks for it again on each tick, and one request per tick already keeps
+     * its generation moving, so the others can be skipped.
+     * <p>
+     * Two threads may both claim the same tick; that only costs a duplicate request.
+     *
+     * @param tick the current tick of the chunk's level
+     * @return whether no request was claimed for this tick yet
+     */
+    @ApiStatus.Internal
+    public boolean claimViewRequest(int tick) {
+        if (this.lastViewRequestTick == tick) {
+            return false;
+        }
+        this.lastViewRequestTick = tick;
+        return true;
+    }
+
+    /**
      * Returns whether this chunk is admitted to the active runtime lifecycle.
      *
      * @return whether the chunk is available
@@ -601,6 +621,34 @@ public class Chunk implements IChunk {
         }
         this.statesUpgraded = true;
         return false;
+    }
+
+    /**
+     * Like {@link #hasLegacyStates()}, but returns at once instead of waiting while a generation
+     * stage is writing the chunk's blocks.
+     *
+     * @return whether the chunk has legacy states, or {@code null} while its blocks are being written
+     */
+    @ApiStatus.Internal
+    public @Nullable Boolean tryHasLegacyStates() {
+        if (this.statesUpgraded) {
+            return Boolean.FALSE;
+        }
+        long stamp = blockLock.tryReadLock();
+        if (stamp == 0L) {
+            return null;
+        }
+        try {
+            for (ChunkSection section : this.sections) {
+                if (section != null && section.hasLegacyStates()) {
+                    return Boolean.TRUE;
+                }
+            }
+        } finally {
+            blockLock.unlockRead(stamp);
+        }
+        this.statesUpgraded = true;
+        return Boolean.FALSE;
     }
 
     @Override

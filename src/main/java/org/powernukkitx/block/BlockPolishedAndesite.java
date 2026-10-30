@@ -8,8 +8,8 @@ import org.jetbrains.annotations.NotNull;
 public class BlockPolishedAndesite extends BlockSolid {
     public static final BlockProperties PROPERTIES = new BlockProperties(POLISHED_ANDESITE);
     public static final BlockDefinition DEFINITION = SOLID.toBuilder()
-            .hardness(1.5)
-            .resistance(6)
+            .hardness(1.5f)
+            .resistance(6.0f)
             .toolType(ItemTool.TYPE_PICKAXE)
             .toolTier(ItemTool.TIER_WOODEN)
             .canHarvestWithHand(false)

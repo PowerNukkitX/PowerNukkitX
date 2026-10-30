@@ -7,7 +7,7 @@ import org.jetbrains.annotations.NotNull;
 public class BlockDeepslateEmeraldOre extends BlockEmeraldOre  {
     public static final BlockProperties PROPERTIES = new BlockProperties(DEEPSLATE_EMERALD_ORE);
     public static final BlockDefinition DEFINITION = BlockEmeraldOre.DEFINITION.toBuilder()
-            .hardness(4.5)
+            .hardness(4.5f)
             .build();
 
     @Override

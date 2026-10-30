@@ -1,9 +1,6 @@
 package org.powernukkitx.blockentity;
 
-import org.powernukkitx.block.Block;
-import org.powernukkitx.block.BlockID;
 import org.powernukkitx.item.Item;
-import org.powernukkitx.item.ItemBlock;
 import org.powernukkitx.level.format.IChunk;
 import org.powernukkitx.nbt.tag.CompoundTag;
 import org.powernukkitx.utils.ItemHelper;
@@ -25,9 +22,6 @@ public class BlockEntityGlowItemFrame extends BlockEntityItemFrame {
 
     @Override
     public CompoundTag getSpawnCompound() {
-        if (!this.nbt.contains("Item")) {
-            this.setItem(new ItemBlock(Block.get(BlockID.AIR)), false);
-        }
         Item item = getItem();
         CompoundTag tag = super.getSpawnCompound();
 

@@ -8,8 +8,8 @@ import org.jetbrains.annotations.NotNull;
 public class BlockCobbledDeepslate extends BlockSolid {
     public static final BlockProperties PROPERTIES = new BlockProperties(COBBLED_DEEPSLATE);
     public static final BlockDefinition DEFINITION = SOLID.toBuilder()
-            .hardness(3.5)
-            .resistance(6.0)
+            .hardness(3.5f)
+            .resistance(6.0f)
             .toolType(ItemTool.TYPE_PICKAXE)
             .toolTier(ItemTool.TIER_WOODEN)
             .canHarvestWithHand(false)

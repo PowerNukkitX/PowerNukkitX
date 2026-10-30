@@ -7,7 +7,7 @@ import org.jetbrains.annotations.NotNull;
 public class BlockDeepslateCoalOre extends BlockCoalOre {
     public static final BlockProperties PROPERTIES = new BlockProperties(DEEPSLATE_COAL_ORE);
     public static final BlockDefinition DEFINITION = BlockCoalOre.DEFINITION.toBuilder()
-            .hardness(4.5)
+            .hardness(4.5f)
             .build();
 
     @Override

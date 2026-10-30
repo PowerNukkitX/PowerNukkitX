@@ -9,8 +9,8 @@ import org.jetbrains.annotations.NotNull;
 public class BlockPolishedDeepslateDoubleSlab extends BlockDoubleSlabBase {
     public static final BlockProperties PROPERTIES = new BlockProperties(POLISHED_DEEPSLATE_DOUBLE_SLAB, CommonBlockProperties.MINECRAFT_VERTICAL_HALF);
     public static final BlockDefinition DEFINITION = BlockDoubleSlabBase.DEFINITION.toBuilder()
-            .hardness(3.5)
-            .resistance(6)
+            .hardness(3.5f)
+            .resistance(6.0f)
             .toolType(ItemTool.TYPE_PICKAXE)
             .toolTier(ItemTool.TIER_WOODEN)
             .canHarvestWithHand(false)

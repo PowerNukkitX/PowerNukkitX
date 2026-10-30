@@ -9,6 +9,8 @@ import org.powernukkitx.entity.passive.EntityAnimal;
 import org.powernukkitx.level.Level;
 import lombok.AllArgsConstructor;
 
+import java.util.Map;
+
 import static org.powernukkitx.level.generator.stages.normal.NormalTerrainStage.SEA_LEVEL;
 
 public class ConditionPopulationControl extends Condition {
@@ -27,18 +29,23 @@ public class ConditionPopulationControl extends Condition {
         int chunkX = block.getChunkX();
         int chunkZ = block.getChunkZ();
         boolean surface = block.getY() >= block.getLevel().getHeightMap(block.getFloorX(), block.getFloorZ());
+        int densityCap = category.densityCap[surface ? 0 : 1][level.getDimension()];
+        if (densityCap <= 0) return false;
         int entityDensity = 0;
         for(int x = -4; x <= 4; x++) {
             for(int z = -4; z <= 4; z++) {
-                for(Entity entity : level.getChunkEntities(chunkX + x, chunkZ + z, false).values()) {
-                    if(category.superClass.isAssignableFrom(entity.getClass())) {
-                        if(entity.getFloorY() >= SEA_LEVEL - 2 && surface) entityDensity++;
-                        if(entity.getFloorY() < SEA_LEVEL - 2 && !surface) entityDensity++;
+                Map<Long, Entity> entities = level.getChunkEntities(chunkX + x, chunkZ + z, false);
+                if (entities.isEmpty()) continue;
+                for(Entity entity : entities.values()) {
+                    if(category.superClass.isAssignableFrom(entity.getClass())
+                            && (entity.getFloorY() >= SEA_LEVEL - 2) == surface
+                            && ++entityDensity >= densityCap) {
+                        return false;
                     }
                 }
             }
         }
-        return entityDensity < category.densityCap[surface ? 0 : 1][level.getDimension()];
+        return true;
     }
 
     @AllArgsConstructor

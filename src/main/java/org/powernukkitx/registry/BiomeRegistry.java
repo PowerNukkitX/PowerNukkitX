@@ -44,6 +44,7 @@ import java.util.stream.Collectors;
 
 public class BiomeRegistry implements IRegistry<Integer, Pair<Short, BiomeDefinitionData>, Pair<Short, BiomeDefinitionData>> {
     private static final ObjectArrayList<String> BIOME_STRING_LIST = new ObjectArrayList<>();
+    private static final Object2IntOpenHashMap<String> BIOME_STRING_INDEX = newBiomeStringIndex();
     private static final Int2ObjectOpenHashMap<Pair<Short, BiomeDefinitionData>> DEFINITIONS = new Int2ObjectOpenHashMap<>(0xFF);
     private static final Object2IntOpenHashMap<String> NAME2ID = new Object2IntOpenHashMap<>(0xFF);
     private static final Int2ObjectMap<String> ID2NAME = new Int2ObjectOpenHashMap<>();
@@ -75,7 +76,7 @@ public class BiomeRegistry implements IRegistry<Integer, Pair<Short, BiomeDefini
         try (var stream = BiomeRegistry.class.getClassLoader().getResourceAsStream("gamedata/kaooot/biome_definitions.nbt");
              var nbtInputStream = NbtUtils.createGZIPReader(stream)) {
             final NbtMap root = (NbtMap) nbtInputStream.readTag();
-            BIOME_STRING_LIST.addAll(root.getList("biomeStringList", NbtType.STRING));
+            addToBiomeStringList(root.getList("biomeStringList", NbtType.STRING));
             final List<NbtMap> biomeData = root.getList("biomeData", NbtType.COMPOUND);
             final List<Pair<Short, BiomeDefinitionData>> biomes = this.parseBiomeDefinitions(biomeData);
             for (Pair<Short, BiomeDefinitionData> pair : biomes) {
@@ -157,6 +158,7 @@ public class BiomeRegistry implements IRegistry<Integer, Pair<Short, BiomeDefini
         DEFINITIONS.clear();
         NAME2ID.clear();
         BIOME_STRING_LIST.clear();
+        BIOME_STRING_INDEX.clear();
         BIOME_NAME_TO_TAGS_MAP.clear();
         BIOME_ID_TO_TAGS_MAP.clear();
         init();
@@ -173,8 +175,21 @@ public class BiomeRegistry implements IRegistry<Integer, Pair<Short, BiomeDefini
     }
 
     public int registerToBiomeStringList(String value) {
-        BIOME_STRING_LIST.add(value);
+        addToBiomeStringList(List.of(value));
         return BIOME_STRING_LIST.size() - 1;
+    }
+
+    private static Object2IntOpenHashMap<String> newBiomeStringIndex() {
+        final Object2IntOpenHashMap<String> index = new Object2IntOpenHashMap<>();
+        index.defaultReturnValue(-1);
+        return index;
+    }
+
+    private static void addToBiomeStringList(List<String> values) {
+        for (String value : values) {
+            BIOME_STRING_INDEX.putIfAbsent(value, BIOME_STRING_LIST.size());
+            BIOME_STRING_LIST.add(value);
+        }
     }
 
     public List<String> getTags(int biomeId) {
@@ -218,9 +233,11 @@ public class BiomeRegistry implements IRegistry<Integer, Pair<Short, BiomeDefini
         }
         // BIOME_STRING_LIST
         int listSize = in.readInt();
+        final List<String> biomeStrings = new ObjectArrayList<>(listSize);
         for (int i = 0; i < listSize; i++) {
-            BIOME_STRING_LIST.add(in.readUTF());
+            biomeStrings.add(in.readUTF());
         }
+        addToBiomeStringList(biomeStrings);
         // Definitions from uncompressed NBT bytes (no Gzip decompression needed)
         int nbtLen = in.readInt();
         byte[] nbtBytes = new byte[nbtLen];
@@ -241,7 +258,18 @@ public class BiomeRegistry implements IRegistry<Integer, Pair<Short, BiomeDefini
     }
 
     public boolean containsTag(String tag, BiomeDefinitionData data) {
-        return Objects.requireNonNull(data.getTags()).contains(((Integer) BIOME_STRING_LIST.indexOf(tag)).shortValue());
+        final List<Short> tags = Objects.requireNonNull(data.getTags());
+        final int index = BIOME_STRING_INDEX.getInt(tag);
+        if (index < 0) {
+            return false;
+        }
+        final short target = (short) index;
+        for (int i = 0, size = tags.size(); i < size; i++) {
+            if (tags.get(i) == target) {
+                return true;
+            }
+        }
+        return false;
     }
 
     public boolean containsTag(String tag, String biomeId) {

@@ -9,8 +9,8 @@ public class BlockStonecutter extends BlockSolid {
 
     public static final BlockProperties PROPERTIES = new BlockProperties(STONECUTTER);
     public static final BlockDefinition DEFINITION = SOLID.toBuilder()
-            .hardness(3.5)
-            .resistance(17.5)
+            .hardness(3.5f)
+            .resistance(17.5f)
             .toolType(ItemTool.TYPE_PICKAXE)
             .toolTier(ItemTool.TIER_WOODEN)
             .canHarvestWithHand(false)

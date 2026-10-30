@@ -14,9 +14,9 @@ import java.util.concurrent.ThreadLocalRandom;
 public class BlockFrostedIce extends BlockTransparent {
     public static final BlockProperties PROPERTIES = new BlockProperties(FROSTED_ICE, CommonBlockProperties.AGE_4);
     public static final BlockDefinition DEFINITION = TRANSPARENT.toBuilder()
-            .hardness(0.5)
-            .resistance(2.5)
-            .friction(0.98)
+            .hardness(0.5f)
+            .resistance(2.5f)
+            .friction(0.98f)
             .canHarvestWithHand(false)
             .build();
 

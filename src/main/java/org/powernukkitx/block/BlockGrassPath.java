@@ -16,8 +16,8 @@ import org.jetbrains.annotations.NotNull;
 public class BlockGrassPath extends BlockGrassBlock {
     public static final BlockProperties PROPERTIES = new BlockProperties(GRASS_PATH);
     public static final BlockDefinition DEFINITION = BlockGrassBlock.DEFINITION.toBuilder()
-            .hardness(0.65)
-            .resistance(0.65)
+            .hardness(0.65f)
+            .resistance(0.65f)
             .isTransparent(true)
             .build();
 

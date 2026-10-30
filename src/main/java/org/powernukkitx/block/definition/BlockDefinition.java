@@ -1,6 +1,7 @@
 package org.powernukkitx.block.definition;
 
 import lombok.Getter;
+import lombok.experimental.Accessors;
 import lombok.experimental.SuperBuilder;
 
 @SuperBuilder(toBuilder = true)
@@ -17,6 +18,7 @@ public class BlockDefinition {
     boolean canBeFlowedInto;
     boolean canBeActivated;
     boolean hasEntityCollision;
+    @Accessors(fluent = true)
     boolean hasEntityStepSensor;
     boolean canPassThrough;
     boolean canBePushed;
@@ -46,8 +48,8 @@ public class BlockDefinition {
     int maxStackSize;
     int waterloggingLevel;
 
-    double hardness;
-    double resistance;
-    double friction;
-    double passableFrictionFactor;
+    float hardness;
+    float resistance;
+    float friction;
+    float passableFrictionFactor;
 }

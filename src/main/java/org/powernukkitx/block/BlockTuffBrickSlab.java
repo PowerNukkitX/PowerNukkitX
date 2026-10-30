@@ -9,8 +9,8 @@ import org.jetbrains.annotations.NotNull;
 public class BlockTuffBrickSlab extends BlockSlab {
     public static final BlockProperties PROPERTIES = new BlockProperties(TUFF_BRICK_SLAB, CommonBlockProperties.MINECRAFT_VERTICAL_HALF);
     public static final BlockDefinition DEFINITION = BlockSlab.DEFINITION.toBuilder()
-            .hardness(1.5)
-            .resistance(6)
+            .hardness(1.5f)
+            .resistance(6f)
             .toolType(ItemTool.TYPE_PICKAXE)
             .toolTier(ItemTool.TIER_WOODEN)
             .canHarvestWithHand(false)

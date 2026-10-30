@@ -2,6 +2,7 @@ package org.powernukkitx.block;
 
 import org.powernukkitx.block.customblock.BlockDataDriven;
 import org.powernukkitx.Player;
+import org.powernukkitx.block.property.enums.RedstoneSide;
 import org.powernukkitx.event.block.BlockRedstoneEvent;
 import org.powernukkitx.event.redstone.RedstoneUpdateEvent;
 import org.powernukkitx.item.Item;
@@ -11,20 +12,26 @@ import org.powernukkitx.level.Position;
 import org.powernukkitx.math.BlockFace;
 import org.powernukkitx.math.BlockFace.Plane;
 import org.powernukkitx.math.Vector3;
+import org.powernukkitx.utils.LevelException;
 import org.powernukkitx.utils.RedstoneComponent;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.EnumSet;
 import java.util.Objects;
 
+import static org.powernukkitx.block.property.CommonBlockProperties.REDSTONE_EAST;
+import static org.powernukkitx.block.property.CommonBlockProperties.REDSTONE_NORTH;
 import static org.powernukkitx.block.property.CommonBlockProperties.REDSTONE_SIGNAL;
+import static org.powernukkitx.block.property.CommonBlockProperties.REDSTONE_SOUTH;
+import static org.powernukkitx.block.property.CommonBlockProperties.REDSTONE_WEST;
 
 
 /**
  * @author Angelic47 (Nukkit Project)
  */
-public class BlockRedstoneWire extends BlockFlowable implements RedstoneComponent {
-    public static final BlockProperties PROPERTIES = new BlockProperties(REDSTONE_WIRE, REDSTONE_SIGNAL);
+public class BlockRedstoneWire extends BlockFlowable implements RedstoneComponent, StateDeriving {
+    public static final BlockProperties PROPERTIES = new BlockProperties(REDSTONE_WIRE, REDSTONE_EAST, REDSTONE_NORTH,
+        REDSTONE_SIGNAL, REDSTONE_SOUTH, REDSTONE_WEST);
 
     @Override
     @NotNull
@@ -228,6 +235,8 @@ public class BlockRedstoneWire extends BlockFlowable implements RedstoneComponen
         }
 
         if (!this.level.getServer().getSettings().gameplaySettings().enableRedstone()) {
+            // the shape is only what the wire looks like, it still follows its neighbors
+            this.refreshShape();
             return 0;
         }
 
@@ -243,9 +252,61 @@ public class BlockRedstoneWire extends BlockFlowable implements RedstoneComponen
             return Level.BLOCK_UPDATE_NORMAL;
         }
 
+        this.refreshShape();
         this.updateSurroundingRedstone(false);
 
         return Level.BLOCK_UPDATE_NORMAL;
+    }
+
+    private void refreshShape() {
+        if (this.autoConfigureState()) {
+            // the signal is untouched, so nothing around the wire needs to hear about this
+            this.level.setBlock(this, this, true, false);
+        }
+    }
+
+    /**
+     * Works out which way the wire runs on each side, the same way the client draws it: toward
+     * anything it can power or be powered by, up the side of a block to a wire on top, and down to
+     * a wire below when nothing is in the way. A wire running one way only stretches across the
+     * whole block, and one with no neighbors at all draws as a cross.
+     */
+    @Override
+    public boolean autoConfigureState() {
+        final RedstoneSide north, south, west, east;
+        try {
+            final boolean openAbove = !this.up().isNormalBlock();
+            north = this.connectingSide(BlockFace.NORTH, openAbove);
+            south = this.connectingSide(BlockFace.SOUTH, openAbove);
+            west = this.connectingSide(BlockFace.WEST, openAbove);
+            east = this.connectingSide(BlockFace.EAST, openAbove);
+        } catch (LevelException e) {
+            // a neighbor is outside a loaded chunk, try again on the next update
+            return false;
+        }
+
+        final boolean northSouthNone = north == RedstoneSide.NONE && south == RedstoneSide.NONE;
+        final boolean eastWestNone = east == RedstoneSide.NONE && west == RedstoneSide.NONE;
+        final short previous = this.blockstate.specialValue();
+        this.setPropertyValue(REDSTONE_NORTH, north == RedstoneSide.NONE && eastWestNone ? RedstoneSide.SIDE : north);
+        this.setPropertyValue(REDSTONE_SOUTH, south == RedstoneSide.NONE && eastWestNone ? RedstoneSide.SIDE : south);
+        this.setPropertyValue(REDSTONE_WEST, west == RedstoneSide.NONE && northSouthNone ? RedstoneSide.SIDE : west);
+        this.setPropertyValue(REDSTONE_EAST, east == RedstoneSide.NONE && northSouthNone ? RedstoneSide.SIDE : east);
+        return this.blockstate.specialValue() != previous;
+    }
+
+    private RedstoneSide connectingSide(BlockFace face, boolean openAbove) {
+        final Block neighbor = this.getSide(face);
+        if (openAbove) {
+            final boolean holdsWire = neighbor instanceof BlockTrapdoor || this.canBePlacedOn(neighbor);
+            if (holdsWire && canConnectTo(neighbor.up(), null)) {
+                return neighbor.isSolid(face.getOpposite()) ? RedstoneSide.UP : RedstoneSide.SIDE;
+            }
+        }
+        if (canConnectTo(neighbor, face) || !neighbor.isNormalBlock() && canConnectTo(neighbor.down(), null)) {
+            return RedstoneSide.SIDE;
+        }
+        return RedstoneSide.NONE;
     }
 
     public boolean canBePlacedOn(Block support) {

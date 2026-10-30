@@ -9,6 +9,7 @@ import org.powernukkitx.migration.MigrationFormat;
 import org.powernukkitx.migration.MigrationService;
 import org.powernukkitx.migration.MigrationVersion;
 import org.powernukkitx.migration.data.StructureMigrationData;
+import org.powernukkitx.migration.steps.StructureV3_1_0Migration;
 import org.powernukkitx.nbt.tag.CompoundTag;
 
 import java.io.File;
@@ -136,23 +137,52 @@ public final class StructureMigrationExecutor {
         }
 
         int migrated = 0;
+        int skipped = 0;
         for (Path structureFile : structureFiles) {
             CompoundTag root = readStructure(structureFile);
-            StructureMigrationData result = migrationService.apply(
-                    MigrationFormat.STRUCTURE,
-                    currentVersion,
-                    new StructureMigrationData(root, structureFile)
-            );
-            writeStructure(structureFile, result.root());
-            migrated++;
+            CompoundTag original = root.copy();
+            StructureMigrationData result;
+            try {
+                result = migrationService.apply(
+                        MigrationFormat.STRUCTURE,
+                        currentVersion,
+                        new StructureMigrationData(root, structureFile)
+                );
+            } catch (StructureV3_1_0Migration.UnrecoverableActorOriginException e) {
+                Path preserved = quarantineStructure(structureFile);
+                skipped++;
+                log.warn("[Structure Migration] UNMIGRATED: {} - {}. Original preserved at {}. "
+                        + "Re-save the structure to restore its original name.", structureFile, e.getMessage(), preserved);
+                continue;
+            }
+
+            if (!original.equals(result.root())) {
+                writeStructure(structureFile, result.root());
+                migrated++;
+            }
         }
 
         writeVersion(versionFile, targetVersion);
         log.info(
-                "[Structure Migration] Structure storage migration from {} to {} completed: {} files processed",
+                "[Structure Migration] Structure storage migration from {} to {} completed: "
+                        + "{} changed, {} skipped, {} files inspected",
                 currentVersion == null ? "legacy" : currentVersion.toString(),
                 targetVersion,
-                migrated);
+                migrated,
+                skipped,
+                structureFiles.size());
+    }
+
+    private static Path quarantineStructure(Path path) throws IOException {
+        String name = path.getFileName() + ".unmigrated";
+        Path preserved = path.resolveSibling(name);
+        int suffix = 1;
+
+        while (Files.exists(preserved)) {
+            preserved = path.resolveSibling(name + "." + suffix++);
+        }
+
+        return Files.move(path, preserved);
     }
 
     private static CompoundTag readStructure(Path path) throws IOException {

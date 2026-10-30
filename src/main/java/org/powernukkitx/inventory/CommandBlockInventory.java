@@ -168,7 +168,7 @@ public class CommandBlockInventory implements Inventory, BlockEntityInventoryNam
 
     @Override
     public Set<Player> getViewers() {
-        return Collections.emptySet();
+        return this.viewers;
     }
 
     @Override
@@ -184,9 +184,8 @@ public class CommandBlockInventory implements Inventory, BlockEntityInventoryNam
     @Override
     public void onOpen(Player who) {
         if (who.isOp() && who.isCreative()) {
-            this.viewers.add(who);
             final ContainerOpenPacket pk = new ContainerOpenPacket();
-            pk.setContainerID((byte) who.getWindowId(this));
+            pk.setContainerID((byte) who.allocateTransientWindowId());
             pk.setContainerType(this.getType());
             InventoryHolder holder = this.getHolder();
             if (holder instanceof Vector3 vector3) {
@@ -200,10 +199,6 @@ public class CommandBlockInventory implements Inventory, BlockEntityInventoryNam
 
     @Override
     public boolean open(Player who) {
-        if (who.getWindowId(this) != -1) {//todo hack, ContainerClosePacket no longer triggers for command block and struct block, finding the correct way to close them
-            who.removeWindow(this);
-        }
-
         InventoryOpenEvent ev = new InventoryOpenEvent(this, who);
         who.getServer().getPluginManager().callEvent(ev);
         if (ev.isCancelled()) {

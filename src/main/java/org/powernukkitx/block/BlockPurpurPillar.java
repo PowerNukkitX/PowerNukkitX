@@ -15,8 +15,8 @@ public class BlockPurpurPillar extends BlockSolid {
 
     public static final BlockProperties PROPERTIES = new BlockProperties(PURPUR_PILLAR, PILLAR_AXIS);
     public static final BlockDefinition DEFINITION = SOLID.toBuilder()
-            .hardness(1.5)
-            .resistance(30)
+            .hardness(1.5f)
+            .resistance(30f)
             .toolType(ItemTool.TYPE_PICKAXE)
             .toolTier(ItemTool.TIER_WOODEN)
             .build();

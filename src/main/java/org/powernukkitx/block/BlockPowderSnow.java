@@ -14,8 +14,8 @@ import org.jetbrains.annotations.NotNull;
 public class BlockPowderSnow extends BlockTransparent {
     public static final BlockProperties PROPERTIES = new BlockProperties(POWDER_SNOW);
     public static final BlockDefinition DEFINITION = TRANSPARENT.toBuilder()
-            .hardness(0.25)
-            .resistance(0.1)
+            .hardness(0.25f)
+            .resistance(0.1f)
             .canPassThrough(true)
             .isTransparent(true)
             .isSolid(false)

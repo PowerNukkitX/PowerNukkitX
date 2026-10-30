@@ -24,13 +24,14 @@ import lombok.extern.slf4j.Slf4j;
 import org.cloudburstmc.math.vector.Vector3f;
 import org.cloudburstmc.math.vector.Vector3i;
 import org.cloudburstmc.netty.channel.nethernet.NetherNetChannel;
-import org.cloudburstmc.netty.channel.raknet.RakServerChannel;
-import org.cloudburstmc.netty.handler.codec.raknet.common.RakSessionCodec;
 import org.cloudburstmc.protocol.bedrock.BedrockServerSession;
+import org.powernukkitx.entity.components.RideableComponent;
+import org.powernukkitx.entity.passive.EntityParrot;
 import org.cloudburstmc.protocol.bedrock.data.*;
 import org.cloudburstmc.protocol.bedrock.data.actor.ActorDataTypes;
 import org.cloudburstmc.protocol.bedrock.data.actor.ActorEvent;
 import org.cloudburstmc.protocol.bedrock.data.actor.ActorFlags;
+import org.cloudburstmc.protocol.bedrock.data.actor.ActorLink;
 import org.cloudburstmc.protocol.bedrock.data.actor.PropertySyncData;
 import org.cloudburstmc.protocol.bedrock.data.command.CommandData;
 import org.cloudburstmc.protocol.bedrock.data.command.CommandEnumData;
@@ -112,6 +113,7 @@ import org.powernukkitx.event.entity.EntityDamageEvent.DamageCause;
 import org.powernukkitx.event.entity.EntityPortalEnterEvent;
 import org.powernukkitx.event.entity.EntityPortalEnterEvent.PortalType;
 import org.powernukkitx.event.entity.ProjectileLaunchEvent;
+import org.powernukkitx.event.inventory.InventoryCloseEvent;
 import org.powernukkitx.event.inventory.InventoryPickupArrowEvent;
 import org.powernukkitx.event.inventory.InventoryPickupTridentEvent;
 import org.powernukkitx.event.player.*;
@@ -127,6 +129,7 @@ import org.powernukkitx.inventory.EntityHandItem;
 import org.powernukkitx.inventory.HumanInventory;
 import org.powernukkitx.inventory.Inventory;
 import org.powernukkitx.inventory.PlayerCursorInventory;
+import org.powernukkitx.inventory.StructBlockInventory;
 import org.powernukkitx.inventory.fake.FakeInventory;
 import org.powernukkitx.inventory.fake.FakeInventoryType;
 import org.powernukkitx.item.Item;
@@ -167,6 +170,7 @@ import org.powernukkitx.nbt.tag.FloatTag;
 import org.powernukkitx.nbt.tag.ListTag;
 import org.powernukkitx.nbt.tag.StringTag;
 import org.powernukkitx.nbt.tag.Tag;
+import org.powernukkitx.network.FlushablePeer;
 import org.powernukkitx.network.primitiveshape.PrimitiveShapes;
 import org.powernukkitx.network.process.PacketHandler;
 import org.powernukkitx.network.process.PlayerSessionHolder;
@@ -247,6 +251,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     /// static fields
     public boolean playedBefore;
     public boolean spawned = false;
+    public boolean motionSent;
     public volatile boolean locallyInitialized = false;
     public volatile boolean loggedIn = false;
     public final HashSet<String> achievements = new HashSet<>();
@@ -291,6 +296,16 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     protected int clientRequestedChunkRadius;
     protected boolean initialRespawnSearchSent;
     protected boolean initialRespawnReady;
+    private static final RideableComponent PARROT_SHOULDERS =
+            new RideableComponent(0, true,
+                    RideableComponent.DismountMode.DEFAULT,
+                    Set.of("parrot_tame"), "", 0, true, true, 2,
+                    List.of(
+                            new RideableComponent.Seat(0, 0,
+                                    new org.powernukkitx.math.Vector3f(0.4f, -0.2f, -0.1f), 0f, null, null, null),
+                            new RideableComponent.Seat(1, 2,
+                                    new org.powernukkitx.math.Vector3f(-0.4f, -0.2f, -0.1f), 0f, null, null, null)));
+
     protected Position initialRespawnPosition;
     protected int viewDistance;
     protected Position spawnPoint;
@@ -342,6 +357,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
      * drained in arrival order at the start of {@link #onUpdate}. See {@link #handlePacket}.
      */
     protected final Queue<BedrockPacket> inboundPackets = PlatformDependent.newMpscQueue();
+    private final AtomicBoolean inboundSignalled = new AtomicBoolean();
     private @Nullable Server.PreloadedPlayerData preloadedPlayerData;
     private Consumer<BedrockPacket> inboundProcessor;
     protected volatile String pendingClose;
@@ -511,6 +527,17 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     @NotNull
     public BedrockServerSession getSession() {
         return this.session;
+    }
+
+    /**
+     * Writes the packets queued for this player right away instead of on the session's own timer,
+     * see {@link FlushablePeer}. Safe to call from any thread.
+     */
+    @ApiStatus.Internal
+    public void flushOutbound() {
+        if (this.session.getPeer() instanceof FlushablePeer peer) {
+            peer.flushQueued();
+        }
     }
 
     /**
@@ -989,7 +1016,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         if (endPortal) {//handle endPortal teleport
             if (!inEndPortal) {
                 inEndPortal = true;
-                if (this.getRiding() == null && this.getPassengers().isEmpty()) {
+                if (this.getRiding() == null && releaseShoulderParrots() && this.getPassengers().isEmpty()) {
                     EntityPortalEnterEvent ev = new EntityPortalEnterEvent(this, PortalType.END);
                     getServer().getPluginManager().callEvent(ev);
 
@@ -1274,7 +1301,22 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     protected void handlePacket(BedrockPacket packet) {
         if (!this.inboundPackets.offer(packet)) {
             log.warn("Failed to enqueue inbound packet {} for player {}", packet.getClass().getSimpleName(), this.getName());
+            return;
         }
+        this.server.onInboundQueued(this);
+    }
+
+    /**
+     * Marks this player as waiting for the server's idle inbound handling.
+     *
+     * @return whether it was not marked yet, so the caller has to queue it
+     */
+    boolean claimInboundSignal() {
+        return this.inboundSignalled.compareAndSet(false, true);
+    }
+
+    void releaseInboundSignal() {
+        this.inboundSignalled.set(false);
     }
 
     protected void drainInboundPackets() {
@@ -3364,18 +3406,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
      */
     public long getPing() {
         final Channel channel = this.session.getPeer().getChannel();
-        if (channel instanceof NetherNetChannel netherNet) {
-            return netherNet.getPing();
-        }
-        if (!(channel.parent() instanceof RakServerChannel rakServerChannel)) {
-            return -1;
-        }
-        var childChannel = rakServerChannel.getChildChannel(getSocketAddress());
-        if (childChannel == null) {
-            return -1;
-        }
-        var rakSessionCodec = childChannel.rakPipeline().get(RakSessionCodec.class);
-        return rakSessionCodec == null ? -1 : rakSessionCodec.getPing();
+        return channel instanceof NetherNetChannel netherNet ? netherNet.getPing() : -1;
     }
 
     public boolean sleepOn(Vector3 pos) {
@@ -3695,6 +3726,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
                 packet.setTargetRuntimeID(this.runtimeId());
                 packet.setMotion(Vector3f.from(this.motionX, this.motionY, this.motionZ));
                 this.sendPacket(packet);  // Send it to self
+                this.motionSent = true;
             }
             if (this.motionY > 0) {
                 //todo: check this
@@ -3828,9 +3860,11 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
             }
 
             if (this.motionX != 0 || this.motionY != 0 || this.motionZ != 0) {
-                this.setMotion(new Vector3(motionX, motionY, motionZ));
+                if (!this.motionSent) this.setMotion(new Vector3(motionX, motionY, motionZ));
                 motionX = motionY = motionZ = 0;
             }
+
+            this.motionSent = false;
 
             while (!this.clientMovements.isEmpty()) {
                 this.handleMovement(this.clientMovements.poll());
@@ -4784,6 +4818,8 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         if (scoreboardManager != null) {
             scoreboardManager.beforePlayerQuit(this);
         }
+
+        releaseShoulderParrots();
 
         //dismount horse
         if (this.riding != null && this.riding.isRideable()) {
@@ -5785,6 +5821,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         }
 
         if (super.attack(source)) {
+            releaseShoulderParrots();
             if (this.getLastDamageCause() == source && this.spawned) {
                 if (source instanceof EntityDamageByEntityEvent entityDamageByEntityEvent) {
                     // Save the entity that last attacked the player in lastBeAttackEntity
@@ -5964,6 +6001,10 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         setOpenSignFront(null);
 
         this.setMotion(this.temporalVector.setComponents(0, 0, 0));
+        if (this.isCrawling()) {
+            this.setCrawling(false);
+            this.sendData(this);
+        }
 
         boolean switchLevel = false;
         if (!to.getLevel().equals(from.getLevel())) {
@@ -6220,9 +6261,18 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
      * @return the allocated window ID
      */
     public int allocateInventoryWindowId() {
-        this.windowsCnt = (byte) Math.max(1, ++this.windowsCnt % 100);
-        this.inventoryWindowId = this.windowsCnt;
+        this.inventoryWindowId = (byte) allocateTransientWindowId();
         return this.inventoryWindowId;
+    }
+
+    /**
+     * Allocates a transient container window ID without registering an inventory.
+     *
+     * @return the allocated window ID
+     */
+    public int allocateTransientWindowId() {
+        this.windowsCnt = (byte) Math.max(1, ++this.windowsCnt % 100);
+        return this.windowsCnt;
     }
 
     /**
@@ -6256,8 +6306,8 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
      * @return The unique identifier assigned to the window if successfully added and opened; -1 if the window fails to be added.
      */
     public int addWindow(@NotNull Inventory inventory) {
-        if (getTopWindow().isPresent() || inventoryOpen) return -1;
         Preconditions.checkNotNull(inventory);
+        if (getTopWindow().isPresent() || inventoryOpen) return -1;
         if (this.windows.containsKey(inventory)) {
             return this.windows.get(inventory);
         }
@@ -6336,6 +6386,21 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
             this.windows.remove(inventory);
             updateTrackingPositions(true);
         }
+    }
+
+    /**
+     * Completes a Structure Block editor window already closed by the client, without sending another close packet.
+     *
+     * @param inventory the Structure Block editor associated with the client update packet
+     */
+    public void finishEditorWindow(@NotNull Inventory inventory) {
+        Preconditions.checkArgument(inventory instanceof StructBlockInventory);
+        if (!this.windows.containsKey(inventory)) return;
+
+        server.getPluginManager().callEvent(new InventoryCloseEvent(inventory, this));
+        inventory.getViewers().remove(this);
+        this.windows.remove(inventory);
+        updateTrackingPositions(true);
     }
 
     /**
@@ -6632,6 +6697,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     @Override
     public boolean switchLevel(Level level) {
         Level oldLevel = this.level;
+        if (oldLevel != level && !releaseShoulderParrots()) return false;
         if (super.switchLevel(level)) {
             this.clientMovements.clear();
             Position spawn = level.getSpawnLocation();
@@ -6874,27 +6940,38 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
 
             //Mending
             ArrayList<Integer> itemsWithMending = new ArrayList<>();
-            for (int i = 0; i < 4; i++) {
-                if (inventory.getArmorItem(i).hasEnchantment(Enchantment.ID_MENDING)) {
-                    itemsWithMending.add(inventory.getSize() + i);
+            int[] equipmentSlots = {
+                    inventory.getHeldItemIndex(), -1,
+                    HumanInventory.ARMORS_INDEX, HumanInventory.ARMORS_INDEX + 1,
+                    HumanInventory.ARMORS_INDEX + 2, HumanInventory.ARMORS_INDEX + 3
+            };
+            for (int slot : equipmentSlots) {
+                Item equipped = slot == -1 ? getOffhandInventory().getItem(0) : inventory.getItem(slot);
+                if (equipped.hasEnchantment(Enchantment.ID_MENDING)
+                        && equipped.getMaxDurability() > 0
+                        && !equipped.isUnbreakable()
+                        && !equipped.getNbt().getBoolean("Unbreakable")
+                        && equipped.getDamage() > 0) {
+                    itemsWithMending.add(slot);
                 }
             }
-            if (inventory.getItemInMainHand().hasEnchantment(Enchantment.ID_MENDING)) {
-                itemsWithMending.add(inventory.getHeldItemIndex());
-            }
-            if (!itemsWithMending.isEmpty()) {
-                Random rand = new Random();
-                Integer itemToRepair = itemsWithMending.get(rand.nextInt(itemsWithMending.size()));
-                Item toRepair = inventory.getItem(itemToRepair);
-                if (toRepair instanceof ItemTool || toRepair instanceof ItemArmor) {
-                    if (toRepair.getDamage() > 0) {
-                        int dmg = toRepair.getDamage() - exp;
-                        if (dmg < 0) {
-                            exp = Math.abs(dmg);
-                            dmg = 0;
+            if (exp > 0 && !itemsWithMending.isEmpty()) {
+                int slot = itemsWithMending.get(ThreadLocalRandom.current().nextInt(itemsWithMending.size()));
+                Item toRepair = slot == -1 ? getOffhandInventory().getItem(0) : inventory.getItem(slot);
+                String itemId = toRepair.getId();
+                int previousDamage = toRepair.getDamage();
+                int repaired = (int) Math.min(previousDamage, (long) exp * 2);
+                toRepair.setDamage(previousDamage - repaired);
+                if (toRepair.getDamage() < previousDamage) {
+                    boolean applied = slot == -1
+                            ? getOffhandInventory().setItem(0, toRepair)
+                            : inventory.setItem(slot, toRepair);
+                    if (applied) {
+                        Item updated = slot == -1 ? getOffhandInventory().getItem(0) : inventory.getItem(slot);
+                        if (!updated.isNull() && itemId.equals(updated.getId())) {
+                            int actualRepair = Math.max(0, Math.min(repaired, previousDamage - updated.getDamage()));
+                            exp -= actualRepair / 2;
                         }
-                        toRepair.setDamage(dmg);
-                        inventory.setItem(itemToRepair, toRepair);
                     }
                 }
             }
@@ -7412,6 +7489,89 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         return Server.resolveXuid(this.info, this.server.getProxyAuthProvider());
     }
 
+    /** @return the two shoulder seats reserved for tame parrots */
+    @Override
+    public @NotNull RideableComponent getComponentRideable() {
+        return PARROT_SHOULDERS;
+    }
+
+    /**
+     * Returns a shoulder's protocol offset without adding a vehicle base offset.
+     * @param seatIndex the shoulder index
+     * @param passenger the seated entity
+     * @return the passenger's seat offset
+     */
+    @Override
+    @NotNull
+    public org.powernukkitx.math.Vector3f getSeatOffsetFor(int seatIndex, @NotNull Entity passenger) {
+        if (passenger instanceof EntityParrot) {
+            return new org.powernukkitx.math.Vector3f(seatIndex == 0 ? 0.4f : -0.4f, -0.2f, -0.1f);
+        }
+        return super.getSeatOffsetFor(seatIndex, passenger);
+    }
+
+    @Override
+    protected void applySeatOffsets() {
+        super.applySeatOffsets();
+        for (Entity passenger : passengers) {
+            if (passenger instanceof EntityParrot) passenger.sendData(this);
+        }
+    }
+
+    @Override
+    protected void broadcastLinkPacket(Entity rider, ActorLinkType type, boolean riderInitiated) {
+        super.broadcastLinkPacket(rider, type, riderInitiated);
+        SetActorLinkPacket packet = new SetActorLinkPacket();
+        packet.setLink(new ActorLink(uniqueIdLong(), rider.uniqueIdLong(), type, false, riderInitiated, 0f));
+        sendPacket(packet);
+        if (rider instanceof EntityParrot && type != ActorLinkType.NONE) {
+            rider.sendData(getViewers().values().toArray(Player.EMPTY_ARRAY));
+            rider.sendData(this);
+        }
+    }
+
+    private boolean releaseShoulderParrots() {
+        if (passengers.isEmpty()) return true;
+        for (Entity passenger : List.copyOf(passengers)) {
+            if (passenger instanceof EntityParrot && !dismountEntity(passenger, true, false)) return false;
+        }
+        return true;
+    }
+
+    /**
+     * Applies the shoulder search delay and cleans up links when either endpoint disappears.
+     * Exit cancellation is respected while both the player and parrot remain available.
+     * @param entity the passenger to release
+     * @param sendLinks whether to send the link change to viewers
+     * @param riderInitiated whether the passenger initiated the dismount
+     * @return whether the passenger was released
+     */
+    @Override
+    public boolean dismountEntity(Entity entity, boolean sendLinks, boolean riderInitiated) {
+        boolean dismounted = super.dismountEntity(entity, sendLinks, riderInitiated);
+        if (!dismounted && entity instanceof EntityParrot && isPassenger(entity)
+                && (!isOnline() || entity.closed)) {
+            if (sendLinks) broadcastLinkPacket(entity, ActorLinkType.NONE, riderInitiated);
+            detachPassenger(entity);
+            updatePassengers(sendLinks, false);
+            dismounted = true;
+        }
+        if (dismounted && entity instanceof EntityParrot parrot) parrot.onShoulderDismounted();
+        return dismounted;
+    }
+
+    @Override
+    protected void updatePassengerPosition(Entity passenger) {
+        if (passenger instanceof EntityParrot) {
+            org.powernukkitx.math.Vector3f seat = passenger.getSeatPosition(passenger);
+            double angle = Math.toRadians(yaw);
+            passenger.setPosition(new Vector3(x + seat.x * Math.cos(angle) - seat.z * Math.sin(angle),
+                    y + getHeight() + seat.y, z + seat.x * Math.sin(angle) + seat.z * Math.cos(angle)));
+            return;
+        }
+        super.updatePassengerPosition(passenger);
+    }
+
     /**
      * Returns the flight status of player
      */
@@ -7589,6 +7749,11 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         BLOCK
     }
 
+    /**
+     * Sends permitted, registered client commands using their registered labels.
+     * Aliases of the same command do not create duplicate entries. No packet is sent
+     * when no valid command data is available. Call on the main server loop.
+     */
     public void syncAvailableCommands() {
         AvailableCommandsPacket pk = new AvailableCommandsPacket();
         Map<String, CommandDataVersions> data = new HashMap<>();
@@ -7600,21 +7765,25 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         synchronized (commands) {
             snapshot = new ArrayList<>(commands.values());
         }
+        final Set<Command> distinct = Collections.newSetFromMap(new IdentityHashMap<>());
         for (Command command : snapshot) {
             if (!command.testPermissionSilent(this.getPlayer()) || !command.isRegistered() || command.isServerSideOnly()) {
                 continue;
             }
+            if (!distinct.add(command)) {
+                continue;
+            }
             ++count;
             CommandDataVersions data0 = command.generateCustomCommandData(this.getPlayer());
-            data.put(command.getName(), data0);
+            data.put(command.getLabel(), data0);
         }
         if (count > 0) {
             Map<String, CommandDataVersions> filtered = getStringCommandDataVersionsMap(data);
 
             if (!filtered.isEmpty()) {
                 final List<CommandData> commandData = new ObjectArrayList<>();
-                for (CommandDataVersions value : filtered.values()) {
-                    commandData.addAll(value.toNetwork());
+                for (Entry<String, CommandDataVersions> entry : filtered.entrySet()) {
+                    commandData.addAll(entry.getValue().toNetwork(entry.getKey()));
                 }
 
                 pk.getCommands().addAll(commandData);

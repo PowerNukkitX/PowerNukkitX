@@ -3,24 +3,13 @@ package org.powernukkitx.network;
 import com.google.common.base.Strings;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import io.netty.bootstrap.Bootstrap;
-import io.netty.buffer.ByteBuf;
-import io.netty.buffer.Unpooled;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelConfig;
 import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelInitializer;
-import io.netty.channel.ChannelOption;
 import io.netty.channel.EventLoopGroup;
-import io.netty.channel.epoll.Epoll;
-import io.netty.channel.epoll.EpollChannelOption;
-import io.netty.channel.epoll.EpollDatagramChannel;
-import io.netty.channel.epoll.EpollEventLoopGroup;
-import io.netty.channel.kqueue.KQueue;
-import io.netty.channel.kqueue.KQueueDatagramChannel;
-import io.netty.channel.kqueue.KQueueEventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
-import io.netty.channel.socket.DatagramChannel;
 import io.netty.channel.socket.nio.NioDatagramChannel;
 import lombok.Getter;
 import lombok.Setter;
@@ -32,28 +21,23 @@ import org.cloudburstmc.netty.channel.nethernet.signaling.IceServerInfo;
 import org.cloudburstmc.netty.channel.nethernet.signaling.JoinRefusal;
 import org.cloudburstmc.netty.channel.nethernet.signaling.PongData;
 import org.cloudburstmc.netty.channel.nethernet.signaling.NetherNetSignaling;
+import org.cloudburstmc.netty.util.nethernet.IpRangeSet;
 import org.cloudburstmc.netty.util.nethernet.NetherNetLogging;
 import org.cloudburstmc.netty.util.nethernet.OperatorIdentity;
 import org.cloudburstmc.netty.util.nethernet.TokenTrust;
 import org.cloudburstmc.netty.util.nethernet.TrustedProxies;
-import org.cloudburstmc.netty.channel.raknet.RakChannelFactory;
-import org.cloudburstmc.netty.channel.raknet.RakServerChannel;
-import org.cloudburstmc.netty.channel.raknet.config.RakChannelOption;
-import org.cloudburstmc.netty.channel.raknet.config.RakServerCookieMode;
-import org.cloudburstmc.protocol.bedrock.BedrockPeer;
 import org.cloudburstmc.protocol.bedrock.BedrockPong;
 import org.cloudburstmc.protocol.bedrock.BedrockServerSession;
 import org.cloudburstmc.protocol.bedrock.codec.BedrockCodec;
+import org.cloudburstmc.protocol.bedrock.netty.codec.batch.BedrockBatchEncoder;
 import org.cloudburstmc.protocol.bedrock.netty.codec.packet.BedrockPacketCodec;
-import org.cloudburstmc.protocol.bedrock.netty.codec.packet.BedrockPacketCodec_v3;
-import org.cloudburstmc.protocol.bedrock.netty.initializer.BedrockServerInitializer;
 import org.jetbrains.annotations.Nullable;
 import org.powernukkitx.Player;
 import org.powernukkitx.Server;
 import org.powernukkitx.config.category.NetworkSettings;
 import org.powernukkitx.config.category.network.NetherNetSettings;
-import org.powernukkitx.config.category.network.RakNetSettings;
 import org.powernukkitx.event.server.ServerBotnetAttackEvent;
+import org.powernukkitx.network.nethernet.GameOutcomeReporter;
 import org.powernukkitx.network.nethernet.NetherNetProvider;
 import org.powernukkitx.network.nethernet.NetherNetServerInitializer;
 import org.powernukkitx.network.nethernet.SignalingService;
@@ -70,16 +54,12 @@ import org.powernukkitx.utils.Utils;
 import oshi.SystemInfo;
 import oshi.hardware.NetworkIF;
 import tel.schich.libdatachannel.LibDataChannelArchDetect;
-import tel.schich.libdatachannel.PeerConnectionConfiguration;
 
-import java.net.BindException;
-import java.net.DatagramSocket;
+import java.net.URI;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
-import java.net.SocketException;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
-import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
@@ -88,7 +68,6 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -106,13 +85,9 @@ public class Network implements NetworkInterface, SignalingService {
     private final AtomicReference<List<NetworkIF>> hardWareNetworkInterfaces = new AtomicReference<>(null);
     private final Map<InetSocketAddress, BedrockServerSession> sessionMap = new ConcurrentHashMap<>();
     private final Map<InetAddress, LocalDateTime> blockIpMap = new ConcurrentHashMap<>();
-    @Getter
-    private final NetworkSettings.TransportType transport;
     private final EventLoopGroup eventLoopGroup;
     private final @Nullable NetherNetHTTPServerSignaling signaling;
     private final @Nullable Channel channel;
-    /** Every bound RakNet listener; {@link #channel} is the first of them. Empty on NetherNet. */
-    private final List<Channel> rakChannels;
     private final @Nullable Channel queryChannel;
     private final @Nullable NetherNetProvider provider;
     private final ChannelHandler sessionInitializer;
@@ -124,7 +99,7 @@ public class Network implements NetworkInterface, SignalingService {
     private NetworkState state = NetworkState.STARTING;
 
     public Network(Server server) {
-        this(server, Runtime.getRuntime().availableProcessors(), new ThreadFactoryBuilder().setNameFormat("Netty Server IO #%d").build());
+        this(server, Utils.backgroundPoolThreads(server.isLevelThreadMode()), new ThreadFactoryBuilder().setNameFormat("Netty Server IO #%d").build());
     }
 
     @SuppressWarnings("deprecation")
@@ -145,7 +120,6 @@ public class Network implements NetworkInterface, SignalingService {
         }, true);
 
         final NetworkSettings net = server.getSettings().networkSettings();
-        this.transport = net.resolvedTransport();
         final BedrockCodec codec = NetworkConstants.CODEC;
         final InetSocketAddress bindAddress = new InetSocketAddress(
             Strings.isNullOrEmpty(this.server.getIp()) ? "0.0.0.0" : this.server.getIp(), this.server.getPort());
@@ -164,75 +138,6 @@ public class Network implements NetworkInterface, SignalingService {
             .ipv4Port(server.getPort())
             .ipv6Port(server.getPort());
 
-        if (this.transport == NetworkSettings.TransportType.RAKNET) {
-            Class<? extends DatagramChannel> oclass;
-            if (Epoll.isAvailable()) {
-                oclass = EpollDatagramChannel.class;
-                @SuppressWarnings("deprecation")
-                var group = new EpollEventLoopGroup(nettyThreadNumber, threadFactory);
-                this.eventLoopGroup = group;
-            } else if (KQueue.isAvailable()) {
-                oclass = KQueueDatagramChannel.class;
-                @SuppressWarnings("deprecation")
-                var group = new KQueueEventLoopGroup(nettyThreadNumber, threadFactory);
-                this.eventLoopGroup = group;
-            } else {
-                oclass = NioDatagramChannel.class;
-                @SuppressWarnings("deprecation")
-                var group = new NioEventLoopGroup(nettyThreadNumber, threadFactory);
-                this.eventLoopGroup = group;
-            }
-
-            checkPortAvailable(bindAddress);
-
-            this.signaling = null;
-            this.provider = null;
-            // Query rides the RakNet datagram channel, so it needs no listener of its own
-            this.queryChannel = null;
-            this.sessionInitializer = this.rakSessionInitializer(net);
-
-            final RakNetSettings rak = net.rakNetSettings();
-            // Each listener is served by one event loop, which does the RakNet work of all of its
-            // connections. With SO_REUSEPORT the kernel spreads clients over several listeners on
-            // the same port, so that work is not stuck on a single core.
-            final int listeners = Epoll.isAvailable()
-                ? (rak.listenerChannels() > 0 ? Math.min(rak.listenerChannels(), nettyThreadNumber) : nettyThreadNumber)
-                : 1;
-            final ServerBootstrap bootstrap = new ServerBootstrap()
-                .channelFactory(RakChannelFactory.server(oclass))
-                .option(RakChannelOption.RAK_ADVERTISEMENT, getAdvertisement())
-                .option(RakChannelOption.RAK_SUPPORTED_PROTOCOLS, new int[]{codec.getRaknetProtocolVersion()})
-                .option(RakChannelOption.RAK_PACKET_LIMIT, rak.packetLimit())
-                .option(RakChannelOption.RAK_GLOBAL_PACKET_LIMIT, rak.globalPacketLimit())
-                .option(RakChannelOption.RAK_SERVER_COOKIE_MODE, parseCookieMode(rak.cookieMode()))
-                .childOption(RakChannelOption.RAK_PROTOCOL_VERSION, codec.getRaknetProtocolVersion())
-                .childOption(RakChannelOption.RAK_AUTO_FLUSH, rak.autoFlush())
-                .childOption(RakChannelOption.RAK_FLUSH_INTERVAL, rak.flushInterval())
-                .childOption(RakChannelOption.RAK_MAX_QUEUED_BYTES, rak.maxQueuedBytes())
-                .group(this.eventLoopGroup)
-                .childHandler(this.sessionInitializer);
-            if (listeners > 1) {
-                // One server identity across listeners, so the server list sees a single server
-                bootstrap.option(RakChannelOption.RAK_GUID, ThreadLocalRandom.current().nextLong())
-                    .option(EpollChannelOption.SO_REUSEPORT, true);
-            }
-            if (rak.socketBufferSize() > 0) {
-                bootstrap.option(ChannelOption.SO_RCVBUF, rak.socketBufferSize())
-                    .option(ChannelOption.SO_SNDBUF, rak.socketBufferSize());
-            }
-
-            final List<Channel> bound = new ArrayList<>(listeners);
-            for (int i = 0; i < listeners; i++) {
-                bound.add(bootstrap.bind(bindAddress).syncUninterruptibly().channel());
-            }
-            this.rakChannels = List.copyOf(bound);
-            this.channel = bound.getFirst();
-
-            log.info("RakNet listening on udp/{} with {} listener(s)", bindAddress.getPort(), listeners);
-            return;
-        }
-
-        this.rakChannels = List.of();
         // Signalling binds NIO channels of its own, so the group has to be NIO. Nothing hot runs on
         // it: the media is carried by the native ICE and DTLS stack on its own threads.
         this.eventLoopGroup = new NioEventLoopGroup(nettyThreadNumber, threadFactory);
@@ -251,13 +156,7 @@ public class Network implements NetworkInterface, SignalingService {
                 + "Set network-settings.nethernet.udpPort to give it a fixed one", bindAddress.getPort());
         }
 
-        this.sessionInitializer =
-            new NetherNetServerInitializer(codec.getRaknetProtocolVersion(), log.isDebugEnabled()) {
-                @Override
-                protected void initSession(BedrockServerSession session) {
-                    Network.this.initSession(session);
-                }
-            };
+        this.sessionInitializer = this.netherNetInitializer(null);
 
         if (mode.binds()) {
             this.signaling = this.buildSignaling(settings, bindAddress, icePort, iceOnListenerPort, mode.builtin());
@@ -266,24 +165,31 @@ public class Network implements NetworkInterface, SignalingService {
                 ? new InetSocketAddress(bindAddress.getAddress(), settings.signalingPort())
                 : bindAddress;
 
-            this.channel = new ServerBootstrap()
+            final List<URI> iceServers = iceServers(settings);
+            final ServerBootstrap bootstrap = new ServerBootstrap()
                 .group(this.eventLoopGroup)
                 .channelFactory(NetherNetChannelFactory.server(this.signaling))
                 .option(NetherChannelOption.NETHER_SERVER_RTC_HANDSHAKE_TIMEOUT_SECONDS, settings.handshakeTimeout())
                 .handler(new ChannelInitializer<>() {
                     @Override
                     protected void initChannel(Channel channel) {
-                        if (icePort <= 0) {
+                        if (iceServers.isEmpty()) {
                             return;
                         }
-                        // Runs before the first connection, so every peer sees the pinned port
+                        // Runs before the first connection, so every peer gathers through them
                         ChannelConfig options = channel.config();
                         options.setOption(NetherChannelOption.NETHER_PEER_CONNECTION_CONFIG,
-                            pinIce(options.getOption(NetherChannelOption.NETHER_PEER_CONNECTION_CONFIG),
-                                bindAddress.getAddress(), icePort));
+                            options.getOption(NetherChannelOption.NETHER_PEER_CONNECTION_CONFIG)
+                                .withIceServers(iceServers));
                     }
                 })
-                .childHandler(this.sessionInitializer)
+                .childHandler(this.sessionInitializer);
+            if (icePort > 0) {
+                // The channel pins ICE here and hands it to signalling, which STUN discovery needs
+                bootstrap.option(NetherChannelOption.NETHER_SERVER_ICE_ADDRESS,
+                    new InetSocketAddress(bindAddress.getAddress(), icePort));
+            }
+            this.channel = bootstrap
                 .bind(signalingAddress)
                 .syncUninterruptibly()
                 .channel();
@@ -307,78 +213,17 @@ public class Network implements NetworkInterface, SignalingService {
     }
 
     /**
-     * The Bedrock pipeline as RakNet carries it: the stock initializer, with the debug packet codec
-     * and the bad-packet guard swapped in the way this server wants them.
+     * The Bedrock pipeline as NetherNet carries it. Only the provider passes a reporter, builtin
+     * signalling has nobody to tell how a join went.
      */
-    private ChannelHandler rakSessionInitializer(NetworkSettings net) {
-        final boolean query = net.enableQuery();
-        return new BedrockServerInitializer() {
-            @Override
-            public BedrockServerSession createSession0(BedrockPeer peer, int subClientId) {
-                return new HoldableServerSession(peer, subClientId);
-            }
-
-            @Override
-            protected void postInitChannel(Channel channel) {
-                channel.config().setOption(
-                    RakChannelOption.RAK_METRICS,
-                    new RakNetNetworkMetrics()
-                );
-
-                if (query) {
-                    channel.pipeline().addLast("queryPacketCodec", new QueryPacketCodec())
-                        .addLast("queryPacketHandler", new QueryPacketHandler(
-                            sender -> Network.this.server.getQueryInformation()));
-                }
-                channel.pipeline().addLast("malformedPacketGuard", new MalformedPacketGuard());
-            }
-
+    private ChannelHandler netherNetInitializer(@Nullable GameOutcomeReporter outcomes) {
+        return new NetherNetServerInitializer(NetworkConstants.CODEC.getRaknetProtocolVersion(), log.isDebugEnabled(),
+            outcomes) {
             @Override
             protected void initSession(BedrockServerSession session) {
-                session.getPeer().getChannel().pipeline().replace(
-                    BedrockPacketCodec.NAME,
-                    BedrockPacketCodec.NAME,
-                    new BedrockPacketCodec_v3(log.isDebugEnabled())
-                );
                 Network.this.initSession(session);
             }
         };
-    }
-
-    // Verifies the UDP port is free before RakNet binds, so the server refuses to start when another process holds it.
-    private void checkPortAvailable(InetSocketAddress address) {
-        try (DatagramSocket testSocket = new DatagramSocket(null)) {
-            testSocket.setReuseAddress(false);
-            testSocket.bind(address);
-        } catch (BindException e) {
-            throw new IllegalStateException("Server port " + address.getPort() + " is already in use by another process. Startup aborted.", e);
-        } catch (SocketException e) {
-            throw new IllegalStateException("Failed to verify availability of server port " + address.getPort() + ".", e);
-        }
-    }
-
-    /**
-     * Resolves the configured RakNet connection-cookie mode, falling back to {@link RakServerCookieMode#ACTIVE}
-     * for unknown values.
-     */
-    private RakServerCookieMode parseCookieMode(String mode) {
-        try {
-            return RakServerCookieMode.valueOf(mode.trim().toUpperCase(Locale.ROOT));
-        } catch (IllegalArgumentException ignored) {
-        }
-        log.warn("Invalid network cookie-mode '{}', falling back to ACTIVE. "
-            + "Valid values: ACTIVE, OFFLOADED, OFFLOADED_PSK, OFF, INVALID", mode);
-        return RakServerCookieMode.ACTIVE;
-    }
-
-    /**
-     * Retrieves the RakNet advertisement, which is what the client shows in its server list.
-     */
-    private ByteBuf getAdvertisement() {
-        if (this.state == NetworkState.STARTING || this.state == NetworkState.STOPPING) {
-            return Unpooled.EMPTY_BUFFER;
-        }
-        return this.pong.toByteBuf();
     }
 
     /**
@@ -392,7 +237,7 @@ public class Network implements NetworkInterface, SignalingService {
                 + "no players will arrive through it");
             return null;
         }
-        NetherNetProvider provider = new NetherNetProvider(this.server, this.sessionInitializer);
+        NetherNetProvider provider = new NetherNetProvider(this.server, this::netherNetInitializer);
         try {
             provider.start(settings, address, udpPort);
             return provider;
@@ -435,17 +280,23 @@ public class Network implements NetworkInterface, SignalingService {
             OperatorIdentity identity = ServerIdentityProvider.identity(this.server);
             log.info("NetherNet identifies this operator to players as {}", ServerIdentityProvider.domain(this.server));
 
+            IpRangeSet trustedProxies = TrustedProxies.parse(settings.trustedProxies());
+            // ok so STUN asks from the ICE port, without a fixed one there is nothing to discover
+            boolean fixedIcePort = icePort > 0 || iceOnListenerPort;
+            List<String> stunServers = stunServers(settings, fixedIcePort);
+            Set<String> advertised = advertisedAddresses(address, settings, !stunServers.isEmpty());
+
             return new NetherNetHTTPServerSignaling.Builder()
                 .setIdentity(identity)
                 .setServeHttp(serveHttp)
-                .setTrustedProxies(TrustedProxies.parse(settings.trustedProxies()))
-                .setProxyProtocol(settings.proxyProtocol())
-                .setAdvertisedAddresses(advertisedAddresses(address, settings))
-                .setIceServers(iceServers(settings))
-                // A dedicated media port is pinned by the channel initialiser instead
+                .setForwardedForProxies(trustedProxies)
+                .setProxyProtocolProxies(settings.proxyProtocol() ? trustedProxies : IpRangeSet.empty())
+                .setAdvertisedAddresses(advertised)
+                .setStunServers(stunServers)
+                // A dedicated media port is handed to the channel as its ICE address instead
                 .setIceOnLocalPort(icePort <= 0 && iceOnListenerPort)
                 .setTokenTrust(TokenTrust.ANY)
-                .setMotdProvider((host, client) -> Network.this.advertisement())
+                .setMotdProvider((host, peer, client) -> Network.this.advertisement())
                 .setPlayerFilter((host, player) -> Network.this.acceptsConnections() ? null : JoinRefusal.FULL)
                 .build();
         } catch (Exception e) {
@@ -489,6 +340,13 @@ public class Network implements NetworkInterface, SignalingService {
             SharedPacketEncoder.NAME,
             new SharedPacketEncoder()
         );
+        if (session.getPeer().getChannel().pipeline().get(BedrockBatchEncoder.NAME) != null) {
+            session.getPeer().getChannel().pipeline().replace(
+                BedrockBatchEncoder.NAME,
+                BedrockBatchEncoder.NAME,
+                new FlatBatchEncoder()
+            );
+        }
 
         final InetSocketAddress address = (InetSocketAddress) session.getSocketAddress();
         if (this.getState() == NetworkState.STARTING || this.getState() == NetworkState.STOPPING) {
@@ -525,25 +383,47 @@ public class Network implements NetworkInterface, SignalingService {
      * The configured STUN and TURN servers, as one entry carrying every URL. Credentials belong in
      * the URL, which is the only place the configuration has to put them.
      */
-    private static List<IceServerInfo> iceServers(NetherNetSettings settings) {
+    private static List<URI> iceServers(NetherNetSettings settings) {
         List<String> urls = settings.iceServers();
         if (urls.isEmpty()) {
             return List.of();
         }
-        return List.of(new IceServerInfo.Builder().setUrls(List.copyOf(urls)).build());
+        return new IceServerInfo.Builder().setUrls(List.copyOf(urls)).build().toUris();
     }
 
     /**
-     * A dedicated media port multiplexes every peer over one socket. Without one, ICE gathers on
-     * the listener port when query is not holding its UDP side, and on ephemeral ports otherwise.
+     * The STUN servers asked for this machine's public address, which then goes into every answer.
+     * Advertised addresses already say what they would find, and the signalling refuses both.
      */
+    private static List<String> stunServers(NetherNetSettings settings, boolean fixedIcePort) {
+        List<String> servers = settings.stunServers().stream()
+            .map(String::trim)
+            .filter(server -> !server.isEmpty())
+            .distinct()
+            .toList();
+        if (servers.isEmpty() || !settings.advertiseAddresses().isEmpty()) {
+            return List.of();
+        }
+        if (!fixedIcePort) {
+            log.warn("NetherNet STUN discovery is off, as ICE has no fixed UDP port to ask from. "
+                + "Set network-settings.nethernet.udpPort to enable it");
+            return List.of();
+        }
+        return servers;
+    }
+
     /**
      * The addresses clients are told to connect to. Falling back to the bind address keeps a server
-     * bound to one public address from offering the internal addresses of its machine.
+     * bound to one public address from offering the internal addresses of its machine, unless STUN
+     * discovery is on, which finds better ones.
      */
-    private static Set<String> advertisedAddresses(InetSocketAddress address, NetherNetSettings settings) {
+    private static Set<String> advertisedAddresses(InetSocketAddress address, NetherNetSettings settings,
+                                                   boolean stunDiscovery) {
         if (!settings.advertiseAddresses().isEmpty()) {
             return Set.copyOf(settings.advertiseAddresses());
+        }
+        if (stunDiscovery) {
+            return Set.of();
         }
         InetAddress bound = address.getAddress();
         if (bound == null || bound.isAnyLocalAddress()) {
@@ -560,17 +440,6 @@ public class Network implements NetworkInterface, SignalingService {
         return Math.max(port, 0);
     }
 
-    private static PeerConnectionConfiguration pinIce(PeerConnectionConfiguration config, InetAddress host, int port) {
-        // A wildcard bind is left unset so ICE keeps gathering on every interface
-        if (host != null && !host.isAnyLocalAddress()) {
-            config = config.withBindAddress(host);
-        }
-        return config
-            .withEnableIceUdpMux(true)
-            .withPortRangeBegin(port)
-            .withPortRangeEnd(port);
-    }
-
     record NetWorkStatisticData(long upload, long download) {
     }
 
@@ -578,11 +447,8 @@ public class Network implements NetworkInterface, SignalingService {
         if (this.provider != null) {
             this.provider.close();
         }
-        if (this.channel != null && this.rakChannels.isEmpty()) {
+        if (this.channel != null) {
             this.channel.close();
-        }
-        for (Channel rakChannel : this.rakChannels) {
-            rakChannel.close();
         }
         if (this.queryChannel != null) {
             this.queryChannel.close();
@@ -651,14 +517,7 @@ public class Network implements NetworkInterface, SignalingService {
 
     @Override
     public NetworkPressure getNetworkPressure(Player player) {
-        if (this.transport != NetworkSettings.TransportType.RAKNET) {
-            return NetworkPressure.UNKNOWN;
-        }
-
-        final var metrics = player.getSession().getPeer().getChannel().config().getOption(RakChannelOption.RAK_METRICS);
-        return metrics instanceof RakNetNetworkMetrics networkMetrics
-            ? networkMetrics.getNetworkPressure()
-            : NetworkPressure.UNKNOWN;
+        return NetworkPressure.UNKNOWN;
     }
 
     /**
@@ -776,11 +635,6 @@ public class Network implements NetworkInterface, SignalingService {
     @Override
     public void updatePong(BedrockPong pong) {
         this.pong = pong;
-        for (Channel rakChannel : this.rakChannels) {
-            if (rakChannel instanceof RakServerChannel rakServerChannel) {
-                rakServerChannel.config().setAdvertisement(this.getAdvertisement());
-            }
-        }
         if (this.signaling != null) {
             this.signaling.setAdvertisementData(this.advertisement());
         }
@@ -797,7 +651,7 @@ public class Network implements NetworkInterface, SignalingService {
         if (signaling == null) {
             return CompletableFuture.failedFuture(new IllegalStateException("NetherNet is not bound"));
         }
-        return signaling.acceptOffer(networkId, offer, clientAddress, null);
+        return signaling.acceptOffer(networkId, offer, clientAddress, null, null);
     }
 
     /**

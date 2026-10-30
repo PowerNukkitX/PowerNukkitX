@@ -33,8 +33,8 @@ public class BlockNoteblock extends BlockSolid implements RedstoneComponent, Blo
 
     public static final BlockProperties PROPERTIES = new BlockProperties(NOTEBLOCK);
     public static final BlockDefinition DEFINITION = SOLID.toBuilder()
-            .hardness(0.8)
-            .resistance(0.8)
+            .hardness(0.8f)
+            .resistance(0.8f)
             .toolType(ItemTool.TYPE_AXE)
             .canBeActivated(true)
             .build();

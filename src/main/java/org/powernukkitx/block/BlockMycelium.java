@@ -25,8 +25,8 @@ import java.util.concurrent.ThreadLocalRandom;
 public class BlockMycelium extends BlockDirt {
     public static final BlockProperties PROPERTIES = new BlockProperties(MYCELIUM);
     public static final BlockDefinition DEFINITION = BlockDirt.DEFINITION.toBuilder()
-            .hardness(0.6)
-            .resistance(2.5)
+            .hardness(0.6f)
+            .resistance(2.5f)
             .toolType(ItemTool.TYPE_SHOVEL)
             .canBeActivated(true)
             .canSilkTouch(true)

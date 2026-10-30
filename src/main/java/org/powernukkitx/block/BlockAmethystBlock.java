@@ -7,8 +7,8 @@ import org.jetbrains.annotations.NotNull;
 public class BlockAmethystBlock extends BlockSolid {
     public static final BlockProperties PROPERTIES = new BlockProperties(AMETHYST_BLOCK);
     public static final BlockDefinition DEFINITION = SOLID.toBuilder()
-            .hardness(1.5)
-            .resistance(1.5)
+            .hardness(1.5f)
+            .resistance(1.5f)
             .toolType(ItemTool.TYPE_PICKAXE)
             .toolTier(ItemTool.TIER_IRON)
             .canHarvestWithHand(false)

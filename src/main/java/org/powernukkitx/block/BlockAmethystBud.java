@@ -17,8 +17,8 @@ import static org.powernukkitx.block.property.CommonBlockProperties.MINECRAFT_BL
 public abstract class BlockAmethystBud extends BlockTransparent implements Faceable {
     public static final BlockDefinition DEFINITION = BlockTransparent.TRANSPARENT.toBuilder()
             .isSolid(false)
-            .hardness(1.5)
-            .resistance(1.5)
+            .hardness(1.5f)
+            .resistance(1.5f)
             .toolType(ItemTool.TYPE_PICKAXE)
             .toolTier(ItemTool.TIER_IRON)
             .waterloggingLevel(1)

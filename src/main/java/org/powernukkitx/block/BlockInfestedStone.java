@@ -9,8 +9,8 @@ import org.jetbrains.annotations.NotNull;
 public class BlockInfestedStone extends BlockSolid {
     public static final BlockProperties PROPERTIES = new BlockProperties(INFESTED_STONE);
     public static final BlockDefinition DEFINITION = SOLID.toBuilder()
-            .hardness(0.75)
-            .resistance(0.75)
+            .hardness(0.75f)
+            .resistance(0.75f)
             .toolType(ItemTool.TYPE_PICKAXE)
             .build();
 

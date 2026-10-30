@@ -28,8 +28,8 @@ import static org.powernukkitx.block.property.CommonBlockProperties.POWERED_BIT;
 public class BlockObserver extends BlockSolid implements RedstoneComponent, Faceable {
     public static final BlockProperties PROPERTIES = new BlockProperties(OBSERVER, CommonBlockProperties.MINECRAFT_FACING_DIRECTION, POWERED_BIT);
     public static final BlockDefinition DEFINITION = SOLID.toBuilder()
-            .hardness(3.5)
-            .resistance(17.5)
+            .hardness(3.5f)
+            .resistance(17.5f)
             .toolType(ItemTool.TYPE_PICKAXE)
             .toolTier(ItemTool.TIER_WOODEN)
             .canHarvestWithHand(false)

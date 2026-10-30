@@ -98,8 +98,8 @@ public abstract class Block extends Position implements Metadatable, AxisAligned
             .build();
 
     public static final Block[] EMPTY_ARRAY = new Block[0];
-    public static final double DEFAULT_FRICTION_FACTOR = 0.4;
-    public static final double DEFAULT_AIR_FLUID_FRICTION = 0.95;
+    public static final float DEFAULT_FRICTION_FACTOR = 0.4f;
+    public static final float DEFAULT_AIR_FLUID_FRICTION = 0.95f;
     public static final Long2ObjectOpenHashMap<BlockColor> VANILLA_BLOCK_COLOR_MAP = new Long2ObjectOpenHashMap<>();
     public int layer;
     protected BlockState blockstate;
@@ -1860,7 +1860,7 @@ public abstract class Block extends Position implements Metadatable, AxisAligned
      * For custom blocks, can be set this by using the builder (isStepSensor).
      */
     public boolean hasEntityStepSensor() {
-        return definition.isHasEntityStepSensor();
+        return definition.hasEntityStepSensor();
     }
 
     public boolean canPassThrough() {

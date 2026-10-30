@@ -37,8 +37,8 @@ import static org.powernukkitx.block.property.CommonBlockProperties.HEIGHT;
 public class BlockSnowLayer extends BlockFallable {
     public static final BlockProperties PROPERTIES = new BlockProperties(SNOW_LAYER, COVERED_BIT, HEIGHT);
     public static final BlockDefinition DEFINITION = FALLABLE.toBuilder()
-            .hardness(0.2)
-            .resistance(0.1)
+            .hardness(0.2f)
+            .resistance(0.1f)
             .toolType(ItemTool.TYPE_SHOVEL)
             .breaksWhenMoved(true)
             .sticksToPiston(false)

@@ -9,8 +9,8 @@ import org.jetbrains.annotations.NotNull;
 public class BlockQuartzBlock extends BlockSolid {
     public static final BlockProperties PROPERTIES = new BlockProperties(QUARTZ_BLOCK, CommonBlockProperties.PILLAR_AXIS);
     public static final BlockDefinition DEFINITION = SOLID.toBuilder()
-            .hardness(0.8)
-            .resistance(4)
+            .hardness(0.8f)
+            .resistance(4f)
             .toolType(ItemTool.TYPE_PICKAXE)
             .toolTier(ItemTool.TIER_WOODEN)
             .canHarvestWithHand(false)

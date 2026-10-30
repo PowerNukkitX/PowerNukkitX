@@ -38,8 +38,8 @@ import static org.powernukkitx.block.property.CommonBlockProperties.HANGING;
 public class BlockPointedDripstone extends BlockFallable {
     public static final BlockProperties PROPERTIES = new BlockProperties(POINTED_DRIPSTONE, DRIPSTONE_THICKNESS, HANGING);
     public static final BlockDefinition DEFINITION = FALLABLE.toBuilder()
-            .hardness(1.5)
-            .resistance(3)
+            .hardness(1.5f)
+            .resistance(3.0f)
             .toolType(ItemTool.TYPE_PICKAXE)
             .canBePushed(false)
             .canBePulled(false)

@@ -7,7 +7,6 @@ import org.junit.jupiter.api.Test;
 import org.powernukkitx.ServerMockFixture;
 import org.powernukkitx.level.DimensionEnum;
 import org.powernukkitx.level.Level;
-import org.powernukkitx.level.format.Chunk;
 import org.powernukkitx.level.format.IChunk;
 import org.powernukkitx.level.format.LevelConfig;
 import org.powernukkitx.level.format.leveldb.LevelDBProvider;
@@ -18,6 +17,8 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class ForcedGenerationTest {
@@ -62,6 +63,36 @@ class ForcedGenerationTest {
 
         final IChunk generated = level.getPhysicalChunkIfLoaded(CHUNK_X, CHUNK_Z);
         assertEquals(ChunkGenerationState.COMPLETE, generated.getGenerationState());
+
+        final long hash = Level.chunkHash(CHUNK_X, CHUNK_Z);
+        final int missingX = CHUNK_X + 1000;
+        final int missingZ = CHUNK_Z + 1000;
+        final long missingHash = Level.chunkHash(missingX, missingZ);
+
+        assertFalse(level.isChunkViewRetained(hash));
+        assertNull(level.getPhysicalChunkIfLoaded(missingX, missingZ));
+
+        try (Level.ChunkPrewarmView first = level.beginChunkPrewarm()) {
+            assertFalse(first.retainLoadedChunk(missingX, missingZ));
+            assertNull(level.getPhysicalChunkIfLoaded(missingX, missingZ));
+            assertFalse(level.isChunkViewRetained(missingHash));
+
+            assertTrue(first.retainLoadedChunk(CHUNK_X, CHUNK_Z));
+            assertTrue(first.isReady(CHUNK_X, CHUNK_Z));
+            assertTrue(first.retainLoadedChunk(CHUNK_X, CHUNK_Z));
+            assertFalse(level.unloadChunk(CHUNK_X, CHUNK_Z, true, false));
+
+            try (Level.ChunkPrewarmView second = level.beginChunkPrewarm()) {
+                assertTrue(second.retainLoadedChunk(CHUNK_X, CHUNK_Z));
+                first.close();
+
+                assertTrue(level.isChunkViewRetained(hash));
+                assertTrue(second.isReady(CHUNK_X, CHUNK_Z));
+                assertFalse(level.unloadChunk(CHUNK_X, CHUNK_Z, true, false));
+            }
+
+            assertFalse(level.isChunkViewRetained(hash));
+        }
 
         final long deadline = System.nanoTime() + TimeUnit.SECONDS.toNanos(30);
         while (heldAround(level) != 0 && System.nanoTime() < deadline) {

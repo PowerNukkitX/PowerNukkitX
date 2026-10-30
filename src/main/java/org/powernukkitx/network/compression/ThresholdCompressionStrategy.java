@@ -7,8 +7,6 @@ import org.cloudburstmc.protocol.bedrock.netty.codec.compression.BatchCompressio
 import org.cloudburstmc.protocol.bedrock.netty.codec.compression.CompressionStrategy;
 import org.cloudburstmc.protocol.bedrock.netty.codec.compression.NoopCompression;
 import org.cloudburstmc.protocol.bedrock.netty.codec.compression.SnappyCompression;
-import org.cloudburstmc.protocol.bedrock.netty.codec.compression.ZlibCompression;
-import org.cloudburstmc.protocol.common.util.Zlib;
 
 /**
  * Sends batches smaller than a threshold uncompressed.
@@ -36,10 +34,10 @@ public final class ThresholdCompressionStrategy implements CompressionStrategy {
             this.zlib = compression;
             this.snappy = new SnappyCompression();
         } else if (compression.getAlgorithm() == PacketCompressionAlgorithm.SNAPPY) {
-            this.zlib = new ZlibCompression(Zlib.RAW);
+            this.zlib = NetworkCompression.newZlibCompression();
             this.snappy = compression;
         } else {
-            this.zlib = new ZlibCompression(Zlib.RAW);
+            this.zlib = NetworkCompression.newZlibCompression();
             this.snappy = new SnappyCompression();
         }
     }

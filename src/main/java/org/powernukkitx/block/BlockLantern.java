@@ -17,8 +17,8 @@ import static org.powernukkitx.block.property.CommonBlockProperties.HANGING;
 public class BlockLantern extends BlockFlowable {
     public static final BlockProperties PROPERTIES = new BlockProperties(LANTERN, HANGING);
     public static final BlockDefinition DEFINITION = FLOWABLE.toBuilder()
-            .hardness(3.5)
-            .resistance(3.5)
+            .hardness(3.5f)
+            .resistance(3.5f)
             .toolType(ItemTool.TYPE_PICKAXE)
             .toolTier(ItemTool.TIER_WOODEN)
             .lightEmission(15)

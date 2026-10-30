@@ -32,8 +32,8 @@ import java.util.List;
 public class BlockChest extends BlockTransparent implements Faceable, BlockEntityHolder<BlockEntityChest> {
     public static final BlockProperties PROPERTIES = new BlockProperties(CHEST, CommonBlockProperties.MINECRAFT_CARDINAL_DIRECTION);
     public static final BlockDefinition DEFINITION = TRANSPARENT.toBuilder()
-            .hardness(2.5)
-            .resistance(12.5)
+            .hardness(2.5f)
+            .resistance(12.5f)
             .toolType(ItemTool.TYPE_AXE)
             .canBeActivated(true)
             .hasComparatorInputOverride(true)

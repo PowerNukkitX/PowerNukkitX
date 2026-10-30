@@ -240,17 +240,17 @@ public class BlockEntityBeehive extends BlockEntity {
             occupant.setActorIdentifier("minecraft:bee<>");
         }
 
-        CompoundTag saveData =
-                occupant.saveData.copy();
+        CompoundTag saveData = occupant.saveData.copy();
+        saveData.remove("UniqueID");
 
         Position lookAt;
         Position spawnPosition;
         if (validFaces != null) {
             BlockFace face = validFaces.get(RANDOM.nextInt(validFaces.size()));
             spawnPosition = add(
-                    face.getXOffset() * 0.25 - face.getZOffset() * 0.5,
-                    face.getYOffset() + (face.getYOffset() < 0 ? -0.4 : 0.2),
-                    face.getZOffset() * 0.25 - face.getXOffset() * 0.5
+                    face.getXOffset() + 0.5,
+                    face.getYOffset() + 0.5,
+                    face.getZOffset() + 0.5
             );
 
             saveData.putList("Pos", new ListTag<FloatTag>()
@@ -296,6 +296,7 @@ public class BlockEntityBeehive extends BlockEntity {
         Entity entity = Entity.createEntity(runtimeIdentifier, spawnPosition.getChunk(), saveData);
         if (entity != null) {
             removeOccupant(occupant);
+            setDirty();
             level.addSound(this, Sound.BLOCK_BEEHIVE_EXIT);
         }
 

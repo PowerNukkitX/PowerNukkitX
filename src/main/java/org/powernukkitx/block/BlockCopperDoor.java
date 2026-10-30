@@ -9,8 +9,8 @@ import org.jetbrains.annotations.NotNull;
 public class BlockCopperDoor extends BlockCopperDoorBase {
     public static final BlockProperties PROPERTIES = new BlockProperties(COPPER_DOOR, CommonBlockProperties.MINECRAFT_CARDINAL_DIRECTION, CommonBlockProperties.OPEN_BIT, CommonBlockProperties.UPPER_BLOCK_BIT, CommonBlockProperties.DOOR_HINGE_BIT);
     public static final BlockDefinition DEFINITION = BlockCopperDoorBase.DEFINITION.toBuilder()
-            .hardness(3.0)
-            .resistance(15)
+            .hardness(3.0f)
+            .resistance(15.0f)
             .build();
 
     @Override

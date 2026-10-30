@@ -54,6 +54,18 @@ public final class LevelDBActorV3_1_0Migration implements MigrationStep<LevelDBA
 
         boolean legacyCreakingHeartLink = "minecraft:creaking".equals(tag.getString("identifier")) && tag.containsCompound("creakingHeart");
 
+        if ("minecraft:painting".equals(tag.getString("identifier")) && !migrateLegacyPaintingMotif(tag)) {
+            return new Data(
+                    tag,
+                    value.dimensionId(),
+                    value.actorUniqueId(),
+                    value.migratedActorUniqueIdsByUuid(),
+                    value.migratedRidingLinks(),
+                    value.migratedCreakingLinks(),
+                    false
+            );
+        }
+
         migrateLegacyPnxActor(tag, value.dimensionId());
 
         if (!collectMigratedActorUuid(tag, value.actorUniqueId(), value.migratedActorUniqueIdsByUuid())) {
@@ -91,6 +103,9 @@ public final class LevelDBActorV3_1_0Migration implements MigrationStep<LevelDBA
      * Migrates one legacy PNX actor compound without dimension-specific relationship reconstruction.
      */
     public static void migrateLegacyPnxActor(CompoundTag tag) throws IOException {
+        if ("minecraft:painting".equals(tag.getString("identifier"))) {
+            migrateLegacyPaintingMotif(tag);
+        }
         migrateLegacyPnxActor(tag, null);
     }
 
@@ -618,14 +633,67 @@ public final class LevelDBActorV3_1_0Migration implements MigrationStep<LevelDBA
     }
 
     private static void migrateLegacyPnxPainting(CompoundTag tag) {
+        ListTag<FloatTag> pos = tag.getList("Pos", FloatTag.class);
+        boolean resolved = false;
+
+        if (pos.size() == 3) {
+            double x = pos.get(0).data;
+            double z = pos.get(2).data;
+            double fx = x - Math.floor(x);
+            double fz = z - Math.floor(z);
+
+            int direction = -1;
+            int matches = 0;
+
+            if (Math.abs(fz - 0.96875) < 0.00001) { direction = 2; matches++; }
+            if (Math.abs(fx - 0.96875) < 0.00001) { direction = 1; matches++; }
+            if (Math.abs(fz - 0.03125) < 0.00001) { direction = 0; matches++; }
+            if (Math.abs(fx - 0.03125) < 0.00001) { direction = 3; matches++; }
+
+            if (matches == 1) {
+                int horizontal = (2 - direction) & 3;
+
+                tag.putByte("Direction", direction);
+                tag.putByte("Dir", horizontal);
+                tag.putList("Rotation", new ListTag<FloatTag>()
+                        .add(new FloatTag(horizontal * 90f))
+                        .add(new FloatTag(0)));
+
+                resolved = true;
+            }
+        }
+
+        if (!resolved) {
+            log.warn("[LevelDB Migration] Cannot resolve legacy painting direction at {}; preserving original values",
+                    paintingPosition(tag));
+        }
+
+        tag.remove("TileX", "TileY", "TileZ");
+    }
+
+    /**
+     * Converts legacy painting motif NBT to the canonical BDS field.
+     *
+     * @return whether the painting has a usable motif
+     */
+    public static boolean migrateLegacyPaintingMotif(CompoundTag tag) {
         if (tag.contains("Motive")) {
-            tag.putString("Motif", tag.getString("Motive"));
+            if (tag.containsString("Motive") && !tag.getString("Motive").isBlank()) {
+                tag.putString("Motif", tag.getString("Motive"));
+            } else if (tag.containsString("Motif") && !tag.getString("Motif").isBlank()) {
+                log.warn("[LevelDB Migration] Painting at {} has invalid Motive; preserving Motif", paintingPosition(tag));
+            }
             tag.remove("Motive");
         }
 
-        tag.remove("TileX");
-        tag.remove("TileY");
-        tag.remove("TileZ");
+        if (tag.containsString("Motif") && !tag.getString("Motif").isBlank()) return true;
+
+        log.warn("[LevelDB Migration] Skipping painting at {}: missing or invalid Motive/Motif", paintingPosition(tag));
+        return false;
+    }
+
+    private static String paintingPosition(CompoundTag tag) {
+        return tag.containsList("Pos") ? tag.getList("Pos").toSNBT() : "unknown";
     }
 
     private static void migrateLegacyPnxCreaking(CompoundTag tag, Integer dimensionId)

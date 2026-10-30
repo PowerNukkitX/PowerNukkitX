@@ -106,8 +106,9 @@ public class BlockStructureBlock extends BlockSolid implements BlockEntityHolder
 
     @Override
     public int onUpdate(int type) {
-        if (type == Level.BLOCK_UPDATE_REDSTONE) {
-            getOrCreateBlockEntity().onPower();
+        if (type == Level.BLOCK_UPDATE_NORMAL || type == Level.BLOCK_UPDATE_REDSTONE) {
+            BlockEntityStructureBlock tile = getBlockEntity();
+            if (tile != null) tile.updateRedstonePower(isGettingPower());
         }
 
         return super.onUpdate(type);

@@ -17,8 +17,8 @@ import org.jetbrains.annotations.NotNull;
 public class BlockPistonArmCollision extends BlockTransparent implements Faceable {
     public static final BlockProperties PROPERTIES = new BlockProperties(PISTON_ARM_COLLISION, CommonBlockProperties.FACING_DIRECTION);
     public static final BlockDefinition DEFINITION = TRANSPARENT.toBuilder()
-            .hardness(1.5)
-            .resistance(1.5)
+            .hardness(1.5f)
+            .resistance(1.5f)
             .canBePushed(false)
             .canBePulled(false)
             .isSolid(false)

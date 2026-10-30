@@ -30,8 +30,8 @@ import static org.powernukkitx.block.property.CommonBlockProperties.OPEN_BIT;
 public class BlockLever extends BlockFlowable implements RedstoneComponent, Faceable {
     public static final BlockProperties PROPERTIES = new BlockProperties(LEVER, LEVER_DIRECTION, OPEN_BIT);
     public static final BlockDefinition DEFINITION = FLOWABLE.toBuilder()
-            .hardness(0.5d)
-            .resistance(2.5d)
+            .hardness(0.5f)
+            .resistance(2.5f)
             .breaksWhenMoved(true)
             .canBeActivated(true)
             .isPowerSource(true)

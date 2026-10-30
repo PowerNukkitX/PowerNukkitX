@@ -22,8 +22,8 @@ import org.jetbrains.annotations.NotNull;
 public class BlockLitFurnace extends BlockSolid implements Faceable, BlockEntityHolder<BlockEntityFurnace> {
     public static final BlockProperties PROPERTIES = new BlockProperties(LIT_FURNACE, CommonBlockProperties.MINECRAFT_CARDINAL_DIRECTION);
     public static final BlockDefinition DEFINITION = SOLID.toBuilder()
-            .hardness(3.5)
-            .resistance(17.5)
+            .hardness(3.5f)
+            .resistance(17.5f)
             .toolType(ItemTool.TYPE_PICKAXE)
             .toolTier(ItemTool.TIER_WOODEN)
             .lightEmission(13)

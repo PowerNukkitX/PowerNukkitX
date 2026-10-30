@@ -15,8 +15,8 @@ import static org.powernukkitx.block.property.CommonBlockProperties.POTENT_SULFU
 public class BlockPotentSulfur extends BlockSolid implements BlockEntityHolder<BlockEntityPotentSulfurBlock> {
     public static final BlockProperties PROPERTIES = new BlockProperties(POTENT_SULFUR, POTENT_SULFUR_STATE);
     public static final BlockDefinition DEFINITION = SOLID.toBuilder()
-            .hardness(1.5)
-            .resistance(6)
+            .hardness(1.5f)
+            .resistance(6f)
             .toolType(ItemTool.TYPE_PICKAXE)
             .toolTier(ItemTool.TIER_WOODEN)
             .canHarvestWithHand(false)

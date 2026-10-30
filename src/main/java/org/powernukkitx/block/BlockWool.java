@@ -6,8 +6,8 @@ import org.powernukkitx.utils.DyeColor;
 
 public abstract class BlockWool extends BlockSolid {
     public static final BlockDefinition DEFINITION = SOLID.toBuilder()
-            .hardness(0.8)
-            .resistance(0.8)
+            .hardness(0.8f)
+            .resistance(0.8f)
             .toolType(ItemTool.TYPE_SHEARS)
             .burnChance(30)
             .burnAbility(60)

@@ -13,8 +13,8 @@ import org.jetbrains.annotations.NotNull;
 public class BlockBookshelf extends BlockSolid {
     public static final BlockProperties PROPERTIES = new BlockProperties(BOOKSHELF);
     public static final BlockDefinition DEFINITION = SOLID.toBuilder()
-            .hardness(1.5D)
-            .resistance(7.5D)
+            .hardness(1.5f)
+            .resistance(7.5f)
             .toolType(ItemTool.TYPE_AXE)
             .burnChance(30)
             .burnAbility(20)

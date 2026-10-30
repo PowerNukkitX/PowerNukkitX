@@ -7,6 +7,7 @@ import org.powernukkitx.block.BlockDirt;
 import org.powernukkitx.block.BlockOakWood;
 import org.powernukkitx.block.BlockObserver;
 import org.powernukkitx.block.BlockRedstoneWire;
+import org.powernukkitx.block.BlockTarget;
 import org.powernukkitx.block.property.CommonBlockProperties;
 import org.powernukkitx.level.format.IChunk;
 import org.powernukkitx.math.BlockFace;
@@ -37,6 +38,20 @@ public class LevelTest {
 
         level.setBlockStateAt(1, 0, 0, BlockOakWood.PROPERTIES.getDefaultState());
         Assertions.assertEquals(15, level.getRedstonePower(new Vector3(1, 0, 0), BlockFace.WEST));//wood be strong power with observer
+    }
+
+    @Test
+    void test_getRedstonePower_targetConducts(Level level) {
+        level.setBlockStateAt(1, 0, 2, BlockTarget.PROPERTIES.getDefaultState());
+        Assertions.assertEquals(0, level.getRedstonePower(new Vector3(1, 0, 2), BlockFace.WEST));
+
+        level.setBlockStateAt(0, 0, 2, BlockObserver.PROPERTIES.getBlockState(
+                        CommonBlockProperties.POWERED_BIT.createValue(true),
+                        CommonBlockProperties.MINECRAFT_FACING_DIRECTION.createValue(BlockFace.WEST)
+                )
+        );
+        //a torch hanging on the target has to see the power going into it, not just projectile hits
+        Assertions.assertEquals(15, level.getRedstonePower(new Vector3(1, 0, 2), BlockFace.WEST));
     }
 
 }

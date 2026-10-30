@@ -13,8 +13,8 @@ import org.jetbrains.annotations.NotNull;
 public class BlockClay extends BlockSolid implements Natural {
     public static final BlockProperties PROPERTIES = new BlockProperties(CLAY);
     public static final BlockDefinition DEFINITION = SOLID.toBuilder()
-            .hardness(0.6)
-            .resistance(3)
+            .hardness(0.6f)
+            .resistance(3f)
             .toolType(ItemTool.TYPE_SHOVEL)
             .canSilkTouch(true)
             .build();

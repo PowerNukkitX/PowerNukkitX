@@ -11,8 +11,8 @@ import static org.powernukkitx.block.property.CommonBlockProperties.MONSTER_EGG_
 public class BlockMonsterEgg extends BlockSolid {
     public static final BlockProperties PROPERTIES = new BlockProperties(MONSTER_EGG, MONSTER_EGG_STONE_TYPE);
     public static final BlockDefinition DEFINITION = SOLID.toBuilder()
-            .hardness(0)
-            .resistance(0.75)
+            .hardness(0f)
+            .resistance(0.75f)
             .build();
 
     @Override

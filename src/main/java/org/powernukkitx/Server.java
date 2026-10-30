@@ -3,6 +3,7 @@ package org.powernukkitx;
 import com.google.common.base.Preconditions;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import eu.okaeri.configs.ConfigManager;
+import io.netty.util.internal.PlatformDependent;
 import it.unimi.dsi.fastutil.longs.LongArrayList;
 import it.unimi.dsi.fastutil.longs.LongList;
 import it.unimi.dsi.fastutil.longs.LongLists;
@@ -93,6 +94,7 @@ import org.powernukkitx.nbt.tag.FloatTag;
 import org.powernukkitx.nbt.tag.ListTag;
 import org.powernukkitx.nbt.tag.StringTag;
 import org.powernukkitx.nbt.tag.Tag;
+import org.powernukkitx.network.FlushablePeer;
 import org.powernukkitx.network.Network;
 import org.powernukkitx.network.NetworkConstants;
 import org.powernukkitx.network.NetworkInterface;
@@ -165,6 +167,7 @@ import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
+import java.util.concurrent.locks.LockSupport;
 import java.util.function.Function;
 
 /**
@@ -274,6 +277,8 @@ public class Server {
     public final String structurePath;
     private final Set<UUID> uniquePlayers = new HashSet<>();
     private final Map<InetSocketAddress, Player> players = new ConcurrentHashMap<>();
+    private final Queue<Player> idleInbound = PlatformDependent.newMpscQueue();
+    private volatile boolean waitingForTick;
     private final Map<UUID, Player> playerList = new ConcurrentHashMap<>();
     private final Map<UUID, Player> onlinePlayersView = Collections.unmodifiableMap(playerList);
     private final Map<Long, Player> playerListByUniqueId = new ConcurrentHashMap<>();
@@ -390,7 +395,6 @@ public class Server {
     private final ConcurrentHashMap<UUID, PlayerDataWrites> playerDataWrites = new ConcurrentHashMap<>();
     private ProxyAuthProvider proxyAuthProvider;
     private FreezableArrayManager freezableArrayManager;
-    public boolean enabledNetworkEncryption;
 
     // default levels
     private Level defaultLevel = null;
@@ -495,7 +499,36 @@ public class Server {
         }
 
         // A minimum of 1 is enforced to prevent invalid recursion values.
-        this.computeThreadPool = new ForkJoinPool(Math.min(0x7fff, Runtime.getRuntime().availableProcessors()), new ComputeThreadPoolThreadFactory(), null, false);
+        this.computeThreadPool = new ForkJoinPool(Math.min(0x7fff, Utils.backgroundPoolThreads(this.settings.levelSettings().levelThread())), new ComputeThreadPoolThreadFactory(), null, false);
+
+        final boolean creativeInventoryEnabled = settings.gameplaySettings().enableCreativeInventory();
+        final boolean recipesEnabled;
+        {
+            boolean recipes = settings.gameplaySettings().enableRecipes();
+            if (recipes && !creativeInventoryEnabled) {
+                log.warn("gameplay-settings: enableRecipes was forced to false because enableCreativeInventory is false (the recipe registry depends on the creative registry)");
+                recipes = false;
+            }
+            recipesEnabled = recipes;
+        }
+
+        final boolean useRegistryCache = settings.performanceSettings().registryCacheEnabled()
+            && creativeInventoryEnabled && recipesEnabled;
+        if (settings.performanceSettings().registryCacheEnabled() && !useRegistryCache) {
+            log.info("Registry cache is bypassed because the creative inventory or recipe registry is disabled by gameplay settings");
+        }
+
+        final RegistryCache registryCache;
+        Path registryCachePath = Path.of(settings.performanceSettings().registryCachePath());
+        {
+            RegistryCache cache = null;
+            if (useRegistryCache) {
+                cache = RegistryCache.tryLoad(registryCachePath);
+            }
+            registryCache = cache;
+        }
+
+        CompletableFuture<Void> registriesF = startRegistries(registryCache, creativeInventoryEnabled, recipesEnabled);
 
         int chunkIoThreads = this.settings.chunkSettings().chunkIoThreads();
         if (chunkIoThreads <= 0) {
@@ -513,7 +546,7 @@ public class Server {
             levelWorkerThreads = Math.max(2, Runtime.getRuntime().availableProcessors());
         }
         ScheduledThreadPoolExecutor levelTickPool = new ScheduledThreadPoolExecutor(
-                levelWorkerThreads, r -> new Thread(r, "Level Worker"));
+            levelWorkerThreads, r -> new Thread(r, "Level Worker"));
         levelTickPool.setRemoveOnCancelPolicy(true);
         this.levelTickExecutor = levelTickPool;
 
@@ -554,16 +587,6 @@ public class Server {
         }
         ServerScheduler.WORKERS = poolSizeNumber;
         this.scheduler = new ServerScheduler();
-
-        // NetherNet carries the session inside DTLS and a real client answers ServerToClientHandshake
-        // in plaintext, so Bedrock packet encryption has no place on top of it.
-        final boolean netherNet = this.settings.networkSettings().resolvedTransport()
-            == NetworkSettings.TransportType.NETHERNET;
-        if (netherNet && this.settings.networkSettings().networkEncryption()) {
-            log.warn("network-settings.networkEncryption is ignored on the NetherNet transport, "
-                + "which is already encrypted");
-        }
-        this.enabledNetworkEncryption = !netherNet && this.settings.networkSettings().networkEncryption();
 
         this.experiments = new ArrayList<>();
         for (String experiment : settings.gameplaySettings().experiments())
@@ -606,34 +629,7 @@ public class Server {
 
         // Initialize metrics
         if (this.settings.miscSettings().enableMetrics()) {
-            NukkitMetrics.startNow();
-        }
-
-        final boolean creativeInventoryEnabled = settings.gameplaySettings().enableCreativeInventory();
-        final boolean recipesEnabled;
-        {
-            boolean recipes = settings.gameplaySettings().enableRecipes();
-            if (recipes && !creativeInventoryEnabled) {
-                log.warn("gameplay-settings: enableRecipes was forced to false because enableCreativeInventory is false (the recipe registry depends on the creative registry)");
-                recipes = false;
-            }
-            recipesEnabled = recipes;
-        }
-
-        final boolean useRegistryCache = settings.performanceSettings().registryCacheEnabled()
-                && creativeInventoryEnabled && recipesEnabled;
-        if (settings.performanceSettings().registryCacheEnabled() && !useRegistryCache) {
-            log.info("Registry cache is bypassed because the creative inventory or recipe registry is disabled by gameplay settings");
-        }
-
-        final RegistryCache registryCache;
-        Path registryCachePath = Path.of(settings.performanceSettings().registryCachePath());
-        {
-            RegistryCache cache = null;
-            if (useRegistryCache) {
-                cache = RegistryCache.tryLoad(registryCachePath);
-            }
-            registryCache = cache;
+            CompletableFuture.runAsync(NukkitMetrics::startNow, computeThreadPool);
         }
 
         try {
@@ -642,74 +638,12 @@ public class Server {
             throw new IllegalStateException("Failed to migrate structure storage", e);
         }
 
-        {//init
-            CompletableFuture<Void> blockF = CompletableFuture.runAsync(Registries.BLOCK::init, computeThreadPool);
-            CompletableFuture<Void> itemF = CompletableFuture.runAsync(Registries.ITEM::init, computeThreadPool);
-            CompletableFuture<Void> potionF = CompletableFuture.runAsync(Registries.POTION::init, computeThreadPool);
-            CompletableFuture<Void> entityF = CompletableFuture.runAsync(Registries.ENTITY::init, computeThreadPool);
-            CompletableFuture<Void> blockEntityF = CompletableFuture.runAsync(Registries.BLOCKENTITY::init, computeThreadPool);
-            CompletableFuture<Void> itemRtIdF = CompletableFuture.runAsync(
-                registryCache != null
-                    ? () -> registryCache.restoreItemRuntimeId(Registries.ITEM_RUNTIMEID)
-                    : Registries.ITEM_RUNTIMEID::init,
-                computeThreadPool);
-            CompletableFuture<Void> biomeF = CompletableFuture.runAsync(
-                registryCache != null
-                    ? () -> registryCache.restoreBiome(Registries.BIOME)
-                    : Registries.BIOME::init,
-                computeThreadPool);
-            CompletableFuture<Void> fuelF = CompletableFuture.runAsync(Registries.FUEL::init, computeThreadPool);
-            CompletableFuture<Void> generatorF = CompletableFuture.runAsync(Registries.GENERATOR::init, computeThreadPool);
-            CompletableFuture<Void> genStageF = CompletableFuture.runAsync(Registries.GENERATE_STAGE::init, computeThreadPool);
-            CompletableFuture<Void> populatorF = CompletableFuture.runAsync(Registries.POPULATOR::init, computeThreadPool);
-            CompletableFuture<Void> genFeatF = CompletableFuture.runAsync(Registries.GENERATE_FEATURE::init, computeThreadPool);
-            CompletableFuture<Void> structureSpawnOverrideF = CompletableFuture.runAsync(Registries.STRUCTURE_SPAWN_OVERRIDE::init, computeThreadPool);
-            CompletableFuture<Void> effectF = CompletableFuture.runAsync(Registries.EFFECT::init, computeThreadPool);
-            CompletableFuture<Void> voxelF = CompletableFuture.runAsync(Registries.VOXEL_SHAPE::init, computeThreadPool);
-            CompletableFuture<Void> disconnectF = CompletableFuture.runAsync(Registries.DISCONNECT_REASON::init, computeThreadPool);
-            CompletableFuture<Void> trimF = CompletableFuture.runAsync(Registries.TRIM::init, computeThreadPool);
-
-            CompletableFuture<Void> blockStateF = blockF.thenRunAsync(
-                registryCache != null
-                    ? registryCache::restoreBlockStateColors
-                    : Registries.BLOCKSTATE::init,
-                computeThreadPool);
-            CompletableFuture<Void> structureF = blockF.thenRunAsync(Registries.STRUCTURE::init, computeThreadPool);
-            CompletableFuture<Void> creativeF = creativeInventoryEnabled
-                    ? CompletableFuture.allOf(itemF, blockStateF, potionF, entityF, itemRtIdF)
-                            .thenRunAsync(
-                                    registryCache != null
-                                            ? () -> registryCache.restoreCreative(Registries.CREATIVE)
-                                            : Registries.CREATIVE::init,
-                                    computeThreadPool)
-                    : CompletableFuture.runAsync(Registries.CREATIVE::initDisabled, computeThreadPool);
-            CompletableFuture<Void> recipeF = recipesEnabled
-                    ? creativeF.thenRunAsync(
-                            registryCache != null
-                                    ? () -> Registries.RECIPE.init(registryCache.getRecipePktBytes())
-                                    : Registries.RECIPE::init,
-                            computeThreadPool)
-                    : CompletableFuture.runAsync(Registries.RECIPE::initDisabled, computeThreadPool);
-
-            CompletableFuture.allOf(potionF, entityF, blockEntityF, itemRtIdF, biomeF,
-                fuelF, generatorF, genStageF, populatorF, genFeatF, structureF, structureSpawnOverrideF, effectF,
-                creativeF, recipeF, voxelF, disconnectF, trimF).join();
-
-            if (useRegistryCache && registryCache == null) {
-                RegistryCache.save(registryCachePath);
-            }
-
-            Profession.init();
-            Updater updater = BlockStateUpdaterBase.INSTANCE;
-            Enchantment.init();
-            Attribute.init();
-            BlockComposter.init();
-            DispenseBehaviorRegister.init();
+        registriesF.join();
+        if (useRegistryCache && registryCache == null) {
+            RegistryCache.save(registryCachePath);
         }
 
-        if (settings.gameplaySettings().enableEducation()) {
-            Education.enable();
-        }
+        if (settings.gameplaySettings().enableEducation()) Education.enable();
 
         freezableArrayManager = new FreezableArrayManager(
             this.settings.performanceSettings().enable(),
@@ -765,8 +699,8 @@ public class Server {
             actorUniqueIdManager = new ActorUniqueIdManager(serverDataDB);
 
             migrationService.migrateLegacyPositionTracking(
-                    Path.of(this.dataPath, "services", "position_tracking_db"),
-                    serverDataDB
+                Path.of(this.dataPath, "services", "position_tracking_db"),
+                serverDataDB
             );
 
             if (players.exists()) {
@@ -810,10 +744,12 @@ public class Server {
 
         log.debug("Loading position tracking service");
         this.positionTrackingService = new PositionTrackingService(serverDataDB);
+
         this.pluginManager.loadInternalPlugin();
 
         this.serverID = UUID.randomUUID();
         this.pluginManager.loadPlugins(this.pluginPath);
+
         {// trim
             Registries.POTION.trim();
             Registries.ENTITY.trim();
@@ -842,8 +778,8 @@ public class Server {
 
         try {
             boolean scoreboardMigrated = this.migrationService.migrateWorlds(
-                    this.serverDataDB,
-                    this.actorUniqueIdManager::assignPlayer
+                this.serverDataDB,
+                this.actorUniqueIdManager::assignPlayer
             );
 
             if (scoreboardMigrated) {
@@ -895,6 +831,71 @@ public class Server {
         Runtime.getRuntime().addShutdownHook(new Thread(this::shutdown));
         this.start();
     }
+
+    private CompletableFuture<Void> startRegistries(RegistryCache registryCache, boolean creativeInventoryEnabled, boolean recipesEnabled) {
+        CompletableFuture<Void> blockF = CompletableFuture.runAsync(Registries.BLOCK::init, computeThreadPool);
+        CompletableFuture<Void> potionF = CompletableFuture.runAsync(Registries.POTION::init, computeThreadPool);
+        CompletableFuture<Void> effectF = CompletableFuture.runAsync(Registries.EFFECT::init, computeThreadPool);
+        CompletableFuture<Void> itemF = CompletableFuture.allOf(potionF, effectF)
+            .thenRunAsync(Registries.ITEM::init, computeThreadPool);
+
+        CompletableFuture<Void> entityF = CompletableFuture.runAsync(Registries.ENTITY::init, computeThreadPool);
+        CompletableFuture<Void> blockEntityF = CompletableFuture.runAsync(Registries.BLOCKENTITY::init, computeThreadPool);
+        CompletableFuture<Void> itemRtIdF = CompletableFuture.runAsync(registryCache != null
+                ? () -> registryCache.restoreItemRuntimeId(Registries.ITEM_RUNTIMEID)
+                : Registries.ITEM_RUNTIMEID::init,
+            computeThreadPool);
+        CompletableFuture<Void> biomeF = CompletableFuture.runAsync(registryCache != null
+                ? () -> registryCache.restoreBiome(Registries.BIOME)
+                : Registries.BIOME::init,
+            computeThreadPool);
+        CompletableFuture<Void> fuelF = CompletableFuture.runAsync(Registries.FUEL::init, computeThreadPool);
+        CompletableFuture<Void> generatorF = CompletableFuture.runAsync(Registries.GENERATOR::init, computeThreadPool);
+        CompletableFuture<Void> genStageF = CompletableFuture.runAsync(Registries.GENERATE_STAGE::init, computeThreadPool);
+        CompletableFuture<Void> populatorF = CompletableFuture.runAsync(Registries.POPULATOR::init, computeThreadPool);
+        CompletableFuture<Void> genFeatF = CompletableFuture.runAsync(Registries.GENERATE_FEATURE::init, computeThreadPool);
+        CompletableFuture<Void> structureSpawnOverrideF = CompletableFuture.runAsync(Registries.STRUCTURE_SPAWN_OVERRIDE::init, computeThreadPool);
+        CompletableFuture<Void> voxelF = CompletableFuture.runAsync(Registries.VOXEL_SHAPE::init, computeThreadPool);
+        CompletableFuture<Void> disconnectF = CompletableFuture.runAsync(Registries.DISCONNECT_REASON::init, computeThreadPool);
+        CompletableFuture<Void> trimF = CompletableFuture.runAsync(Registries.TRIM::init, computeThreadPool);
+
+        CompletableFuture<Void> blockStateF = blockF.thenRunAsync(registryCache != null
+                ? registryCache::restoreBlockStateColors
+                : Registries.BLOCKSTATE::init,
+            computeThreadPool);
+        CompletableFuture<Void> structureF = blockF.thenRunAsync(Registries.STRUCTURE::init, computeThreadPool);
+        CompletableFuture<Void> creativeF = creativeInventoryEnabled
+            ? CompletableFuture.allOf(itemF, blockStateF, potionF, entityF, itemRtIdF)
+            .thenRunAsync(registryCache != null
+                          ? () -> registryCache.restoreCreative(Registries.CREATIVE)
+                          : Registries.CREATIVE::init,
+                computeThreadPool)
+            : CompletableFuture.runAsync(Registries.CREATIVE::initDisabled, computeThreadPool);
+        CompletableFuture<Void> recipeF = recipesEnabled
+            ? creativeF.thenRunAsync(registryCache != null
+                                     ? () -> Registries.RECIPE.init(registryCache.getRecipePktBytes())
+                                     : Registries.RECIPE::init,
+            computeThreadPool)
+            : CompletableFuture.runAsync(Registries.RECIPE::initDisabled, computeThreadPool);
+
+        CompletableFuture<Void> miscF = CompletableFuture.runAsync(() -> {
+            Profession.init();
+            Updater updater = BlockStateUpdaterBase.INSTANCE;
+            Enchantment.init();
+            Attribute.init();
+        }, computeThreadPool);
+
+        CompletableFuture<Void> dispenseF = CompletableFuture.allOf(blockF, itemF)
+            .thenRunAsync(() -> {
+                BlockComposter.init();
+                DispenseBehaviorRegister.init();
+            }, computeThreadPool);
+
+        return CompletableFuture.allOf(potionF, entityF, blockEntityF, itemRtIdF, biomeF,
+            fuelF, generatorF, genStageF, populatorF, genFeatF, structureF, structureSpawnOverrideF, effectF,
+            creativeF, recipeF, voxelF, disconnectF, trimF, miscF, dispenseF);
+    }
+
 
     private boolean convertLegacyConfiguration() {
         File oldNukkitYml = new File(this.dataPath + "nukkit.yml");
@@ -1292,8 +1293,12 @@ public class Server {
                     this.tick();
 
                     long nanosPerTick = getNanosPerTick();
-                    GameLoop.waitUntilNanos(this.nextTickNanos,
-                        nanosPerTick < GameLoop.SPIN_ACTIVATION_NANOS ? GameLoop.SPIN_MARGIN_NANOS : 0L);
+                    if (this.levelThreadMode || nanosPerTick < GameLoop.SPIN_ACTIVATION_NANOS) {
+                        GameLoop.waitUntilNanos(this.nextTickNanos,
+                            nanosPerTick < GameLoop.SPIN_ACTIVATION_NANOS ? GameLoop.SPIN_MARGIN_NANOS : 0L);
+                    } else {
+                        this.waitHandlingInbound(this.nextTickNanos);
+                    }
                 } catch (RuntimeException e) {
                     log.error("A RuntimeException happened while ticking the server", e);
                 }
@@ -1340,6 +1345,87 @@ public class Server {
                     e.printStackTrace();
                 }
             }
+        }
+    }
+
+    /**
+     * Waits for the next tick, handling inbound packets of spawned players as they arrive. Without
+     * it a packet that arrives just after a player was ticked waits for the whole idle part of the
+     * tick before anything reacts to it.
+     * <p>
+     * Only used when levels tick on this thread: the packets are handled on the thread that would
+     * otherwise handle them at the start of the player's next update, in the same order. The
+     * network threads wake this thread through {@link #onInboundQueued(Player)}; what arrived
+     * during the tick, after the player's update, is handled right at the start of the wait.
+     */
+    private void waitHandlingInbound(long deadlineNanos) {
+        this.waitingForTick = true;
+        try {
+            for (Player player : this.players.values()) {
+                if (deadlineNanos - System.nanoTime() <= 0) {
+                    return;
+                }
+                this.handleInboundNow(player);
+            }
+            long remaining;
+            while (deadlineNanos - System.nanoTime() > 0) {
+                Player player;
+                while (deadlineNanos - System.nanoTime() > 0 && (player = this.idleInbound.poll()) != null) {
+                    player.releaseInboundSignal();
+                    this.handleInboundNow(player);
+                }
+                remaining = deadlineNanos - System.nanoTime();
+                if (remaining <= 0) {
+                    return;
+                }
+                LockSupport.parkNanos(remaining);
+                if (Thread.currentThread().isInterrupted()) {
+                    return;
+                }
+            }
+        } finally {
+            this.waitingForTick = false;
+        }
+    }
+
+    /**
+     * Handles what a spawned player has queued and writes the replies right away, so they do not
+     * wait for the next tick's flush.
+     */
+    private void handleInboundNow(Player player) {
+        if (!player.spawned || player.inboundPackets.isEmpty()) {
+            return;
+        }
+        player.drainInboundPackets();
+        player.flushOutbound();
+    }
+
+    /**
+     * Called on a network thread after a packet was queued for {@code player}, see
+     * {@link #waitHandlingInbound(long)}. Does nothing while the tick runs, which handles the
+     * packet itself.
+     */
+    void onInboundQueued(Player player) {
+        if (this.waitingForTick && player.claimInboundSignal()) {
+            if (this.idleInbound.offer(player)) {
+                LockSupport.unpark(this.currentThread);
+            } else {
+                player.releaseInboundSignal();
+            }
+        }
+    }
+
+    /**
+     * Writes what the tick queued for every player right away instead of on the next session
+     * timer, see {@link FlushablePeer}. With level threads each level flushes its own players when
+     * its tick ends instead, since a flush from here would split a level's tick across batches.
+     */
+    private void flushPlayerSessions() {
+        if (this.levelThreadMode) {
+            return;
+        }
+        for (Player player : this.players.values()) {
+            player.flushOutbound();
         }
     }
 
@@ -1392,6 +1478,7 @@ public class Server {
         this.getScheduler().mainThreadHeartbeat((int) this.tickCounter);
 
         this.checkTickUpdates((int) this.tickCounter);
+        this.flushPlayerSessions();
 
         if (tickTime - this.lastTitleTickMillis >= 800) {
             this.lastTitleTickMillis = tickTime;
@@ -2084,6 +2171,7 @@ public class Server {
         entry.setActorUniqueID(entityId);
         entry.setPlayerName(name);
         entry.setXblXUID(xboxUserId);
+        entry.setPlayFabID(Objects.requireNonNullElse(skin.getSkin().getPlayFabId(), ""));
         entry.setPlatformOnlineID("");
         entry.setBuildPlatform(BuildPlatform.UNKNOWN);
         entry.setSerializedSkin(skin.toSerializedSkin());
@@ -2599,7 +2687,7 @@ public class Server {
                 .add(new FloatTag(0)))
             .putFloat("FallDistance", 0)
             .putShort("Fire", 0)
-            .putShort("Air", 300)
+            .putShort("Air", 400)
             .putBoolean("OnGround", true)
             .putBoolean("Invulnerable", false)
             .putCompound("abilities", abilities)

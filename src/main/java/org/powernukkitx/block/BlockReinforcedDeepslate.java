@@ -8,7 +8,7 @@ import org.jetbrains.annotations.NotNull;
 public class BlockReinforcedDeepslate extends BlockSolid {
     public static final BlockProperties PROPERTIES = new BlockProperties(REINFORCED_DEEPSLATE);
     public static final BlockDefinition DEFINITION = SOLID.toBuilder()
-            .resistance(1200.0)
+            .resistance(1200.0f)
             .canBePushed(false)
             .canBePulled(false)
             .build();

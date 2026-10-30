@@ -2,6 +2,7 @@ package org.powernukkitx.blockentity;
 
 import org.powernukkitx.block.Block;
 import org.powernukkitx.item.Item;
+import org.powernukkitx.entity.passive.EntityParrot;
 import org.powernukkitx.item.ItemMusicDisc;
 import org.powernukkitx.item.customitem.ItemDataDriven;
 import org.powernukkitx.level.format.IChunk;
@@ -29,6 +30,7 @@ public class BlockEntityJukebox extends BlockEntitySpawnable {
     private Item recordItem;
 
     private ServerSoundHandle soundHandle;
+    private int playbackEndsAt;
 
     public BlockEntityJukebox(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
@@ -61,10 +63,13 @@ public class BlockEntityJukebox extends BlockEntitySpawnable {
 
     public void play() {
         String sound;
+        int duration;
         if (this.recordItem instanceof ItemMusicDisc itemRecord) {
             sound = itemRecord.getSoundId();
+            duration = itemRecord.getDurationTicks();
         } else if (this.recordItem instanceof ItemDataDriven dataDriven && dataDriven.getRecord() != null) {
             sound = dataDriven.getRecord().soundEvent();
+            duration = Math.round(dataDriven.getRecord().duration() * 20);
         } else {
             return;
         }
@@ -72,6 +77,8 @@ public class BlockEntityJukebox extends BlockEntitySpawnable {
 
         final ServerSoundHandle handle = new ServerSoundHandle(SOUND_HANDLES.getAndIncrement());
         this.soundHandle = handle;
+        playbackEndsAt = duration > 0 ? level.getTick() + duration : Integer.MAX_VALUE;
+        scheduleUpdate();
 
         final PlaySoundPacket playSound = new PlaySoundPacket();
         playSound.setName(sound);
@@ -88,6 +95,14 @@ public class BlockEntityJukebox extends BlockEntitySpawnable {
 
         this.broadcast(playSound);
         this.broadcast(recordStarted);
+        notifyParrots(true);
+    }
+
+    /** @return whether this jukebox has an active record playback */
+    public boolean isPlaying() {
+        return !closed && level != null && soundHandle != null
+                && (recordItem instanceof ItemMusicDisc || recordItem instanceof ItemDataDriven dataDriven && dataDriven.getRecord() != null)
+                && level.getTick() < playbackEndsAt;
     }
 
     public void stop() {
@@ -96,6 +111,7 @@ public class BlockEntityJukebox extends BlockEntitySpawnable {
             return;
         }
         this.soundHandle = null;
+        notifyParrots(false);
 
         final Stop stop = new Stop();
         final ClientboundUpdateSoundDataPacket packet = new ClientboundUpdateSoundDataPacket();
@@ -109,6 +125,32 @@ public class BlockEntityJukebox extends BlockEntitySpawnable {
         packet.setResume(stop);
 
         this.broadcast(packet);
+    }
+
+    @Override
+    public boolean onUpdate() {
+        super.onUpdate();
+        if (closed) return false;
+        if (soundHandle == null) return false;
+        if (!isPlaying()) {
+            stop();
+            return false;
+        }
+        if (level.getTick() % 20 == 0) notifyParrots(true);
+        return true;
+    }
+
+    @Override
+    public synchronized void close() {
+        if (!closed) stop();
+        super.close();
+    }
+
+    private void notifyParrots(boolean playing) {
+        for (var entity : level.fastNearbyEntities(new org.powernukkitx.math.SimpleAxisAlignedBB(
+                x - 3, y - 3, z - 3, x + 4, y + 4, z + 4))) {
+            if (entity instanceof EntityParrot parrot) parrot.onRecordPlaying(this, playing);
+        }
     }
 
     private void broadcast(BedrockPacket packet) {

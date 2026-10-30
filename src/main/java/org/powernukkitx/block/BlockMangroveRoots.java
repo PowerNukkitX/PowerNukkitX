@@ -11,8 +11,8 @@ import org.jetbrains.annotations.NotNull;
 public class BlockMangroveRoots extends BlockTransparent {
     public static final BlockProperties PROPERTIES = new BlockProperties(MANGROVE_ROOTS);
     public static final BlockDefinition DEFINITION = TRANSPARENT.toBuilder()
-            .hardness(0.7)
-            .resistance(0.7)
+            .hardness(0.7f)
+            .resistance(0.7f)
             .burnChance(5)
             .waterloggingLevel(1)
             .build();

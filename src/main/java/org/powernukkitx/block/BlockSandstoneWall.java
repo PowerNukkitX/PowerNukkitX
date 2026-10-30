@@ -19,8 +19,8 @@ public class BlockSandstoneWall extends BlockWallBase {
             CommonBlockProperties.WALL_POST_BIT
     );
     public static final BlockDefinition DEFINITION = BlockWallBase.DEFINITION.toBuilder()
-            .hardness(0.8)
-            .resistance(0.8)
+            .hardness(0.8f)
+            .resistance(0.8f)
             .toolTier(ItemTool.TIER_WOODEN)
             .build();
 
