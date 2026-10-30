@@ -29,6 +29,7 @@ import org.cloudburstmc.netty.util.nethernet.TrustedProxies;
 import org.cloudburstmc.protocol.bedrock.BedrockPong;
 import org.cloudburstmc.protocol.bedrock.BedrockServerSession;
 import org.cloudburstmc.protocol.bedrock.codec.BedrockCodec;
+import org.cloudburstmc.protocol.bedrock.netty.codec.batch.BedrockBatchEncoder;
 import org.cloudburstmc.protocol.bedrock.netty.codec.packet.BedrockPacketCodec;
 import org.jetbrains.annotations.Nullable;
 import org.powernukkitx.Player;
@@ -98,7 +99,7 @@ public class Network implements NetworkInterface, SignalingService {
     private NetworkState state = NetworkState.STARTING;
 
     public Network(Server server) {
-        this(server, Runtime.getRuntime().availableProcessors(), new ThreadFactoryBuilder().setNameFormat("Netty Server IO #%d").build());
+        this(server, Utils.backgroundPoolThreads(server.isLevelThreadMode()), new ThreadFactoryBuilder().setNameFormat("Netty Server IO #%d").build());
     }
 
     @SuppressWarnings("deprecation")
@@ -339,6 +340,13 @@ public class Network implements NetworkInterface, SignalingService {
             SharedPacketEncoder.NAME,
             new SharedPacketEncoder()
         );
+        if (session.getPeer().getChannel().pipeline().get(BedrockBatchEncoder.NAME) != null) {
+            session.getPeer().getChannel().pipeline().replace(
+                BedrockBatchEncoder.NAME,
+                BedrockBatchEncoder.NAME,
+                new FlatBatchEncoder()
+            );
+        }
 
         final InetSocketAddress address = (InetSocketAddress) session.getSocketAddress();
         if (this.getState() == NetworkState.STARTING || this.getState() == NetworkState.STOPPING) {

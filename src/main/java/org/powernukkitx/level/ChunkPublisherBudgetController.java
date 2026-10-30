@@ -3,6 +3,7 @@ package org.powernukkitx.level;
 import org.powernukkitx.Player;
 import org.powernukkitx.Server;
 import org.powernukkitx.network.NetworkInterface.NetworkPressure;
+import org.powernukkitx.network.compression.MeasuredCompression;
 
 import java.lang.management.GarbageCollectorMXBean;
 import java.lang.management.ManagementFactory;
@@ -36,6 +37,9 @@ public final class ChunkPublisherBudgetController {
     private static final double MIN_SAMPLED_CHUNK_BYTES = 1024d;
     private static final double MAX_SAMPLED_CHUNK_BYTES = 1024d * 1024d;
     private static final double CHUNK_BYTES_EWMA_ALPHA = 0.10d;
+    private static final double MIN_WIRE_RATIO = 0.03d;
+    private static final double MIN_ACCOUNTED_CHUNK_BYTES = 256d;
+    private static final double WIRE_RATIO_EWMA_ALPHA = 0.25d;
     private static final double GC_LIVE_SET_PRESSURE_START = 0.80d;
     private static final double GC_LIVE_SET_PRESSURE_HARD = 0.90d;
     private static final double GC_OVERHEAD_PRESSURE_START = 0.05d;
@@ -59,6 +63,8 @@ public final class ChunkPublisherBudgetController {
     private long lastGcCollectionTimeMillis = -1L;
     private long upstreamBytesPerSecond;
     private double averageChunkBytes = DEFAULT_ACCOUNTED_CHUNK_BYTES;
+    private double wireRatio = 1d;
+    private boolean wireRatioSampled;
     private double resourceFactor = 1d;
     private double targetChunkBytesPerSecond;
     private double byteTokens;
@@ -237,6 +243,7 @@ public final class ChunkPublisherBudgetController {
         lastResourceSampleNanos = now;
 
         upstreamBytesPerSecond = resolveUpstreamBytesPerSecond();
+        sampleWireRatio();
 
         final double normalResourceFactor = calculateResourceFactor();
         final double memoryEmergencyFactor = calculateMemoryEmergencyFactor(now);
@@ -428,8 +435,27 @@ public final class ChunkPublisherBudgetController {
         return Math.max(getAccountedChunkBytes(), targetChunkBytesPerSecond * TOKEN_BUCKET_SECONDS);
     }
 
+    /**
+     * A chunk is charged what it costs on the link: its payload shrunk by the compression ratio
+     * outbound batches are seeing. Until the first batch is compressed the raw payload is charged.
+     * The ratio covers every compressed batch, not only chunks, so the charge never drops below
+     * {@value #MIN_ACCOUNTED_CHUNK_BYTES} bytes and the token bucket keeps bounding a pass.
+     */
     private double getAccountedChunkBytes() {
-        return Math.max(DEFAULT_ACCOUNTED_CHUNK_BYTES, averageChunkBytes);
+        return Math.max(MIN_ACCOUNTED_CHUNK_BYTES, averageChunkBytes * wireRatio);
+    }
+
+    private void sampleWireRatio() {
+        final double sampled = MeasuredCompression.sampleRatio();
+        if (sampled < 0d) return;
+
+        final double ratio = clamp(sampled, MIN_WIRE_RATIO, 1d);
+        if (!wireRatioSampled) {
+            wireRatio = ratio;
+            wireRatioSampled = true;
+        } else {
+            wireRatio += (ratio - wireRatio) * WIRE_RATIO_EWMA_ALPHA;
+        }
     }
 
     private double getConfiguredPassesPerSecond() {

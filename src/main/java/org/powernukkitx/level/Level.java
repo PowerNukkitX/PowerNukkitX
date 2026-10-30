@@ -444,6 +444,7 @@ public class Level implements Metadatable, LiquidUpdateAccess {
     private final Long2IntMap chunkTickList = new Long2IntOpenHashMap();
     private final CircuitSystem circuitSystem = new CircuitSystem();
     private final LongSet legacyStateChunks = new LongOpenHashSet();
+    private final LongSet legacyStateRetries = new LongOpenHashSet();
     private final VibrationManager vibrationManager = new SimpleVibrationManager(this);
     private final VillageManager villageManager = new VillageManager(this);
     public boolean stopTime;
@@ -663,6 +664,9 @@ public class Level implements Metadatable, LiquidUpdateAccess {
                     try {
                         if (!this.players.isEmpty() || this.hasTickingAreas()) {
                             this.doTick(loop);
+                            for (Player player : this.players.values()) {
+                                player.flushOutbound();
+                            }
                         } else {
                             this.scheduler.mainThreadHeartbeat(loop.getTick());
                         }
@@ -1828,10 +1832,23 @@ public class Level implements Metadatable, LiquidUpdateAccess {
             this.cancelUnloadChunkRequest(hash);
         }
 
-        reacquireChunkView(hash);
+        acquireChunkView(hash);
     }
 
+    /**
+     * Re-acquires a chunk the view already retains. A loaded chunk that finished generating and is
+     * available has nothing left to restore, so it is skipped: the view keeps it loaded, and its
+     * neighbours are re-evaluated whenever one of them advances.
+     */
     void reacquireChunkView(long hash) {
+        if (this.getPhysicalChunkIfLoaded(getHashX(hash), getHashZ(hash)) instanceof Chunk chunk
+                && !chunk.isDiscarded() && chunk.isGenerationComplete() && chunk.isAvailable()) {
+            return;
+        }
+        acquireChunkView(hash);
+    }
+
+    private void acquireChunkView(long hash) {
         int chunkX = getHashX(hash);
         int chunkZ = getHashZ(hash);
         IChunk acquired = this.requireProvider().acquireChunk(chunkX, chunkZ);
@@ -2183,7 +2200,7 @@ public class Level implements Metadatable, LiquidUpdateAccess {
             if (!this.updateEntities.isEmpty()) {
                 // skip unless previous tick's serial loop saw entity implementing EntityAsyncPrepare
                 if (this.hasAsyncPrepareEntities) {
-                    CompletableFuture.runAsync(() -> updateEntities.keySet()
+                    updateEntities.keySet()
                         .longParallelStream().forEach(id -> {
                             Entity entity = this.updateEntities.get(id);
                             if (entity != null && entity.isAlive() && entity.isInitialized() && entity instanceof EntityAsyncPrepare entityAsyncPrepare) {
@@ -2192,7 +2209,7 @@ public class Level implements Metadatable, LiquidUpdateAccess {
                                 } catch (Exception e) {
                                 }
                             }
-                        }), this.scheduler.getAsyncTaskThreadPool()).join();
+                        });
                 }
                 boolean seenAsyncPrepare = false;
                 var entityIterator = this.updateEntities.fastKeyIterator();
@@ -4448,12 +4465,19 @@ public class Level implements Metadatable, LiquidUpdateAccess {
      */
     private void deriveLegacyChunkStates() {
         final long[] pending;
+        final long[] retries;
         synchronized (this.legacyStateChunks) {
-            if (this.legacyStateChunks.isEmpty()) {
+            if (this.legacyStateChunks.isEmpty() && this.legacyStateRetries.isEmpty()) {
                 return;
             }
             pending = this.legacyStateChunks.toLongArray();
+            retries = this.legacyStateRetries.toLongArray();
             this.legacyStateChunks.clear();
+            this.legacyStateRetries.clear();
+        }
+
+        for (long hash : retries) {
+            this.deriveChunkStates(getHashX(hash), getHashZ(hash));
         }
 
         for (long hash : pending) {
@@ -4473,8 +4497,23 @@ public class Level implements Metadatable, LiquidUpdateAccess {
         if (provider == null) {
             return;
         }
-        final IChunk chunk = provider.getLoadedChunk(chunkHash(chunkX, chunkZ));
-        if (chunk == null || !chunk.hasLegacyStates()) {
+        final long hash = chunkHash(chunkX, chunkZ);
+        final IChunk chunk = provider.getLoadedChunk(hash);
+        if (chunk == null) {
+            return;
+        }
+        if (chunk instanceof Chunk generated) {
+            final Boolean legacy = generated.tryHasLegacyStates();
+            if (legacy == null) {
+                synchronized (this.legacyStateChunks) {
+                    this.legacyStateRetries.add(hash);
+                }
+                return;
+            }
+            if (!legacy) {
+                return;
+            }
+        } else if (!chunk.hasLegacyStates()) {
             return;
         }
         // blocks on the chunk edge derive their state from the chunk next to it, so the chunk is
@@ -7143,16 +7182,11 @@ public class Level implements Metadatable, LiquidUpdateAccess {
     public boolean standable(Vector3 vec, boolean allowWaterUnder, boolean loadChunks) {
         Position pos = Position.fromObject(vec, this);
         Block blockUnder = pos.add(0, -1, 0).getLevelBlock(0, loadChunks);
+        if (blockUnder.canPassThrough() && !(allowWaterUnder && blockUnder instanceof BlockFlowingWater)) return false;
         Block block = pos.getLevelBlock(0, loadChunks);
+        if (!block.isAir() && !block.canPassThrough()) return false;
         Block blockUpper = pos.add(0, 1, 0).getLevelBlock(0, loadChunks);
-        if (!allowWaterUnder)
-            return !blockUnder.canPassThrough()
-                    && (block.isAir() || block.canPassThrough())
-                    && (blockUpper.isAir() || blockUpper.canPassThrough());
-        else
-            return (!blockUnder.canPassThrough() || blockUnder instanceof BlockFlowingWater)
-                    && (block.isAir() || block.canPassThrough())
-                    && (blockUpper.isAir() || blockUpper.canPassThrough());
+        return blockUpper.isAir() || blockUpper.canPassThrough();
     }
 
     public boolean isTicked() {
@@ -7330,7 +7364,10 @@ public class Level implements Metadatable, LiquidUpdateAccess {
     @ApiStatus.Internal
     public boolean prepareChunkLightingForSend(int chunkX, int chunkZ, boolean force) {
         IChunk loadedChunk = getChunkIfLoaded(chunkX, chunkZ);
-        if (loadedChunk instanceof Chunk chunk && chunk.isGenerationComplete() && chunk.isLightingReady()) return true;
+        if (loadedChunk instanceof Chunk chunk) {
+            if (chunk.isGenerationComplete() && chunk.isLightingReady()) return true;
+            if (!force && !chunk.claimViewRequest(this.getTick())) return false;
+        }
 
         chunkGenerationManager.requestView(chunkX, chunkZ);
         return false;

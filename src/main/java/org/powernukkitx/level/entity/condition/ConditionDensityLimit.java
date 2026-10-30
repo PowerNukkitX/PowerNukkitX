@@ -45,6 +45,7 @@ public class ConditionDensityLimit extends Condition {
         for (int chunkX = minChunkX; chunkX <= maxChunkX; chunkX++) {
             for (int chunkZ = minChunkZ; chunkZ <= maxChunkZ; chunkZ++) {
                 Map<Long, Entity> entities = level.getChunkEntities(chunkX, chunkZ, false);
+                if (entities.isEmpty()) continue;
                 for (Entity entity : entities.values()) {
                     if (entityId.equals(entity.getIdentifier())
                             && entity.distanceSquared(block) < radiusSquared

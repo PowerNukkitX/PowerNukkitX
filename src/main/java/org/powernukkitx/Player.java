@@ -170,6 +170,7 @@ import org.powernukkitx.nbt.tag.FloatTag;
 import org.powernukkitx.nbt.tag.ListTag;
 import org.powernukkitx.nbt.tag.StringTag;
 import org.powernukkitx.nbt.tag.Tag;
+import org.powernukkitx.network.FlushablePeer;
 import org.powernukkitx.network.primitiveshape.PrimitiveShapes;
 import org.powernukkitx.network.process.PacketHandler;
 import org.powernukkitx.network.process.PlayerSessionHolder;
@@ -356,6 +357,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
      * drained in arrival order at the start of {@link #onUpdate}. See {@link #handlePacket}.
      */
     protected final Queue<BedrockPacket> inboundPackets = PlatformDependent.newMpscQueue();
+    private final AtomicBoolean inboundSignalled = new AtomicBoolean();
     private @Nullable Server.PreloadedPlayerData preloadedPlayerData;
     private Consumer<BedrockPacket> inboundProcessor;
     protected volatile String pendingClose;
@@ -525,6 +527,17 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     @NotNull
     public BedrockServerSession getSession() {
         return this.session;
+    }
+
+    /**
+     * Writes the packets queued for this player right away instead of on the session's own timer,
+     * see {@link FlushablePeer}. Safe to call from any thread.
+     */
+    @ApiStatus.Internal
+    public void flushOutbound() {
+        if (this.session.getPeer() instanceof FlushablePeer peer) {
+            peer.flushQueued();
+        }
     }
 
     /**
@@ -1288,7 +1301,22 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     protected void handlePacket(BedrockPacket packet) {
         if (!this.inboundPackets.offer(packet)) {
             log.warn("Failed to enqueue inbound packet {} for player {}", packet.getClass().getSimpleName(), this.getName());
+            return;
         }
+        this.server.onInboundQueued(this);
+    }
+
+    /**
+     * Marks this player as waiting for the server's idle inbound handling.
+     *
+     * @return whether it was not marked yet, so the caller has to queue it
+     */
+    boolean claimInboundSignal() {
+        return this.inboundSignalled.compareAndSet(false, true);
+    }
+
+    void releaseInboundSignal() {
+        this.inboundSignalled.set(false);
     }
 
     protected void drainInboundPackets() {

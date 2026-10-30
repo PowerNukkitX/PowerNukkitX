@@ -26,7 +26,7 @@ import java.util.concurrent.RejectedExecutionException;
 @ApiStatus.Internal
 public class HoldableServerSession extends BedrockServerSession {
     private final Object holdLock = new Object();
-    private List<Held> held;
+    private volatile List<Held> held;
 
     public HoldableServerSession(BedrockPeer peer, int subClientId) {
         super(peer, subClientId);
@@ -125,10 +125,12 @@ public class HoldableServerSession extends BedrockServerSession {
 
     @Override
     public void sendPacket(BedrockPacket packet) {
-        synchronized (this.holdLock) {
-            if (this.held != null) {
-                this.held.add(new HeldPacket(packet, false));
-                return;
+        if (this.held != null) {
+            synchronized (this.holdLock) {
+                if (this.held != null) {
+                    this.held.add(new HeldPacket(packet, false));
+                    return;
+                }
             }
         }
         super.sendPacket(packet);
@@ -136,10 +138,12 @@ public class HoldableServerSession extends BedrockServerSession {
 
     @Override
     public void sendPacketImmediately(BedrockPacket packet) {
-        synchronized (this.holdLock) {
-            if (this.held != null) {
-                this.held.add(new HeldPacket(packet, true));
-                return;
+        if (this.held != null) {
+            synchronized (this.holdLock) {
+                if (this.held != null) {
+                    this.held.add(new HeldPacket(packet, true));
+                    return;
+                }
             }
         }
         super.sendPacketImmediately(packet);

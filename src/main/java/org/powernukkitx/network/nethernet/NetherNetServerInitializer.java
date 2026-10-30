@@ -3,6 +3,7 @@ package org.powernukkitx.network.nethernet;
 import io.netty.channel.Channel;
 import org.cloudburstmc.protocol.bedrock.BedrockPeer;
 import org.cloudburstmc.protocol.bedrock.BedrockServerSession;
+import org.powernukkitx.network.FlushablePeer;
 import org.powernukkitx.network.HoldableServerSession;
 import org.cloudburstmc.protocol.bedrock.PacketDirection;
 import org.cloudburstmc.protocol.bedrock.data.PacketCompressionAlgorithm;
@@ -82,7 +83,7 @@ public abstract class NetherNetServerInitializer extends BedrockServerInitialize
     @Override
     protected BedrockPeer createPeer(Channel channel) {
         final int rakVersion = this.codecVersion;
-        return new BedrockPeer(channel, this::createSession) {
+        return new FlushablePeer(channel, this::createSession) {
             @Override
             public int getRakVersion() {
                 return rakVersion;
