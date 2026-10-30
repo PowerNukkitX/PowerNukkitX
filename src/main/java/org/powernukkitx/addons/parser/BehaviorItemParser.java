@@ -4,8 +4,10 @@ import org.powernukkitx.addons.AddonFeatureTracker;
 import org.powernukkitx.block.BlockComposter;
 import org.powernukkitx.item.customitem.CustomItemDefinition;
 import org.powernukkitx.item.customitem.ItemDataDriven;
+import org.powernukkitx.item.customitem.ItemDataDrivenStorage;
 import org.powernukkitx.item.customitem.data.CreativeCategory;
 import org.powernukkitx.item.utils.DiggerEntry;
+import org.powernukkitx.math.BlockFace;
 import org.powernukkitx.registry.BlockRegistry;
 import org.powernukkitx.registry.ItemRegistry;
 import org.powernukkitx.registry.Registries;
@@ -14,10 +16,13 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import lombok.extern.slf4j.Slf4j;
+import org.cloudburstmc.protocol.bedrock.data.ParticleType;
+import org.cloudburstmc.protocol.bedrock.data.SoundEvent;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -89,12 +94,12 @@ public final class BehaviorItemParser {
                         definition.toBuilder().lavaResistant(true).build());
             }
             ItemDataDriven.ServerComponents serverComponents = serverComponents(components);
-            prototype = new ItemDataDriven(identifier, definition, serverComponents);
+            prototype = create(identifier, definition, serverComponents);
             CustomItemDefinition registered = definition;
             if (replacesBlockItem) {
-                Registries.ITEM.registerBlockItemReplacement(prototype, () -> new ItemDataDriven(identifier, registered, serverComponents));
+                Registries.ITEM.registerBlockItemReplacement(prototype, () -> create(identifier, registered, serverComponents));
             } else {
-                Registries.ITEM.registerCustomItemDefinition(prototype, () -> new ItemDataDriven(identifier, registered, serverComponents));
+                Registries.ITEM.registerCustomItemDefinition(prototype, () -> create(identifier, registered, serverComponents));
             }
             registerCompostable(identifier, components);
             log.debug("Registered data-driven item {} from behavior pack '{}'", identifier, packName);
@@ -103,6 +108,13 @@ public final class BehaviorItemParser {
             log.error("Behavior pack '{}': could not register item {}", packName, identifier, e);
             return null;
         }
+    }
+
+    private static ItemDataDriven create(String identifier, CustomItemDefinition definition,
+                                         ItemDataDriven.ServerComponents serverComponents) {
+        return serverComponents.storage() != null
+                ? new ItemDataDrivenStorage(identifier, definition, serverComponents)
+                : new ItemDataDriven(identifier, definition, serverComponents);
     }
 
     /**
@@ -146,8 +158,149 @@ public final class BehaviorItemParser {
         if (absorption != null && absorption.isJsonObject()) {
             causes = asStringList(absorption.getAsJsonObject().get("absorbable_causes"));
         }
-        return record == null && causes.isEmpty() ? ItemDataDriven.ServerComponents.NONE
-                : new ItemDataDriven.ServerComponents(record, Set.copyOf(causes));
+        List<ItemDataDriven.DurabilityThreshold> thresholds = durabilityThresholds(components.get("minecraft:durability_sensor"));
+        BlockFace plantAtFace = plantAtFace(components.get("minecraft:seed"));
+        ItemDataDriven.Storage storage = storage(components);
+        JsonElement weightModifier = components.get("minecraft:storage_weight_modifier");
+        int storageWeight = weightModifier != null && weightModifier.isJsonObject()
+                ? Math.max(asInt(weightModifier.getAsJsonObject().get("weight_in_storage_item"), 4), 0) : -1;
+        ItemDataDriven.PiercingWeapon piercingWeapon = piercingWeapon(components.get("minecraft:piercing_weapon"));
+        ItemDataDriven.KineticWeapon kineticWeapon = kineticWeapon(components.get("minecraft:kinetic_weapon"));
+        return record == null && causes.isEmpty() && thresholds.isEmpty() && plantAtFace == null && storage == null
+                && storageWeight < 0 && piercingWeapon == null && kineticWeapon == null
+                ? ItemDataDriven.ServerComponents.NONE
+                : new ItemDataDriven.ServerComponents(record, Set.copyOf(causes), thresholds, plantAtFace, storage,
+                storageWeight, piercingWeapon, kineticWeapon);
+    }
+
+    private static @Nullable ItemDataDriven.KineticWeapon kineticWeapon(@Nullable JsonElement element) {
+        ItemDataDriven.PiercingWeapon reach = piercingWeapon(element);
+        if (reach == null) {
+            return null;
+        }
+        JsonObject json = element.getAsJsonObject();
+        return new ItemDataDriven.KineticWeapon(reach, Math.max(asInt(json.get("delay"), 0), 0),
+                asFloat(json.get("damage_multiplier"), 1f), asFloat(json.get("damage_modifier"), 0f),
+                kineticConditions(json.get("damage_conditions")), kineticConditions(json.get("knockback_conditions")),
+                kineticConditions(json.get("dismount_conditions")));
+    }
+
+    private static @Nullable ItemDataDriven.KineticConditions kineticConditions(@Nullable JsonElement element) {
+        if (element == null || !element.isJsonObject()) {
+            return null;
+        }
+        JsonObject json = element.getAsJsonObject();
+        return new ItemDataDriven.KineticConditions(asInt(json.get("max_duration"), -1),
+                asFloat(json.get("min_relative_speed"), 0f), asFloat(json.get("min_speed"), 0f));
+    }
+
+    /**
+     * Reach defaults to 0 to 3 blocks, and creative reach to the reach. Kinetic weapons share this reach.
+     */
+    private static @Nullable ItemDataDriven.PiercingWeapon piercingWeapon(@Nullable JsonElement element) {
+        if (element == null || !element.isJsonObject()) {
+            return null;
+        }
+        JsonObject json = element.getAsJsonObject();
+        JsonObject reach = json.has("reach") && json.get("reach").isJsonObject() ? json.getAsJsonObject("reach") : new JsonObject();
+        float min = asFloat(reach.get("min"), 0f);
+        float max = asFloat(reach.get("max"), 3f);
+        JsonObject creative = json.has("creative_reach") && json.get("creative_reach").isJsonObject()
+                ? json.getAsJsonObject("creative_reach") : null;
+        return new ItemDataDriven.PiercingWeapon(min, max,
+                creative == null ? min : asFloat(creative.get("min"), 0f),
+                creative == null ? max : asFloat(creative.get("max"), 0f),
+                Math.max(asFloat(json.get("hitbox_margin"), 0f), 0f));
+    }
+
+    /**
+     * @return what the item stores, with the defaults of a bundle for what the pack leaves out, or null when
+     * it has no {@code minecraft:storage_item}
+     */
+    private static @Nullable ItemDataDriven.Storage storage(JsonObject components) {
+        JsonElement element = components.get("minecraft:storage_item");
+        if (element == null || !element.isJsonObject()) {
+            return null;
+        }
+        JsonObject storage = element.getAsJsonObject();
+        JsonElement limit = components.get("minecraft:storage_weight_limit");
+        int maxWeight = limit != null && limit.isJsonObject() ? asInt(limit.getAsJsonObject().get("max_weight_limit"), 64) : 64;
+        return new ItemDataDriven.Storage(Math.clamp(asInt(storage.get("max_slots"), 64), 1, 64), Math.max(maxWeight, 0),
+                optBoolean(storage, "allow_nested_storage_items", true),
+                itemNames(storage.get("allowed_items")), itemNames(storage.get("banned_items")));
+    }
+
+    private static Set<String> itemNames(@Nullable JsonElement element) {
+        Set<String> names = new HashSet<>();
+        if (element == null || !element.isJsonArray()) {
+            return names;
+        }
+        for (JsonElement entry : element.getAsJsonArray()) {
+            String name = entry.isJsonObject() ? optString(entry.getAsJsonObject(), "item") : asStringOrEmpty(entry);
+            if (name.isEmpty() && entry.isJsonObject()) {
+                name = optString(entry.getAsJsonObject(), "name");
+            }
+            if (!name.isEmpty()) {
+                names.add(name.indexOf(':') >= 0 ? name : "minecraft:" + name);
+            }
+        }
+        return names;
+    }
+
+    /**
+     * @return the face a seed plants on, {@code up} unless {@code plant_at_face} names another, or null when
+     * the element is not a seed
+     */
+    private static @Nullable BlockFace plantAtFace(@Nullable JsonElement element) {
+        if (element == null || !element.isJsonObject() || optString(element.getAsJsonObject(), "crop_result").isEmpty()) {
+            return null;
+        }
+        String name = optString(element.getAsJsonObject(), "plant_at_face");
+        for (BlockFace face : BlockFace.values()) {
+            if (face.getName().equalsIgnoreCase(name)) {
+                return face;
+            }
+        }
+        return BlockFace.UP;
+    }
+
+    /**
+     * A threshold without its own sound plays the sensor's {@code sound_event}, a level sound event name such as
+     * {@code armor.crack_wolf}; a name the protocol does not know plays nothing. Particle types are the legacy
+     * names, matched against the protocol's particle types without their underscores.
+     */
+    private static List<ItemDataDriven.DurabilityThreshold> durabilityThresholds(@Nullable JsonElement element) {
+        JsonElement entries = element != null && element.isJsonObject()
+                ? element.getAsJsonObject().get("durability_thresholds") : null;
+        if (entries == null || !entries.isJsonArray()) {
+            return List.of();
+        }
+        String sensorSound = optString(element.getAsJsonObject(), "sound_event");
+        List<ItemDataDriven.DurabilityThreshold> thresholds = new ArrayList<>();
+        for (JsonElement entry : entries.getAsJsonArray()) {
+            if (!entry.isJsonObject()) {
+                continue;
+            }
+            JsonObject threshold = entry.getAsJsonObject();
+            String sound = optString(threshold, "sound_event");
+            if (sound.isEmpty()) {
+                sound = sensorSound;
+            }
+            SoundEvent soundEvent = sound.isEmpty() ? SoundEvent.UNDEFINED : SoundEvent.from(sound);
+            thresholds.add(new ItemDataDriven.DurabilityThreshold(asInt(threshold.get("durability"), 0),
+                    particleType(optString(threshold, "particle_type")), soundEvent == SoundEvent.UNDEFINED ? null : soundEvent));
+        }
+        return thresholds;
+    }
+
+    private static @Nullable ParticleType particleType(String name) {
+        String wanted = name.toLowerCase(Locale.ENGLISH);
+        for (ParticleType type : ParticleType.values()) {
+            if (type.name().replace("_", "").toLowerCase(Locale.ENGLISH).equals(wanted)) {
+                return type;
+            }
+        }
+        return null;
     }
 
     private static void registerCompostable(String identifier, @Nullable JsonObject components) {
@@ -170,7 +323,8 @@ public final class BehaviorItemParser {
                 applyComponent(packName, builder, component.getKey(), component.getValue());
             }
         }
-        return new ItemDataDriven(identifier, builder.build());
+        return new ItemDataDriven(identifier, components == null ? builder.build()
+                : builder.customBuild(nbt -> ClientItemComponents.write(components, nbt.getCompound("components"))));
     }
 
     private void applyMenuCategory(CustomItemDefinition.SimpleBuilder builder, JsonObject description) {
@@ -286,7 +440,8 @@ public final class BehaviorItemParser {
                     applyDigger(builder, value.getAsJsonObject());
                 }
             }
-            case "minecraft:compostable", "minecraft:fire_resistant", "minecraft:record", "minecraft:damage_absorption" -> {
+            case "minecraft:compostable", "minecraft:fire_resistant", "minecraft:record", "minecraft:damage_absorption",
+                 "minecraft:durability_sensor", "minecraft:kinetic_weapon" -> {
             }
             case "minecraft:seed" -> {
                 if (value.isJsonObject()) {
@@ -294,7 +449,11 @@ public final class BehaviorItemParser {
                 }
             }
             case "minecraft:use_duration" -> builder.useModifiers(1.0f, asFloat(unwrapValue(value), 0f));
-            default -> tracker.reportUnsupported(packName, "item-component", key);
+            default -> {
+                if (!ClientItemComponents.HANDLED.contains(key)) {
+                    tracker.reportUnsupported(packName, "item-component", key);
+                }
+            }
         }
     }
 
@@ -471,14 +630,14 @@ public final class BehaviorItemParser {
     }
 
     /** Many components accept either a bare value or {@code {"value": x}}. */
-    private static JsonElement unwrapValue(JsonElement element) {
+    static JsonElement unwrapValue(JsonElement element) {
         if (element != null && element.isJsonObject() && element.getAsJsonObject().has("value")) {
             return element.getAsJsonObject().get("value");
         }
         return element;
     }
 
-    private static String optString(JsonObject json, String key) {
+    static String optString(JsonObject json, String key) {
         return asStringOrEmpty(json.get(key));
     }
 
@@ -486,11 +645,11 @@ public final class BehaviorItemParser {
         return asBoolean(json.get(key), fallback);
     }
 
-    private static String asStringOrEmpty(JsonElement element) {
+    static String asStringOrEmpty(JsonElement element) {
         return element != null && element.isJsonPrimitive() ? element.getAsString() : "";
     }
 
-    private static boolean asBoolean(JsonElement element, boolean fallback) {
+    static boolean asBoolean(JsonElement element, boolean fallback) {
         try {
             return element != null && element.isJsonPrimitive() ? element.getAsBoolean() : fallback;
         } catch (RuntimeException e) {
@@ -498,7 +657,7 @@ public final class BehaviorItemParser {
         }
     }
 
-    private static int asInt(JsonElement element, int fallback) {
+    static int asInt(JsonElement element, int fallback) {
         try {
             return element != null && element.isJsonPrimitive() ? element.getAsInt() : fallback;
         } catch (RuntimeException e) {
@@ -506,7 +665,7 @@ public final class BehaviorItemParser {
         }
     }
 
-    private static float asFloat(JsonElement element, float fallback) {
+    static float asFloat(JsonElement element, float fallback) {
         try {
             return element != null && element.isJsonPrimitive() ? element.getAsFloat() : fallback;
         } catch (RuntimeException e) {

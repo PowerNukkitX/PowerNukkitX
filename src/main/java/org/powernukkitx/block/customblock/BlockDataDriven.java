@@ -229,6 +229,21 @@ public class BlockDataDriven extends Block implements CustomBlock, BlockFlowerPo
     }
 
     /**
+     * How water treats the block beyond whether it flows into it, from {@code minecraft:liquid_detection}.
+     *
+     * @param stopsFlowingFrom the faces water held in the block cannot flow out of; with {@code noReaction}
+     *                         also the faces water cannot flow in through
+     * @param noReaction       whether water flows through the block without affecting it
+     * @param broken           whether water destroys the block without dropping its loot
+     */
+    public record LiquidRule(@NotNull Set<BlockFace> stopsFlowingFrom, boolean noReaction, boolean broken) {
+
+        public LiquidRule {
+            stopsFlowingFrom = stopsFlowingFrom.isEmpty() ? Set.of() : Set.copyOf(stopsFlowingFrom);
+        }
+    }
+
+    /**
      * What a block does on the server whatever its state.
      *
      * @param instrumentSound   the note block instruments it sounds, or null for the default
@@ -246,6 +261,8 @@ public class BlockDataDriven extends Block implements CustomBlock, BlockFlowerPo
      *                          {@code minecraft:connection_*} states up to date
      * @param cornerWith        the blocks the {@code minecraft:corner} state forms corners with, empty for blocks
      *                          of the same identifier, or null when the block does not form corners
+     * @param liquid            how water treats the block, or null for the defaults
+     * @param wireStepsDown     whether redstone wire on top of the block connects down its sides
      */
     public record Behavior(@Nullable InstrumentSound instrumentSound,
                            @Nullable PlacementFilter placementFilter, @NotNull TraitPlacement traitPlacement,
@@ -253,10 +270,11 @@ public class BlockDataDriven extends Block implements CustomBlock, BlockFlowerPo
                            @NotNull ChestObstruction chestObstruction, boolean flowerPottable,
                            @Nullable Boolean redstoneConductor, @Nullable ConnectionRule connectionRule,
                            @Nullable RedstoneProducer redstoneProducer, @Nullable MultiBlock multiBlock,
-                           boolean cardinalConnections, @Nullable List<PlacementFilter.BlockMatcher> cornerWith) {
+                           boolean cardinalConnections, @Nullable List<PlacementFilter.BlockMatcher> cornerWith,
+                           @Nullable LiquidRule liquid, boolean wireStepsDown) {
 
         public static final Behavior DEFAULT = new Behavior(null, null, TraitPlacement.NONE, List.of(), null,
-                ChestObstruction.SHAPE, false, null, null, null, null, false, null);
+                ChestObstruction.SHAPE, false, null, null, null, null, false, null, null, true);
 
         public Behavior {
             itemSpeeds = List.copyOf(itemSpeeds);
@@ -946,6 +964,40 @@ public class BlockDataDriven extends Block implements CustomBlock, BlockFlowerPo
     }
 
     /**
+     * @return whether redstone wire on top of the block connects to wire one block lower beside it, from
+     * {@code allows_wire_to_step_down} of {@code minecraft:redstone_conductivity}
+     */
+    public boolean allowsWireToStepDown() {
+        return spec.behavior().wireStepsDown();
+    }
+
+    /**
+     * @param face the face water would leave through
+     * @return whether water held in the block cannot flow out through that face
+     */
+    public boolean stopsLiquidFlowingOut(@NotNull BlockFace face) {
+        LiquidRule liquid = spec.behavior().liquid();
+        return liquid != null && liquid.stopsFlowingFrom().contains(face);
+    }
+
+    /**
+     * @param face the face of this block water would enter through
+     * @return whether the block keeps water out on that face while letting it through elsewhere
+     */
+    public boolean stopsLiquidFlowingIn(@NotNull BlockFace face) {
+        LiquidRule liquid = spec.behavior().liquid();
+        return liquid != null && liquid.noReaction() && liquid.stopsFlowingFrom().contains(face);
+    }
+
+    /**
+     * @return whether water flowing into the block destroys it without dropping its loot
+     */
+    public boolean isBrokenByLiquidWithoutDrops() {
+        LiquidRule liquid = spec.behavior().liquid();
+        return liquid != null && liquid.broken();
+    }
+
+    /**
      * {@inheritDoc}
      * <p>
      * Only blocks declaring {@code minecraft:flower_pottable} go in a flower pot.
@@ -1045,9 +1097,9 @@ public class BlockDataDriven extends Block implements CustomBlock, BlockFlowerPo
 
     /**
      * Reads the collision boxes of a component compound in the client schema and places them in the
-     * block the way the client does: scaled and rotated about the block's centre, then translated, by
-     * the {@code minecraft:transformation} next to them, and kept within the 16x24x16 pixel space a
-     * collision box may occupy.
+     * block the way the client does: scaled about the scale pivot and rotated about the rotation pivot,
+     * both offsets from the block's centre, then translated, by the {@code minecraft:transformation} next
+     * to them, and kept within the 16x24x16 pixel space a collision box may occupy.
      */
     static float @Nullable [][] readCollisionBoxes(CompoundTag components) {
         if (!components.contains("minecraft:collision_box")) {
@@ -1090,6 +1142,12 @@ public class BlockDataDriven extends Block implements CustomBlock, BlockFlowerPo
         float[] translation = {
                 floatOr(transformation, "TX", 0f), floatOr(transformation, "TY", 0f), floatOr(transformation, "TZ", 0f)
         };
+        float[] scalePivot = {
+                floatOr(transformation, "SXP", 0f), floatOr(transformation, "SYP", 0f), floatOr(transformation, "SZP", 0f)
+        };
+        float[] rotationPivot = {
+                floatOr(transformation, "RXP", 0f), floatOr(transformation, "RYP", 0f), floatOr(transformation, "RZP", 0f)
+        };
         int rx = transformation.getInt("RX");
         int ry = transformation.getInt("RY");
         int rz = transformation.getInt("RZ");
@@ -1101,11 +1159,14 @@ public class BlockDataDriven extends Block implements CustomBlock, BlockFlowerPo
                     ((corner & 4) == 0 ? box[2] : box[5]) - 0.5f
             };
             for (int axis = 0; axis < 3; axis++) {
-                point[axis] *= scale[axis];
+                point[axis] = (point[axis] - scalePivot[axis]) * scale[axis] + scalePivot[axis] - rotationPivot[axis];
             }
             rotate(point, 1, 2, rx);
             rotate(point, 2, 0, ry);
             rotate(point, 0, 1, rz);
+            for (int axis = 0; axis < 3; axis++) {
+                point[axis] += rotationPivot[axis];
+            }
             for (int axis = 0; axis < 3; axis++) {
                 float value = point[axis] + 0.5f + translation[axis];
                 result[axis] = Math.min(result[axis], value);

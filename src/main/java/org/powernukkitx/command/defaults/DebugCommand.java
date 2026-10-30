@@ -20,8 +20,8 @@ import org.powernukkitx.entity.ai.EntityAI;
 import org.powernukkitx.inventory.fake.FakeInventory;
 import org.powernukkitx.inventory.fake.FakeInventoryType;
 import org.powernukkitx.item.Item;
-import org.powernukkitx.item.ItemBundle;
 import org.powernukkitx.item.ItemFilledMap;
+import org.powernukkitx.item.StorageItem;
 import org.powernukkitx.level.Level;
 import org.powernukkitx.level.Location;
 import org.powernukkitx.level.format.IChunk;
@@ -388,7 +388,7 @@ public class DebugCommand extends TestCommand implements CoreCommand {
             case "nbt" -> player.sendMessage(player.getInventory().getItemInMainHand().getNbt().toString());
             case "bundle" -> {
                 Item item = player.getInventory().getItemInMainHand();
-                if (item instanceof ItemBundle bundle)
+                if (item instanceof StorageItem bundle)
                     for (Item it : bundle.getInventory().getContents().values())
                         player.sendMessage(it.toString());
             }

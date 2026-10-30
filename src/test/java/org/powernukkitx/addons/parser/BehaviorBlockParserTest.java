@@ -101,18 +101,81 @@ class BehaviorBlockParserTest {
 
         assertTrue(spec.properties().getPropertyTypeSet().stream()
                 .anyMatch(type -> type.getName().equals("minecraft:cardinal_direction")));
-        ListTag<CompoundTag> properties = spec.definition().nbt().getList("properties", CompoundTag.class);
-        assertEquals("minecraft:cardinal_direction", properties.get(0).getString("name"));
-        assertEquals(4, properties.get(0).getList("enum").size());
+        CompoundTag nbt = spec.definition().nbt();
+        assertFalse(nbt.contains("properties"), "the client adds trait states itself and rejects them twice");
+        CompoundTag trait = nbt.getList("traits", CompoundTag.class).get(0);
+        assertEquals("minecraft:placement_direction", trait.getString("name"));
+        assertEquals(1, trait.getCompound("enabled_states").getByte("cardinal_direction"));
+        assertEquals(0, trait.getCompound("enabled_states").getByte("facing_direction"));
+        assertEquals(13, nbt.getInt("molangVersion"));
     }
 
     @Test
-    void sendsDisabledCollisionBoxAsOneZeroSizeBox() {
+    void sendsMultiBlockTraitAndKeepsOwnStates() {
+        CompoundTag nbt = parse(block("pnxtest:tall_block",
+                ", \"states\": { \"pnxtest:lit\": [false, true] }, \"traits\": { \"minecraft:multi_block\": "
+                        + "{ \"enabled_states\": [\"minecraft:multi_block_part\"], \"parts\": 3, \"direction\": \"up\" } }",
+                "{}", "[]")).definition().nbt();
+
+        CompoundTag trait = nbt.getList("traits", CompoundTag.class).get(0);
+        assertEquals(3, trait.getByte("part_count"));
+        assertEquals(BlockFace.UP.getIndex(), trait.getByte("direction"));
+        ListTag<CompoundTag> properties = nbt.getList("properties", CompoundTag.class);
+        assertEquals(1, properties.size());
+        assertEquals("pnxtest:lit", properties.get(0).getString("name"));
+    }
+
+    @Test
+    void sendsCornerAndConnectionTraitsInsteadOfTheirStates() {
+        CompoundTag nbt = parse(block("pnxtest:corner_fence",
+                ", \"traits\": { \"minecraft:placement_direction\": { \"enabled_states\": [\"minecraft:corner_and_cardinal_direction\"], "
+                        + "\"blocks_to_corner_with\": [\"pnxtest:corner_fence\"] }, "
+                        + "\"minecraft:connection\": { \"enabled_states\": [\"minecraft:cardinal_connections\"] } }",
+                "{}", "[]")).definition().nbt();
+
+        assertFalse(nbt.contains("properties"));
+        ListTag<CompoundTag> traits = nbt.getList("traits", CompoundTag.class);
+        CompoundTag direction = traits.get(0);
+        assertEquals(1, direction.getCompound("enabled_states").getByte("corner_and_cardinal_direction"));
+        assertEquals("pnxtest:corner_fence", direction.getList("blocks_to_corner_with", CompoundTag.class).get(0).getString("name"));
+        CompoundTag connection = traits.get(1);
+        assertEquals("minecraft:connection", connection.getString("name"));
+        assertEquals(1, connection.getInt("enabled_states"));
+    }
+
+    @Test
+    void sendsClientComponentsInDedicatedServerSchema() {
+        CompoundTag components = components(parse(block("pnxtest:schema_block", "",
+                "{ \"minecraft:liquid_detection\": { \"detection_rules\": [ { \"can_contain_liquid\": true, "
+                        + "\"on_liquid_touches\": \"blocking\", \"stops_liquid_flowing_from_direction\": [\"up\", \"north\"] } ] },"
+                        + "\"minecraft:redstone_conductivity\": { \"redstone_conductor\": true },"
+                        + "\"minecraft:placement_filter\": { \"conditions\": [ { \"allowed_faces\": [\"side\"] } ] },"
+                        + "\"minecraft:material_instances\": { \"*\": { \"texture\": \"stone\", \"face_dimming\": false, "
+                        + "\"isotropic\": true, \"ambient_occlusion\": 0.5 } },"
+                        + "\"minecraft:transformation\": { \"rotation\": [0, 90, 0], \"rotation_pivot\": [0, 0.5, 0] } }",
+                "[]")));
+
+        CompoundTag rule = components.getCompound("minecraft:liquid_detection").getList("detectionRules", CompoundTag.class).get(0);
+        assertEquals(1, rule.getByte("canContainLiquid"));
+        assertEquals("water", rule.getString("liquidType"));
+        assertEquals((1 << BlockFace.UP.getIndex()) | (1 << BlockFace.NORTH.getIndex()), rule.getByte("stopsLiquidFromDirection"));
+        assertEquals(1, components.getCompound("minecraft:redstone_conductivity").getByte("redstoneConductor"));
+        assertEquals(1, components.getCompound("minecraft:redstone_conductivity").getByte("allowsWireToStepDown"));
+        assertEquals(0x3c, components.getCompound("minecraft:placement_filter")
+                .getList("conditions", CompoundTag.class).get(0).getByte("allowed_faces"));
+        CompoundTag material = components.getCompound("minecraft:material_instances").getCompound("materials").getCompound("*");
+        assertEquals(0x6, material.getByte("packed_bools"));
+        assertEquals(0.5f, material.getFloat("ambient_occlusion"));
+        assertEquals(0.5f, components.getCompound("minecraft:transformation").getFloat("RYP"));
+    }
+
+    @Test
+    void sendsDisabledCollisionBoxWithEmptyBoxList() {
         CompoundTag box = components(parse(block("pnxtest:no_collision", "", "{ \"minecraft:collision_box\": false }", "[]")))
                 .getCompound("minecraft:collision_box");
 
         assertFalse(box.getBoolean("enabled"));
-        assertEquals(1, box.getList("boxes", CompoundTag.class).size(), "an empty box list breaks the client");
+        assertEquals(0, box.getList("boxes", CompoundTag.class).size(), "the dedicated server sends an empty box list");
     }
 
     @Test
@@ -285,6 +348,55 @@ class BehaviorBlockParserTest {
         assertEquals(0.0, west.getMinX(), 1.0e-6);
         assertEquals(0.5, west.getMaxX(), 1.0e-6);
         assertEquals(1.0, west.getMaxZ(), 1.0e-6);
+    }
+
+    @Test
+    void readsLiquidFlowRules() {
+        BlockDataDriven held = new BlockDataDriven(null, parse(block("pnxtest:water_holder", "",
+                "{ \"minecraft:liquid_detection\": { \"detection_rules\": [ { \"can_contain_liquid\": true, "
+                        + "\"stops_liquid_flowing_from_direction\": [\"down\", \"north\"] } ] } }", "[]")));
+        BlockDataDriven through = new BlockDataDriven(null, parse(block("pnxtest:water_through", "",
+                "{ \"minecraft:liquid_detection\": { \"detection_rules\": [ { \"on_liquid_touches\": \"no_reaction\", "
+                        + "\"stops_liquid_flowing_from_direction\": [\"east\"] } ] } }", "[]")));
+        BlockDataDriven washed = new BlockDataDriven(null, parse(block("pnxtest:water_broken", "",
+                "{ \"minecraft:liquid_detection\": { \"detection_rules\": [ { \"on_liquid_touches\": \"broken\" } ] } }", "[]")));
+
+        assertTrue(held.stopsLiquidFlowingOut(BlockFace.NORTH));
+        assertFalse(held.stopsLiquidFlowingOut(BlockFace.SOUTH));
+        assertFalse(held.stopsLiquidFlowingIn(BlockFace.NORTH), "only no_reaction blocks keep water out by face");
+        assertTrue(through.stopsLiquidFlowingIn(BlockFace.EAST));
+        assertFalse(through.stopsLiquidFlowingIn(BlockFace.WEST));
+        assertTrue(washed.isBrokenByLiquidWithoutDrops());
+        assertFalse(held.isBrokenByLiquidWithoutDrops());
+    }
+
+    @Test
+    void propagatingConsumerConductsRedstone() {
+        BlockDataDriven propagating = new BlockDataDriven(null, parse(block("pnxtest:consumer_on", "",
+                "{ \"minecraft:redstone_consumer\": { \"propagates_power\": true } }", "[]")));
+        BlockDataDriven blocking = new BlockDataDriven(null, parse(block("pnxtest:consumer_off", "",
+                "{ \"minecraft:redstone_consumer\": { \"min_power\": 3 } }", "[]")));
+
+        BlockDataDriven noStep = new BlockDataDriven(null, parse(block("pnxtest:no_step", "",
+                "{ \"minecraft:redstone_conductivity\": { \"allows_wire_to_step_down\": false } }", "[]")));
+
+        assertFalse(noStep.allowsWireToStepDown());
+        assertTrue(propagating.allowsWireToStepDown());
+        assertTrue(propagating.isNormalBlock());
+        assertFalse(blocking.isNormalBlock());
+        assertTrue(tracker.isEmpty(), "redstone_consumer must not be reported unsupported");
+    }
+
+    @Test
+    void scalesCollisionBoxAboutScalePivot() {
+        BlockDataDriven.Spec spec = parse(block("pnxtest:squashed_box", "",
+                "{ \"minecraft:collision_box\": { \"origin\": [-8, 0, -8], \"size\": [16, 16, 16] }, "
+                        + "\"minecraft:transformation\": { \"scale\": [1, 0.5, 1], \"scale_pivot\": [0, -0.5, 0] } }", "[]"));
+
+        AxisAlignedBB box = new BlockDataDriven(null, spec).getCollisionBoxes()[0];
+
+        assertEquals(0.0, box.getMinY(), 1.0e-6);
+        assertEquals(0.5, box.getMaxY(), 1.0e-6);
     }
 
     @Test

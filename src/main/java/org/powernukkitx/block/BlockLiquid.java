@@ -1,5 +1,6 @@
 package org.powernukkitx.block;
 
+import org.powernukkitx.block.customblock.BlockDataDriven;
 import org.powernukkitx.block.definition.BlockDefinition;
 
 import org.powernukkitx.Player;
@@ -407,6 +408,12 @@ public abstract class BlockLiquid extends BlockTransparent {
                     if (layer0 instanceof Faceable faceable && faceable.getBlockFace() == blockFace) {
                         return;
                     }
+                    if (layer0 instanceof BlockDataDriven dataDriven && dataDriven.stopsLiquidFlowingOut(blockFace)) {
+                        return;
+                    }
+                }
+                if (block instanceof BlockDataDriven dataDriven && dataDriven.stopsLiquidFlowingIn(blockFace.getOpposite())) {
+                    return;
                 }
 
                 if (block.getWaterloggingLevel() > 1) {
@@ -415,7 +422,8 @@ public abstract class BlockLiquid extends BlockTransparent {
             }
 
             if (access.handleLiquidFlow(block, this, newFlowDecay)) {
-                if (block.layer == 0 && !block.isAir()) {
+                if (block.layer == 0 && !block.isAir()
+                        && !(block instanceof BlockDataDriven dataDriven && dataDriven.isBrokenByLiquidWithoutDrops())) {
                     access.useBreakOn(block, block instanceof BlockWeb ? Item.get(Item.WOODEN_SWORD) : Item.AIR);
                 }
                 access.setBlock(block, block.layer, getLiquidWithNewDepth(newFlowDecay), false, true);

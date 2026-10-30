@@ -9,9 +9,7 @@ import org.powernukkitx.block.customblock.CustomBlockDefinition;
 import org.powernukkitx.block.customblock.PlacementFilter;
 import org.powernukkitx.block.customblock.data.CollisionBox;
 import org.powernukkitx.block.customblock.data.CraftingTable;
-import org.powernukkitx.block.customblock.data.Geometry;
 import org.powernukkitx.block.customblock.data.Movable;
-import org.powernukkitx.block.customblock.data.Transformation;
 import org.powernukkitx.block.property.type.BlockPropertyType;
 import org.powernukkitx.block.property.type.BooleanPropertyType;
 import org.powernukkitx.block.property.type.IntListPropertyType;
@@ -74,6 +72,11 @@ public final class BehaviorBlockParser {
      * time for no gameplay benefit.
      */
     static final int MAX_STATE_PERMUTATIONS = 1 << 16;
+
+    /**
+     * The Molang version the dedicated server writes into block definitions.
+     */
+    private static final int CLIENT_MOLANG_VERSION = 13;
 
     private static final Vector3f DEFAULT_BOX_ORIGIN = new Vector3f(-8f, 0f, -8f);
     private static final Vector3f DEFAULT_BOX_SIZE = new Vector3f(16f, 16f, 16f);
@@ -243,9 +246,15 @@ public final class BehaviorBlockParser {
             };
         }
         Boolean conductor = null;
+        boolean wireStepsDown = true;
         JsonElement conductivity = components.get("minecraft:redstone_conductivity");
+        JsonElement consumer = components.get("minecraft:redstone_consumer");
         if (conductivity != null && conductivity.isJsonObject()) {
             conductor = asBoolean(conductivity.getAsJsonObject().get("redstone_conductor"), false);
+            wireStepsDown = asBoolean(conductivity.getAsJsonObject().get("allows_wire_to_step_down"), true);
+        } else if (consumer != null && consumer.isJsonObject()) {
+            JsonObject json = consumer.getAsJsonObject();
+            conductor = asBoolean(json.has("propagates_power") ? json.get("propagates_power") : json.get("propogates_power"), false);
         }
         return new BlockDataDriven.Behavior(
                 instrumentSound(components.get("minecraft:instrument_sound")),
@@ -260,7 +269,36 @@ public final class BehaviorBlockParser {
                 redstoneProducer(components.get("minecraft:redstone_producer")),
                 multiBlock(traits),
                 traitStates(traits, "minecraft:connection").contains("minecraft:cardinal_connections"),
-                cornerWith(packName, traits));
+                cornerWith(packName, traits),
+                liquidRule(components.get("minecraft:liquid_detection")),
+                wireStepsDown);
+    }
+
+    /**
+     * @return the first water rule's effects beyond what {@link #applyLiquidDetection} sets, or null when it
+     * has none
+     */
+    private static @Nullable BlockDataDriven.LiquidRule liquidRule(@Nullable JsonElement value) {
+        JsonElement rules = value != null && value.isJsonObject() ? value.getAsJsonObject().get("detection_rules") : null;
+        if (rules == null || !rules.isJsonArray()) {
+            return null;
+        }
+        for (JsonElement ruleElement : rules.getAsJsonArray()) {
+            if (!ruleElement.isJsonObject()) {
+                continue;
+            }
+            JsonObject rule = ruleElement.getAsJsonObject();
+            String liquid = optString(rule, "liquid_type");
+            if (!liquid.isEmpty() && !"water".equals(liquid)) {
+                continue;
+            }
+            String touches = optString(rule, "on_liquid_touches");
+            Set<BlockFace> stops = faces(rule.get("stops_liquid_flowing_from_direction"));
+            boolean noReaction = "no_reaction".equals(touches);
+            boolean broken = "broken".equals(touches);
+            return stops.isEmpty() && !broken ? null : new BlockDataDriven.LiquidRule(stops, noReaction, broken);
+        }
+        return null;
     }
 
     private static List<String> traitStates(@Nullable JsonObject traits, String trait) {
@@ -386,7 +424,7 @@ public final class BehaviorBlockParser {
                 asBoolean(producer.get("transform_relative"), false));
     }
 
-    private static Set<BlockFace> faces(@Nullable JsonElement element) {
+    static Set<BlockFace> faces(@Nullable JsonElement element) {
         Set<BlockFace> faces = EnumSet.noneOf(BlockFace.class);
         for (String face : asStringList(element)) {
             for (BlockFace candidate : BlockFace.values()) {
@@ -416,8 +454,7 @@ public final class BehaviorBlockParser {
     /**
      * Water is the only liquid Bedrock lets blocks react to. A block that holds water is waterlogged; one
      * the water flows through without breaking it shares its space with the water, as waterlogged blocks do.
-     * {@code broken} drops the block's loot like {@code popped}, because the liquid engine breaks blocks one
-     * way only.
+     * The flow directions and whether {@code broken} drops loot are read by {@link #liquidRule(JsonElement)}.
      */
     private static void applyLiquidDetection(CustomBlockDefinition.Builder builder, JsonElement value) {
         JsonElement rules = value.isJsonObject() ? value.getAsJsonObject().get("detection_rules") : null;
@@ -585,6 +622,8 @@ public final class BehaviorBlockParser {
             builder.blockTags(baseTags.toArray(new String[0]));
         }
         ListTag<CompoundTag> translatedPermutations = clientPermutations(permutations);
+        Set<String> traitStates = new LinkedHashSet<>();
+        ListTag<CompoundTag> traits = ClientBlockComponents.traits(description.getAsJsonObject("traits"), traitStates);
         return builder.customBuild(nbt -> {
             CompoundTag target = nbt.getCompound("components");
             for (Map.Entry<String, Tag> entry : rawComponents.getTags().entrySet()) {
@@ -593,7 +632,32 @@ public final class BehaviorBlockParser {
             if (translatedPermutations.size() > 0) {
                 nbt.putList("permutations", translatedPermutations);
             }
+            nbt.putInt("molangVersion", CLIENT_MOLANG_VERSION);
+            if (traits.size() > 0) {
+                nbt.putList("traits", traits);
+                removeProperties(nbt, traitStates);
+            }
         });
+    }
+
+    /**
+     * Drops the states a trait declares from the property list, since the client adds them itself.
+     */
+    private static void removeProperties(CompoundTag nbt, Set<String> names) {
+        if (!nbt.containsList("properties")) {
+            return;
+        }
+        ListTag<CompoundTag> kept = new ListTag<>();
+        for (CompoundTag property : nbt.getList("properties", CompoundTag.class).getAll()) {
+            if (!names.contains(property.getString("name"))) {
+                kept.add(property);
+            }
+        }
+        if (kept.size() > 0) {
+            nbt.putList("properties", kept);
+        } else {
+            nbt.remove("properties");
+        }
     }
 
     private void applyMenuCategory(CustomBlockDefinition.Builder builder, JsonObject description) {
@@ -637,12 +701,7 @@ public final class BehaviorBlockParser {
                     builder.mapColor(color);
                 }
             }
-            case "minecraft:geometry" -> {
-                Geometry geometry = parseGeometry(value);
-                if (geometry != null) {
-                    builder.geometry(geometry);
-                }
-            }
+            case "minecraft:geometry" -> putIfPresent(raw, key, ClientBlockComponents.geometry(value));
             case "minecraft:collision_box" -> {
                 if (isFalse(value)) {
                     raw.putCompound(key, disabledCollisionBox());
@@ -657,12 +716,7 @@ public final class BehaviorBlockParser {
                     builder.selectionBox(boxOrigin(value), boxSize(value));
                 }
             }
-            case "minecraft:transformation" -> {
-                Transformation transformation = parseTransformation(value);
-                if (transformation != null) {
-                    builder.transformation(transformation);
-                }
-            }
+            case "minecraft:transformation" -> putIfPresent(raw, key, ClientBlockComponents.transformation(value));
             case "minecraft:crafting_table" -> {
                 if (value.isJsonObject()) {
                     builder.craftingTable(parseCraftingTable(identifier, value.getAsJsonObject()));
@@ -675,7 +729,7 @@ public final class BehaviorBlockParser {
             }
             case "minecraft:material_instances" -> {
                 if (value.isJsonObject()) {
-                    raw.putCompound(key, translateMaterialInstances(value.getAsJsonObject()));
+                    raw.putCompound(key, ClientBlockComponents.materialInstances(value.getAsJsonObject()));
                 }
             }
             case "minecraft:unit_cube" -> raw.putCompound(key, new CompoundTag());
@@ -685,14 +739,26 @@ public final class BehaviorBlockParser {
                 builder.canBeReplaced(true);
                 raw.putCompound(key, new CompoundTag());
             }
-            case "minecraft:liquid_detection" -> applyLiquidDetection(builder, value);
+            case "minecraft:liquid_detection" -> {
+                applyLiquidDetection(builder, value);
+                putIfPresent(raw, key, ClientBlockComponents.liquidDetection(value));
+            }
+            case "minecraft:placement_filter" -> putIfPresent(raw, key, ClientBlockComponents.placementFilter(value));
+            case "minecraft:precipitation_interactions" ->
+                    putIfPresent(raw, key, ClientBlockComponents.precipitationInteractions(value));
+            case "minecraft:redstone_conductivity" -> raw.putCompound(key, ClientBlockComponents.redstoneConductivity(value));
+            case "minecraft:redstone_producer" -> putIfPresent(raw, key, ClientBlockComponents.redstoneProducer(value));
+            case "minecraft:support" -> putIfPresent(raw, key, ClientBlockComponents.support(value));
+            case "minecraft:flower_pottable" -> raw.putCompound(key, ClientBlockComponents.flowerPottable());
+            case "minecraft:connection_rule" -> raw.putCompound(key, ClientBlockComponents.connectionRule(value));
+            case "minecraft:destruction_particles" -> raw.putCompound(key, ClientBlockComponents.destructionParticles(value));
+            case "minecraft:random_offset" -> raw.putCompound(key, ClientBlockComponents.randomOffset(value));
+            case "minecraft:embedded_visual" -> putIfPresent(raw, key, ClientBlockComponents.embeddedVisual(value));
+            case "minecraft:item_visual" -> putIfPresent(raw, key, ClientBlockComponents.itemVisual(value));
             case "minecraft:block_light_emission" -> builder.lightEmission(Math.round(Math.clamp(asFloat(value, 0f), 0f, 1f) * 15));
             case "minecraft:destroy_time" -> builder.destructibleByMining(asFloat(value, 0f));
             case "minecraft:explosion_resistance" -> builder.destructibleByExplosion((int) asFloat(value, 0f));
-            case "minecraft:loot", "minecraft:placement_filter", "minecraft:precipitation_interactions",
-                 "minecraft:redstone_conductivity", "minecraft:redstone_producer", "minecraft:support",
-                 "minecraft:chest_obstruction", "minecraft:flower_pottable", "minecraft:connection_rule",
-                 "minecraft:instrument_sound" -> {
+            case "minecraft:loot", "minecraft:chest_obstruction", "minecraft:instrument_sound", "minecraft:redstone_consumer" -> {
             }
             default -> tracker.reportUnsupported(packName, "block-component", key);
         }
@@ -910,6 +976,7 @@ public final class BehaviorBlockParser {
                 for (Map.Entry<String, JsonElement> entry : components.entrySet()) {
                     if (entry.getKey().equals("minecraft:redstone_producer")) {
                         producer = redstoneProducer(entry.getValue());
+                        putIfPresent(clientComponents, entry.getKey(), ClientBlockComponents.redstoneProducer(entry.getValue()));
                     } else if (!entry.getKey().startsWith("tag:")) {
                         translatePermutationComponent(packName, clientComponents, serverValues, entry.getKey(), entry.getValue());
                     }
@@ -954,15 +1021,10 @@ public final class BehaviorBlockParser {
         switch (key) {
             case "minecraft:material_instances" -> {
                 if (value.isJsonObject()) {
-                    target.putCompound(key, translateMaterialInstances(value.getAsJsonObject()));
+                    target.putCompound(key, ClientBlockComponents.materialInstances(value.getAsJsonObject()));
                 }
             }
-            case "minecraft:geometry" -> {
-                CompoundTag geometry = translatePermutationGeometry(value);
-                if (geometry != null) {
-                    target.putCompound(key, geometry);
-                }
-            }
+            case "minecraft:geometry" -> putIfPresent(target, key, ClientBlockComponents.geometry(value));
             case "minecraft:friction" -> {
                 double friction = Math.min(asDouble(value, 0.4), 0.9);
                 target.putCompound(key, new CompoundTag().putFloat("value", (float) friction));
@@ -994,12 +1056,7 @@ public final class BehaviorBlockParser {
             case "minecraft:selection_box" -> target.putCompound(key, isFalse(value)
                     ? selectionBox(false, new Vector3f(0f, 0f, 0f), new Vector3f(0f, 0f, 0f))
                     : selectionBox(true, boxOrigin(value), boxSize(value)));
-            case "minecraft:transformation" -> {
-                Transformation transformation = parseTransformation(value);
-                if (transformation != null) {
-                    target.putCompound(key, transformation.toCompoundTag());
-                }
-            }
+            case "minecraft:transformation" -> putIfPresent(target, key, ClientBlockComponents.transformation(value));
             case "minecraft:tick" -> {
                 if (value.isJsonObject()) {
                     JsonObject tick = value.getAsJsonObject();
@@ -1015,7 +1072,12 @@ public final class BehaviorBlockParser {
                 target.putCompound(key, new CompoundTag());
                 serverValues.add(builder -> builder.canBeReplaced(true));
             }
-            case "minecraft:liquid_detection" -> serverValues.add(builder -> applyLiquidDetection(builder, value));
+            case "minecraft:liquid_detection" -> {
+                putIfPresent(target, key, ClientBlockComponents.liquidDetection(value));
+                serverValues.add(builder -> applyLiquidDetection(builder, value));
+            }
+            case "minecraft:destruction_particles" -> target.putCompound(key, ClientBlockComponents.destructionParticles(value));
+            case "minecraft:random_offset" -> target.putCompound(key, ClientBlockComponents.randomOffset(value));
             case "minecraft:loot" -> {
             }
             default -> tracker.reportUnsupported(packName, "block-permutation-component", key);
@@ -1049,17 +1111,18 @@ public final class BehaviorBlockParser {
     }
 
     /**
-     * A disabled collision box, sent as one zero-size box. An empty box list would serialise as an
-     * NBT list of type 0, which the client fails to read.
+     * A disabled collision box, sent as the dedicated server sends it: disabled, with an empty box list.
      */
     private static CompoundTag disabledCollisionBox() {
-        ListTag<CompoundTag> boxes = new ListTag<>();
-        boxes.add(new CompoundTag()
-                .putFloat("minX", 0f).putFloat("minY", 0f).putFloat("minZ", 0f)
-                .putFloat("maxX", 0f).putFloat("maxY", 0f).putFloat("maxZ", 0f));
         return new CompoundTag()
-                .putBoolean("enabled", false)
-                .putList("boxes", boxes);
+                .putList("boxes", new ListTag<CompoundTag>())
+                .putBoolean("enabled", false);
+    }
+
+    private static void putIfPresent(CompoundTag target, String key, @Nullable CompoundTag value) {
+        if (value != null) {
+            target.putCompound(key, value);
+        }
     }
 
     /**
@@ -1073,115 +1136,6 @@ public final class BehaviorBlockParser {
                         .add(new FloatTag(origin.x)).add(new FloatTag(origin.y)).add(new FloatTag(origin.z)))
                 .putList("size", new ListTag<FloatTag>()
                         .add(new FloatTag(size.x)).add(new FloatTag(size.y)).add(new FloatTag(size.z)));
-    }
-
-    /**
-     * Permutation geometry in the full client schema, starting from the same defaults the builder uses
-     * for the base geometry. The sparse NBT that {@link Geometry} produces names its keys differently and is
-     * not accepted inside a permutation.
-     */
-    private static @Nullable CompoundTag translatePermutationGeometry(JsonElement value) {
-        String identifier;
-        JsonObject geometryJson = null;
-        if (value.isJsonPrimitive()) {
-            identifier = value.getAsString();
-        } else if (value.isJsonObject()) {
-            geometryJson = value.getAsJsonObject();
-            identifier = optString(geometryJson, "identifier");
-        } else {
-            return null;
-        }
-        if (identifier.isEmpty()) {
-            return null;
-        }
-        CompoundTag geometry = CustomBlockDefinition.createDefaultGeometry(identifier);
-        if (geometryJson != null) {
-            JsonObject boneVisibility = geometryJson.getAsJsonObject("bone_visibility");
-            if (boneVisibility != null) {
-                CompoundTag bones = new CompoundTag(new LinkedHashMap<>());
-                for (Map.Entry<String, JsonElement> bone : boneVisibility.entrySet()) {
-                    JsonElement condition = bone.getValue();
-                    if (condition.isJsonPrimitive() && condition.getAsJsonPrimitive().isBoolean()) {
-                        bones.putString(bone.getKey(), condition.getAsBoolean() ? "true" : "false");
-                    } else if (condition.isJsonPrimitive()) {
-                        bones.putString(bone.getKey(), condition.getAsString());
-                    }
-                }
-                geometry.putCompound("bone_visibility", bones);
-            }
-            String culling = optString(geometryJson, "culling");
-            if (!culling.isEmpty()) {
-                geometry.putString("culling", culling);
-            }
-        }
-        return geometry;
-    }
-
-    private static @Nullable Geometry parseGeometry(JsonElement value) {
-        if (value.isJsonPrimitive()) {
-            return new Geometry(value.getAsString());
-        }
-        if (!value.isJsonObject()) {
-            return null;
-        }
-        JsonObject geometryJson = value.getAsJsonObject();
-        String name = optString(geometryJson, "identifier");
-        if (name.isEmpty()) {
-            return null;
-        }
-        Geometry geometry = new Geometry(name);
-        JsonObject boneVisibility = geometryJson.getAsJsonObject("bone_visibility");
-        if (boneVisibility != null) {
-            for (Map.Entry<String, JsonElement> bone : boneVisibility.entrySet()) {
-                JsonElement condition = bone.getValue();
-                if (condition.isJsonPrimitive() && condition.getAsJsonPrimitive().isBoolean()) {
-                    geometry.boneVisibility(bone.getKey(), condition.getAsBoolean());
-                } else if (condition.isJsonPrimitive()) {
-                    geometry.boneVisibility(bone.getKey(), condition.getAsString());
-                }
-            }
-        }
-        String culling = optString(geometryJson, "culling");
-        if (!culling.isEmpty()) {
-            geometry.culling(culling);
-        }
-        return geometry;
-    }
-
-    private static @Nullable Transformation parseTransformation(JsonElement value) {
-        if (!value.isJsonObject()) {
-            return null;
-        }
-        JsonObject transformation = value.getAsJsonObject();
-        return new Transformation(
-                asVector3(transformation.get("translation"), 0),
-                asVector3(transformation.get("scale"), 1),
-                asVector3(transformation.get("rotation"), 0));
-    }
-
-    /**
-     * Flattens a pack's per-face material map into the client schema, which nests the materials and
-     * carries an empty mapping compound alongside them.
-     */
-    private static CompoundTag translateMaterialInstances(JsonObject materialInstances) {
-        CompoundTag materials = new CompoundTag(new LinkedHashMap<>());
-        for (Map.Entry<String, JsonElement> entry : materialInstances.entrySet()) {
-            if (!entry.getValue().isJsonObject()) {
-                continue;
-            }
-            JsonObject material = entry.getValue().getAsJsonObject();
-            CompoundTag translated = new CompoundTag(new LinkedHashMap<>());
-            translated.putFloat("ambient_occlusion", asBoolean(material.get("ambient_occlusion"), true) ? 1.0f : 0.0f);
-            translated.putByte("packed_bools", (byte) (asBoolean(material.get("face_dimming"), true) ? 0x1 : 0x0));
-            translated.putByte("isotropic", (byte) (asBoolean(material.get("isotropic"), false) ? 1 : 0));
-            translated.putString("render_method", lowerOr(material, "render_method", "opaque"));
-            translated.putString("texture", optString(material, "texture"));
-            translated.putString("tint_method", lowerOr(material, "tint_method", "none"));
-            materials.putCompound(entry.getKey(), translated);
-        }
-        return new CompoundTag(new LinkedHashMap<>())
-                .putCompound("mappings", new CompoundTag())
-                .putCompound("materials", materials);
     }
 
     private static Vector3f boxOrigin(JsonElement value) {
@@ -1200,7 +1154,7 @@ public final class BehaviorBlockParser {
         return new Vector3f(asFloat(array.get(0), 0f), asFloat(array.get(1), 0f), asFloat(array.get(2), 0f));
     }
 
-    private static Vector3 asVector3(@Nullable JsonElement element, double fallback) {
+    static Vector3 asVector3(@Nullable JsonElement element, double fallback) {
         if (element == null || !element.isJsonArray() || element.getAsJsonArray().size() < 3) {
             return new Vector3(fallback, fallback, fallback);
         }
@@ -1209,7 +1163,7 @@ public final class BehaviorBlockParser {
                 asFloat(array.get(2), (float) fallback));
     }
 
-    private static String lowerOr(JsonObject json, String key, String fallback) {
+    static String lowerOr(JsonObject json, String key, String fallback) {
         String value = optString(json, key);
         return value.isEmpty() ? fallback : value.toLowerCase(Locale.ENGLISH);
     }
@@ -1218,7 +1172,7 @@ public final class BehaviorBlockParser {
         return element != null && element.isJsonPrimitive() && element.getAsJsonPrimitive().isBoolean() && !element.getAsBoolean();
     }
 
-    private static String optString(JsonObject json, String key) {
+    static String optString(JsonObject json, String key) {
         return asStringOrEmpty(json.get(key));
     }
 
@@ -1230,7 +1184,7 @@ public final class BehaviorBlockParser {
         return element != null && element.isJsonPrimitive() ? element.getAsString() : null;
     }
 
-    private static boolean asBoolean(@Nullable JsonElement element, boolean fallback) {
+    static boolean asBoolean(@Nullable JsonElement element, boolean fallback) {
         try {
             return element != null && element.isJsonPrimitive() ? element.getAsBoolean() : fallback;
         } catch (RuntimeException e) {
@@ -1238,7 +1192,7 @@ public final class BehaviorBlockParser {
         }
     }
 
-    private static int asInt(@Nullable JsonElement element, int fallback) {
+    static int asInt(@Nullable JsonElement element, int fallback) {
         try {
             return element != null && element.isJsonPrimitive() ? element.getAsInt() : fallback;
         } catch (RuntimeException e) {
@@ -1246,7 +1200,7 @@ public final class BehaviorBlockParser {
         }
     }
 
-    private static float asFloat(@Nullable JsonElement element, float fallback) {
+    static float asFloat(@Nullable JsonElement element, float fallback) {
         try {
             return element != null && element.isJsonPrimitive() ? element.getAsFloat() : fallback;
         } catch (RuntimeException e) {
@@ -1262,7 +1216,7 @@ public final class BehaviorBlockParser {
         }
     }
 
-    private static List<String> asStringList(@Nullable JsonElement element) {
+    static List<String> asStringList(@Nullable JsonElement element) {
         List<String> values = new ArrayList<>();
         if (element == null) {
             return values;

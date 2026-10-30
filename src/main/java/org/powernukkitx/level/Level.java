@@ -50,6 +50,7 @@ import org.powernukkitx.event.player.PlayerInteractEvent.Action;
 import org.powernukkitx.event.weather.LightningStrikeEvent;
 import org.powernukkitx.inventory.BlockInventoryHolder;
 import org.powernukkitx.item.Item;
+import org.powernukkitx.item.customitem.ItemDataDriven;
 import org.powernukkitx.item.enchantment.Enchantment;
 import org.powernukkitx.level.format.Chunk;
 import org.powernukkitx.level.format.ChunkSection;
@@ -4896,6 +4897,7 @@ public class Level implements Metadatable, LiquidUpdateAccess {
             if (blockToPlace == null) return null;
             List<String> useOn = item.getCustomDefinition().getBlockPlacerData().useOn();
             if (!useOn.isEmpty() && !useOn.contains(target.getId())) return null;
+            if (item instanceof ItemDataDriven dataDriven && !dataDriven.canPlantAt(face)) return null;
             hand = blockToPlace;
             hand.position(block);
         }

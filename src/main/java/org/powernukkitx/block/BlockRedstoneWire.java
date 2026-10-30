@@ -1,5 +1,6 @@
 package org.powernukkitx.block;
 
+import org.powernukkitx.block.customblock.BlockDataDriven;
 import org.powernukkitx.Player;
 import org.powernukkitx.event.block.BlockRedstoneEvent;
 import org.powernukkitx.event.redstone.RedstoneUpdateEvent;
@@ -123,7 +124,8 @@ public class BlockRedstoneWire extends BlockFlowable implements RedstoneComponen
             int upStrength = this.getMaxCurrentStrength(adjacentX, baseY + 1, adjacentZ, strength);
             if (upStrength > strength && !coveredFromAbove) {
                 adjacentBlock = this.level.getBlock(adjacentX, baseY, adjacentZ);
-                if (!(adjacentBlock instanceof BlockSlab slab && slab.isOnTop())) {
+                if (!(adjacentBlock instanceof BlockSlab slab && slab.isOnTop())
+                        && !(adjacentBlock instanceof BlockDataDriven dataDriven && !dataDriven.allowsWireToStepDown())) {
                     strength = upStrength;
                 }
             }
@@ -134,7 +136,8 @@ public class BlockRedstoneWire extends BlockFlowable implements RedstoneComponen
                 if (adjacentBlock == null) {
                     adjacentBlock = this.level.getBlock(adjacentX, baseY, adjacentZ);
                 }
-                if (!adjacentBlock.isNormalBlock()) {
+                if (!adjacentBlock.isNormalBlock()
+                        && !(this.level.getBlock(baseX, baseY - 1, baseZ) instanceof BlockDataDriven dataDriven && !dataDriven.allowsWireToStepDown())) {
                     strength = downStrength;
                 }
             }

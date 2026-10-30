@@ -6,8 +6,14 @@ import org.powernukkitx.block.BlockComposter;
 import org.powernukkitx.block.BlockID;
 import org.powernukkitx.addons.AddonFeatureTracker;
 import org.powernukkitx.item.Item;
+import org.powernukkitx.item.ItemID;
 import org.powernukkitx.item.customitem.CustomItemDefinition;
 import org.powernukkitx.item.customitem.ItemDataDriven;
+import org.powernukkitx.item.customitem.ItemDataDrivenStorage;
+import org.powernukkitx.math.BlockFace;
+import org.powernukkitx.nbt.tag.CompoundTag;
+import org.powernukkitx.nbt.tag.IntTag;
+import org.powernukkitx.nbt.tag.ListTag;
 import org.powernukkitx.registry.ItemRegistry;
 import org.powernukkitx.registry.Registries;
 
@@ -88,6 +94,99 @@ class BehaviorItemParserTest {
         CustomItemDefinition definition = ItemRegistry.getCustomItemDefinitionByIdStatic(id);
         assertNotNull(definition);
         assertEquals(id, definition.identifier());
+    }
+
+    @Test
+    void sendsClientComponentsInDedicatedServerSchema() {
+        String id = "pnxtest:parsed_client_components";
+
+        assertEquals(id, register(id, """
+                {
+                  "minecraft:rarity": "rare",
+                  "minecraft:interact_button": "Use This",
+                  "minecraft:liquid_clipped": true,
+                  "minecraft:dyeable": { "default_color": "#175882" },
+                  "minecraft:storage_item": { "max_slots": 64, "banned_items": ["minecraft:shulker_box"] },
+                  "minecraft:cooldown": { "category": "spear", "duration": 1.05, "type": "attack" },
+                  "minecraft:use_modifiers": { "use_duration": 2, "start_sound": "item.diamond_spear.use" }
+                }
+                """));
+
+        CompoundTag components = ItemRegistry.getCustomItemDefinitionByIdStatic(id).nbt().getCompound("components");
+        assertTrue(assertInstanceOf(ItemDataDriven.class, Registries.ITEM.get(id)).isDyeable());
+        assertEquals("rare", components.getCompound("minecraft:rarity").getString("value"));
+        assertEquals("Use This", components.getCompound("minecraft:interact_button").getString("interact_text"));
+        assertTrue(components.getCompound("item_properties").getBoolean("liquid_clipped"));
+        ListTag<IntTag> color = components.getCompound("minecraft:dyeable").getList("default_color", IntTag.class);
+        assertEquals(0x17, (int) color.get(0).getData());
+        assertEquals(0x82, (int) color.get(2).getData());
+        assertEquals("minecraft:shulker_box", components.getCompound("minecraft:storage_item")
+                .getList("banned_items", CompoundTag.class).get(0).getString("name"));
+        assertEquals("attack", components.getCompound("minecraft:cooldown").getString("type"));
+        assertEquals("if_first", components.getCompound("minecraft:use_modifiers").getString("start_using"));
+        assertTrue(components.contains("item_tags"));
+        assertTrue(tracker.isEmpty(), "client components must not be reported unsupported");
+    }
+
+    @Test
+    void seedPlantsOnlyAtItsFace() {
+        String id = "pnxtest:parsed_hanging_seed";
+
+        assertEquals(id, register(id, """
+                { "minecraft:seed": { "crop_result": "minecraft:wheat", "plant_at_face": "DOWN" },
+                  "minecraft:durability_sensor": { "durability_thresholds": [ { "durability": 5, "particle_type": "wolfarmorcrack" } ] } }
+                """));
+
+        ItemDataDriven seed = assertInstanceOf(ItemDataDriven.class, Registries.ITEM.get(id));
+        assertFalse(seed.isPiercingWeapon());
+        assertTrue(seed.canPlantAt(BlockFace.DOWN));
+        assertFalse(seed.canPlantAt(BlockFace.UP));
+        assertTrue(tracker.isEmpty(), "durability_sensor must not be reported unsupported");
+    }
+
+    @Test
+    void storageItemStoresWithinPackLimits() {
+        String id = "pnxtest:parsed_pouch";
+
+        assertEquals(id, register(id, """
+                {
+                  "minecraft:max_stack_size": 1,
+                  "minecraft:storage_item": { "max_slots": 8, "allow_nested_storage_items": false, "banned_items": ["stick"] },
+                  "minecraft:storage_weight_limit": { "max_weight_limit": 32 }
+                }
+                """));
+
+        ItemDataDrivenStorage pouch = assertInstanceOf(ItemDataDrivenStorage.class, Registries.ITEM.get(id));
+        assertEquals(8, pouch.getMaxStorageSlots());
+        assertEquals(32, pouch.getMaxStorageWeight());
+        assertTrue(pouch.canStore(Item.get(ItemID.APPLE)));
+        assertFalse(pouch.canStore(Item.get(ItemID.BUNDLE)), "nested storage items are not allowed");
+        assertFalse(pouch.canStore(Item.get(ItemID.STICK)), "banned names without a namespace are vanilla items");
+    }
+
+    @Test
+    void readsPiercingWeapon() {
+        String id = "pnxtest:parsed_spear";
+
+        assertEquals(id, register(id, """
+                { "minecraft:damage": 4, "minecraft:piercing_weapon": { "reach": { "min": 2.0, "max": 4.5 }, "hitbox_margin": 0.25 } }
+                """));
+
+        ItemDataDriven spear = assertInstanceOf(ItemDataDriven.class, Registries.ITEM.get(id));
+        assertTrue(spear.isPiercingWeapon());
+    }
+
+    @Test
+    void acceptsKineticWeapon() {
+        String id = "pnxtest:parsed_lance";
+
+        assertEquals(id, register(id, """
+                { "minecraft:kinetic_weapon": { "delay": 10, "damage_multiplier": 1.2,
+                  "damage_conditions": { "min_relative_speed": 4.6, "max_duration": 200 } } }
+                """));
+
+        assertInstanceOf(ItemDataDriven.class, Registries.ITEM.get(id));
+        assertTrue(tracker.isEmpty(), "kinetic_weapon must not be reported unsupported");
     }
 
     @Test
