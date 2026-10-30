@@ -13,7 +13,7 @@ public class NukkitRandom implements RandomSourceProvider {
 
     long seeds;
     ReseedableMersenneTwister provider;
-    final ContinuousSampler sampler;
+    ContinuousSampler sampler;
 
     public NukkitRandom() {
         this(System.currentTimeMillis());
@@ -21,8 +21,6 @@ public class NukkitRandom implements RandomSourceProvider {
 
     public NukkitRandom(long seeds) {
         setSeed(seeds);
-        sampler = GaussianSampler.of(ZigguratSampler.NormalizedGaussian.of(RandomSource.ISAAC.create()),
-                0, 0.33333);
     }
 
     @Override
@@ -81,6 +79,7 @@ public class NukkitRandom implements RandomSourceProvider {
 
     @Override
     public double nextGaussian() {
+        if(sampler == null) sampler = GaussianSampler.of(ZigguratSampler.NormalizedGaussian.of(RandomSource.ISAAC.create()), 0, 0.33333);
         double sample = sampler.sample();
         return Math.min(1, Math.max(sample, -1));
     }
