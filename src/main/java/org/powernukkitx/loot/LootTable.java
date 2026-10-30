@@ -13,8 +13,12 @@ import org.powernukkitx.item.enchantment.Enchantment;
 import org.powernukkitx.item.enchantment.EnchantmentHelper;
 import org.powernukkitx.item.ItemColorArmor;
 import org.powernukkitx.network.protocol.types.ArmorTrim;
+import org.powernukkitx.nbt.tag.CompoundTag;
+import org.powernukkitx.nbt.tag.ListTag;
+import org.powernukkitx.nbt.tag.Tag;
 import org.powernukkitx.network.protocol.types.BannerPattern;
 import org.powernukkitx.utils.DyeColor;
+import org.powernukkitx.utils.ItemHelper;
 import org.powernukkitx.utils.random.NukkitRandom;
 
 import lombok.extern.slf4j.Slf4j;
@@ -22,6 +26,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
@@ -235,7 +240,7 @@ public record LootTable(List<Pool> pools) {
      */
     public sealed interface ItemFunction permits SpecificEnchants, EnchantRandomly, EnchantWithLevels,
             RandomAuxValue, SetDamage, LootingEnchant, SetPotion, SetActorId, SetOminousBottleAmplifier, RandomDye,
-            EnchantRandomGear, RandomBlockState, SetBannerDetails, SetBookContents, SetArmorTrim {
+            EnchantRandomGear, RandomBlockState, SetBannerDetails, SetBookContents, SetArmorTrim, FillContainer {
 
         /**
          * @param item   the item so far; may be changed in place
@@ -538,6 +543,48 @@ public record LootTable(List<Pool> pools) {
         @Override
         public @NotNull Item apply(@NotNull Item item, @NotNull Random random, @Nullable Item tool) {
             return new ArmorTrim(pattern, material).applyTo(item);
+        }
+    }
+
+    /**
+     * Fills a container item, such as a shulker box, with what another table rolls, each stack in a random
+     * slot of 27. Stacks beyond the 27th are dropped. A table that fills containers with itself stops after
+     * {@value #MAX_NESTING_DEPTH} levels.
+     *
+     * @param table the path of the table to roll, as registered in {@link LootTableRegistry}
+     */
+    public record FillContainer(@NotNull String table) implements ItemFunction {
+
+        private static final int CONTAINER_SLOTS = 27;
+        private static final ThreadLocal<int[]> DEPTH = ThreadLocal.withInitial(() -> new int[1]);
+
+        @Override
+        public @NotNull Item apply(@NotNull Item item, @NotNull Random random, @Nullable Item tool) {
+            LootTable contents = LootTableRegistry.get(table);
+            int[] depth = DEPTH.get();
+            if (contents == null || depth[0] >= MAX_NESTING_DEPTH) {
+                return item;
+            }
+            List<Item> stacks;
+            depth[0]++;
+            try {
+                stacks = contents.generate(random, tool);
+            } finally {
+                depth[0]--;
+            }
+            List<Integer> slots = new ArrayList<>(CONTAINER_SLOTS);
+            for (int slot = 0; slot < CONTAINER_SLOTS; slot++) {
+                slots.add(slot);
+            }
+            Collections.shuffle(slots, random);
+            ListTag<CompoundTag> items = new ListTag<>(Tag.TAG_Compound);
+            for (int i = 0; i < stacks.size() && i < CONTAINER_SLOTS; i++) {
+                items.add(ItemHelper.write(stacks.get(i), slots.get(i)));
+            }
+            CompoundTag nbt = item.getOrCreateNbt();
+            nbt.putList("Items", items);
+            item.setNbt(nbt);
+            return item;
         }
     }
 

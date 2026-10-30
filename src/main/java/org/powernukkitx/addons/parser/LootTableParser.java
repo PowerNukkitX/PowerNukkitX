@@ -166,6 +166,14 @@ public final class LootTableParser {
                             optString(function, "title"), pages(function.get("pages"))));
                     case "set_armor_trim" -> itemFunctions.add(new LootTable.SetArmorTrim(optString(function, "material"),
                             optString(function, "pattern")));
+                    case "fill_container" -> {
+                        String table = optString(function, "loot_table");
+                        if (table.isEmpty()) {
+                            tracker.reportUnsupported(packName, "loot-function", functionName);
+                        } else {
+                            itemFunctions.add(new LootTable.FillContainer(table));
+                        }
+                    }
                     case "explosion_decay", "furnace_smelt" -> {
                     }
                     default -> tracker.reportUnsupported(packName, "loot-function", functionName);

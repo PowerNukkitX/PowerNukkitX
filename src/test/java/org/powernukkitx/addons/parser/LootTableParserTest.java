@@ -6,6 +6,10 @@ import org.powernukkitx.item.Item;
 import org.powernukkitx.item.ItemID;
 import org.powernukkitx.item.enchantment.Enchantment;
 import org.powernukkitx.loot.LootTable;
+import org.powernukkitx.loot.LootTableRegistry;
+import org.powernukkitx.nbt.tag.CompoundTag;
+import org.powernukkitx.nbt.tag.ListTag;
+import org.powernukkitx.utils.ItemHelper;
 
 import com.google.gson.JsonParser;
 import org.junit.jupiter.api.BeforeAll;
@@ -84,6 +88,21 @@ class LootTableParserTest {
         assertEquals(2, loot.size());
         assertEquals("Gem", loot.getFirst().getCustomName());
         assertEquals(2, loot.getFirst().getLore().length);
+    }
+
+    @Test
+    void fillsContainerFromAnotherTable() {
+        LootTableRegistry.register("loot_tables/pnxtest/box_contents.json", parse(LEAVES));
+        LootTable table = parse("""
+                { "pools": [ { "rolls": 1, "entries": [ { "type": "item", "name": "minecraft:undyed_shulker_box",
+                  "functions": [ { "function": "fill_container", "loot_table": "loot_tables/pnxtest/box_contents.json" } ] } ] } ] }
+                """);
+
+        Item box = table.generate(new Random(3)).getFirst();
+        ListTag<CompoundTag> items = box.getNbt().getList("Items", CompoundTag.class);
+        assertEquals(1, items.size());
+        assertEquals(ItemID.STICK, ItemHelper.read(items.get(0)).getId());
+        assertTrue(tracker.isEmpty());
     }
 
     @Test
