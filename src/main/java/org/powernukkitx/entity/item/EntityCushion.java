@@ -177,7 +177,7 @@ public class EntityCushion extends EntityVehicle {
             }
         }
 
-        if(drop) {
+        if(drop && this.level != null) {
             this.level.dropItem(this, ItemCushion.of(getColor()));
         }
         this.close();
