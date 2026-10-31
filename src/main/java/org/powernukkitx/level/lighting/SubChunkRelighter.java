@@ -171,11 +171,15 @@ public final class SubChunkRelighter {
             int neighborZ = z + OFFSET_Z[direction];
             if (!access.isAvailable(neighborX, neighborY, neighborZ)) continue;
 
+            // Attenuation is at least 1, so a neighbour already at sourceLight - 1 can never be
+            // raised. Checking that first skips the light filter lookup, which resolves block
+            // states, for most neighbours of a flood fill.
+            int currentLight = clampLight(access.getSkyLight(neighborX, neighborY, neighborZ));
+            if (currentLight >= sourceLight - 1) continue;
+
             int attenuation = attenuation(access.getLightFilter(neighborX, neighborY, neighborZ));
             int candidateLight = sourceLight - attenuation;
             if (candidateLight <= 0) continue;
-
-            int currentLight = clampLight(access.getSkyLight(neighborX, neighborY, neighborZ));
             if (candidateLight <= currentLight) continue;
 
             access.setSkyLight(neighborX, neighborY, neighborZ, candidateLight);
@@ -257,16 +261,18 @@ public final class SubChunkRelighter {
             int neighborZ = z + OFFSET_Z[direction];
             if (!access.isAvailable(neighborX, neighborY, neighborZ)) continue;
 
-            int attenuation = attenuation(access.getLightFilter(neighborX, neighborY, neighborZ));
-            int candidateLight = sourceLight - attenuation;
+            int currentLight = clampLight(access.getBlockLight(neighborX, neighborY, neighborZ));
             int emission = clampLight(access.getBlockEmission(neighborX, neighborY, neighborZ));
-            if (emission > candidateLight) {
+            int candidateLight;
+            if (currentLight >= sourceLight - 1) {
+                // Propagated light is at most sourceLight - 1 and cannot beat the current value, so
+                // only the neighbour's own emission can raise it and the filter lookup is skipped.
                 candidateLight = emission;
+            } else {
+                candidateLight = Math.max(sourceLight - attenuation(access.getLightFilter(neighborX, neighborY, neighborZ)), emission);
             }
 
             if (candidateLight <= 0) continue;
-
-            int currentLight = clampLight(access.getBlockLight(neighborX, neighborY, neighborZ));
             if (candidateLight <= currentLight) continue;
 
             access.setBlockLight(neighborX, neighborY, neighborZ, candidateLight);
