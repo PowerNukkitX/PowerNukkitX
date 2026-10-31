@@ -19,15 +19,13 @@ public class BiomeMapStage extends GenerateStage {
 
     public static final String NAME = "biome";
 
-    private BiomePicker biomePicker;
-
     @Override
     public void apply(ChunkGenerateContext context) {
         IChunk chunk = context.getChunk();
         int chunkX = chunk.getX();
         int chunkZ = chunk.getZ();
         Level level = chunk.getLevel();
-        if(biomePicker == null) biomePicker = level.getBiomePicker();
+        BiomePicker biomePicker = level.getBiomePicker();
         final int minHeight = level.getMinHeight();
         final int maxHeight = level.getMaxHeight();
         BiomeResult[] biomes = new BiomeResult[16*16];
