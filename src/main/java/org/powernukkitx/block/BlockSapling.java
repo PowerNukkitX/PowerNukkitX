@@ -65,7 +65,6 @@ public abstract class BlockSapling extends BlockFlowable implements BlockFlowerP
 
         return false;
     }
-
     
     @Override
     public boolean onActivate(@NotNull Item item, Player player, BlockFace blockFace, float fx, float fy, float fz) {
@@ -163,6 +162,10 @@ public abstract class BlockSapling extends BlockFlowable implements BlockFlowerP
                     generator = new ObjectSmallPaleOakTree(4, 7);
                     vector3 = this.add(0, 0, 0);
                 }
+                break;
+            case POPLAR:
+                generator = new ObjectPoplarTree();
+                vector3 = this.add(0, 0, 0);
                 break;
             case SPRUCE:
                 if ((vector2 = this.findSaplings(WoodType.SPRUCE)) != null) {
@@ -269,5 +272,4 @@ public abstract class BlockSapling extends BlockFlowable implements BlockFlowerP
         return block.getId().equals(this.getId()) && ((BlockSapling) block).getWoodType() == type;
     }
 
-    
 }
