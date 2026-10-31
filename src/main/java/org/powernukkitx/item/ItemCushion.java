@@ -51,6 +51,11 @@ public abstract class ItemCushion extends Item {
         });
     }
 
+    @Override
+    public int getMaxStackSize() {
+        return 16;
+    }
+
     public DyeColor getColor() {
         return this.color;
     }
