@@ -3,6 +3,8 @@ package org.powernukkitx.inventory;
 import org.powernukkitx.Player;
 import org.powernukkitx.item.Item;
 import org.powernukkitx.item.ItemBundle;
+import org.powernukkitx.item.StorageItem;
+import org.powernukkitx.item.customitem.ItemDataDriven;
 import org.powernukkitx.math.AtomicIntIncrementSupplier;
 import org.powernukkitx.nbt.tag.CompoundTag;
 import org.powernukkitx.nbt.tag.ListTag;
@@ -25,6 +27,13 @@ public class BundleInventory extends BaseInventory {
     private static final AtomicIntIncrementSupplier BUNDLE_ID_INCREMENT = new AtomicIntIncrementSupplier(0, 1);
 
     public BundleInventory(ItemBundle holder) {
+        this((StorageItem) holder);
+    }
+
+    /**
+     * @param holder the item the stored items are inside, whose NBT they are read from
+     */
+    public BundleInventory(StorageItem holder) {
         super(holder, ContainerType.NONE, 64);
         this.holder = holder;
         CompoundTag tag = holder.getOrCreateNbt();
@@ -38,6 +47,7 @@ public class BundleInventory extends BaseInventory {
             Item item = ItemHelper.read(compound);
             this.setItemInternal(compound.getByte("Slot"), item);
         }
+        holder.setNbt(tag);
     }
 
     @Override
@@ -47,10 +57,14 @@ public class BundleInventory extends BaseInventory {
 
     @Override
     public boolean setItem(int index, Item item, boolean send) {
+        if (!item.isNull() && (index >= getHolder().getMaxStorageSlots() || !getHolder().canStore(item)
+                || item instanceof ItemDataDriven dataDriven && dataDriven.getStorageWeight() == 0)) {
+            return false;
+        }
         Item previous = getUnclonedItem(index);
         int previousWeight = previous.isNull() ? 0 : getWeight(previous);
         int newWeight = getWeight() - previousWeight + getWeight(item);
-        if (newWeight > MAX_FILL) {
+        if (newWeight > getHolder().getMaxStorageWeight()) {
             log.warn("Tried to overfill bundle! {}", newWeight);
             return false;
         }
@@ -88,10 +102,19 @@ public class BundleInventory extends BaseInventory {
         }
     }
 
+    /**
+     * A stored storage item weighs 4 plus what it stores; a pack item with
+     * {@code minecraft:storage_weight_modifier} weighs that much per item; any other item weighs its share
+     * of a stack of 64.
+     */
     protected int getWeight(Item item) {
-        if (item instanceof ItemBundle bundle) {
-            return ((BundleInventory) bundle.getInventory()).getWeight() + 4;
-        } else return (MAX_FILL / item.getMaxStackSize()) * item.getCount();
+        if (item instanceof StorageItem storage) {
+            return ((BundleInventory) storage.getInventory()).getWeight() + 4;
+        }
+        if (item instanceof ItemDataDriven dataDriven && dataDriven.getStorageWeight() > 0) {
+            return dataDriven.getStorageWeight() * item.getCount();
+        }
+        return (MAX_FILL / item.getMaxStackSize()) * item.getCount();
     }
 
     public int getWeight() {
@@ -134,12 +157,15 @@ public class BundleInventory extends BaseInventory {
         return map;
     }
 
-    public ItemBundle getHolder() {
-        return (ItemBundle) holder;
+    /**
+     * @return the item the stored items are inside
+     */
+    public StorageItem getHolder() {
+        return (StorageItem) holder;
     }
 
     @InternalApi
-    public void setHolder(ItemBundle bundle) {
-        holder = bundle;
+    public void setHolder(StorageItem storage) {
+        holder = storage;
     }
 }

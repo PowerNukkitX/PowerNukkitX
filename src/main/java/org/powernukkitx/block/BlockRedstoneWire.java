@@ -1,5 +1,6 @@
 package org.powernukkitx.block;
 
+import org.powernukkitx.block.customblock.BlockDataDriven;
 import org.powernukkitx.Player;
 import org.powernukkitx.block.property.enums.RedstoneSide;
 import org.powernukkitx.event.block.BlockRedstoneEvent;
@@ -130,7 +131,8 @@ public class BlockRedstoneWire extends BlockFlowable implements RedstoneComponen
             int upStrength = this.getMaxCurrentStrength(adjacentX, baseY + 1, adjacentZ, strength);
             if (upStrength > strength && !coveredFromAbove) {
                 adjacentBlock = this.level.getBlock(adjacentX, baseY, adjacentZ);
-                if (!(adjacentBlock instanceof BlockSlab slab && slab.isOnTop())) {
+                if (!(adjacentBlock instanceof BlockSlab slab && slab.isOnTop())
+                        && !(adjacentBlock instanceof BlockDataDriven dataDriven && !dataDriven.allowsWireToStepDown())) {
                     strength = upStrength;
                 }
             }
@@ -141,7 +143,8 @@ public class BlockRedstoneWire extends BlockFlowable implements RedstoneComponen
                 if (adjacentBlock == null) {
                     adjacentBlock = this.level.getBlock(adjacentX, baseY, adjacentZ);
                 }
-                if (!adjacentBlock.isNormalBlock()) {
+                if (!adjacentBlock.isNormalBlock()
+                        && !(this.level.getBlock(baseX, baseY - 1, baseZ) instanceof BlockDataDriven dataDriven && !dataDriven.allowsWireToStepDown())) {
                     strength = downStrength;
                 }
             }
@@ -273,10 +276,11 @@ public class BlockRedstoneWire extends BlockFlowable implements RedstoneComponen
         final RedstoneSide north, south, west, east;
         try {
             final boolean openAbove = !this.up().isNormalBlock();
-            north = this.connectingSide(BlockFace.NORTH, openAbove);
-            south = this.connectingSide(BlockFace.SOUTH, openAbove);
-            west = this.connectingSide(BlockFace.WEST, openAbove);
-            east = this.connectingSide(BlockFace.EAST, openAbove);
+            final boolean stepsDown = allowsWireToStepDown(this.down());
+            north = this.connectingSide(BlockFace.NORTH, openAbove, stepsDown);
+            south = this.connectingSide(BlockFace.SOUTH, openAbove, stepsDown);
+            west = this.connectingSide(BlockFace.WEST, openAbove, stepsDown);
+            east = this.connectingSide(BlockFace.EAST, openAbove, stepsDown);
         } catch (LevelException e) {
             // a neighbor is outside a loaded chunk, try again on the next update
             return false;
@@ -292,18 +296,22 @@ public class BlockRedstoneWire extends BlockFlowable implements RedstoneComponen
         return this.blockstate.specialValue() != previous;
     }
 
-    private RedstoneSide connectingSide(BlockFace face, boolean openAbove) {
+    private RedstoneSide connectingSide(BlockFace face, boolean openAbove, boolean stepsDown) {
         final Block neighbor = this.getSide(face);
-        if (openAbove) {
+        if (openAbove && allowsWireToStepDown(neighbor)) {
             final boolean holdsWire = neighbor instanceof BlockTrapdoor || this.canBePlacedOn(neighbor);
             if (holdsWire && canConnectTo(neighbor.up(), null)) {
                 return neighbor.isSolid(face.getOpposite()) ? RedstoneSide.UP : RedstoneSide.SIDE;
             }
         }
-        if (canConnectTo(neighbor, face) || !neighbor.isNormalBlock() && canConnectTo(neighbor.down(), null)) {
+        if (canConnectTo(neighbor, face) || stepsDown && !neighbor.isNormalBlock() && canConnectTo(neighbor.down(), null)) {
             return RedstoneSide.SIDE;
         }
         return RedstoneSide.NONE;
+    }
+
+    private static boolean allowsWireToStepDown(Block support) {
+        return !(support instanceof BlockDataDriven dataDriven) || dataDriven.allowsWireToStepDown();
     }
 
     public boolean canBePlacedOn(Block support) {

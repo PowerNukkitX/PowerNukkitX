@@ -32,6 +32,7 @@ import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.cloudburstmc.protocol.bedrock.packet.CraftingDataPacket;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -104,16 +105,36 @@ public class RecipeRegistry implements IRegistry<String, Recipe, Recipe> {
         recipeXpMap.put(recipe, xp);
     }
 
+    /**
+     * A type only gets an entry in {@link #recipeMaps} once a recipe of that type is registered,
+     * so a registry without such recipes - recipes disabled, or a type no data provides - has none.
+     *
+     * @return the recipe sets of the given type, grouped by ingredient count; empty when none exist
+     */
+    private Collection<Set<Recipe>> buckets(RecipeType type) {
+        Int2ObjectArrayMap<Set<Recipe>> recipes = recipeMaps.get(type);
+        return recipes == null ? Collections.emptyList() : recipes.values();
+    }
+
+    /**
+     * @return the recipes of the given type with the given ingredient count, or null when there are none
+     * @see #buckets(RecipeType)
+     */
+    private Set<Recipe> recipesOfSize(RecipeType type, int size) {
+        Int2ObjectArrayMap<Set<Recipe>> recipes = recipeMaps.get(type);
+        return recipes == null ? null : recipes.get(size);
+    }
+
     public Set<ShapelessRecipe> getShapelessRecipeMap() {
         HashSet<ShapelessRecipe> result = new HashSet<>();
-        for (var s : recipeMaps.get(RecipeType.SHAPELESS).values()) {
+        for (var s : buckets(RecipeType.SHAPELESS)) {
             result.addAll(Collections2.transform(s, d -> (ShapelessRecipe) d));
         }
         return result;
     }
 
     public ShapelessRecipe findShapelessRecipe(Item... items) {
-        Set<Recipe> recipes = recipeMaps.get(RecipeType.SHAPELESS).get(items.length);
+        Set<Recipe> recipes = recipesOfSize(RecipeType.SHAPELESS, items.length);
         if (recipes != null) {
             for (var r : recipes) {
                 if (r.fastCheck(items)) return (ShapelessRecipe) r;
@@ -124,7 +145,7 @@ public class RecipeRegistry implements IRegistry<String, Recipe, Recipe> {
 
     public Set<ShapedRecipe> getShapedRecipeMap() {
         HashSet<ShapedRecipe> result = new HashSet<>();
-        for (var s : recipeMaps.get(RecipeType.SHAPED).values()) {
+        for (var s : buckets(RecipeType.SHAPED)) {
             result.addAll(Collections2.transform(s, d -> (ShapedRecipe) d));
         }
         return result;
@@ -163,8 +184,7 @@ public class RecipeRegistry implements IRegistry<String, Recipe, Recipe> {
     }
 
     public FurnaceRecipe findFurnaceRecipe(Item... items) {
-        Int2ObjectArrayMap<Set<Recipe>> map1 = recipeMaps.get(RecipeType.FURNACE);
-        Set<Recipe> recipes = map1.get(items.length);
+        Set<Recipe> recipes = recipesOfSize(RecipeType.FURNACE, items.length);
         if (recipes != null) {
             for (var r : recipes) {
                 if (r.fastCheck(items)) return (FurnaceRecipe) r;
@@ -185,8 +205,7 @@ public class RecipeRegistry implements IRegistry<String, Recipe, Recipe> {
     }
 
     public BlastFurnaceRecipe findBlastFurnaceRecipe(Item... items) {
-        Int2ObjectArrayMap<Set<Recipe>> map1 = recipeMaps.get(RecipeType.BLAST_FURNACE);
-        Set<Recipe> recipes = map1.get(items.length);
+        Set<Recipe> recipes = recipesOfSize(RecipeType.BLAST_FURNACE, items.length);
         if (recipes != null) {
             for (var r : recipes) {
                 if (r.fastCheck(items)) return (BlastFurnaceRecipe) r;
@@ -240,7 +259,7 @@ public class RecipeRegistry implements IRegistry<String, Recipe, Recipe> {
     }
 
     public CampfireRecipe findCampfireRecipe(Item... items) {
-        Set<Recipe> recipes = recipeMaps.get(RecipeType.CAMPFIRE).get(items.length);
+        Set<Recipe> recipes = recipesOfSize(RecipeType.CAMPFIRE, items.length);
         if (recipes != null) {
             for (var r : recipes) {
                 if (r.fastCheck(items)) return (CampfireRecipe) r;
@@ -264,14 +283,14 @@ public class RecipeRegistry implements IRegistry<String, Recipe, Recipe> {
 
     public Set<MultiRecipe> getMultiRecipeMap() {
         HashSet<MultiRecipe> result = new HashSet<>();
-        for (var s : recipeMaps.get(RecipeType.MULTI).values()) {
+        for (var s : buckets(RecipeType.MULTI)) {
             result.addAll(Collections2.transform(s, d -> (MultiRecipe) d));
         }
         return result;
     }
 
     public MultiRecipe findMultiRecipe(Item... items) {
-        Set<Recipe> recipes = recipeMaps.get(RecipeType.MULTI).get(items.length);
+        Set<Recipe> recipes = recipesOfSize(RecipeType.MULTI, items.length);
         if (recipes != null) {
             for (var r : recipes) {
                 if (r.fastCheck(items)) return (MultiRecipe) r;
@@ -282,14 +301,14 @@ public class RecipeRegistry implements IRegistry<String, Recipe, Recipe> {
 
     public Set<StonecutterRecipe> getStonecutterRecipeMap() {
         HashSet<StonecutterRecipe> result = new HashSet<>();
-        for (var s : recipeMaps.get(RecipeType.STONECUTTER).values()) {
+        for (var s : buckets(RecipeType.STONECUTTER)) {
             result.addAll(Collections2.transform(s, d -> (StonecutterRecipe) d));
         }
         return result;
     }
 
     public StonecutterRecipe findStonecutterRecipe(Item... items) {
-        Set<Recipe> recipes = recipeMaps.get(RecipeType.STONECUTTER).get(items.length);
+        Set<Recipe> recipes = recipesOfSize(RecipeType.STONECUTTER, items.length);
         if (recipes != null) {
             for (var r : recipes) {
                 if (r.fastCheck(items)) return (StonecutterRecipe) r;
@@ -300,30 +319,32 @@ public class RecipeRegistry implements IRegistry<String, Recipe, Recipe> {
 
     public Set<CartographyRecipe> getCartographyRecipeMap() {
         HashSet<CartographyRecipe> result = new HashSet<>();
-        for (var s : recipeMaps.get(RecipeType.CARTOGRAPHY).values()) {
+        for (var s : buckets(RecipeType.CARTOGRAPHY)) {
             result.addAll(Collections2.transform(s, d -> (CartographyRecipe) d));
         }
         return result;
     }
 
     public CartographyRecipe findCartographyRecipe(Item... items) {
-        Set<Recipe> recipes = recipeMaps.get(RecipeType.CARTOGRAPHY).get(items.length);
-        for (var r : recipes) {
-            if (r.fastCheck(items)) return (CartographyRecipe) r;
+        Set<Recipe> recipes = recipesOfSize(RecipeType.CARTOGRAPHY, items.length);
+        if (recipes != null) {
+            for (var r : recipes) {
+                if (r.fastCheck(items)) return (CartographyRecipe) r;
+            }
         }
         return null;
     }
 
     public Set<SmithingTransformRecipe> getSmithingTransformRecipeMap() {
         HashSet<SmithingTransformRecipe> result = new HashSet<>();
-        for (var s : recipeMaps.get(RecipeType.SMITHING_TRANSFORM).values()) {
+        for (var s : buckets(RecipeType.SMITHING_TRANSFORM)) {
             result.addAll(Collections2.transform(s, d -> (SmithingTransformRecipe) d));
         }
         return result;
     }
 
     public SmithingTransformRecipe findSmithingTransform(Item... items) {
-        Set<Recipe> recipes = recipeMaps.get(RecipeType.SMITHING_TRANSFORM).get(items.length);
+        Set<Recipe> recipes = recipesOfSize(RecipeType.SMITHING_TRANSFORM, items.length);
         if (recipes != null) {
             for (var r : recipes) {
                 if (r.fastCheck(items)) return (SmithingTransformRecipe) r;
@@ -334,14 +355,14 @@ public class RecipeRegistry implements IRegistry<String, Recipe, Recipe> {
 
     public Set<BrewingRecipe> getBrewingRecipeMap() {
         HashSet<BrewingRecipe> result = new HashSet<>();
-        for (var s : recipeMaps.get(RecipeType.BREWING).values()) {
+        for (var s : buckets(RecipeType.BREWING)) {
             result.addAll(Collections2.transform(s, d -> (BrewingRecipe) d));
         }
         return result;
     }
 
     public BrewingRecipe findBrewingRecipe(Item... items) {
-        Set<Recipe> recipes = recipeMaps.get(RecipeType.BREWING).get(items.length);
+        Set<Recipe> recipes = recipesOfSize(RecipeType.BREWING, items.length);
         if (recipes != null) {
             for (var r : recipes) {
                 if (r.fastCheck(items)) return (BrewingRecipe) r;
@@ -352,14 +373,14 @@ public class RecipeRegistry implements IRegistry<String, Recipe, Recipe> {
 
     public Set<ContainerRecipe> getContainerRecipeMap() {
         HashSet<ContainerRecipe> result = new HashSet<>();
-        for (var s : recipeMaps.get(RecipeType.CONTAINER).values()) {
+        for (var s : buckets(RecipeType.CONTAINER)) {
             result.addAll(Collections2.transform(s, d -> (ContainerRecipe) d));
         }
         return result;
     }
 
     public ContainerRecipe findContainerRecipe(Item... items) {
-        Set<Recipe> recipes = recipeMaps.get(RecipeType.CONTAINER).get(items.length);
+        Set<Recipe> recipes = recipesOfSize(RecipeType.CONTAINER, items.length);
         if (recipes != null) {
             for (var r : recipes) {
                 if (r.fastCheck(items)) return (ContainerRecipe) r;
@@ -370,14 +391,14 @@ public class RecipeRegistry implements IRegistry<String, Recipe, Recipe> {
 
     public Set<ModProcessRecipe> getModProcessRecipeMap() {
         HashSet<ModProcessRecipe> result = new HashSet<>();
-        for (var s : recipeMaps.get(RecipeType.MOD_PROCESS).values()) {
+        for (var s : buckets(RecipeType.MOD_PROCESS)) {
             result.addAll(Collections2.transform(s, d -> (ModProcessRecipe) d));
         }
         return result;
     }
 
     public ModProcessRecipe findModProcessRecipe(Item... items) {
-        Set<Recipe> recipes = recipeMaps.get(RecipeType.MOD_PROCESS).get(items.length);
+        Set<Recipe> recipes = recipesOfSize(RecipeType.MOD_PROCESS, items.length);
         if (recipes != null) {
             for (var r : recipes) {
                 if (r.fastCheck(items)) return (ModProcessRecipe) r;
@@ -400,10 +421,14 @@ public class RecipeRegistry implements IRegistry<String, Recipe, Recipe> {
 
     /**
      * Returns the next available crafting recipe network ID.
+     * <p>
+     * The ID is derived from the recipes registered so far, so the recipe it is meant for must be
+     * registered before this is called again, or both receive the same ID. Smelting recipes take
+     * theirs from {@link #FURNACE_RECIPE_NET_ID_COUNTER} instead.
      *
      * @return the next available network ID
      */
-    private int nextNetworkId() {
+    public int nextNetworkId() {
         int networkId = 1;
 
         for (int id : this.networkIdRecipeMap.keySet()) {
@@ -563,6 +588,46 @@ public class RecipeRegistry implements IRegistry<String, Recipe, Recipe> {
             }
         }
         this.unlockIndex.index(recipe);
+    }
+
+    /**
+     * Removes the recipe registered under {@code key}, together with the copies this registry keeps
+     * under {@code key#...} for the further blocks a smelting recipe applies to. Clients only see the
+     * change once the crafting data packet is rebuilt.
+     *
+     * @param key the key the recipe was registered under
+     * @return how many recipes were removed, 0 when none was registered under the key
+     */
+    public int unregister(@NotNull String key) {
+        String variantPrefix = key + "#";
+        List<String> keys = new ArrayList<>();
+        for (String registered : allRecipeMaps.keySet()) {
+            if (registered.equals(key) || registered.startsWith(variantPrefix)) {
+                keys.add(registered);
+            }
+        }
+        for (String registered : keys) {
+            Recipe recipe = allRecipeMaps.remove(registered);
+            Int2ObjectArrayMap<Set<Recipe>> byIngredientCount = recipeMaps.get(recipe.getType());
+            if (byIngredientCount != null) {
+                Set<Recipe> recipes = byIngredientCount.get(recipe.getIngredients().size());
+                if (recipes != null) {
+                    recipes.remove(recipe);
+                }
+            }
+            switch (recipe) {
+                case CraftingRecipe craftingRecipe -> networkIdRecipeMap.remove(craftingRecipe.getNetId());
+                case SmithingTransformRecipe smithingTransformRecipe -> networkIdRecipeMap.remove(smithingTransformRecipe.getNetId());
+                case SmithingTrimRecipe smithingTrimRecipe -> networkIdRecipeMap.remove(smithingTrimRecipe.getNetId());
+                case MultiRecipe multiRecipe -> networkIdRecipeMap.remove(multiRecipe.getNetId());
+                default -> {
+                }
+            }
+            recipeXpMap.removeDouble(recipe);
+            unlockIndex.remove(recipe.getRecipeId());
+            --RECIPE_COUNT;
+        }
+        return keys.size();
     }
 
     public void register(Recipe recipe) {

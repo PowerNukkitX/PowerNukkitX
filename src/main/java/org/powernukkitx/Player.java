@@ -135,9 +135,9 @@ import org.powernukkitx.inventory.fake.FakeInventoryType;
 import org.powernukkitx.item.Item;
 import org.powernukkitx.item.ItemArmor;
 import org.powernukkitx.item.ItemArrow;
-import org.powernukkitx.item.ItemBundle;
 import org.powernukkitx.item.ItemID;
 import org.powernukkitx.item.ItemTool;
+import org.powernukkitx.item.StorageItem;
 import org.powernukkitx.item.enchantment.Enchantment;
 import org.powernukkitx.lang.CommandOutputContainer;
 import org.powernukkitx.lang.LangCode;
@@ -6326,7 +6326,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         }
         for (int index : inventory.getContents().keySet()) {
             Item item = inventory.getUnclonedItem(index);
-            if (item instanceof ItemBundle bundle) {
+            if (item instanceof StorageItem bundle) {
                 if (bundle.hasNbt()) {
                     bundle.onChange(inventory);
                     inventory.sendSlot(index, this);
@@ -7943,7 +7943,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
             this.playerHandle.getWindows().keySet().stream().filter(inv -> !(inv instanceof CreativeOutputInventory)).forEach(inventory -> {
                 for (int index : inventory.getContents().keySet()) {
                     Item item = inventory.getUnclonedItem(index);
-                    if (item instanceof ItemBundle bundle) {
+                    if (item instanceof StorageItem bundle) {
                         if (bundle.hasNbt()) {
                             bundle.onChange(inventory);
                             inventory.sendSlot(index, player);

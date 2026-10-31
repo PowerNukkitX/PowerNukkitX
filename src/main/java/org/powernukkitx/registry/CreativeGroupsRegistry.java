@@ -10,6 +10,7 @@ import org.powernukkitx.network.protocol.types.inventory.creative.CreativeCustom
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.List;
@@ -181,6 +182,8 @@ public class CreativeGroupsRegistry {
             if (!CreativeItemRegistry.CUSTOM_ITEM_IDENTIFIERS.contains(originalId)){
                 Integer mapped = groupIndexMap.get(originalGroupId);
                 newGroupId = (mapped != null) ? mapped : originalGroupId;
+            } else if (CreativeItemRegistry.ITEM_CATEGORY_MAP.containsKey(originalId)) {
+                newGroupId = CreativeItemRegistry.getLastGroupIndexFrom(CreativeItemRegistry.ITEM_CATEGORY_MAP.get(originalId).name());
             } else {
                 // Custom item: use mapped group names from ITEM_GROUP_MAP saved on item/block registry
                 String key = originalId;
@@ -238,8 +241,35 @@ public class CreativeGroupsRegistry {
         }
 
         current.clear();
-        current.addAll(rebuilt);
+        current.addAll(inCatalogOrder(rebuilt));
         CreativeItemRegistry.ITEM_GROUP_MAP.clear();
+        CreativeItemRegistry.ITEM_CATEGORY_MAP.clear();
+        CreativeItemRegistry.ITEM_ORDER_MAP.clear();
+    }
+
+    /**
+     * Reorders the custom items among the positions custom items already hold, so items an item catalog lists
+     * come in catalog order; vanilla items keep their positions.
+     */
+    private static List<CreativeItemEntryPayload> inCatalogOrder(ObjectLinkedOpenHashSet<CreativeItemEntryPayload> entries) {
+        List<CreativeItemEntryPayload> ordered = new ArrayList<>(entries);
+        if (CreativeItemRegistry.ITEM_ORDER_MAP.isEmpty()) {
+            return ordered;
+        }
+        List<Integer> customPositions = new ArrayList<>();
+        List<CreativeItemEntryPayload> custom = new ArrayList<>();
+        for (int i = 0; i < ordered.size(); i++) {
+            if (CreativeItemRegistry.CUSTOM_ITEM_IDENTIFIERS.contains(ordered.get(i).getItemInstance().getDefinition().getIdentifier())) {
+                customPositions.add(i);
+                custom.add(ordered.get(i));
+            }
+        }
+        custom.sort(Comparator.comparingInt(entry -> CreativeItemRegistry.ITEM_ORDER_MAP
+            .getOrDefault(entry.getItemInstance().getDefinition().getIdentifier(), Integer.MAX_VALUE)));
+        for (int i = 0; i < custom.size(); i++) {
+            ordered.set(customPositions.get(i), custom.get(i));
+        }
+        return ordered;
     }
 
     public static CreativeCategory getCategoryFromFallbackIndex(int groupId) {

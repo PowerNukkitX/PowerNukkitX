@@ -12,6 +12,7 @@ public final class DiggerEntry {
     private Integer speed;
     private String  blockId;
     private final Set<String> tags = new LinkedHashSet<>();
+    private String tagsExpression;
     private final CompoundTag states = new CompoundTag();
 
     private DiggerEntry() {}
@@ -52,6 +53,19 @@ public final class DiggerEntry {
                 }
             }
         }
+        return this;
+    }
+
+    /**
+     * Matches blocks by a Molang expression over their tags, written as is, such as
+     * {@code query.all_tags('stone', 'minecraft:is_pickaxe_item_destructible')}. Takes the place of any tags
+     * given to {@link #addTags(String...)}.
+     *
+     * @param molang the expression, as a behaviour pack writes it
+     * @return this entry
+     */
+    public DiggerEntry tagsExpression(String molang) {
+        this.tagsExpression = molang;
         return this;
     }
 
@@ -127,6 +141,7 @@ public final class DiggerEntry {
     }
 
     private String buildTagsExpression() {
+        if (tagsExpression != null) return tagsExpression;
         if (tags.isEmpty()) return "";
         String joined = String.join(", ", tags);
         return "query.any_tag( " + joined + " )";

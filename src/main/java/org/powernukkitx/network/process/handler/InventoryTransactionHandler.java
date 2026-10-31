@@ -25,6 +25,7 @@ import org.powernukkitx.item.ItemBlock;
 import org.powernukkitx.item.ItemFireworkRocket;
 import org.powernukkitx.item.ItemMace;
 import org.powernukkitx.item.ItemSpear;
+import org.powernukkitx.item.customitem.ItemDataDriven;
 import org.powernukkitx.item.enchantment.Enchantment;
 import org.powernukkitx.level.GameRule;
 import org.powernukkitx.level.Sound;
@@ -476,6 +477,10 @@ public class InventoryTransactionHandler implements PacketHandler<InventoryTrans
                     return;
                 }
 
+                if (item instanceof ItemDataDriven dataDriven) {
+                    dataDriven.pierce(player);
+                    return;
+                }
                 if (!(item instanceof ItemSpear spear)) {
                     return;
                 }

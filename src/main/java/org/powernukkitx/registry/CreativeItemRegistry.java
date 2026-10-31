@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import io.netty.util.internal.EmptyArrays;
 import it.unimi.dsi.fastutil.ints.Int2ObjectLinkedOpenHashMap;
+import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.objects.ObjectLinkedOpenHashSet;
 import lombok.extern.slf4j.Slf4j;
@@ -53,6 +54,17 @@ public class CreativeItemRegistry implements ItemID, IRegistry<Integer, Item, It
     static final ObjectLinkedOpenHashSet<CreativeGroupInfoPayload> GROUPS = new ObjectLinkedOpenHashSet<>();
     public static final ObjectLinkedOpenHashSet<CreativeItemEntryPayload> ITEM_DATA = new ObjectLinkedOpenHashSet<>();
     public static final Map<String, String> ITEM_GROUP_MAP = new HashMap<>();
+    /**
+     * Custom items an item catalog lists outside any group, to the category whose ungrouped items they join.
+     * Cleared once the creative inventory is finalised.
+     */
+    public static final Map<String, CreativeCategory> ITEM_CATEGORY_MAP = new HashMap<>();
+    /**
+     * Custom items in the order item catalogs list them, as positions starting at 0. Listed items keep this
+     * order within their group; items no catalog lists follow them. Cleared once the creative inventory is
+     * finalised.
+     */
+    public static final Map<String, Integer> ITEM_ORDER_MAP = new HashMap<>();
     public static final Set<String> CUSTOM_ITEM_IDENTIFIERS = new HashSet<>();
     static final Map<CreativeCategory, Map<String, Integer>> CATEGORY_GROUP_INDEX_MAP = new HashMap<>();
     private static final Map<String, BlockState> ITEM_BLOCK_STATES = new HashMap<>();
@@ -337,6 +349,45 @@ public class CreativeItemRegistry implements ItemID, IRegistry<Integer, Item, It
         }
     }
 
+
+    /**
+     * Swaps the item a creative entry hands out, keeping the entry's position, so an item can take over
+     * the entry another item with the same identifier registered - a block's item form replaced by an
+     * item definition, for instance.
+     *
+     * @param identifier the identifier of the entry to replace
+     * @param item       the item the entry hands out from now on
+     * @param groupIndex the group the entry is listed in from now on
+     * @return false when no entry has the identifier, or the registry is disabled
+     */
+    public boolean replaceCreativeItem(@NotNull String identifier, @NotNull Item item, int groupIndex) {
+        if (!enabled) return false;
+        int index = -1;
+        for (Int2ObjectMap.Entry<Item> entry : MAP.int2ObjectEntrySet()) {
+            if (identifier.equals(entry.getValue().getId())) {
+                index = entry.getIntKey();
+                break;
+            }
+        }
+        if (index == -1) return false;
+        MAP.put(index, item.clone());
+        INTERNAL_DIFF_ITEM.remove(index);
+        List<CreativeItemEntryPayload> rebuilt = new ArrayList<>(ITEM_DATA.size());
+        for (CreativeItemEntryPayload data : ITEM_DATA) {
+            if (identifier.equals(data.getItemInstance().getDefinition().getIdentifier())) {
+                CreativeItemEntryPayload payload = new CreativeItemEntryPayload();
+                payload.setCreativeNetId(data.getCreativeNetId());
+                payload.setItemInstance(item.toCreativeNetwork());
+                payload.setGroupIndex(groupIndex);
+                rebuilt.add(payload);
+            } else {
+                rebuilt.add(data);
+            }
+        }
+        ITEM_DATA.clear();
+        ITEM_DATA.addAll(rebuilt);
+        return true;
+    }
 
     /**
      * Remove a specified created item
