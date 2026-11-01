@@ -122,7 +122,13 @@ public final class ObjectPineTree extends ObjectGenerator {
 
     private static boolean mayGrowOn(String id) {
         return switch (id) {
-            case BlockID.DIRT, BlockID.GRASS_BLOCK, BlockID.COARSE_DIRT -> true;
+            case BlockID.DIRT,
+                 BlockID.GRASS_BLOCK,
+                 BlockID.PODZOL,
+                 BlockID.DIRT_WITH_ROOTS,
+                 BlockID.MOSS_BLOCK,
+                 BlockID.SNOW,
+                 BlockID.COARSE_DIRT -> true;
             default -> false;
         };
     }
