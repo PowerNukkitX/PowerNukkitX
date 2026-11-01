@@ -33,7 +33,8 @@ public class ClimbController implements IController {
         }
 
         double xzLength = Math.sqrt(xzLengthSquared);
-        double speed = entity.isCollidedHorizontally ? entity.getMovementSpeed() * 0.33d : entity.getMovementSpeed() * 0.1d;
+        double base = entity.getMovementSpeed() * entity.getMovementSpeedFactor();
+        double speed = entity.isCollidedHorizontally ? base * 0.33d : base * 0.1d;
         double yaw = BVector3.getYawFromVector(new Vector3(dx, 0, dz));
         entity.setYaw(yaw);
         entity.setHeadYaw(yaw);
