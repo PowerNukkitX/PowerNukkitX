@@ -5,7 +5,11 @@ import org.powernukkitx.block.BlockID;
 import org.powernukkitx.block.BlockLava;
 import org.powernukkitx.block.BlockState;
 import org.powernukkitx.level.Level;
+import org.powernukkitx.level.format.Chunk;
+import org.powernukkitx.level.format.ChunkSection;
 import org.powernukkitx.level.format.IChunk;
+import org.powernukkitx.level.format.UnsafeChunk;
+import org.powernukkitx.level.format.palette.BlockPalette;
 import org.powernukkitx.level.generator.ChunkGenerateContext;
 import org.powernukkitx.level.generator.GenerateFeature;
 import org.powernukkitx.math.MathHelper;
@@ -266,20 +270,98 @@ public class CaveGenerateFeature extends GenerateFeature {
         return dx * dx + dz * dz - remaining * remaining <= maxReach * maxReach;
     }
 
-    protected boolean hasLiquid(IChunk chunk, int xFrom, int xTo, int yFrom, int yTo, int zFrom, int zTo, int maxY) {
+    private static boolean mayContainLiquid(BlockPalette palette) {
+        return palette.containsIdentifier(BlockID.WATER)
+            || palette.containsIdentifier(BlockID.FLOWING_WATER)
+            || palette.containsIdentifier(BlockID.LAVA)
+            || palette.containsIdentifier(BlockID.FLOWING_LAVA);
+    }
+
+    protected boolean hasLiquid(
+        IChunk chunk,
+        int xFrom, int xTo,
+        int yFrom, int yTo,
+        int zFrom, int zTo,
+        int maxY
+    ) {
+        int topY = Math.min(yTo + 1, maxY - 1);
+        int bottomY = yFrom - 1;
+
+        if (topY < bottomY) {
+            return false;
+        }
+
+        int minSectionY = chunk.getDimensionData().getMinSectionY();
+        ChunkSection[] sections = chunk.getSections();
+
         return chunk.readBlockStates(reader -> {
-            for (int xx = xFrom; xx < xTo; xx++) {
-                for (int zz = zFrom; zz < zTo; zz++) {
-                    for (int yy = yTo + 1; yy >= yFrom - 1; yy--) {
-                        if (yy >= maxY) continue;
-                        if (LIQUID_BLOCK_IDS.contains(reader.getBlockState(xx, yy, zz).getIdentifier())) return true;
-                        if (yy != yFrom - 1 && xx != xFrom && xx != xTo - 1 && zz != zFrom && zz != zTo - 1) yy = yFrom;
+            for (int sectionY = topY >> 4;
+                 sectionY >= (bottomY >> 4);
+                 sectionY--) {
+
+                int sectionIndex = sectionY - minSectionY;
+
+                if (sectionIndex < 0 || sectionIndex >= sections.length) {
+                    continue;
+                }
+
+                ChunkSection section = sections[sectionIndex];
+
+                // No section means only air.
+                if (section == null) {
+                    continue;
+                }
+
+                // Skip sections that cannot contain liquids.
+                if (!mayContainLiquid(section.blockLayer()[0])) {
+                    continue;
+                }
+
+                int startY = Math.max(bottomY, sectionY << 4);
+                int endY = Math.min(topY, (sectionY << 4) + 15);
+
+                for (int xx = xFrom; xx < xTo; xx++) {
+                    for (int zz = zFrom; zz < zTo; zz++) {
+
+                        boolean boundary =
+                            xx == xFrom || xx == xTo - 1
+                                || zz == zFrom || zz == zTo - 1;
+
+                        if (boundary) {
+                            // Check the entire vertical boundary.
+                            for (int yy = endY; yy >= startY; yy--) {
+                                if (LIQUID_BLOCK_IDS.contains(
+                                    reader.getBlockState(xx, yy, zz)
+                                        .getIdentifier())) {
+                                    return true;
+                                }
+                            }
+                        } else {
+                            // Interior columns only need top and bottom.
+                            if (topY >= startY && topY <= endY
+                                && LIQUID_BLOCK_IDS.contains(
+                                reader.getBlockState(xx, topY, zz)
+                                    .getIdentifier())) {
+                                return true;
+                            }
+
+                            if (bottomY != topY
+                                && bottomY >= startY
+                                && bottomY <= endY
+                                && LIQUID_BLOCK_IDS.contains(
+                                reader.getBlockState(xx, bottomY, zz)
+                                    .getIdentifier())) {
+                                return true;
+                            }
+                        }
                     }
                 }
             }
+
             return false;
         });
     }
+
 
     protected void carveEllipsoid(
             IChunk chunk,
