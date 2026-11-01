@@ -378,15 +378,27 @@ public class Palette<V> {
         byteBuf.markReaderIndex();
         try (final ByteBufInputStream inputStream = new ByteBufInputStream(byteBuf);
              final NBTInputStream nbtInputStream = NbtUtils.createReaderLE(inputStream)) {
-            NbtMap blockTag = (NbtMap) nbtInputStream.readTag();
-            final int storedVersion = blockTag.getInt("version");
+            final int storedVersion;
+            final int blockRuntimeId;
+            final PaletteEntryHashCache.Probe cacheProbe = PaletteEntryHashCache.probe(byteBuf);
+            final PaletteEntryHashCache.Entry cached = cacheProbe == null ? null : PaletteEntryHashCache.lookup(cacheProbe, byteBuf);
+            if (cached != null) {
+                storedVersion = cached.storedVersion();
+                blockRuntimeId = cached.blockRuntimeId();
+            } else {
+                NbtMap blockTag = (NbtMap) nbtInputStream.readTag();
+                storedVersion = blockTag.getInt("version");
+                final NbtMapBuilder builder = blockTag.toBuilder();
+                builder.remove("version");
+                blockTag = builder.build();
+                blockRuntimeId = HashUtils.fnv1a_32_nbt(blockTag);
+                if (cacheProbe != null) {
+                    PaletteEntryHashCache.remember(cacheProbe, byteBuf.readerIndex(), storedVersion, blockRuntimeId);
+                }
+            }
             if (storedVersion != 0 && storedVersion < NetworkConstants.BLOCK_STATE_VERSION_NO_REVISION) {
                 this.legacyStates = true;
             }
-            final NbtMapBuilder builder = blockTag.toBuilder();
-            builder.remove("version");
-            blockTag = builder.build();
-            final int blockRuntimeId = HashUtils.fnv1a_32_nbt(blockTag);
 
             final V unknownState = (V) BlockUnknown.PROPERTIES.getDefaultState();
 
