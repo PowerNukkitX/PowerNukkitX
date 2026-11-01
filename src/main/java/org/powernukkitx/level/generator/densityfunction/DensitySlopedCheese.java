@@ -28,12 +28,14 @@ public final class DensitySlopedCheese {
                 DensityCommon.flatCache(DensityCommon.mul(jaggedness, jaggedSample))
         );
 
-        return DensityCommon.add(
-                DensityCommon.mul(
-                        DensityCommon.constant(4.0),
-                        DensityCommon.mul(combinedDepth, factor).quarterNegative()
-                ),
-                base3dNoise
+        return DensityCommon.cacheOnce(
+                DensityCommon.add(
+                        DensityCommon.mul(
+                                DensityCommon.constant(4.0),
+                                DensityCommon.mul(combinedDepth, factor).quarterNegative()
+                        ),
+                        base3dNoise
+                )
         );
     }
 

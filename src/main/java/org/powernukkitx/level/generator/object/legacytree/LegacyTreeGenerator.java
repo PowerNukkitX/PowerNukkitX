@@ -27,7 +27,6 @@ public abstract class LegacyTreeGenerator extends TreeGenerator {
             }
             case DARK_OAK -> tree = new LegacyDarkOakTree(6, 3);
             case JUNGLE -> tree = new LegacyJungleTree();
-            case POPLAR -> tree = new LegacyPoplarTree();
             default -> tree = new LegacyOakTree();
 
             //todo: more complex treeeeeeeeeeeeeeeee

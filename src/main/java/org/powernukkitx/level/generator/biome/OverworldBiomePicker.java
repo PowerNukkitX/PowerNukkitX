@@ -57,17 +57,16 @@ public class OverworldBiomePicker extends BiomePicker<OverworldBiomeResult> {
 
     public OverworldBiomeResult pickRaw(int x, int y, int z, DensityFunction.FunctionContext point) {
         NormalObjectHolder.TerrainHolder density = ((NormalObjectHolder) level.getGeneratorObjectHolder()).getTerrainHolder();
-        NormalObjectHolder.BiomeHolder noises = ((NormalObjectHolder) level.getGeneratorObjectHolder()).getBiomeHolder();
         //Those values are 2D
         float continental = (float) density.getContinents().compute(point);
-        float temperature = noises.getTemperatureNoise().getValue(x, SEA_LEVEL, z);
-        float humidity = noises.getHumidityNoise().getValue(x, SEA_LEVEL, z);
+        float temperature = (float) density.getTemperature().compute(point);
+        float humidity = (float) density.getHumidity().compute(point);
         float erosion = (float) density.getErosion().compute(point);
         float weirdness = (float) density.getRidges().compute(point);
         float pv = -3 * (-(1/3f) + Math.abs(-(2/3f) + Math.abs(weirdness)));
 
         int continentalLevel = continental < -1.05f ? 0 : (continental < -0.455f ? 1 : (continental < -0.19 ? 2 : (continental < -0.11 ? 3 : (continental < 0.03 ? 4 : (continental < 0.3 ? 5 : 6)))));
-        int temperatureLevel = temperature < -0.45f ? 0 : (temperature < -0.15f ? 1 : (temperature < 0.3f ? 2 : (temperature < 0.55f ? 3 : 4)));
+        int temperatureLevel = temperature < -0.45f ? 0 : (temperature < -0.15f ? 1 : (temperature < 0.2f ? 2 : (temperature < 0.55f ? 3 : 4)));
         int humidityLevel = humidity < -0.35f ? 0 : (humidity < -0.1f ? 1 : (humidity < 0.1f ? 2 : (humidity < 0.3f ? 3 : 4)));
         int erosionLevel = erosion < -0.78f ? 0 : (erosion < -0.375f ? 1 : (erosion < -0.2225f ? 2 : (erosion < 0.05f ? 3 : (erosion < 0.45f ? 4 : (erosion < 0.55f ? 5 : 6)))));
         int biome = switch (continentalLevel){
@@ -386,7 +385,8 @@ public class OverworldBiomePicker extends BiomePicker<OverworldBiomeResult> {
                 default -> TAIGA;
             };
             case 1 -> switch (humidityLevel) {
-                case 0, 1 -> PLAINS;
+                case 0 -> weird ? DAPPLED_FOREST : PLAINS;
+                case 1 -> PLAINS;
                 case 2 -> FOREST;
                 case 3 -> TAIGA;
                 default -> weird ? MEGA_TAIGA : REDWOOD_TAIGA_MUTATED;

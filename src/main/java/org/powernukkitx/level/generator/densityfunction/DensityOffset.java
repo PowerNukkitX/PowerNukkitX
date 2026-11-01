@@ -10,7 +10,7 @@ import static org.powernukkitx.level.generator.densityfunction.DensityCommon.spl
  */
 public final class DensityOffset {
 
-    private static final double BASE_OFFSET = -0.5037500262260437;
+    private static final double BASE_OFFSET = -0.50375;
 
     private DensityOffset() {
     }
@@ -85,6 +85,13 @@ public final class DensityOffset {
                 DensityCommon.p(0.0, -0.03, 0.0),
                 DensityCommon.p(0.4, 0.0, 0.06),
                 DensityCommon.p(1.0, 0.0, 0.0)
+        );
+        DensityFunction ridgesFolded7Updated = DensityCommon.spline(ridgesFolded,
+                DensityCommon.p(-1.0, -0.02, 0.0),
+                DensityCommon.p(-0.4, -0.03, 0.0),
+                DensityCommon.p(0.0, -0.03, 0.0),
+                DensityCommon.p(0.4, 0.03, 0.12),
+                DensityCommon.p(1.0, 0.1, 0.049)
         );
         DensityFunction ridgesFolded8 = spline(ridgesFolded,
                 p(-1.0, -0.25, 0.5),
@@ -197,12 +204,12 @@ public final class DensityOffset {
         );
         DensityFunction ridgesFolded25 = spline(ridgesFolded,
                 p(-1.0, -0.1, 0.0),
-                p(-0.4, 0.1, 0.0),
+                p(-0.4, ridgesFolded17, 0.0),
                 p(0.0, 0.17, 0.0)
         );
         DensityFunction ridgesFolded26 = spline(ridgesFolded,
                 p(-1.0, -0.05, 0.0),
-                p(-0.4, 0.1, 0.0),
+                p(-0.4, ridgesFolded18, 0.0),
                 p(0.0, 0.17, 0.0)
         );
 
@@ -222,7 +229,7 @@ public final class DensityOffset {
                 p(-0.35, ridgesFolded8, 0.0),
                 p(-0.1, ridgesFolded9, 0.0),
                 p(0.2, ridgesFolded10, 0.0),
-                p(0.7, ridgesFolded11, 0.0)
+                p(0.7, ridgesFolded7Updated, 0.0)
         );
         DensityFunction erosion3 = DensityCommon.spline(erosion,
                 p(-0.85, ridgesFolded12, 0.0),
@@ -235,7 +242,7 @@ public final class DensityOffset {
                 p(0.45, ridgesFolded25, 0.0),
                 p(0.55, ridgesFolded25, 0.0),
                 p(0.58, ridgesFolded18, 0.0),
-                p(0.7, ridgesFolded11, 0.0)
+                p(0.7, ridgesFolded7Updated, 0.0)
         );
         DensityFunction erosion4 = DensityCommon.spline(erosion,
                 p(-0.85, ridgesFolded24, 0.0),

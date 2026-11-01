@@ -13,10 +13,13 @@ import org.powernukkitx.level.generator.object.ObjectRoofedTreeWorldgen;
 import org.powernukkitx.level.generator.object.ObjectMegaConiferTree;
 import org.powernukkitx.level.generator.object.ObjectMegaJungleTree;
 import org.powernukkitx.level.generator.object.ObjectPineTree;
+import org.powernukkitx.level.generator.object.ObjectPoplarTree;
 import org.powernukkitx.level.generator.object.ObjectSavannaTreeWorldgen;
 import org.powernukkitx.math.Vector3;
 import org.powernukkitx.registry.Registries;
 import org.powernukkitx.tags.BiomeTags;
+
+import static org.powernukkitx.level.biome.BiomeID.DAPPLED_FOREST;
 
 import java.util.List;
 
@@ -69,6 +72,11 @@ public final class TreePlacementFeatures {
     );
 
     private static final PlacementFeature FANCY_OAK = new FancyOakPlacementFeature();
+
+    private static final PlacementFeature POPLAR = new GeneratorPlacementFeature(
+            context -> new ObjectPoplarTree()
+    );
+    private static final PlacementFeature FALLEN_POPLAR = FallenTreePlacementFeature.poplar();
 
     private static final PlacementFeature PLAIN_ROOFED = new GeneratorPlacementFeature(
             context -> new ObjectRoofedTreeWorldgen(false)
@@ -190,6 +198,14 @@ public final class TreePlacementFeatures {
     private static final PlacementFeature FANCY_OAK_WITH_LEAF_LITTER_AND_OPTIONAL_BEEHIVE =
             withLeafLitter(FANCY_OAK_WITH_OPTIONAL_BEEHIVE);
 
+    private static final PlacementFeature POPLAR_WITH_FALLEN_TREE = new AggregatePlacementFeature(
+            List.of(
+                    optional(80, FALLEN_POPLAR),
+                    withLeafLitter(POPLAR)
+            ),
+            AggregatePlacementFeature.EarlyOut.FIRST_SUCCESS
+    );
+
     private TreePlacementFeatures() {
     }
 
@@ -278,6 +294,13 @@ public final class TreePlacementFeatures {
     }
 
     /**
+     * Returns the configured poplar feature.
+     */
+    public static PlacementFeature poplar() {
+        return POPLAR;
+    }
+
+    /**
      * Returns plain oak with an optional beehive.
      */
     public static PlacementFeature oakWithOptionalBeehive() {
@@ -331,6 +354,10 @@ public final class TreePlacementFeatures {
      */
     public static PlacementFeature fancyOakWithLeafLitterAndOptionalBeehive() {
         return FANCY_OAK_WITH_LEAF_LITTER_AND_OPTIONAL_BEEHIVE;
+    }
+
+    public static PlacementFeature poplarWithFallenTree() {
+        return POPLAR_WITH_FALLEN_TREE;
     }
 
     static boolean isNormalForestCandidate(FeaturePlacementContext context) {
@@ -405,6 +432,10 @@ public final class TreePlacementFeatures {
 
     static boolean isMeadowCandidate(FeaturePlacementContext context) {
         return hasTag(context, BiomeTags.MEADOW);
+    }
+
+    static boolean isDappledForestCandidate(FeaturePlacementContext context) {
+        return hasTag(context, BiomeTags.DAPPLED_FOREST);
     }
 
     static boolean isIceCandidate(FeaturePlacementContext context) {

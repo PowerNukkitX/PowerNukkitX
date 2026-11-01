@@ -14,9 +14,9 @@ public final class DensityRidgesFolded {
         return DensityCommon.mul(
                 DensityCommon.constant(-3.0),
                 DensityCommon.add(
-                        DensityCommon.constant(-0.3333333333333333),
+                        DensityCommon.constant(-0.33333334),
                         DensityCommon.add(
-                                DensityCommon.constant(-0.6666666666666666),
+                                DensityCommon.constant(-0.6666667),
                                 ridges.abs()
                         ).abs()
                 )

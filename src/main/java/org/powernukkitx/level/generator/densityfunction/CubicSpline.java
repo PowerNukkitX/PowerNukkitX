@@ -50,12 +50,12 @@ public final class CubicSpline<C> {
         double x = coordinate.applyAsDouble(input);
         int range = findRangeForLocation(locations, x);
         if (range < 0) {
-            return values[0].apply(input);
+            return linearExtend(x, locations[0], values[0].apply(input), derivatives[0]);
         }
 
         int last = locations.length - 1;
         if (range == last) {
-            return values[last].apply(input);
+            return linearExtend(x, locations[last], values[last].apply(input), derivatives[last]);
         }
 
         double loc0 = locations[range];
@@ -68,6 +68,10 @@ public final class CubicSpline<C> {
         double p = derivatives[range] * locDist - yDist;
         double q = -derivatives[range + 1] * locDist + yDist;
         return y0 + k * yDist + k * (1.0 - k) * (p + k * (q - p));
+    }
+
+    private static double linearExtend(double location, double pointLocation, double pointValue, double derivative) {
+        return derivative == 0.0 ? pointValue : pointValue + derivative * (location - pointLocation);
     }
 
     public double minValue() {

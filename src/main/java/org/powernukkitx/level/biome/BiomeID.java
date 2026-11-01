@@ -176,4 +176,6 @@ public interface BiomeID {
   int PALE_GARDEN = 193;
 
   int SULFUR_CAVES = 194;
+
+  int DAPPLED_FOREST = 195;
 }
