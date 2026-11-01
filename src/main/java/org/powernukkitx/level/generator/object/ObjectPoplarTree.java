@@ -7,6 +7,7 @@ import org.powernukkitx.block.BlockLeaves;
 import org.powernukkitx.block.BlockOrangePoplarLeaves;
 import org.powernukkitx.block.BlockPoplarLog;
 import org.powernukkitx.block.BlockRedPoplarLeaves;
+import org.powernukkitx.block.BlockShelfMushroom;
 import org.powernukkitx.block.BlockState;
 import org.powernukkitx.block.BlockYellowPoplarLeaves;
 import org.powernukkitx.block.BlockVine;
@@ -17,12 +18,16 @@ import org.powernukkitx.utils.random.RandomSourceProvider;
 
 /**
  * Standing poplar tree placement.
+ *
+ * @author Buddelbubi (PowerNukkitX)
+ * @since 2026/10/31
  */
 public final class ObjectPoplarTree extends TreeGenerator {
     private static final int MIN_HEIGHT = 7;
     private static final int HEIGHT_VARIANCE = 4;
     private static final int TRUNK_ABOVE_BRANCHES = 4;
     private static final float EDGE_GAP_CHANCE = 0.15f;
+    private static final float SHELF_MUSHROOM_CHANCE = 0.25f;
 
     private static final BlockState VERTICAL_LOG = log(BlockFace.Axis.Y);
     private static final BlockState EAST_WEST_LOG = log(BlockFace.Axis.X);
@@ -45,6 +50,7 @@ public final class ObjectPoplarTree extends TreeGenerator {
 
         fixBase(level, x, y - 1, z);
         placeTrunk(level, random, x, y, z, trunkHeight, branchY);
+        placeShelfMushrooms(level, random, x, y, z, branchY);
         placeCanopy(level, random, leaves, x, branchY + 1, z);
 
         return true;
@@ -124,6 +130,36 @@ public final class ObjectPoplarTree extends TreeGenerator {
         placeCrossBranches(level, leaves, x, y, z, radius, foliageHeight - 4, foliageHeight, alternateCorners);
         placeLeafLayer(level, random, leaves, x, y, z, radius - 1, 0, foliageHeight, alternateCorners);
         placeLeafLayer(level, random, leaves, x, y, z, Math.max(1, radius - 2), -1, foliageHeight, alternateCorners);
+    }
+
+    private static void placeShelfMushrooms(
+            BlockManager level,
+            RandomSourceProvider random,
+            int x,
+            int y,
+            int z,
+            int branchY
+    ) {
+        if (random.nextFloat() >= SHELF_MUSHROOM_CHANCE) {
+            return;
+        }
+
+        BlockFace[] directions = BlockFace.getHorizontals();
+        int attempts = 1 + random.nextExclusiveInt(2);
+        for (int attempt = 0; attempt < attempts; attempt++) {
+            BlockFace facing = directions[random.nextExclusiveInt(directions.length)];
+            int mushroomY = y + 1 + random.nextExclusiveInt(Math.max(1, branchY - y - 1));
+            int mushroomX = x + facing.getXOffset();
+            int mushroomZ = z + facing.getZOffset();
+            if (!BlockID.AIR.equals(level.getBlockIdIfCachedOrLoaded(mushroomX, mushroomY, mushroomZ))) {
+                continue;
+            }
+
+            BlockShelfMushroom mushroom = new BlockShelfMushroom();
+            mushroom.setFacing(facing);
+            mushroom.setPropertyValue(CommonBlockProperties.GROWTH_1, random.nextExclusiveInt(2));
+            level.setBlockStateAt(mushroomX, mushroomY, mushroomZ, mushroom.getBlockState());
+        }
     }
 
     private static void placeLeafLayer(

@@ -8,7 +8,9 @@ import org.powernukkitx.block.BlockID;
 import org.powernukkitx.block.BlockJungleLog;
 import org.powernukkitx.block.BlockLeaves;
 import org.powernukkitx.block.BlockOakLog;
+import org.powernukkitx.block.BlockPoplarLog;
 import org.powernukkitx.block.BlockRedMushroom;
+import org.powernukkitx.block.BlockShelfMushroom;
 import org.powernukkitx.block.BlockSnowLayer;
 import org.powernukkitx.block.BlockSpruceLog;
 import org.powernukkitx.block.BlockState;
@@ -27,6 +29,7 @@ import org.powernukkitx.utils.random.RandomSourceProvider;
  * @author Curse
  */
 final class FallenTreePlacementFeature implements PlacementFeature {
+    private static final float SHELF_MUSHROOM_CHANCE = 0.25f;
     private static final int[] DIRECTION_X = {0, 0, -1, 1};
     private static final int[] DIRECTION_Z = {-1, 1, 0, 0};
 
@@ -94,6 +97,10 @@ final class FallenTreePlacementFeature implements PlacementFeature {
 
     static FallenTreePlacementFeature jungle() {
         return new FallenTreePlacementFeature(WoodType.JUNGLE, 4, 11, 0, 0, true, true);
+    }
+
+    static FallenTreePlacementFeature poplar() {
+        return new FallenTreePlacementFeature(WoodType.POPLAR, 4, 7, 0, 0, true, false);
     }
 
     @Override
@@ -258,6 +265,45 @@ final class FallenTreePlacementFeature implements PlacementFeature {
             level.setBlockStateAt(blockX, y, blockZ, log);
             decorateHorizontalLog(level, random, blockX, y, blockZ);
         }
+
+        if (this.woodType == WoodType.POPLAR) {
+            decorateFallenPoplar(level, random, x, y, z, direction, length);
+        }
+    }
+
+    private static void decorateFallenPoplar(
+            BlockManager level,
+            RandomSourceProvider random,
+            int x,
+            int y,
+            int z,
+            int direction,
+            int length
+    ) {
+        if (random.nextFloat() >= SHELF_MUSHROOM_CHANCE) {
+            return;
+        }
+
+        int attempts = 1 + random.nextExclusiveInt(2);
+        for (int attempt = 0; attempt < attempts; attempt++) {
+            int logIndex = random.nextExclusiveInt(length);
+            int side = random.nextBoolean() ? 1 : -1;
+            int sideX = DIRECTION_Z[direction] * side;
+            int sideZ = -DIRECTION_X[direction] * side;
+            int mushroomX = x + DIRECTION_X[direction] * logIndex + sideX;
+            int mushroomZ = z + DIRECTION_Z[direction] * logIndex + sideZ;
+            if (!BlockID.AIR.equals(level.getBlockIdIfCachedOrLoaded(mushroomX, y, mushroomZ))) {
+                continue;
+            }
+
+            BlockFace facing = BlockFace.fromHorizontalIndex(
+                    sideX > 0 ? 3 : sideX < 0 ? 1 : sideZ > 0 ? 0 : 2
+            );
+            BlockShelfMushroom mushroom = new BlockShelfMushroom();
+            mushroom.setFacing(facing);
+            mushroom.setPropertyValue(CommonBlockProperties.GROWTH_1, random.nextExclusiveInt(2));
+            level.setBlockStateAt(mushroomX, y, mushroomZ, mushroom.getBlockState());
+        }
     }
 
     private static void decorateHorizontalLog(
@@ -406,7 +452,10 @@ final class FallenTreePlacementFeature implements PlacementFeature {
                  BlockID.BIRCH_LEAVES,
                  BlockID.JUNGLE_LEAVES,
                  BlockID.ACACIA_LEAVES,
-                 BlockID.DARK_OAK_LEAVES -> true;
+                 BlockID.DARK_OAK_LEAVES,
+                 BlockID.RED_POPLAR_LEAVES,
+                 BlockID.ORANGE_POPLAR_LEAVES,
+                 BlockID.YELLOW_POPLAR_LEAVES -> true;
             default -> false;
         };
     }
@@ -437,6 +486,10 @@ final class FallenTreePlacementFeature implements PlacementFeature {
                     axis
             );
             case SPRUCE -> BlockSpruceLog.PROPERTIES.getBlockState(
+                    CommonBlockProperties.PILLAR_AXIS,
+                    axis
+            );
+            case POPLAR -> BlockPoplarLog.PROPERTIES.getBlockState(
                     CommonBlockProperties.PILLAR_AXIS,
                     axis
             );

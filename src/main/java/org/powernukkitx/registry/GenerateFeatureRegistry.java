@@ -67,6 +67,7 @@ public class GenerateFeatureRegistry implements IRegistry<String, GenerateFeatur
             this.register(JungleEdgeTreeFeature.NAME, JungleEdgeTreeFeature.class);
             this.register(SavannaTreeFeature.NAME, SavannaTreeFeature.class);
             this.register(ForestTreeFeature.NAME, ForestTreeFeature.class);
+            this.register(DappledForestTreeFeature.NAME, DappledForestTreeFeature.class);
             this.register(ExtremeHillsPlusTreeFeature.NAME, ExtremeHillsPlusTreeFeature.class);
             this.register(FlowerForestTreeFeature.NAME, FlowerForestTreeFeature.class);
             this.register(JungleMelonGenerateFeature.NAME, JungleMelonGenerateFeature.class);
@@ -115,6 +116,7 @@ public class GenerateFeatureRegistry implements IRegistry<String, GenerateFeatur
             this.register(HugeMushroomFeature.NAME, HugeMushroomFeature.class);
             this.register(RandomRoofedForestFeatureWithDecorationFeature.NAME, RandomRoofedForestFeatureWithDecorationFeature.class);
             this.register(BushFeature.NAME, BushFeature.class);
+            this.register(ScatterRedShrubBushFeature.NAME, ScatterRedShrubBushFeature.class);
             this.register(JungleBushFeature.NAME, JungleBushFeature.class);
             this.register(JunglePlantFeature.NAME, JunglePlantFeature.class);
             this.register(SwampTreeFeature.NAME, SwampTreeFeature.class);

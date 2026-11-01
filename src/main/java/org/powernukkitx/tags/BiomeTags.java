@@ -25,6 +25,7 @@ public final class BiomeTags {
     public static final String CHERRY_GROVE = "cherry_grove";
     public static final String COLD = "cold";
     public static final String CRIMSON_FOREST = "crimson_forest";
+    public static final String DAPPLED_FOREST = "dappled_forest";
     public static final String DEEP_DOWN = "deep_down";
     public static final String DESERT = "desert";
     public static final String DRIPSTONE_CAVES = "dripstone_caves";
@@ -35,6 +36,7 @@ public final class BiomeTags {
     public static final String FROZEN = "frozen";
     public static final String FROZEN_PEAKS = "frozen_peaks";
     public static final String GROVE = "grove";
+    public static final String HAS_STRUCTURE_ABANDONED_CAMP = "has_structure_abandoned_camp";
     public static final String HAS_STRUCTURE_TRAIL_RUINS = "has_structure_trail_ruins";
     public static final String HILLS = "hills";
     public static final String ICE = "ice";
