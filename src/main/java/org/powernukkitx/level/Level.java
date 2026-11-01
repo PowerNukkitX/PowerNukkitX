@@ -5416,8 +5416,8 @@ public class Level implements Metadatable, LiquidUpdateAccess {
 
     /**
      * Checks whether an entity stands in the way of a block placed in the given box. Projectiles,
-     * dropped items, experience orbs, area effect clouds, fireworks, paintings, spectators, entities
-     * without collision and the placing player never block a placement.
+     * dropped items, experience orbs, area effect clouds, fireworks, paintings, entities without
+     * collision and the placing player never block a placement.
      *
      * @param bb     the box the placed block would fill
      * @param player the player placing the block, or {@code null} when no player is involved
@@ -5427,7 +5427,7 @@ public class Level implements Metadatable, LiquidUpdateAccess {
         for (Entity e : this.getCollidingEntities(bb)) {
             if (e instanceof EntityProjectile || e instanceof EntityItem || e instanceof EntityXpOrb || e instanceof EntityAreaEffectCloud ||
                     e instanceof EntityFireworksRocket || e instanceof EntityPainting || e == player ||
-                    (e instanceof Player p && p.isSpectator()) || !e.isCollisionEnabled()) {
+                    !e.isCollisionEnabled()) {
                 continue;
             }
             return true;
