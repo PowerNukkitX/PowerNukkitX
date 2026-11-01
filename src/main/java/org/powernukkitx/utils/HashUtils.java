@@ -10,6 +10,7 @@ import org.cloudburstmc.nbt.NbtMapBuilder;
 import org.cloudburstmc.nbt.NbtUtils;
 
 import java.io.ByteArrayOutputStream;
+import java.io.OutputStream;
 import java.util.List;
 import java.util.TreeMap;
 
@@ -90,12 +91,11 @@ public class HashUtils {
         if (tag.getString("name").equals("minecraft:unknown")) {
             return -2; // This is special case
         }
-        try (final ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-             final NBTOutputStream nbtOutputStream = NbtUtils.createWriterLE(outputStream)) {
+        final Fnv1a32OutputStream outputStream = new Fnv1a32OutputStream();
+        try (final NBTOutputStream nbtOutputStream = NbtUtils.createWriterLE(outputStream)) {
             nbtOutputStream.writeTag(tag);
-            nbtOutputStream.close();
-            return fnv1a_32(outputStream.toByteArray());
         }
+        return outputStream.hash;
     }
 
     @SneakyThrows
@@ -110,11 +110,11 @@ public class HashUtils {
         builder.putCompound("states", states);
         builder.remove("version");
         tag = builder.build();
-        try (final ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-             final NBTOutputStream nbtOutputStream = NbtUtils.createWriterLE(outputStream)) {
+        final Fnv1a32OutputStream outputStream = new Fnv1a32OutputStream();
+        try (final NBTOutputStream nbtOutputStream = NbtUtils.createWriterLE(outputStream)) {
             nbtOutputStream.writeTag(tag);
-            return fnv1a_32(outputStream.toByteArray());
         }
+        return outputStream.hash;
     }
 
     /**
@@ -130,6 +130,29 @@ public class HashUtils {
             nbtOutputStream.writeTag(metadata);
             nbtOutputStream.close();
             return xxh64(outputStream.toByteArray(), 0);
+        }
+    }
+
+    /**
+     * Hashes the bytes written to it with FNV-1a 32 as they arrive, giving the same result as
+     * {@link #fnv1a_32(byte[])} over the same bytes without buffering and copying them first.
+     * Block state hashing runs once per palette entry of every chunk read from disk.
+     */
+    private static final class Fnv1a32OutputStream extends OutputStream {
+        private int hash = FNV1_32_INIT;
+
+        @Override
+        public void write(int b) {
+            hash = (hash ^ (b & 0xff)) * FNV1_PRIME_32;
+        }
+
+        @Override
+        public void write(byte[] b, int off, int len) {
+            int h = hash;
+            for (int i = off, end = off + len; i < end; i++) {
+                h = (h ^ (b[i] & 0xff)) * FNV1_PRIME_32;
+            }
+            hash = h;
         }
     }
 
