@@ -46,6 +46,8 @@ public class ToggleElement extends Element<Boolean> {
         } else {
             setDescription((String) options.getDescription());
         }
+
+        applyToolTip(options.getTooltip());
     }
 
     public boolean isToggled() {
