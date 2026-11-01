@@ -82,7 +82,6 @@ public class ButtonElement extends Element<Long> {
         return this;
     }
 
-    // yeah, vanilla writes the icon flat on the button as image_src / image_pack_id, no nested object
     public String getImageSrc() {
         var prop = getProperty("image_src");
         if (prop instanceof StringProperty sp) return sp.getValue();

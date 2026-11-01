@@ -6,6 +6,9 @@ import lombok.Getter;
 
 /**
  * Icon drawn on a button, pointing at a texture inside a resource pack.
+ *
+ * @author SemihAkin685
+ * @since 01/11/2026
  */
 @Getter
 @Builder
