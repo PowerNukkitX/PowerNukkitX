@@ -194,7 +194,7 @@ public final class BotnetDetector {
         });
 
         List<SessionStats> flooding = new ArrayList<>(floodingSessions.values());
-        if (flooding.size() < minFloodingSessions) {
+        if (flooding.isEmpty() || flooding.size() < minFloodingSessions) {
             return Optional.empty();
         }
 
