@@ -8,8 +8,8 @@ import it.unimi.dsi.fastutil.longs.Long2DoubleOpenHashMap;
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
 
 import java.util.Arrays;
+import java.util.IdentityHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.Map;
 import java.util.function.Supplier;
 
 /**
@@ -85,6 +85,8 @@ public final class DensityCommon {
          */
         private Object[] states = new Object[Math.max(16, Marker.cacheSlotCount())];
 
+        private IdentityHashMap<Spline, Spline.Point> splinePoints;
+
         @SuppressWarnings("unchecked")
         private <T> T getOrCreate(Marker marker, Supplier<T> supplier) {
             int slot = marker.cacheSlot;
@@ -102,9 +104,37 @@ public final class DensityCommon {
             return (T) state;
         }
 
+        private Spline.Point getOrCreateSplinePoint(Spline spline) {
+            IdentityHashMap<Spline, Spline.Point> points = splinePoints;
+            if (points == null) {
+                points = new IdentityHashMap<>();
+                splinePoints = points;
+            }
+            Spline.Point point = points.get(spline);
+            if (point == null) {
+                point = new Spline.Point();
+                points.put(spline, point);
+            }
+            return point;
+        }
+
         public void clear() {
             Arrays.fill(this.states, null);
+            splinePoints = null;
         }
+    }
+
+    private static ChunkCache requireChunkCache(DensityFunction.FunctionContext context) {
+        if (!(context instanceof ChunkCacheContext chunkContext)) {
+            throw new IllegalStateException("Density function requires ChunkCacheContext, got: "
+                + (context == null ? "null" : context.getClass().getName()));
+        }
+        ChunkCache cache = chunkContext.densityChunkCache();
+        if (cache == null) {
+            throw new IllegalStateException("ChunkCacheContext returned null ChunkCache: "
+                + context.getClass().getName());
+        }
+        return cache;
     }
 
     public static DensityFunction interpolated(DensityFunction function) {
@@ -492,11 +522,9 @@ public final class DensityCommon {
     }
 
     public record Spline(CubicSpline<Point> spline) implements DensityFunction {
-        private static final ThreadLocal<Point> POINT = ThreadLocal.withInitial(Point::new);
-
         @Override
         public double compute(FunctionContext context) {
-            Point point = POINT.get();
+            Point point = requireChunkCache(context).getOrCreateSplinePoint(this);
             point.context(context);
             return spline.apply(point);
         }
@@ -678,17 +706,12 @@ public final class DensityCommon {
             return wrapped.maxValue();
         }
 
-        @SuppressWarnings("unchecked")
-        protected final <S> S state(FunctionContext context, ThreadLocal<S> localState, Supplier<S> stateFactory) {
-            if (context instanceof ChunkCacheContext chunkCacheContext) {
-                return (S) chunkCacheContext.densityChunkCache().getOrCreate(this, stateFactory);
-            }
-            return localState.get();
+        protected final <S> S state(FunctionContext context, Supplier<S> stateFactory) {
+            return requireChunkCache(context).getOrCreate(this, stateFactory);
         }
     }
 
     private static final class Cache2DMarker extends Marker {
-        private final ThreadLocal<Cache2DState> state = ThreadLocal.withInitial(Cache2DState::new);
 
         private Cache2DMarker(DensityFunction wrapped) {
             super(Type.CACHE_2D, wrapped);
@@ -696,15 +719,16 @@ public final class DensityCommon {
 
         @Override
         public double compute(FunctionContext context) {
-            Cache2DState s = state(context, state, Cache2DState::new);
+            Cache2DState s = state(context, Cache2DState::new);
             int blockX = context.blockX();
             int blockZ = context.blockZ();
             long pos2d = (((long) blockX) << 32) ^ (blockZ & 0xFFFFFFFFL);
-            if (s.lastPos2d == pos2d) {
+            if (s.valid && s.lastPos2d == pos2d) {
                 return s.lastValue;
             }
-            s.lastPos2d = pos2d;
             s.lastValue = wrapped.compute(context);
+            s.lastPos2d = pos2d;
+            s.valid = true;
             return s.lastValue;
         }
 
@@ -716,7 +740,6 @@ public final class DensityCommon {
 
     private static final class FlatCacheMarker extends Marker {
         private static final int CHUNK_SIZE_BLOCKS = 16;
-        private final ThreadLocal<FlatCacheState> state = ThreadLocal.withInitial(FlatCacheState::new);
 
         private FlatCacheMarker(DensityFunction wrapped) {
             super(Type.FLAT_CACHE, wrapped);
@@ -724,7 +747,7 @@ public final class DensityCommon {
 
         @Override
         public double compute(FunctionContext context) {
-            FlatCacheState s = state(context, state, FlatCacheState::new);
+            FlatCacheState s = state(context, FlatCacheState::new);
             int blockX = context.blockX();
             int blockZ = context.blockZ();
             int chunkX = blockX >> 4;
@@ -741,7 +764,8 @@ public final class DensityCommon {
                     return cell.values[index];
                 }
 
-                double computed = wrapped.compute(s.context.set(blockX, 0, blockZ));
+                double computed = wrapped.compute(
+                    s.context.withCache(requireChunkCache(context)).set(blockX, 0, blockZ));
                 cell.values[index] = computed;
                 cell.filledBits[word] |= mask;
                 return computed;
@@ -756,7 +780,7 @@ public final class DensityCommon {
     }
 
     private static final class FlatCacheState {
-        private final DensityFunction.MutableFunctionContext context = new DensityFunction.MutableFunctionContext();
+        private final MutableChunkCacheContext context = new MutableChunkCacheContext();
         private final Long2ObjectOpenHashMap<FlatCacheCell> cells = new Long2ObjectOpenHashMap<>();
 
         private long lastKey = Long.MAX_VALUE;
@@ -765,7 +789,7 @@ public final class DensityCommon {
 
             long key = (((long) chunkX) << 32) ^ (chunkZ & 0xFFFFFFFFL);
 
-            if(key == lastKey) {
+            if (key == lastKey && lastCell != null) {
                 return lastCell;
             }
 
@@ -788,7 +812,6 @@ public final class DensityCommon {
     }
 
     private static final class CacheOnceMarker extends Marker {
-        private final ThreadLocal<Cache3DState> state = ThreadLocal.withInitial(Cache3DState::new);
 
         private CacheOnceMarker(DensityFunction wrapped) {
             super(Type.CACHE_ONCE, wrapped);
@@ -796,18 +819,20 @@ public final class DensityCommon {
 
         @Override
         public double compute(FunctionContext context) {
-            Cache3DState s = state(context, state, Cache3DState::new);
+            Cache3DState s = state(context, Cache3DState::new);
             int blockX = context.blockX();
             int blockY = context.blockY();
             int blockZ = context.blockZ();
-            if (s.blockX == blockX && s.blockY == blockY && s.blockZ == blockZ) {
+            if (s.valid && s.blockX == blockX && s.blockY == blockY && s.blockZ == blockZ) {
                 return s.value;
             }
+            double value = wrapped.compute(context);
             s.blockX = blockX;
             s.blockY = blockY;
             s.blockZ = blockZ;
-            s.value = wrapped.compute(context);
-            return s.value;
+            s.value = value;
+            s.valid = true;
+            return value;
         }
 
         @Override
@@ -822,7 +847,6 @@ public final class DensityCommon {
         private static final int CELL_XZ_MASK = CELL_SIZE_XZ - 1;
         private static final int CELL_Y_MASK = CELL_SIZE_Y - 1;
         private static final int CELL_VALUE_COUNT = CELL_SIZE_XZ * CELL_SIZE_Y * CELL_SIZE_XZ;
-        private final ThreadLocal<CacheAllInCellState> state = ThreadLocal.withInitial(CacheAllInCellState::new);
 
         private CacheAllInCellMarker(DensityFunction wrapped) {
             super(Type.CACHE_ALL_IN_CELL, wrapped);
@@ -830,7 +854,7 @@ public final class DensityCommon {
 
         @Override
         public double compute(FunctionContext context) {
-            CacheAllInCellState s = state(context, state, CacheAllInCellState::new);
+            CacheAllInCellState s = state(context, CacheAllInCellState::new);
             int blockX = context.blockX();
             int blockY = context.blockY();
             int blockZ = context.blockZ();
@@ -852,10 +876,9 @@ public final class DensityCommon {
 
         private static final class CacheAllInCellState {
             private final double[] values = new double[CELL_VALUE_COUNT];
-            private final MutableFunctionContext context = new MutableFunctionContext();
             private final MutableChunkCacheContext chunkCacheContext = new MutableChunkCacheContext();
 
-            private long lastKey = Long.MAX_VALUE;
+            private long lastKey = Long.MIN_VALUE;
 
             private double[] getOrCreateCell(int cellX, int cellY, int cellZ, DensityFunction wrapped, FunctionContext sourceContext) {
                 long key = (((long) cellX & 0x1FFFFFL) << 42)
@@ -871,27 +894,7 @@ public final class DensityCommon {
             }
 
             private void fillCell(int startX, int startY, int startZ, DensityFunction wrapped, FunctionContext sourceContext) {
-                if (sourceContext instanceof ChunkCacheContext chunkCacheSource) {
-                    fillCell(startX, startY, startZ, wrapped, chunkCacheContext.withCache(chunkCacheSource.densityChunkCache()));
-                } else {
-                    fillCell(startX, startY, startZ, wrapped, context);
-                }
-            }
-
-            private void fillCell(int startX, int startY, int startZ, DensityFunction wrapped, MutableFunctionContext context) {
-                int index = 0;
-                for (int localY = 0; localY < CELL_SIZE_Y; localY++) {
-                    int y = startY + localY;
-                    for (int localZ = 0; localZ < CELL_SIZE_XZ; localZ++) {
-                        int z = startZ + localZ;
-                        for (int localX = 0; localX < CELL_SIZE_XZ; localX++) {
-                            values[index++] = wrapped.compute(context.set(startX + localX, y, z));
-                        }
-                    }
-                }
-            }
-
-            private void fillCell(int startX, int startY, int startZ, DensityFunction wrapped, MutableChunkCacheContext context) {
+                MutableChunkCacheContext context = chunkCacheContext.withCache(requireChunkCache(sourceContext));
                 int index = 0;
                 for (int localY = 0; localY < CELL_SIZE_Y; localY++) {
                     int y = startY + localY;
@@ -915,7 +918,6 @@ public final class DensityCommon {
         private static final int CELL_VALUE_COUNT = CELL_SIZE_XZ * CELL_SIZE_Y * CELL_SIZE_XZ;
         private static final double INV_CELL_SIZE_XZ = 1.0 / CELL_SIZE_XZ;
         private static final double INV_CELL_SIZE_Y = 1.0 / CELL_SIZE_Y;
-        private final ThreadLocal<InterpolatedState> state = ThreadLocal.withInitial(InterpolatedState::new);
 
         private InterpolatedMarker(DensityFunction wrapped) {
             super(Type.INTERPOLATED, wrapped);
@@ -923,7 +925,7 @@ public final class DensityCommon {
 
         @Override
         public double compute(FunctionContext context) {
-            InterpolatedState s = state(context, state, InterpolatedState::new);
+            InterpolatedState s = state(context, InterpolatedState::new);
             int blockX = context.blockX();
             int blockY = context.blockY();
             int blockZ = context.blockZ();
@@ -944,11 +946,10 @@ public final class DensityCommon {
 
         private static final class InterpolatedState {
             private final double[] values = new double[CELL_VALUE_COUNT];
-            private final MutableFunctionContext context = new MutableFunctionContext();
             private final MutableChunkCacheContext chunkCacheContext = new MutableChunkCacheContext();
             private final Long2DoubleOpenHashMap cornerValues = new Long2DoubleOpenHashMap(1024);
 
-            private long lastKey = Long.MAX_VALUE;
+            private long lastKey = Long.MIN_VALUE;
 
             private InterpolatedState() {
                 cornerValues.defaultReturnValue(Double.NaN);
@@ -980,30 +981,7 @@ public final class DensityCommon {
             }
 
             private void fillCell(int cellX, int cellY, int cellZ, DensityFunction wrapped, FunctionContext sourceContext) {
-                if (sourceContext instanceof ChunkCacheContext chunkCacheSource) {
-                    fillCell(cellX, cellY, cellZ, wrapped, chunkCacheContext.withCache(chunkCacheSource.densityChunkCache()));
-                } else {
-                    fillCell(cellX, cellY, cellZ, wrapped, context);
-                }
-            }
-
-            private void fillCell(int cellX, int cellY, int cellZ, DensityFunction wrapped, MutableFunctionContext context) {
-                int nextX = cellX + CELL_SIZE_XZ;
-                int nextY = cellY + CELL_SIZE_Y;
-                int nextZ = cellZ + CELL_SIZE_XZ;
-                fillValues(
-                        cornerValue(wrapped, context.set(cellX, cellY, cellZ)),
-                        cornerValue(wrapped, context.set(nextX, cellY, cellZ)),
-                        cornerValue(wrapped, context.set(cellX, nextY, cellZ)),
-                        cornerValue(wrapped, context.set(nextX, nextY, cellZ)),
-                        cornerValue(wrapped, context.set(cellX, cellY, nextZ)),
-                        cornerValue(wrapped, context.set(nextX, cellY, nextZ)),
-                        cornerValue(wrapped, context.set(cellX, nextY, nextZ)),
-                        cornerValue(wrapped, context.set(nextX, nextY, nextZ))
-                );
-            }
-
-            private void fillCell(int cellX, int cellY, int cellZ, DensityFunction wrapped, MutableChunkCacheContext context) {
+                MutableChunkCacheContext context = chunkCacheContext.withCache(requireChunkCache(sourceContext));
                 int nextX = cellX + CELL_SIZE_XZ;
                 int nextY = cellY + CELL_SIZE_Y;
                 int nextZ = cellZ + CELL_SIZE_XZ;
@@ -1060,11 +1038,13 @@ public final class DensityCommon {
     }
 
     private static final class Cache2DState {
+        private boolean valid;
         private long lastPos2d;
         private double lastValue;
     }
 
     private static final class Cache3DState {
+        private boolean valid;
         private int blockX;
         private int blockY;
         private int blockZ;
