@@ -488,7 +488,7 @@ public final class TreePlacementFeatures {
         return 0;
     }
 
-    private static boolean hasTag(FeaturePlacementContext context, String tag) {
+    static boolean hasTag(FeaturePlacementContext context, String tag) {
         int y = Math.max(context.getGenerationContext().getLevel().getMinHeight(), context.getY() - 1);
         return hasTagAt(context, tag, y);
     }

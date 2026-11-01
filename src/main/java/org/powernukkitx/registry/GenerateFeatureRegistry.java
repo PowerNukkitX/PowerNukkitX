@@ -102,6 +102,7 @@ public class GenerateFeatureRegistry implements IRegistry<String, GenerateFeatur
             this.register(PinkPetalsFeature.NAME, PinkPetalsFeature.class);
             this.register(AmethystGeodeFeature.NAME, AmethystGeodeFeature.class);
             this.register(GroveTreeFeature.NAME, GroveTreeFeature.class);
+            this.register(GrovePineTreeFeature.NAME, GrovePineTreeFeature.class);
             this.register(BirchForestMutatedTreeFeature.NAME, BirchForestMutatedTreeFeature.class);
             this.register(BirchForestWildflowersFeature.NAME, BirchForestWildflowersFeature.class);
             this.register(JungleGrassFeature.NAME, JungleGrassFeature.class);
