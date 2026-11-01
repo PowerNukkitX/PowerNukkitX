@@ -84,6 +84,7 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
     private boolean shieldReblockAfterAttack = false;
 
     private Vector3 pendingHomePosition;
+    private float movementSpeedFactor = 1f;
 
     public EntityLiving(IChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
@@ -111,6 +112,10 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
      * @return the factor to apply to the movement speed, never below 0
      */
     public float getMovementSpeedFactor() {
+        return this.movementSpeedFactor;
+    }
+
+    private float computeMovementSpeedFactor() {
         float factor = 1f;
 
         Effect slowness = this.getEffect(EffectType.SLOWNESS);
@@ -1055,8 +1060,9 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
 
     @SuppressWarnings("removal")
     public void recalcMovementSpeedFromEffects() {
+        this.movementSpeedFactor = this.computeMovementSpeedFactor();
         float base = this.getMovementSpeedDefault() * this.getSprintMultiplier();
-        float mul = this instanceof EntityIntelligent ? 1f : this.getMovementSpeedFactor();
+        float mul = this instanceof EntityIntelligent ? 1f : this.movementSpeedFactor;
 
         if (this instanceof Player p && p.isSprinting()) mul *= 1.3f;
         float newSpeed = base * mul;
