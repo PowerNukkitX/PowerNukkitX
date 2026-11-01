@@ -28,4 +28,11 @@ public class ToggleOptions implements ElementOptions {
      */
     @Builder.Default
     private final Object visible = true;
+
+    /**
+     * Tooltip shown when hovering over the toggle. Empty means no tooltip.
+     * Can be a plain {@code String} or an {@link Observable}.
+     */
+    @Builder.Default
+    private final Object tooltip = "";
 }

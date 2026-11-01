@@ -14,6 +14,7 @@ import org.powernukkitx.ddui.element.options.ButtonOptions;
 import org.powernukkitx.ddui.element.options.CloseButtonOptions;
 import org.powernukkitx.ddui.element.options.DropdownOptions;
 import org.powernukkitx.ddui.element.options.HeaderOptions;
+import org.powernukkitx.ddui.element.options.ImageDetails;
 import org.powernukkitx.ddui.element.options.LabelOptions;
 import org.powernukkitx.ddui.element.options.SliderElementOptions;
 import org.powernukkitx.ddui.element.options.SpacerOptions;
@@ -237,6 +238,59 @@ public class DdUiSmokeTest {
         DropdownElement dropdown2 = new DropdownElement("d2", List.of(a), new Observable<>(0L),
                 DropdownOptions.builder().description("x").disabled(true).visible(false).build(), root());
         Assertions.assertEquals("x", dropdown2.getDescription());
+    }
+
+    @Test
+    void tooltipsOnInputElements() {
+        ToggleElement toggle = new ToggleElement("t", new Observable<>(false),
+                ToggleOptions.builder().tooltip("tt").build(), root());
+        Assertions.assertEquals("tt", toggle.getToolTip());
+
+        SliderElement slider = new SliderElement("s", new Observable<>(1L), 0L, 10L,
+                SliderElementOptions.builder().tooltip("st").build(), root());
+        Assertions.assertEquals("st", slider.getToolTip());
+
+        Observable<String> fieldTip = new Observable<>("ft");
+        TextFieldElement field = new TextFieldElement("f", new Observable<>("v"),
+                TextFieldOptions.builder().tooltip(fieldTip).build(), root());
+        Assertions.assertEquals("ft", field.getToolTip());
+        fieldTip.setValue("ft2");
+        Assertions.assertEquals("ft2", field.getToolTip());
+
+        DropdownElement dropdown = new DropdownElement("d",
+                List.of(DropdownElement.Item.builder().label("A").build()), new Observable<>(0L),
+                DropdownOptions.builder().tooltip("dt").build(), root());
+        Assertions.assertEquals("dt", dropdown.getToolTip());
+
+        // vanilla leaves the key out entirely when no tooltip was given
+        ToggleElement noTip = new ToggleElement("n", new Observable<>(false), root());
+        Assertions.assertNull(noTip.getProperty("tooltip"));
+        Assertions.assertEquals("", noTip.getToolTip());
+    }
+
+    @Test
+    void buttonImageDetails() {
+        ButtonElement btn = new ButtonElement("icon", ButtonOptions.builder()
+                .imageDetails(ImageDetails.builder()
+                        .imageSrc("textures/items/diamond")
+                        .imagePackId("pack123")
+                        .build())
+                .build(), root());
+        Assertions.assertEquals("textures/items/diamond", btn.getImageSrc());
+        Assertions.assertEquals("pack123", btn.getImagePackId());
+        Assertions.assertTrue(btn.getProperty("image_src") instanceof StringProperty);
+        Assertions.assertTrue(btn.getProperty("image_pack_id") instanceof StringProperty);
+
+        Observable<String> src = new Observable<>("textures/items/apple");
+        ButtonElement obsBtn = new ButtonElement("obs", ButtonOptions.builder()
+                .imageDetails(ImageDetails.builder().imageSrc(src).imagePackId("p").build())
+                .build(), root());
+        src.setValue("textures/items/stick");
+        Assertions.assertEquals("textures/items/stick", obsBtn.getImageSrc());
+
+        ButtonElement plain = new ButtonElement("plain", root());
+        Assertions.assertNull(plain.getProperty("image_src"));
+        Assertions.assertNull(plain.getProperty("image_pack_id"));
     }
 
     @Test

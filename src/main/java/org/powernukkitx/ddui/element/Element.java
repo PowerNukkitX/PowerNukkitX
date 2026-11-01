@@ -61,6 +61,46 @@ public abstract class Element<T> extends ObjectProperty<T> {
         return this;
     }
 
+    /**
+     * Hover text shown by the client. Only buttons, toggles, sliders, text fields and
+     * dropdowns render it, other elements ignore the property.
+     *
+     * @return the current tooltip, or an empty string when none is set
+     */
+    public String getToolTip() {
+        var prop = getProperty("tooltip");
+        if (prop instanceof StringProperty sp) return sp.getValue();
+        return "";
+    }
+
+    public Element<T> setToolTip(String tooltip) {
+        setProperty(new StringProperty("tooltip", tooltip, this));
+        return this;
+    }
+
+    public Element<T> setToolTip(Observable<String> tooltip) {
+        var property = new StringProperty("tooltip", tooltip.getValue(), this);
+        tooltip.subscribe(value -> {
+            setToolTip(value);
+            return property;
+        });
+        setProperty(property);
+        return this;
+    }
+
+    /**
+     * Applies a tooltip option value, which is either a plain {@code String} or an {@link Observable}.
+     * An empty string leaves the property out, like vanilla does when no tooltip is given.
+     */
+    @SuppressWarnings("unchecked")
+    protected void applyToolTip(Object tooltip) {
+        if (tooltip instanceof Observable<?> obs) {
+            setToolTip((Observable<String>) obs);
+        } else if (tooltip instanceof String text && !text.isEmpty()) {
+            setToolTip(text);
+        }
+    }
+
     public boolean getVisibility() {
         var prop = getProperty("visible");
         if (prop instanceof BooleanProperty bp) return bp.getValue();

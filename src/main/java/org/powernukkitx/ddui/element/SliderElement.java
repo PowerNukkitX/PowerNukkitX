@@ -61,6 +61,8 @@ public class SliderElement extends Element<Long> {
         } else {
             setDescription((String) options.getDescription());
         }
+
+        applyToolTip(options.getTooltip());
     }
 
     public long getMaxValue() {
