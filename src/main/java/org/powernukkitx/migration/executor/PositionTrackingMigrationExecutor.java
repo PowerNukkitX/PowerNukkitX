@@ -147,7 +147,8 @@ public final class PositionTrackingMigrationExecutor {
             LevelConfig levelConfig,
             Set<Integer> expectedDimensions,
             DB targetDB,
-            MigrationService migrationService
+            MigrationService migrationService,
+            PositionTrackingV3_1_0Migration.BdsSourceKeys bdsSourceKeys
     ) throws IOException {
         DB sourceDB = storage.getDb();
         String worldName = worldPath.getFileName().toString();
@@ -193,7 +194,7 @@ public final class PositionTrackingMigrationExecutor {
 
         MigrationVersion targetVersion = migrationService.getLatestVersion(MigrationFormat.POSITION_TRACKING);
         writeBdsImport(targetDB, migrated, targetVersion, markerKey);
-        PositionTrackingV3_1_0Migration.remapBdsWorld(sourceDB, sourceLastId, migrated.handleOffset());
+        PositionTrackingV3_1_0Migration.remapBdsWorld(sourceDB, sourceLastId, migrated.handleOffset(), bdsSourceKeys);
         targetDB.delete(markerKey);
 
         log.info(

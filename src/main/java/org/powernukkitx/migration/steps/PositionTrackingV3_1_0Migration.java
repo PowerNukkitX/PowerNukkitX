@@ -12,6 +12,7 @@ import org.iq80.leveldb.DBIterator;
 import org.iq80.leveldb.WriteBatch;
 import org.powernukkitx.ServerDBStorageFormat;
 import org.powernukkitx.blockentity.BlockEntityLodestone;
+import org.powernukkitx.level.format.leveldb.LevelDBActorStorage;
 import org.powernukkitx.migration.MigrationContext;
 import org.powernukkitx.migration.MigrationFormat;
 import org.powernukkitx.migration.MigrationStep;
@@ -25,10 +26,12 @@ import org.powernukkitx.nbt.tag.Tag;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -152,9 +155,70 @@ public final class PositionTrackingV3_1_0Migration implements MigrationStep<Posi
     }
 
     /**
+     * Captures original BDS reference records before chunk migration creates PNX storage records.
+     */
+    public static BdsSourceKeys captureBdsSourceKeys(DB db) throws IOException {
+        byte[] allocator = db.get(ServerDBStorageFormat.SERVER_DATA_POSITION_TRACKING_LAST_ID_KEY);
+        if (allocator == null || allocator.length == 0) {
+            return new BdsSourceKeys(Set.of(), Set.of());
+        }
+
+        Set<ByteBuffer> blockEntities = new HashSet<>();
+        Set<ByteBuffer> actors = new HashSet<>();
+
+        try (DBIterator iterator = db.iterator()) {
+            iterator.seekToFirst();
+            while (iterator.hasNext()) {
+                Map.Entry<byte[], byte[]> entry = iterator.next();
+                byte[] key = entry.getKey();
+
+                if (isBlockEntityKey(key)) {
+                    byte[] extraKey = key.clone();
+                    extraKey[extraKey.length - 1] = '|';
+                    if (db.get(extraKey) == null) {
+                        blockEntities.add(ByteBuffer.wrap(key.clone()));
+                    }
+                    continue;
+                }
+
+                if (!isActorKey(key)) continue;
+
+                actors.add(ByteBuffer.wrap(key.clone()));
+
+                List<CompoundTag> tags = readLittleEndianCompounds(entry.getValue());
+                if (tags.size() != 1) {
+                    throw new IOException("Invalid original actorprefix position-tracking source record");
+                }
+
+                long uniqueId = tags.getFirst().getLong("UniqueID");
+                if (uniqueId != 0) {
+                    try {
+                        long storageKey = LevelDBActorStorage.getActorStorageKey(uniqueId);
+                        actors.add(ByteBuffer.wrap(LevelDBActorStorage.getActorKey(storageKey)));
+                    } catch (IllegalArgumentException e) {
+                        throw new IOException("Invalid original BDS actor UniqueID " + uniqueId, e);
+                    }
+                }
+            }
+        }
+
+        return new BdsSourceKeys(Set.copyOf(blockEntities), Set.copyOf(actors));
+    }
+
+    /**
+     * Original BDS records eligible for position-tracking remapping.
+     *
+     * @param blockEntities original native BDS block-entity keys
+     * @param actors original actorprefix keys, including their canonical UniqueID keys
+     */
+    public record BdsSourceKeys(Set<ByteBuffer> blockEntities, Set<ByteBuffer> actors) {
+    }
+
+    /**
      * Rewrites BDS references to a reserved global handle range and clears the original BDS position-tracking values atomically.
      */
-    public static void remapBdsWorld(DB sourceDB, int sourceLastId, int offset) throws IOException {
+    public static void remapBdsWorld(DB sourceDB, int sourceLastId, int offset, BdsSourceKeys bdsSourceKeys)
+            throws IOException {
         try (WriteBatch batch = sourceDB.createWriteBatch()) {
             try (DBIterator iterator = sourceDB.iterator()) {
                 iterator.seekToFirst();
@@ -168,11 +232,15 @@ public final class PositionTrackingV3_1_0Migration implements MigrationStep<Posi
                         continue;
                     }
                     if (isBlockEntityKey(key) && value.length != 0) {
-                        remapBlockEntities(sourceDB, batch, key, value, sourceLastId, offset);
+                        if (bdsSourceKeys.blockEntities().contains(ByteBuffer.wrap(key))) {
+                            remapBlockEntities(sourceDB, batch, key, value, sourceLastId, offset);
+                        }
                         continue;
                     }
                     if (isActorKey(key) && value.length != 0) {
-                        remapCompoundRecord(batch, key, value, sourceLastId, offset, "actorprefix");
+                        if (bdsSourceKeys.actors().contains(ByteBuffer.wrap(key))) {
+                            remapCompoundRecord(batch, key, value, sourceLastId, offset, "actorprefix");
+                        }
                         continue;
                     }
                     if (isBdsPlayerDataKey(key) && value.length != 0) {
