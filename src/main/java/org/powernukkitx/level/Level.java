@@ -2255,7 +2255,6 @@ public class Level implements Metadatable, LiquidUpdateAccess {
             if (prof) phase[6] = -phaseStart + (phaseStart = System.nanoTime());
 
             this.tickChunks();
-            this.tickBiomeSnowReconciliation();
             if (prof) phase[7] = -phaseStart + (phaseStart = System.nanoTime());
             if (!this.changedBlocks.isEmpty()) {
                 synchronized (changedBlocks) {
@@ -2761,27 +2760,6 @@ public class Level implements Metadatable, LiquidUpdateAccess {
             }
 
             Server.broadcastPacket(target, packet);
-        }
-    }
-
-    private void tickBiomeSnowReconciliation() {
-        if (this.getDimension() != DIMENSION_OVERWORLD || !(requireProvider() instanceof LevelDBProvider levelDBProvider)) {
-            return;
-        }
-
-        synchronized (this.loaders) {
-            for (ChunkLoader loader : this.loaders.values()) {
-                int chunkX = (int) loader.getX() >> 4;
-                int chunkZ = (int) loader.getZ() >> 4;
-                levelDBProvider.tickBiomeSnowReconciliation(chunkX, chunkZ, this.chunkTickRadius);
-            }
-        }
-
-        TickingAreaManager areaManager = this.server.getTickingAreaManager();
-        if (areaManager == null) return;
-
-        for (TickingArea area : areaManager.getTickingAreas(this)) {
-            levelDBProvider.tickBiomeSnowReconciliation(area);
         }
     }
 

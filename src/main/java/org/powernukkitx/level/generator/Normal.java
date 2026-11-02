@@ -8,6 +8,7 @@ import org.powernukkitx.level.generator.biome.result.OverworldBiomeResult;
 import org.powernukkitx.level.generator.holder.ObjectHolder;
 import org.powernukkitx.level.generator.holder.NormalObjectHolder;
 import org.powernukkitx.level.generator.stages.GeneratedStage;
+import org.powernukkitx.level.generator.stages.BiomeSnowReconciliationStage;
 import org.powernukkitx.level.generator.stages.LightPopulationStage;
 import org.powernukkitx.level.generator.stages.NormalChunkFeatureStage;
 import org.powernukkitx.level.generator.stages.NormalPregenerationFeatureStage;
@@ -43,6 +44,7 @@ public class Normal extends PopulatedGenerator implements BiomedGenerator {
 
         builder.next(Registries.GENERATE_STAGE.get(NormalPopulatorStage.NAME));
         builder.next(Registries.GENERATE_STAGE.get(NormalChunkFeatureStage.NAME));
+        builder.next(Registries.GENERATE_STAGE.get(BiomeSnowReconciliationStage.NAME));
         builder.next(Registries.GENERATE_STAGE.get(LightPopulationStage.NAME));
         builder.next(Registries.GENERATE_STAGE.get(FinishedStage.NAME));
     }
@@ -79,7 +81,7 @@ public class Normal extends PopulatedGenerator implements BiomedGenerator {
                         ChunkGenerationState.NEEDS_CFRD,
                         ChunkGenerationState.NEEDS_STRUCTURE_PP,
                         NormalChunkFeatureStage.NAME,
-                        NormalChunkFeatureStage.NAME,
+                        BiomeSnowReconciliationStage.NAME,
                         ChunkGenerationDependency.NEIGHBORHOOD_PRESENT
                 ),
 

@@ -146,57 +146,8 @@ public class LevelDBProvider implements LevelProvider {
         BiomeSnowPrecipitation.tick(level, chunk, attempts, level.getRainLevel());
     }
 
-    /**
-     * Performs one BiomeState maintenance pass for a loader ticking view.
-     */
-    public void tickBiomeSnowReconciliation(int centerChunkX, int centerChunkZ, int radius) {
-        if (getDimensionData().getDimensionId() != Level.DIMENSION_OVERWORLD || radius < 0) return;
-        sampleBiomeSnowArea(
-                centerChunkX - radius,
-                centerChunkZ - radius,
-                centerChunkX + radius,
-                centerChunkZ + radius,
-                null
-        );
-    }
-
-    /**
-     * Performs one BiomeState maintenance pass for an explicit ticking area.
-     */
-    public void tickBiomeSnowReconciliation(TickingArea area) {
-        if (getDimensionData().getDimensionId() != Level.DIMENSION_OVERWORLD
-                || area.getDimensionId() != Level.DIMENSION_OVERWORLD
-                || !level.getName().equals(area.getLevelName())
-                || area.getChunks().isEmpty()) {
-            return;
-        }
-
-        List<TickingArea.ChunkPos> bounds = area.minAndMaxChunkPos();
-        TickingArea.ChunkPos min = bounds.get(0);
-        TickingArea.ChunkPos max = bounds.get(1);
-        sampleBiomeSnowArea(min.x, min.z, max.x, max.z, area);
-    }
-
-    private void sampleBiomeSnowArea(int minChunkX, int minChunkZ, int maxChunkX, int maxChunkZ, @Nullable TickingArea area) {
-        ThreadLocalRandom random = ThreadLocalRandom.current();
-
-        for (int attempt = 0; attempt < BIOME_STATE_SAMPLE_ATTEMPTS; attempt++) {
-            int chunkX = randomChunkCoordinate(random, minChunkX, maxChunkX);
-            int chunkZ = randomChunkCoordinate(random, minChunkZ, maxChunkZ);
-
-            if (area != null && !area.getChunks().contains(new TickingArea.ChunkPos(chunkX, chunkZ))) {
-                continue;
-            }
-
-            IChunk chunk = level.getChunkIfLoaded(chunkX, chunkZ);
-            if (chunk == null || !hasStaleBiomeState(chunk)) {
-                continue;
-            }
-
-            BiomeSnowChunkReconciler.reconcile(level, chunk);
-            refreshBiomeState(chunk);
-            return;
-        }
+    public void reconcileSnow(IChunk chunk) {
+        BiomeSnowChunkReconciler.reconcile(this.level, chunk);
     }
 
     private static int randomChunkCoordinate(ThreadLocalRandom random, int min, int max) {
