@@ -485,7 +485,7 @@ public class Level implements Metadatable, LiquidUpdateAccess {
     private final Class<? extends Generator> generatorClass;
     private BiomePicker biomePicker;
     private ObjectHolder generatorObjectHolder;
-    private int updateLCG = ThreadLocalRandom.current().nextInt();
+    private int randomTickState = ThreadLocalRandom.current().nextInt();
     private int tickRate;
     private long levelCurrentTick = 0;
     private long tickTime = System.currentTimeMillis();
@@ -2529,11 +2529,11 @@ public class Level implements Metadatable, LiquidUpdateAccess {
     private void performThunder(long index, IChunk chunk) {
         if (areNeighboringChunksLoaded(index)) return;
         if (ThreadLocalRandom.current().nextInt(100000) == 0) {
-            int LCG = this.getUpdateLCG() >> 2;
+            int bits = this.getRandomTickState() >> 2;
 
             int chunkX = chunk.getX() * 16;
             int chunkZ = chunk.getZ() * 16;
-            Vector3 vector = this.adjustPosToNearbyEntity(new Vector3(chunkX + (LCG & 0xf), 0, chunkZ + (LCG >> 8 & 0xf)));
+            Vector3 vector = this.adjustPosToNearbyEntity(new Vector3(chunkX + (bits & 0xf), 0, chunkZ + (bits >> 8 & 0xf)));
 
             int biome = this.getBiomeId(vector.getFloorX(), 70, vector.getFloorZ());
             if (Registries.BIOME.get(biome).second().getDownfall() <= 0) {
@@ -3089,10 +3089,10 @@ public class Level implements Metadatable, LiquidUpdateAccess {
                 continue;
             }
             for (int i = 0; i < tickSpeed; ++i) {
-                int lcg = this.getUpdateLCG();
-                int x = lcg & 0x0f;
-                int y = lcg >>> 8 & 0x0f;
-                int z = lcg >>> 16 & 0x0f;
+                int bits = this.getRandomTickState();
+                int x = bits & 0x0f;
+                int y = bits >>> 8 & 0x0f;
+                int z = bits >>> 16 & 0x0f;
                 BlockState state = section.getBlockState(x, y, z);
                 if (state != null && randomTickBlocks.contains(state.getIdentifier())) {
                     if (Block.isTickingDisabled(this, state.getIdentifier())) {
@@ -8000,8 +8000,16 @@ public class Level implements Metadatable, LiquidUpdateAccess {
         return true;
     }
 
-    public int getUpdateLCG() {
-        return (this.updateLCG = (this.updateLCG * 3) ^ LCG_CONSTANT);
+    public int getRandomTickState() {
+        int value = (this.randomTickState += 0x9E3779B9);
+
+        value ^= value >>> 16;
+        value *= 0x85EBCA6B;
+        value ^= value >>> 13;
+        value *= 0xC2B2AE35;
+        value ^= value >>> 16;
+
+        return value;
     }
 
     public boolean createPortal(Block target) {
