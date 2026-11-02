@@ -30,6 +30,19 @@ public class PerlinNoiseSampler extends Noise {
         super(rand);
     }
 
+    private PerlinNoiseSampler(RandomSourceProvider rand, boolean exclusiveShuffleBounds) {
+        super(rand, exclusiveShuffleBounds);
+    }
+
+    /**
+     * Vanilla-conform construction: 3x {@code nextDouble() * 256} as offsets, then a Fisher-Yates shuffle with
+     * {@code nextExclusiveInt(256 - i)}. Meant for {@code Xoroshiro128} streams from
+     * {@code Xoroshiro128PositionalFactory#hashOf("octave_<n>")}.
+     */
+    public static PerlinNoiseSampler vanilla(RandomSourceProvider rand) {
+        return new PerlinNoiseSampler(rand, true);
+    }
+
     public double sample(double x, double y, double z, double yAmplification, double minY) {
         double offsetX = x + originX;
         double offsetY = y + originY;

@@ -1,8 +1,10 @@
 package org.powernukkitx.level.generator.densityfunction;
 
 import org.powernukkitx.level.generator.noise.minecraft.perlin.OctavePerlinNoiseSampler;
+import org.powernukkitx.level.generator.noise.minecraft.utils.MathHelper;
 import org.powernukkitx.math.NukkitMath;
-import org.powernukkitx.utils.random.RandomSourceProvider;
+import org.powernukkitx.utils.random.Xoroshiro128;
+import org.powernukkitx.utils.random.Xoroshiro128PositionalFactory;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -22,21 +24,32 @@ public final class DensityBase3dNoise {
     private static final List<Integer> LIMIT_OCTAVES = descendingOctaves(-15, 0);
     private static final List<Integer> MAIN_OCTAVES = descendingOctaves(-7, 0);
 
+    /** Name of the stream from which all three Perlin sets are built one after another. */
+    private static final String TERRAIN_NOISE_NAME = "minecraft:terrain";
+
     private DensityBase3dNoise() {
     }
 
+    /**
+     * @param random a single stream ({@code noiseFactory.hashOf("minecraft:terrain")}); min-limit (16 octaves),
+     *               max-limit (16) and main (8) consume it in exactly this order.
+     */
     public static DensityFunction oldBlendedNoise(
-            RandomSourceProvider random,
+            Xoroshiro128 random,
             double xzScale,
             double yScale,
             double xzFactor,
             double yFactor,
             double smearScaleMultiplier
     ) {
+        // Order matters: min, max, main. Deliberately no fork(): all three read from the same stream.
+        OctavePerlinNoiseSampler minLimit = new OctavePerlinNoiseSampler(random, LIMIT_OCTAVES);
+        OctavePerlinNoiseSampler maxLimit = new OctavePerlinNoiseSampler(random, LIMIT_OCTAVES);
+        OctavePerlinNoiseSampler main = new OctavePerlinNoiseSampler(random, MAIN_OCTAVES);
         return new OldBlendedNoise(
-                new OctavePerlinNoiseSampler(random.fork(), LIMIT_OCTAVES),
-                new OctavePerlinNoiseSampler(random.fork(), LIMIT_OCTAVES),
-                new OctavePerlinNoiseSampler(random.fork(), MAIN_OCTAVES),
+                minLimit,
+                maxLimit,
+                main,
                 xzScale,
                 yScale,
                 xzFactor,
@@ -45,12 +58,12 @@ public final class DensityBase3dNoise {
         );
     }
 
-    public static DensityFunction overworld(RandomSourceProvider random) {
-        return oldBlendedNoise(random, 0.25, 0.125, 80.0, 160.0, 8.0);
+    public static DensityFunction overworld(Xoroshiro128PositionalFactory noiseFactory) {
+        return oldBlendedNoise(noiseFactory.hashOf(TERRAIN_NOISE_NAME), 0.25, 0.125, 80.0, 160.0, 8.0);
     }
 
-    public static DensityFunction nether(RandomSourceProvider random) {
-        return oldBlendedNoise(random, 0.25, 0.375, 80.0, 60.0, 8.0);
+    public static DensityFunction nether(Xoroshiro128PositionalFactory noiseFactory) {
+        return oldBlendedNoise(noiseFactory.hashOf(TERRAIN_NOISE_NAME), 0.25, 0.375, 80.0, 60.0, 8.0);
     }
 
     private static List<Integer> descendingOctaves(int minInclusive, int maxInclusive) {
@@ -74,13 +87,17 @@ public final class DensityBase3dNoise {
         public double compute(FunctionContext context) {
             double scaledXZ = BASE_SCALE * xzScale;
             double scaledY = BASE_SCALE * yScale;
-            double mainScaledXZ = scaledXZ / xzFactor;
-            double mainScaledY = scaledY / yFactor;
-            double smearScale = scaledY * smearScaleMultiplier;
+            // Smear of the limit noises and (divided by yFactor) of the main noise
+            double smear = scaledY * smearScaleMultiplier;
+            double mainSmear = smear / yFactor;
 
-            double x = context.blockX();
-            double y = context.blockY();
-            double z = context.blockZ();
+            double x = context.blockX() * scaledXZ;
+            double y = context.blockY() * scaledY;
+            double z = context.blockZ() * scaledXZ;
+
+            double mainX = x / xzFactor;
+            double mainY = y / yFactor;
+            double mainZ = z / xzFactor;
 
             double mainValue = 0.0;
             double frequency = 1.0;
@@ -88,11 +105,11 @@ public final class DensityBase3dNoise {
                 var sampler = mainNoise.getOctave(octave);
                 if (sampler != null) {
                     mainValue += sampler.sample(
-                            x * mainScaledXZ * frequency,
-                            y * mainScaledY * frequency,
-                            z * mainScaledXZ * frequency,
-                            smearScale * frequency,
-                            y * mainScaledY * frequency
+                            MathHelper.maintainPrecision(mainX * frequency),
+                            MathHelper.maintainPrecision(mainY * frequency),
+                            MathHelper.maintainPrecision(mainZ * frequency),
+                            mainSmear * frequency,
+                            mainY * frequency
                     ) / frequency;
                 }
                 frequency /= 2.0;
@@ -108,22 +125,23 @@ public final class DensityBase3dNoise {
 
             int octaveCount = Math.min(minLimitNoise.getCount(), maxLimitNoise.getCount());
             for (int octave = 0; octave < octaveCount; octave++) {
-                double sampleX = x * scaledXZ * frequency;
-                double sampleY = y * scaledY * frequency;
-                double sampleZ = z * scaledXZ * frequency;
-                double sampleSmear = smearScale * frequency;
+                double sampleX = MathHelper.maintainPrecision(x * frequency);
+                double sampleY = MathHelper.maintainPrecision(y * frequency);
+                double sampleZ = MathHelper.maintainPrecision(z * frequency);
+                double sampleSmear = smear * frequency;
+                double yLimit = y * frequency; // not wrapped, as in Vanilla
 
                 if (!useOnlyMax) {
                     var sampler = minLimitNoise.getOctave(octave);
                     if (sampler != null) {
-                        minValue += sampler.sample(sampleX, sampleY, sampleZ, sampleSmear, sampleY) / frequency;
+                        minValue += sampler.sample(sampleX, sampleY, sampleZ, sampleSmear, yLimit) / frequency;
                     }
                 }
 
                 if (!useOnlyMin) {
                     var sampler = maxLimitNoise.getOctave(octave);
                     if (sampler != null) {
-                        maxValue += sampler.sample(sampleX, sampleY, sampleZ, sampleSmear, sampleY) / frequency;
+                        maxValue += sampler.sample(sampleX, sampleY, sampleZ, sampleSmear, yLimit) / frequency;
                     }
                 }
 
