@@ -567,6 +567,7 @@ public final class MigrationService {
                         migratedCreakingLinks,
                         migratedActorUniqueIdsByUuid,
                         migratedRidingLinks,
+                        pnxManagedStorage,
                         this,
                         actorVersion
                 );

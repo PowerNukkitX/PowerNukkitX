@@ -111,7 +111,8 @@ public final class PositionTrackingMigrationExecutor {
         );
 
         writeLegacyPnxImport(targetDB, migrated, targetVersion);
-        migrationService.getContext().setLegacyPositionTrackingRemap(source.lastId(), migrated.handleOffset());
+        Set<Integer> sourceHandles = Set.copyOf(source.entries().stream().map(PositionTrackingMigrationData.Entry::handle).toList());
+        migrationService.getContext().setLegacyPositionTrackingRemap(source.lastId(), migrated.handleOffset(), sourceHandles);
 
         log.info(
                 "[PositionTracking Migration] Prepared {} legacy PNX records with handle offset {}",
