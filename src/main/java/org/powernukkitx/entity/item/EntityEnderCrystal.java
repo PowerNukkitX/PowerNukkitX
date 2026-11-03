@@ -58,12 +58,12 @@ public class EntityEnderCrystal extends Entity implements EntityExplosive {
 
     @Override
     public float getHeight() {
-        return 0.98f;
+        return 2f;
     }
 
     @Override
     public float getWidth() {
-        return 0.98f;
+        return 2f;
     }
 
     @Override
