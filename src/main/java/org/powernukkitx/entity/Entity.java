@@ -5644,7 +5644,9 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
             this.leashFollowTarget = null;
         }
         this.setDataProperty(ActorDataTypes.LEASH_HOLDER, -1L);
-        this.respawnToAll();
+        if (this.isAlive()) {
+            this.respawnToAll();
+        }
         if (this.level != null) {
             this.level.addSound(this, Sound.LEASHKNOT_BREAK);
             if (dropItem) {
@@ -6592,6 +6594,8 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
     public void kill() {
         this.health = 0;
         this.scheduleUpdate();
+
+        this.unleash(true);
 
         for (Entity passenger : new ArrayList<>(this.passengers)) {
             dismountEntity(passenger, true, false);

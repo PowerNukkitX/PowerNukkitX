@@ -17,6 +17,7 @@ import java.util.UUID;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.doReturn;
@@ -166,6 +167,24 @@ class EntityLeashTest {
             sheep.close();
             if (knot != null) knot.close();
             level.setBlock(fencePos, previousBlock);
+        }
+    }
+
+    @Test
+    void dyingSheepReleasesItsLeash(Level level, TestPlayer player) {
+        Entity sheep = Entity.createEntity(EntityID.SHEEP, new Position(0, 80, 0, level));
+        assertNotNull(sheep);
+
+        try {
+            assertTrue(sheep.useLeadOn(player));
+            assertTrue(sheep.isLeashed());
+
+            sheep.kill();
+
+            assertFalse(sheep.isLeashed());
+            assertNull(sheep.getLeashedTo());
+        } finally {
+            sheep.close();
         }
     }
 }
