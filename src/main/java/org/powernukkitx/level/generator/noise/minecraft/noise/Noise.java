@@ -13,6 +13,16 @@ public class Noise {
     protected final byte[] permutations = new byte[256];
 
     public Noise(RandomSourceProvider rand) {
+        this(rand, false);
+    }
+
+    /**
+     * @param exclusiveShuffleBounds {@code false}: legacy ({@code nextBoundedInt(255 - i)}, whose bound is
+     *                               inclusive or exclusive depending on the random class).
+     *                               {@code true}: Vanilla ({@code nextExclusiveInt(256 - i)}, always exclusive,
+     *                               Lemire's method for {@code Xoroshiro128}).
+     */
+    protected Noise(RandomSourceProvider rand, boolean exclusiveShuffleBounds) {
         this.originX = rand.nextDouble() * 256.0D;
         this.originY = rand.nextDouble() * 256.0D;
         this.originZ = rand.nextDouble() * 256.0D;
@@ -22,7 +32,9 @@ public class Noise {
         }
 
         for(int index = 0; index < 256; ++index) {
-            int randomIndex = rand.nextBoundedInt(255 - index) + index;
+            int randomIndex = (exclusiveShuffleBounds
+                ? rand.nextExclusiveInt(256 - index)
+                : rand.nextBoundedInt(255 - index)) + index;
             byte temp = this.permutations[index];
             this.permutations[index] = this.permutations[randomIndex];
             this.permutations[randomIndex] = temp;

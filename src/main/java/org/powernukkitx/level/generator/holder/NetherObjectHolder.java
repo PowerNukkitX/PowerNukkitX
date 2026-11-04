@@ -5,6 +5,8 @@ import org.powernukkitx.level.generator.densityfunction.DensityBase3dNoise;
 import org.powernukkitx.level.generator.densityfunction.DensityNether;
 import org.powernukkitx.level.generator.noise.minecraft.noise.NormalNoise;
 import org.powernukkitx.utils.random.RandomSourceProvider;
+import org.powernukkitx.utils.random.Xoroshiro128;
+import org.powernukkitx.utils.random.Xoroshiro128PositionalFactory;
 import lombok.Getter;
 
 @Getter
@@ -32,12 +34,15 @@ public class NetherObjectHolder extends RandomizedObjectHolder {
 
         public TerrainHolder(RandomSourceProvider randomSourceProvider) {
             super(randomSourceProvider);
+            final Xoroshiro128PositionalFactory noiseFactory =
+                Xoroshiro128.ofSeed(randomSourceProvider.getSeed()).forkPositional();
+
             this.surfaceNoise = new NormalNoise(getRandomSourceProvider().identical(), -6, new float[]{1f, 1f, 1f});
             this.patchNoise = new NormalNoise(getRandomSourceProvider().identical(), -5, new float[]{1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.013333333333333334f});
             this.soulsandNoise = new NormalNoise(getRandomSourceProvider().identical(), -8, new float[]{1.0f, 1.0f, 1.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.013333333333333334f});
             this.netherStateNoise = new NormalNoise(getRandomSourceProvider().identical(), -4, new float[]{1.0f});
             this.netherwartNoise = new NormalNoise(getRandomSourceProvider().identical(), -3, new float[]{1.0f, 0.0f, 0.0f, 0.9f});
-            this.base3dNoise = DensityBase3dNoise.nether(getRandomSourceProvider().identical());
+            this.base3dNoise = DensityBase3dNoise.nether(noiseFactory);
             this.densityFunction = DensityNether.finalDensity(this.base3dNoise);
         }
     }
