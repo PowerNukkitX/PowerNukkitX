@@ -66,7 +66,6 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Executor;
 import java.util.concurrent.RejectedExecutionException;
-import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
@@ -81,7 +80,7 @@ import lombok.extern.slf4j.Slf4j;
 public class LevelDBProvider implements LevelProvider {
     static final Map<String, LevelDBStorage> CACHE = new ConcurrentHashMap<>();
     private static final int LEVEL_DAT_VERSION = 10;
-    private static final int BIOME_STATE_SAMPLE_ATTEMPTS = 10;
+    private static final int BIOME_STATE_REFRESHES_PER_TICK = 8;
     private static final int CHUNKS_PER_SAVE_HELPER = 8;
     /**
      * Single entry cache for the chunk looked up last, which almost always answers the run of
@@ -106,6 +105,8 @@ public class LevelDBProvider implements LevelProvider {
     private int runtimeThunderTime;
     private int runtimeNoSleepNight;
     private final WorldBiomeSnowState biomeSnowState;
+    private Iterator<IChunk> pendingBiomeStateRefresh;
+    private boolean repeatBiomeStateRefresh;
     /**
      * Network bytes an absent section serialises to, indexed by section Y offset into the byte
      * range. Sized from {@link Byte} because {@link ChunkSection#y()} is a {@code byte} that the
@@ -135,7 +136,31 @@ public class LevelDBProvider implements LevelProvider {
      */
     public void tickBiomeSnowAccumulation(float previousRainLevel, float currentRainLevel) {
         if (getDimensionData().getDimensionId() != Level.DIMENSION_OVERWORLD) return;
-        biomeSnowState.tick(previousRainLevel, currentRainLevel);
+        if (biomeSnowState.tick(previousRainLevel, currentRainLevel)) {
+            if (pendingBiomeStateRefresh == null) {
+                pendingBiomeStateRefresh = chunks.values().iterator();
+            } else {
+                repeatBiomeStateRefresh = true;
+            }
+        }
+        for (int refreshed = 0; pendingBiomeStateRefresh != null && refreshed < BIOME_STATE_REFRESHES_PER_TICK;) {
+            if (!pendingBiomeStateRefresh.hasNext()) {
+                if (repeatBiomeStateRefresh) {
+                    pendingBiomeStateRefresh = chunks.values().iterator();
+                    repeatBiomeStateRefresh = false;
+                    continue;
+                } else {
+                    pendingBiomeStateRefresh = null;
+                    break;
+                }
+            }
+
+            IChunk chunk = pendingBiomeStateRefresh.next();
+            if (chunks.get(Level.chunkHash(chunk.getX(), chunk.getZ())) == chunk) {
+                refreshBiomeState(chunk);
+                refreshed++;
+            }
+        }
     }
 
     /**
@@ -148,10 +173,7 @@ public class LevelDBProvider implements LevelProvider {
 
     public void reconcileSnow(IChunk chunk) {
         BiomeSnowChunkReconciler.reconcile(this.level, chunk);
-    }
-
-    private static int randomChunkCoordinate(ThreadLocalRandom random, int min, int max) {
-        return min == max ? min : random.nextInt(min, max + 1);
+        this.refreshBiomeState(chunk);
     }
 
     @Override
@@ -176,25 +198,13 @@ public class LevelDBProvider implements LevelProvider {
     public void onChunkInitialized(IChunk chunk) {
         restoreNormalTicks(this.level, chunk.getExtraData());
 
+        if (getDimensionData().getDimensionId() == Level.DIMENSION_OVERWORLD) {
+            refreshBiomeState(chunk);
+        }
+
         if (LevelDBLimboEntities.supportsDimension(getDimensionData())) {
             this.storage.consumeLimboEntities(chunk);
         }
-    }
-
-    private boolean hasStaleBiomeState(IChunk chunk) {
-        boolean[] stale = {false};
-
-        chunk.batchProcess(unsafeChunk -> {
-            for (var entry : unsafeChunk.getBiomeState().snowAccumulation().int2ByteEntrySet()) {
-                int current = (int) (biomeSnowState.getSnowAccumulation(entry.getIntKey()) * 8.0f);
-                if (Byte.toUnsignedInt(entry.getByteValue()) != (current & 0xff)) {
-                    stale[0] = true;
-                    return;
-                }
-            }
-        });
-
-        return stale[0];
     }
 
     private void refreshBiomeState(IChunk chunk) {

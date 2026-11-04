@@ -170,7 +170,7 @@ public class UnsafeChunk {
         section.setBlockState(x, localY, z, blockstate, layer, oldState);
 
         if (oldState != blockstate) {
-            if (ChunkRainHeightMap.isCached(chunk, x, z) && (ChunkRainHeightMap.obstructsRain(blockstate) || ChunkRainHeightMap.obstructsRain(oldState))) {
+            if (ChunkRainHeightMap.isCached(chunk, x, z) && (ChunkRainHeightMap.obstructsRain(blockstate) != ChunkRainHeightMap.obstructsRain(oldState))) {
                 ChunkRainHeightMap.invalidateAfterBlockChange(chunk, x, y, z);
             }
             int oldHeightMask = (int) (heightMasks >>> 32);
@@ -200,7 +200,7 @@ public class UnsafeChunk {
         section.setBlockState(x, localY, z, blockstate, layer, oldState);
 
         if (oldState != blockstate) {
-            if (ChunkRainHeightMap.isCached(chunk, x, z) && (ChunkRainHeightMap.obstructsRain(blockstate) || ChunkRainHeightMap.obstructsRain(oldState))) {
+            if (ChunkRainHeightMap.isCached(chunk, x, z) && (ChunkRainHeightMap.obstructsRain(blockstate) != ChunkRainHeightMap.obstructsRain(oldState))) {
                 ChunkRainHeightMap.invalidateAfterBlockChange(chunk, x, y, z);
             }
 
