@@ -1,5 +1,7 @@
 package org.powernukkitx.utils.random;
 
+import com.google.common.base.Preconditions;
+
 public class Xoroshiro128 implements RandomSourceProvider {
 
     private long seed;
@@ -38,11 +40,11 @@ public class Xoroshiro128 implements RandomSourceProvider {
 
     @Override
     public int nextInt(int min, int max) {
-        if (max <= min) {
-            return min;
-        }
-        long span = (long) max - min + 1L;
-        return (int) (min + Integer.toUnsignedLong(nextInt()) % span);
+        Preconditions.checkArgument(max >= min, "max must be greater than or equal to min");
+        if (max == min) return min;
+
+        long span = (long) max - min;
+        return (int) (min + Long.remainderUnsigned(nextLong(), span));
     }
 
     public int nextBoundedInt(int max) {
