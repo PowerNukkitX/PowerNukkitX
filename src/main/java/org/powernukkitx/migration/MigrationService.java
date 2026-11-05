@@ -24,6 +24,7 @@ import org.powernukkitx.migration.leveldb.LevelDBMigrationChunkSerializer;
 import org.powernukkitx.migration.leveldb.LevelDBMigrationVersionStore;
 import org.powernukkitx.migration.steps.LevelDBActorV3_1_0Migration;
 import org.powernukkitx.migration.steps.LevelDBBlockEntityV3_1_0Migration;
+import org.powernukkitx.migration.steps.PositionTrackingV3_1_0Migration;
 import org.powernukkitx.nbt.tag.CompoundTag;
 import org.powernukkitx.utils.JSONUtils;
 
@@ -226,6 +227,7 @@ public final class MigrationService {
                 String dimensionMigrationSignature = LevelDBMigrationVersionStore.getMigrationSignature();
                 String worldMigrationSignature = LevelDBMigrationVersionStore.getWorldMigrationSignature();
                 CompoundTag globalMarker = LevelDBMigrationVersionStore.readGlobalMarker(db);
+                var bdsSourceKeys = PositionTrackingV3_1_0Migration.captureBdsSourceKeys(db);
 
                 WorldStorageMigrationExecutor worldStorage = new WorldStorageMigrationExecutor(storage, worldPath, expectedDimensions);
                 MigrationVersion currentWorldStorageVersion = worldStorage.getCurrentVersion(this);
@@ -239,7 +241,8 @@ public final class MigrationService {
                             levelConfig,
                             expectedDimensions,
                             serverDataDB,
-                            uniqueIdAssigner
+                            uniqueIdAssigner,
+                            bdsSourceKeys
                     );
                 }
 
@@ -316,7 +319,8 @@ public final class MigrationService {
                         levelConfig,
                         expectedDimensions,
                         serverDataDB,
-                        uniqueIdAssigner
+                        uniqueIdAssigner,
+                        bdsSourceKeys
                 );
 
                 globalMarker.putString(MIGRATION_SIGNATURE_KEY, worldMigrationSignature);
@@ -341,7 +345,8 @@ public final class MigrationService {
             LevelConfig levelConfig,
             Set<Integer> expectedDimensions,
             DB serverDataDB,
-            BiConsumer<UUID, CompoundTag> uniqueIdAssigner
+            BiConsumer<UUID, CompoundTag> uniqueIdAssigner,
+            PositionTrackingV3_1_0Migration.BdsSourceKeys bdsSourceKeys
     ) throws IOException {
         try {
             PositionTrackingMigrationExecutor.migrateBdsWorldIfNeeded(
@@ -350,7 +355,8 @@ public final class MigrationService {
                     levelConfig,
                     expectedDimensions,
                     serverDataDB,
-                    this
+                    this,
+                    bdsSourceKeys
             );
         } catch (Exception e) {
             throw new IOException("Stage PositionTracking migration failed", e);
@@ -567,6 +573,7 @@ public final class MigrationService {
                         migratedCreakingLinks,
                         migratedActorUniqueIdsByUuid,
                         migratedRidingLinks,
+                        pnxManagedStorage,
                         this,
                         actorVersion
                 );

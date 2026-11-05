@@ -53,11 +53,12 @@ public final class LevelDBBlockEntityV3_1_0Migration implements MigrationStep<Le
         while (iterator.hasNext()) {
             CompoundTag blockEntity = iterator.next();
 
-            if (context.hasLegacyPositionTrackingRemap()) {
-                PositionTrackingV3_1_0Migration.remapLegacyPnxBlockEntity(
+            if (context.hasLegacyPositionTrackingRemap() && (value.migrationContext() == null || !value.migrationContext().isNativeBdsStorage())) {
+                changed |= PositionTrackingV3_1_0Migration.remapLegacyPnxBlockEntity(
                         blockEntity,
                         context.getLegacyPositionTrackingSourceLastId(),
-                        context.getLegacyPositionTrackingOffset()
+                        context.getLegacyPositionTrackingOffset(),
+                        context.getLegacyPositionTrackingSourceHandles()
                 );
             }
 
@@ -218,7 +219,7 @@ public final class LevelDBBlockEntityV3_1_0Migration implements MigrationStep<Le
                     case "EnderChest" -> migrateEnderChest(tag);
                     case "SporeBlossom" -> migrateSporeBlossom(tag);
                     case "FlowerPot" -> migrateFlowerPot(tag);
-                    case "Lodestone" -> migrateLodestone(tag, migrationContext);
+                    case "Lodestone" -> !migrationContext.isNativeBdsStorage() && migrateLodestone(tag, migrationContext);
                     case "Chest", "Barrel", "ShulkerBox" -> migrateFindableContainer(tag);
                     case "Dispenser", "Dropper", "Hopper", "BrewingStand" -> migrateItemContainer(tag);
                     case "Crafter" -> migrateCrafter(tag);
@@ -2402,6 +2403,13 @@ public final class LevelDBBlockEntityV3_1_0Migration implements MigrationStep<Le
      * Provides storage-dependent services required while converting legacy Block Entities.
      */
     public interface LegacyStorageMigrationContext {
+        /**
+         * Returns whether the source is native BDS storage.
+         */
+        default boolean isNativeBdsStorage() {
+            return false;
+        }
+
         /**
          * Returns the current dimension ID when available.
          */
