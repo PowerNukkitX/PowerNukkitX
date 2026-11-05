@@ -6,6 +6,7 @@ import org.powernukkitx.block.Block;
 import org.powernukkitx.block.BlockAir;
 import org.powernukkitx.block.BlockID;
 import org.powernukkitx.block.BlockState;
+import org.powernukkitx.block.customblock.TagQueryContext;
 import org.powernukkitx.entity.Entity;
 import org.powernukkitx.event.item.ItemWearEvent;
 import org.powernukkitx.event.player.PlayerItemConsumeEvent;
@@ -21,6 +22,7 @@ import org.powernukkitx.level.vibration.VibrationEvent;
 import org.powernukkitx.level.vibration.VibrationType;
 import org.powernukkitx.math.BlockFace;
 import org.powernukkitx.math.Vector3;
+import org.powernukkitx.molang.MolangExpression;
 import org.powernukkitx.plugin.PluginManager;
 import org.powernukkitx.registry.ItemRegistry;
 import org.powernukkitx.registry.Registries;
@@ -71,6 +73,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Random;
 import java.util.StringJoiner;
+import java.util.concurrent.ConcurrentHashMap;
 
 import static org.powernukkitx.utils.Utils.dynamic;
 
@@ -2471,37 +2474,23 @@ public abstract class Item implements Cloneable, ItemID {
             String tagsExpr = blk.contains("tags") ? blk.getString("tags") : "";
             if (tagsExpr.isEmpty()) continue;
 
-            boolean matched = anyTagMatches(block, tagsExpr);
+            boolean matched = tagsMatch(block, tagsExpr);
             if (matched) return rule.getInt("speed");
         }
 
         return null;
     }
 
-    /**
-     * Supports: query.any_tag('wood') or query.any_tag('wood','logs')
-     */
-    private boolean anyTagMatches(Block block, String expr) {
-        int lp = expr.indexOf('('), rp = expr.lastIndexOf(')');
-        if (lp < 0 || rp <= lp + 1) return false;
+    private static final Map<String, MolangExpression> DIGGER_TAG_EXPRESSIONS = new ConcurrentHashMap<>();
 
-        String inner = expr.substring(lp + 1, rp);
-        String[] parts = inner.split(",");
-        for (String raw : parts) {
-            String s = raw.trim();
-            if (s.length() >= 2) {
-                char q0 = s.charAt(0), q1 = s.charAt(s.length() - 1);
-                if ((q0 == '\'' && q1 == '\'') || (q0 == '"' && q1 == '"')) {
-                    String tag = s.substring(1, s.length() - 1).trim();
-                    if (!tag.isEmpty()) {
-                        if (block.hasTag(tag)) return true;
-                        if (block.getTags() != null && java.util.Arrays.asList(block.getTags()).contains(tag))
-                            return true;
-                    }
-                }
-            }
-        }
-        return false;
+    /**
+     * Evaluates a digger rule's tag expression, such as {@code query.any_tag('wood')} or
+     * {@code query.all_tags('stone', 'minecraft:is_pickaxe_item_destructible')}, against the block's tags.
+     * Each expression is compiled once and reused.
+     */
+    private boolean tagsMatch(Block block, String expr) {
+        MolangExpression expression = DIGGER_TAG_EXPRESSIONS.computeIfAbsent(expr, MolangExpression::compile);
+        return expression.evaluateAsBoolean(new TagQueryContext(block::hasTag));
     }
 
     public boolean toolUseOnBlock(Block block) {

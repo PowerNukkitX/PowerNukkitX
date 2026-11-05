@@ -17,6 +17,7 @@ import org.powernukkitx.event.entity.EntityDamageEvent;
 import org.powernukkitx.event.player.PlayerBucketEmptyEvent;
 import org.powernukkitx.event.player.PlayerBucketFillEvent;
 import org.powernukkitx.item.*;
+import org.powernukkitx.item.customitem.ItemDataDriven;
 import org.powernukkitx.level.Sound;
 import org.powernukkitx.level.particle.SmokeParticle;
 import org.powernukkitx.level.vibration.VibrationEvent;
@@ -241,37 +242,7 @@ public class BlockCauldron extends BlockSolid implements BlockEntityHolder<Block
             case ItemID.LEATHER_LEGGINGS:
             case ItemID.LEATHER_BOOTS:
             case ItemID.LEATHER_HORSE_ARMOR:
-                if (isEmpty() || cauldron.hasPotion()) {
-                    break;
-                }
-
-                if (cauldron.isCustomColor()) {
-                    CompoundTag compoundTag = item.hasNbt() ? item.getNbt().copy() : new CompoundTag();
-                    compoundTag.putInt("customColor", cauldron.getCustomColor().getRGB());
-                    item.setNbt(compoundTag);
-                    player.getInventory().setItemInMainHand(item);
-                    setFillLevel(NukkitMath.clamp(getFillLevel() - 2, FILL_LEVEL.getMin(), FILL_LEVEL.getMax()), player);
-                    this.level.setBlock(this, this, true, true);
-                    this.level.addSound(add(0.5, 0.5, 0.5), Sound.CAULDRON_DYEARMOR);
-                } else {
-                    if (!item.hasNbt()) {
-                        break;
-                    }
-
-                    CompoundTag compoundTag = item.getNbt();
-                    if (!compoundTag.contains("customColor")) {
-                        break;
-                    }
-
-                    compoundTag.remove("customColor");
-                    item.setNbt(compoundTag);
-                    player.getInventory().setItemInMainHand(item);
-
-                    setFillLevel(NukkitMath.clamp(getFillLevel() - 2, FILL_LEVEL.getMin(), FILL_LEVEL.getMax()), player);
-                    this.level.setBlock(this, this, true, true);
-                    this.getLevel().addSound(this.add(0.5, 1, 0.5), Sound.CAULDRON_TAKEWATER);
-                }
-
+                dyeOrWash(item, player, cauldron);
                 break;
             case ItemID.POTION:
             case ItemID.SPLASH_POTION:
@@ -406,6 +377,8 @@ public class BlockCauldron extends BlockSolid implements BlockEntityHolder<Block
                             LevelEvent.CAULDRON_ADD_DYE,
                             cauldron.getCustomColor().getRGB() << 8 >> 8
                     );
+                } else if (item instanceof ItemDataDriven dataDriven && dataDriven.isDyeable()) {
+                    dyeOrWash(item, player, cauldron);
                 } else {
                     return true;
                 }
@@ -413,6 +386,42 @@ public class BlockCauldron extends BlockSolid implements BlockEntityHolder<Block
 
         this.level.updateComparatorOutputLevel(this);
         return true;
+    }
+
+    /**
+     * Dyes a dyeable item in coloured water, or washes its colour off in plain water.
+     */
+    private void dyeOrWash(Item item, Player player, BlockEntityCauldron cauldron) {
+        if (isEmpty() || cauldron.hasPotion()) {
+            return;
+        }
+
+        if (cauldron.isCustomColor()) {
+            CompoundTag compoundTag = item.hasNbt() ? item.getNbt().copy() : new CompoundTag();
+            compoundTag.putInt("customColor", cauldron.getCustomColor().getRGB());
+            item.setNbt(compoundTag);
+            player.getInventory().setItemInMainHand(item);
+            setFillLevel(NukkitMath.clamp(getFillLevel() - 2, FILL_LEVEL.getMin(), FILL_LEVEL.getMax()), player);
+            this.level.setBlock(this, this, true, true);
+            this.level.addSound(add(0.5, 0.5, 0.5), Sound.CAULDRON_DYEARMOR);
+        } else {
+            if (!item.hasNbt()) {
+                return;
+            }
+
+            CompoundTag compoundTag = item.getNbt();
+            if (!compoundTag.contains("customColor")) {
+                return;
+            }
+
+            compoundTag.remove("customColor");
+            item.setNbt(compoundTag);
+            player.getInventory().setItemInMainHand(item);
+
+            setFillLevel(NukkitMath.clamp(getFillLevel() - 2, FILL_LEVEL.getMin(), FILL_LEVEL.getMax()), player);
+            this.level.setBlock(this, this, true, true);
+            this.getLevel().addSound(this.add(0.5, 1, 0.5), Sound.CAULDRON_TAKEWATER);
+        }
     }
 
     public boolean onLavaActivate(@NotNull Item item, Player player, BlockFace blockFace, float fx, float fy, float fz) {

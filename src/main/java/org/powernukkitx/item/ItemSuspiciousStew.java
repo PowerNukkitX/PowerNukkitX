@@ -5,7 +5,14 @@ import org.powernukkitx.entity.effect.Effect;
 import org.powernukkitx.entity.effect.EffectType;
 import org.powernukkitx.item.definition.ItemDefinition;
 
+import org.jetbrains.annotations.Nullable;
+
 public class ItemSuspiciousStew extends ItemFood {
+    /**
+     * The highest aux value a stew has; every value from 0 up to it gives an effect.
+     */
+    public static final int MAX_META = 12;
+
     public static final ItemDefinition DEFINITION = FOOD.toBuilder()
             .maxStackSize(1)
             .nutrition(6)
@@ -31,7 +38,21 @@ public class ItemSuspiciousStew extends ItemFood {
 
     @Override
     public boolean onEaten(Player player) {
-        Effect effect = switch(meta) {
+        Effect effect = getEffect(meta);
+
+        if(effect != null) {
+            player.addEffect(effect);
+        }
+
+        return super.onEaten(player);
+    }
+
+    /**
+     * @param meta the stew's aux value, which records the flower it was made with
+     * @return a new instance of the effect eating that stew gives, or null for an unknown value
+     */
+    public static @Nullable Effect getEffect(int meta) {
+        return switch(meta) {
             case 0, 10 -> Effect.get(EffectType.NIGHT_VISION).setDuration(5 * 20);
             case 1 -> Effect.get(EffectType.JUMP_BOOST).setDuration(5 * 20);
             case 2 -> Effect.get(EffectType.WEAKNESS).setDuration(7 * 20);
@@ -44,11 +65,19 @@ public class ItemSuspiciousStew extends ItemFood {
             case 12 -> Effect.get(EffectType.NAUSEA).setDuration(7 * 20);
             default -> null;
         };
+    }
 
-        if(effect != null) {
-            player.addEffect(effect);
+    /**
+     * @param effectId the numeric id of an effect
+     * @return the lowest aux value whose stew gives that effect, or -1 when no stew gives it
+     */
+    public static int getMeta(int effectId) {
+        for (int meta = 0; meta <= MAX_META; meta++) {
+            Effect effect = getEffect(meta);
+            if (effect != null && effect.getId() == effectId) {
+                return meta;
+            }
         }
-
-        return super.onEaten(player);
+        return -1;
     }
 }

@@ -1,6 +1,7 @@
 package org.powernukkitx.block;
 
 import org.powernukkitx.Player;
+import org.powernukkitx.block.customblock.BlockDataDriven;
 import org.powernukkitx.item.Item;
 import org.powernukkitx.level.Level;
 import org.powernukkitx.math.BlockFace;
@@ -58,6 +59,9 @@ public abstract class BlockFence extends BlockTransparent implements BlockConnec
 
     @Override
     public boolean canConnect(Block block) {
+        if (block instanceof BlockDataDriven dataDriven && !dataDriven.acceptsConnectionFrom(this, true)) {
+            return false;
+        }
         if (block instanceof BlockFence) {
             if (block.getId().equals(NETHER_BRICK_FENCE) || this.getId().equals(NETHER_BRICK_FENCE)) {
                 return block.getId().equals(this.getId());

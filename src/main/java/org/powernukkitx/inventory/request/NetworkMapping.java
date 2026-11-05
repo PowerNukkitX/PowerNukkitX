@@ -6,7 +6,7 @@ import org.powernukkitx.inventory.CraftTypeInventory;
 import org.powernukkitx.inventory.Inventory;
 import org.powernukkitx.inventory.InventoryHolder;
 import org.powernukkitx.inventory.fake.FakeInventory;
-import org.powernukkitx.item.ItemBundle;
+import org.powernukkitx.item.StorageItem;
 import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
 import org.cloudburstmc.protocol.bedrock.data.inventory.ContainerEnumName;
@@ -85,15 +85,15 @@ public class NetworkMapping {
             }
             case DYNAMIC_CONTAINER -> {
                 //If player is looking in container. If not, check the players inventory.
-                var item = player.getTopWindow().orElse(player.getInventory()).getContents().values().stream().filter(itm -> itm instanceof ItemBundle bundle && bundle.getBundleId() == dynamicId).findFirst();
+                var item = player.getTopWindow().orElse(player.getInventory()).getContents().values().stream().filter(itm -> itm instanceof StorageItem storage && storage.getBundleId() == dynamicId).findFirst();
                 if (item.isPresent()) {
-                    yield ((ItemBundle) item.get()).getInventory();
+                    yield ((StorageItem) item.get()).getInventory();
                 } else {
                     //If player is looking in container, but bundle is not inside the container.
-                    item = player.getInventory().getContents().values().stream().filter(itm -> itm instanceof ItemBundle bundle && bundle.getBundleId() == dynamicId).findFirst();
+                    item = player.getInventory().getContents().values().stream().filter(itm -> itm instanceof StorageItem storage && storage.getBundleId() == dynamicId).findFirst();
                     if (item.isPresent()) {
-                        yield ((ItemBundle) item.get()).getInventory();
-                    } else yield ((ItemBundle) player.getCursorInventory().getUnclonedItem()).getInventory();
+                        yield ((StorageItem) item.get()).getInventory();
+                    } else yield ((StorageItem) player.getCursorInventory().getUnclonedItem()).getInventory();
                 }
             }
             default -> {

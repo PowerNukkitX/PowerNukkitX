@@ -7,6 +7,7 @@ import org.powernukkitx.PlayerHandle;
 import org.powernukkitx.Server;
 import org.powernukkitx.api.NonComputationAtomic;
 import org.powernukkitx.block.*;
+import org.powernukkitx.block.customblock.BlockDataDriven;
 import org.powernukkitx.block.customblock.CustomBlock;
 import org.powernukkitx.block.customblock.CustomBlockDefinition;
 import org.powernukkitx.block.customblock.CustomBlockDefinition.BlockTickSettings;
@@ -50,6 +51,7 @@ import org.powernukkitx.event.player.PlayerInteractEvent.Action;
 import org.powernukkitx.event.weather.LightningStrikeEvent;
 import org.powernukkitx.inventory.BlockInventoryHolder;
 import org.powernukkitx.item.Item;
+import org.powernukkitx.item.customitem.ItemDataDriven;
 import org.powernukkitx.item.enchantment.Enchantment;
 import org.powernukkitx.level.format.Chunk;
 import org.powernukkitx.level.format.ChunkSection;
@@ -5022,10 +5024,18 @@ public class Level implements Metadatable, LiquidUpdateAccess {
             }
         }
 
-        if (data.getClientInteractPrediction() == ItemUsePredictedResult.SUCCESS) {
+        if (data.getClientInteractPrediction() == ItemUsePredictedResult.SUCCESS || isPlacementFiltered(item)) {
             return placeBlock(item, face, fx, fy, fz, player, playSound, block, target);
         }
         return item;
+    }
+
+    /**
+     * Clients predict a pack block's placement filter as failing where the dedicated server, which decides
+     * by the filter itself, places the block. Such placements are left to the filter.
+     */
+    private static boolean isPlacementFiltered(Item item) {
+        return item.canBePlaced() && item.getBlock() instanceof BlockDataDriven dataDriven && dataDriven.hasPlacementFilter();
     }
 
     private Block beforePlaceBlock(Item item, BlockFace face, Block block, Block target) {
@@ -5037,6 +5047,9 @@ public class Level implements Metadatable, LiquidUpdateAccess {
         } else {
             Block blockToPlace = item.getBlockPlacerTargetBlock();
             if (blockToPlace == null) return null;
+            List<String> useOn = item.getCustomDefinition().getBlockPlacerData().useOn();
+            if (!useOn.isEmpty() && !useOn.contains(target.getId())) return null;
+            if (item instanceof ItemDataDriven dataDriven && !dataDriven.canPlantAt(face)) return null;
             hand = blockToPlace;
             hand.position(block);
         }

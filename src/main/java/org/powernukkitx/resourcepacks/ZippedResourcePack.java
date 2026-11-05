@@ -118,6 +118,11 @@ public class ZippedResourcePack extends AbstractResourcePack {
     }
 
     @Override
+    public File getFile() {
+        return this.file;
+    }
+
+    @Override
     public int getPackSize() {
         return (int) this.file.length();
     }
