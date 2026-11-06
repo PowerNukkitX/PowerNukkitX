@@ -376,93 +376,94 @@ public class Palette<V> {
     @SuppressWarnings("unchecked")
     protected void addBlockPalette(ByteBuf byteBuf, RuntimeDataDeserializer<V> deserializer, Supplier<String> locationHint) throws IOException {
         byteBuf.markReaderIndex();
-        try (final ByteBufInputStream inputStream = new ByteBufInputStream(byteBuf);
-             final NBTInputStream nbtInputStream = NbtUtils.createReaderLE(inputStream)) {
-            final int storedVersion;
-            final int blockRuntimeId;
-            final PaletteEntryHashCache.Probe cacheProbe = PaletteEntryHashCache.probe(byteBuf);
-            final PaletteEntryHashCache.Entry cached = cacheProbe == null ? null : PaletteEntryHashCache.lookup(cacheProbe, byteBuf);
-            if (cached != null) {
-                storedVersion = cached.storedVersion();
-                blockRuntimeId = cached.blockRuntimeId();
-            } else {
-                NbtMap blockTag = (NbtMap) nbtInputStream.readTag();
+        final int storedVersion;
+        final int blockRuntimeId;
+        // Probed before any stream is opened: a cached entry must not pay for the three readers the
+        // NBT parse needs.
+        final PaletteEntryHashCache.Probe cacheProbe = PaletteEntryHashCache.probe(byteBuf);
+        final PaletteEntryHashCache.Entry cached = cacheProbe == null ? null : PaletteEntryHashCache.lookup(cacheProbe, byteBuf);
+        if (cached != null) {
+            storedVersion = cached.storedVersion();
+            blockRuntimeId = cached.blockRuntimeId();
+        } else {
+            try (final ByteBufInputStream inputStream = new ByteBufInputStream(byteBuf);
+                 final NBTInputStream nbtInputStream = NbtUtils.createReaderLE(inputStream)) {
+                final NbtMap blockTag = (NbtMap) nbtInputStream.readTag();
                 storedVersion = blockTag.getInt("version");
                 final NbtMapBuilder builder = blockTag.toBuilder();
                 builder.remove("version");
-                blockTag = builder.build();
-                blockRuntimeId = HashUtils.fnv1a_32_nbt(blockTag);
-                if (cacheProbe != null) {
-                    PaletteEntryHashCache.remember(cacheProbe, byteBuf.readerIndex(), storedVersion, blockRuntimeId);
-                }
+                blockRuntimeId = HashUtils.fnv1a_32_nbt(builder.build());
             }
-            if (storedVersion != 0 && storedVersion < NetworkConstants.BLOCK_STATE_VERSION_NO_REVISION) {
-                this.legacyStates = true;
+            if (cacheProbe != null) {
+                PaletteEntryHashCache.remember(cacheProbe, byteBuf.readerIndex(), storedVersion, blockRuntimeId);
             }
+        }
+        if (storedVersion != 0 && storedVersion < NetworkConstants.BLOCK_STATE_VERSION_NO_REVISION) {
+            this.legacyStates = true;
+        }
 
-            final V unknownState = (V) BlockUnknown.PROPERTIES.getDefaultState();
+        final V unknownState = (V) BlockUnknown.PROPERTIES.getDefaultState();
 
-            V resultingBlockState = unknownState;
+        V resultingBlockState = unknownState;
 
-            int version;
-            if (storedVersion != 0) {
-                version = storedVersion;
-            } else {
-                SemVersion semVersion = SemVersion.fromString(NetworkConstants.DATA_FORMAT_VERSION);
-                version = CompoundTagUpdaterContext.makeVersion(semVersion.major(), semVersion.minor(), semVersion.patch());
-            }
+        int version;
+        if (storedVersion != 0) {
+            version = storedVersion;
+        } else {
+            SemVersion semVersion = SemVersion.fromString(NetworkConstants.DATA_FORMAT_VERSION);
+            version = CompoundTagUpdaterContext.makeVersion(semVersion.major(), semVersion.minor(), semVersion.patch());
+        }
 
-            boolean isBlockOutdated = false;
+        boolean isBlockOutdated = false;
 
-            V currentState = deserializer.deserialize(blockRuntimeId);
-            if (blockRuntimeId != -2 && Objects.equals(currentState, unknownState)) {
-                byteBuf.resetReaderIndex();
-                isBlockOutdated = true;
-            } else {
-                resultingBlockState = currentState;
-            }
+        V currentState = deserializer.deserialize(blockRuntimeId);
+        if (blockRuntimeId != -2 && Objects.equals(currentState, unknownState)) {
+            byteBuf.resetReaderIndex();
+            isBlockOutdated = true;
+        } else {
+            resultingBlockState = currentState;
+        }
 
-            if (isBlockOutdated) {
-                try (final ByteBufInputStream bufInputStream = new ByteBufInputStream(byteBuf);
-                     final NBTInputStream input = NbtUtils.createReaderLE(bufInputStream)) {
-                    NbtMap oldBlockNbt = (NbtMap) input.readTag();
-                    NbtMap newNbtMap = BlockStateUpdaters.updateBlockState(oldBlockNbt, version);
-                    final TreeMap<String, Object> states = new TreeMap<>(newNbtMap.getCompound("states"));
-                    final NbtMap newBlockNbt = NbtMap.builder()
-                            .putString("name", newNbtMap.getString("name"))
-                            .putCompound("states", NbtMap.fromMap(states))
+        if (isBlockOutdated) {
+            try (final ByteBufInputStream bufInputStream = new ByteBufInputStream(byteBuf);
+                 final NBTInputStream input = NbtUtils.createReaderLE(bufInputStream)) {
+                NbtMap oldBlockNbt = (NbtMap) input.readTag();
+                NbtMap newNbtMap = BlockStateUpdaters.updateBlockState(oldBlockNbt, version);
+                final TreeMap<String, Object> states = new TreeMap<>(newNbtMap.getCompound("states"));
+                final NbtMap newBlockNbt = NbtMap.builder()
+                        .putString("name", newNbtMap.getString("name"))
+                        .putCompound("states", NbtMap.fromMap(states))
+                        .build();
+
+                int hash = HashUtils.fnv1a_32_nbt(newBlockNbt);
+
+                resultingBlockState = deserializer.deserialize(hash);
+
+                if (resultingBlockState == null || Objects.equals(resultingBlockState, unknownState)) {
+                    final NbtMap preservedTag = newBlockNbt.toBuilder()
+                            .putInt("version", version)
                             .build();
+                    resultingBlockState = (V) BlockState.makeUnknownBlockState(hash, preservedTag);
 
-                    int hash = HashUtils.fnv1a_32_nbt(newBlockNbt);
-
-                    resultingBlockState = deserializer.deserialize(hash);
-
-                    if (resultingBlockState == null || Objects.equals(resultingBlockState, unknownState)) {
-                        final NbtMap preservedTag = newBlockNbt.toBuilder()
-                                .putInt("version", version)
-                                .build();
-                        resultingBlockState = (V) BlockState.makeUnknownBlockState(hash, preservedTag);
-
-                        if (log.isDebugEnabled()) {
-                            final String name = newBlockNbt.getString("name");
-                            if (!name.isEmpty()) {
-                                final String location = locationHint != null ? locationHint.get() : "<unknown>";
-                                log.debug("Block state did not resolve after updating; preserved as unknown. name: '{}', hash: {}, location: {}, originalState: {}, updatedState: {}",
-                                    name, hash, location, oldBlockNbt, newBlockNbt);
-                            }
+                    if (log.isDebugEnabled()) {
+                        final String name = newBlockNbt.getString("name");
+                        if (!name.isEmpty()) {
+                            final String location = locationHint != null ? locationHint.get() : "<unknown>";
+                            log.debug("Block state did not resolve after updating; preserved as unknown. name: '{}', hash: {}, location: {}, originalState: {}, updatedState: {}",
+                                name, hash, location, oldBlockNbt, newBlockNbt);
                         }
                     }
                 }
             }
+        }
 
-            if (resultingBlockState instanceof BlockState bs && bs.getIdentifier().equals(BlockID.UNKNOWN)) {
-                boolean replaceWithUnknown = Server.getInstance().getSettings().baseSettings().saveUnknownBlock();
-                if (replaceWithUnknown) {
-                    this.addToPalette(resultingBlockState);
-                }
-            } else if (resultingBlockState != null) {
+        if (resultingBlockState instanceof BlockState bs && bs.getIdentifier().equals(BlockID.UNKNOWN)) {
+            boolean replaceWithUnknown = Server.getInstance().getSettings().baseSettings().saveUnknownBlock();
+            if (replaceWithUnknown) {
                 this.addToPalette(resultingBlockState);
             }
+        } else if (resultingBlockState != null) {
+            this.addToPalette(resultingBlockState);
         }
     }
 

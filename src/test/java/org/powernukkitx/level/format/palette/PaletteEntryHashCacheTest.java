@@ -10,7 +10,17 @@ import org.cloudburstmc.nbt.NbtMapBuilder;
 import org.cloudburstmc.nbt.NbtType;
 import org.cloudburstmc.nbt.NbtUtils;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.powernukkitx.GameMockExtension;
+import org.powernukkitx.block.Block;
+import org.powernukkitx.block.BlockAir;
+import org.powernukkitx.block.BlockID;
+import org.powernukkitx.block.BlockState;
+import org.powernukkitx.block.BlockUnknown;
+import org.powernukkitx.level.format.ChunkSection;
+import org.powernukkitx.registry.Registries;
 import org.powernukkitx.utils.HashUtils;
 
 import java.io.ByteArrayOutputStream;
@@ -220,18 +230,23 @@ class PaletteEntryHashCacheTest {
 
     @Test
     void byteBudgetIsNeverExceeded() throws IOException {
-        // Each entry costs well over 64 bytes, so this is more than the budget holds.
-        int attempts = (int) (PaletteEntryHashCache.MAX_BYTES / 64);
-        for (int i = 0; i < attempts; i++) {
-            byte[] entry = stored(state("minecraft:custom_" + i, NbtMap.EMPTY), 18168865);
+        // Feed unique entries until one is read correctly without being stored: that is the budget
+        // refusing it. The cap only keeps a broken budget from looping forever.
+        int attempts = 0;
+        int cap = (int) (PaletteEntryHashCache.MAX_BYTES / PaletteEntryHashCache.ENTRY_OVERHEAD) + 1;
+        int sizeBefore;
+        do {
+            sizeBefore = PaletteEntryHashCache.size();
+            byte[] entry = stored(state("minecraft:custom_" + attempts++, NbtMap.EMPTY), 18168865);
             assertArrayEquals(fullRead(Unpooled.wrappedBuffer(entry)), cachedRead(Unpooled.wrappedBuffer(entry)));
-        }
+        } while (PaletteEntryHashCache.size() > sizeBefore && attempts < cap);
+
         assertTrue(PaletteEntryHashCache.usedBytes() <= PaletteEntryHashCache.MAX_BYTES);
         assertTrue(PaletteEntryHashCache.size() > 0);
-        assertTrue(PaletteEntryHashCache.size() < attempts, "the budget must have stopped storing");
+        assertTrue(attempts < cap, "the budget must have stopped storing");
+        assertEquals(sizeBefore, PaletteEntryHashCache.size(), "the refused entry must not be stored");
 
         byte[] extra = stored(state("minecraft:custom_after_full", NbtMap.EMPTY), 18168865);
-        int sizeBefore = PaletteEntryHashCache.size();
         assertArrayEquals(fullRead(Unpooled.wrappedBuffer(extra)), cachedRead(Unpooled.wrappedBuffer(extra)));
         assertEquals(sizeBefore, PaletteEntryHashCache.size());
     }
@@ -290,6 +305,83 @@ class PaletteEntryHashCacheTest {
         if (probe != null) PaletteEntryHashCache.remember(probe, buf.readerIndex(), result[0], result[1]);
         result[2] -= start;
         return result;
+    }
+
+    /**
+     * The cache inside its real caller. The tests above drive it through hand-written copies of the
+     * head of {@link Palette#addBlockPalette}, which cannot notice a later change to that reader;
+     * these go through {@link Palette#readFromStoragePersistent} itself, so they can. Needs the block
+     * registries, hence the fixture.
+     */
+    @Nested
+    @ExtendWith(GameMockExtension.class)
+    class ThroughPalette {
+
+        @Test
+        void aWarmCacheReadsTheSameSectionAsAColdOne() {
+            byte[] section = writeSection();
+
+            List<Integer> coldHashes = new ArrayList<>();
+            Palette<BlockState> cold = new Palette<>(BlockAir.STATE);
+            cold.readFromStoragePersistent(Unpooled.wrappedBuffer(section), recording(coldHashes));
+            int stored = PaletteEntryHashCache.size();
+            assertTrue(stored > 0, "reading a section must fill the cache");
+
+            List<Integer> warmHashes = new ArrayList<>();
+            Palette<BlockState> warm = new Palette<>(BlockAir.STATE);
+            warm.readFromStoragePersistent(Unpooled.wrappedBuffer(section), recording(warmHashes));
+
+            assertEquals(coldHashes, warmHashes, "a hit must resolve the same block state hashes");
+            assertEquals(stored, PaletteEntryHashCache.size(), "a second read must add nothing");
+            for (int i = 0; i < ChunkSection.SIZE; i++) {
+                assertEquals(cold.get(i), warm.get(i), "block at " + i);
+            }
+        }
+
+        @Test
+        void aColdCacheReadsTheSameSectionAsAWarmOne() {
+            byte[] section = writeSection();
+
+            Palette<BlockState> warm = new Palette<>(BlockAir.STATE);
+            warm.readFromStoragePersistent(Unpooled.wrappedBuffer(section), recording(new ArrayList<>()));
+            warm.readFromStoragePersistent(Unpooled.wrappedBuffer(section), recording(new ArrayList<>()));
+
+            PaletteEntryHashCache.clear();
+            Palette<BlockState> cold = new Palette<>(BlockAir.STATE);
+            cold.readFromStoragePersistent(Unpooled.wrappedBuffer(section), recording(new ArrayList<>()));
+
+            for (int i = 0; i < ChunkSection.SIZE; i++) {
+                assertEquals(warm.get(i), cold.get(i), "block at " + i);
+            }
+        }
+
+        /** A section of repeated states, serialised the way the chunk writer does. */
+        private byte[] writeSection() {
+            BlockState[] states = {
+                    Block.get(BlockID.STONE).getBlockState(),
+                    Block.get(BlockID.DIRT).getBlockState(),
+                    Block.get(BlockID.OAK_LOG).getBlockState(),
+                    Block.get(BlockID.GRAVEL).getBlockState(),
+                    Block.get(BlockID.BEDROCK).getBlockState(),
+            };
+            Palette<BlockState> source = new Palette<>(states[0]);
+            for (int i = 0; i < ChunkSection.SIZE; i++) source.set(i, states[i % states.length]);
+
+            ByteBuf buf = Unpooled.buffer();
+            source.writeToStoragePersistent(buf, BlockState::getBlockStateTag);
+            byte[] bytes = new byte[buf.readableBytes()];
+            buf.getBytes(buf.readerIndex(), bytes);
+            return bytes;
+        }
+
+        /** The deserializer the chunk loader uses, recording every hash it is asked for. */
+        private RuntimeDataDeserializer<BlockState> recording(List<Integer> hashes) {
+            return hash -> {
+                hashes.add(hash);
+                BlockState state = Registries.BLOCKSTATE.get(hash);
+                return state == null ? BlockUnknown.PROPERTIES.getDefaultState() : state;
+            };
+        }
     }
 
     private static int indexOf(byte[] haystack, byte[] needle) {

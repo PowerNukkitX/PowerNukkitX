@@ -1,6 +1,7 @@
 package org.powernukkitx.level.format.palette;
 
 import io.netty.buffer.ByteBuf;
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Arrays;
@@ -12,59 +13,75 @@ import java.util.concurrent.atomic.AtomicLong;
  * bytes, so a repeated entry skips the NBT parse. Thread-safe; an entry is remembered only when the
  * skip-only scan ends exactly where the real NBT reader stopped, otherwise the normal path is taken.
  */
-final class PaletteEntryHashCache {
+@ApiStatus.Internal
+public final class PaletteEntryHashCache {
     static final int MAX_ENTRY_BYTES = 512;
-    /** Heap budget for stored entries; once spent, entries are read normally instead of evicting. */
-    static final long MAX_BYTES = 2L * 1024 * 1024;
+    /**
+     * Heap budget for stored entries; once spent, entries are read normally instead of evicting.
+     * Sized to hold every block state of a release (~3MB) plus room for custom and outdated ones.
+     */
+    public static final long MAX_BYTES = 8L * 1024 * 1024;
     /** Heap cost of one entry besides its bytes: key, value, map node, table slot, array header. */
     static final int ENTRY_OVERHEAD = 112;
     private static final int MAX_DEPTH = 16;
     private static final ConcurrentHashMap<Probe, Entry> CACHE = new ConcurrentHashMap<>();
     private static final AtomicLong USED_BYTES = new AtomicLong();
+    /** Reused per reading thread so a lookup allocates nothing; see {@link Probe}. */
+    private static final ThreadLocal<Probe> SCRATCH = ThreadLocal.withInitial(Probe::new);
 
-    record Entry(int storedVersion, int blockRuntimeId) {
+    public record Entry(int storedVersion, int blockRuntimeId) {
     }
 
     private PaletteEntryHashCache() {
     }
 
-    /** @return a probe for the entry at the reader index, or {@code null} if it cannot be cached */
-    static @Nullable Probe probe(ByteBuf buf) {
+    /**
+     * @return a probe for the entry at the reader index, or {@code null} if it cannot be cached. The
+     * probe belongs to the calling thread and stays valid until that thread probes again, so it must
+     * be passed to {@link #lookup} and {@link #remember} before any other entry is probed.
+     */
+    public static @Nullable Probe probe(ByteBuf buf) {
         final int start = buf.readerIndex();
         final int end = scanTagEnd(buf, start);
-        if (end < 0 || end - start > MAX_ENTRY_BYTES) return null;
-        return new Probe(buf, start, end);
+        if (end < 0) return null;
+        final Probe probe = SCRATCH.get();
+        probe.reset(buf, start, end);
+        return probe;
     }
 
     /** On a hit the reader index is moved past the entry; on a miss the buffer is left untouched. */
-    static @Nullable Entry lookup(Probe probe, ByteBuf buf) {
+    public static @Nullable Entry lookup(Probe probe, ByteBuf buf) {
         final Entry entry = CACHE.get(probe);
         if (entry != null) buf.readerIndex(probe.end);
         return entry;
     }
 
-    static void remember(Probe probe, int readerEnd, int storedVersion, int blockRuntimeId) {
+    public static void remember(Probe probe, int readerEnd, int storedVersion, int blockRuntimeId) {
         if (probe.end != readerEnd) return;
-        final long cost = probe.bytes.length + ENTRY_OVERHEAD;
+        final long cost = probe.length + ENTRY_OVERHEAD;
         if (USED_BYTES.get() + cost > MAX_BYTES) return;
         if (USED_BYTES.addAndGet(cost) > MAX_BYTES) {
             USED_BYTES.addAndGet(-cost);
             return;
         }
-        if (CACHE.putIfAbsent(probe, new Entry(storedVersion, blockRuntimeId)) != null) {
+        if (CACHE.putIfAbsent(probe.toKey(), new Entry(storedVersion, blockRuntimeId)) != null) {
             USED_BYTES.addAndGet(-cost);
         }
     }
 
-    static long usedBytes() {
+    public static long usedBytes() {
         return USED_BYTES.get();
     }
 
-    static int size() {
+    public static int size() {
         return CACHE.size();
     }
 
-    static synchronized void clear() {
+    /**
+     * Drops every stored entry. Not atomic against concurrent reads: it is meant for tests and
+     * benchmarks that start from an empty cache, not for use while palettes are being read.
+     */
+    public static void clear() {
         CACHE.clear();
         USED_BYTES.set(0);
     }
@@ -129,22 +146,64 @@ final class PaletteEntryHashCache {
         return end <= limit ? (int) end : -1;
     }
 
-    /** Copy of an entry's stored bytes and its end index; keeps no reference to the source buffer. */
-    static final class Probe {
-        private final byte[] bytes;
-        private final int hash;
-        private final int end;
+    /**
+     * Identity of one stored entry, in two shapes that hash and compare alike.
+     * <p>
+     * A probe handed out by {@link #probe(ByteBuf)} is the calling thread's reusable scratch: it
+     * points at the bytes still sitting in the source buffer, so looking an entry up reads the buffer
+     * in place and copies nothing. {@link #remember} turns it into a stored key, which owns a copy of
+     * the bytes and keeps no reference to the buffer.
+     */
+    public static final class Probe {
+        /** Set on a stored key, {@code null} on a thread's scratch probe. */
+        private byte @Nullable [] bytes;
+        /** Set on a scratch probe, {@code null} on a stored key; only read within [start, end). */
+        private @Nullable ByteBuf buf;
+        private int start;
+        private int end;
+        private int length;
+        private int hash;
 
-        private Probe(ByteBuf buf, int start, int end) {
+        private Probe() {
+        }
+
+        private Probe(Probe scratch) {
+            this.bytes = new byte[scratch.length];
+            scratch.buf.getBytes(scratch.start, this.bytes);
+            this.length = scratch.length;
+            this.end = scratch.end;
+            this.hash = scratch.hash;
+        }
+
+        private void reset(ByteBuf buf, int start, int end) {
+            this.buf = buf;
+            this.bytes = null;
+            this.start = start;
             this.end = end;
-            this.bytes = new byte[end - start];
-            buf.getBytes(start, this.bytes);
-            this.hash = Arrays.hashCode(this.bytes);
+            this.length = end - start;
+            // Must match Arrays.hashCode(byte[]) so a scratch probe finds its stored key.
+            int h = 1;
+            for (int i = start; i < end; i++) h = 31 * h + buf.getByte(i);
+            this.hash = h;
+        }
+
+        private Probe toKey() {
+            return bytes != null ? this : new Probe(this);
+        }
+
+        private byte byteAt(int index) {
+            return bytes != null ? bytes[index] : buf.getByte(start + index);
         }
 
         @Override
         public boolean equals(Object o) {
-            return o instanceof Probe other && other.hash == hash && Arrays.equals(other.bytes, bytes);
+            if (this == o) return true;
+            if (!(o instanceof Probe other) || other.hash != hash || other.length != length) return false;
+            if (bytes != null && other.bytes != null) return Arrays.equals(bytes, other.bytes);
+            for (int i = 0; i < length; i++) {
+                if (byteAt(i) != other.byteAt(i)) return false;
+            }
+            return true;
         }
 
         @Override

@@ -1,4 +1,4 @@
-package org.powernukkitx.level.format.palette;
+package jmh;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -13,6 +13,7 @@ import org.cloudburstmc.nbt.NbtMap;
 import org.cloudburstmc.nbt.NbtMapBuilder;
 import org.cloudburstmc.nbt.NbtUtils;
 import org.openjdk.jmh.annotations.*;
+import org.powernukkitx.level.format.palette.PaletteEntryHashCache;
 import org.powernukkitx.utils.HashUtils;
 
 import java.io.ByteArrayOutputStream;
@@ -126,24 +127,25 @@ public class PaletteEntryHashCacheBenchmark {
     /** The head of addBlockPalette with the cache. */
     private static int readAfter(ByteBuf byteBuf) throws IOException {
         byteBuf.markReaderIndex();
+        PaletteEntryHashCache.Probe cacheProbe = PaletteEntryHashCache.probe(byteBuf);
+        PaletteEntryHashCache.Entry cached = cacheProbe == null ? null : PaletteEntryHashCache.lookup(cacheProbe, byteBuf);
+        if (cached != null) {
+            return cached.storedVersion() ^ cached.blockRuntimeId();
+        }
+        int storedVersion;
+        int blockRuntimeId;
         try (ByteBufInputStream inputStream = new ByteBufInputStream(byteBuf);
              NBTInputStream nbtInputStream = NbtUtils.createReaderLE(inputStream)) {
-            PaletteEntryHashCache.Probe cacheProbe = PaletteEntryHashCache.probe(byteBuf);
-            PaletteEntryHashCache.Entry cached = cacheProbe == null ? null : PaletteEntryHashCache.lookup(cacheProbe, byteBuf);
-            if (cached != null) {
-                return cached.storedVersion() ^ cached.blockRuntimeId();
-            }
             NbtMap blockTag = (NbtMap) nbtInputStream.readTag();
-            int storedVersion = blockTag.getInt("version");
+            storedVersion = blockTag.getInt("version");
             NbtMapBuilder builder = blockTag.toBuilder();
             builder.remove("version");
-            blockTag = builder.build();
-            int blockRuntimeId = HashUtils.fnv1a_32_nbt(blockTag);
-            if (cacheProbe != null) {
-                PaletteEntryHashCache.remember(cacheProbe, byteBuf.readerIndex(), storedVersion, blockRuntimeId);
-            }
-            return storedVersion ^ blockRuntimeId;
+            blockRuntimeId = HashUtils.fnv1a_32_nbt(builder.build());
         }
+        if (cacheProbe != null) {
+            PaletteEntryHashCache.remember(cacheProbe, byteBuf.readerIndex(), storedVersion, blockRuntimeId);
+        }
+        return storedVersion ^ blockRuntimeId;
     }
 
     private static List<NbtMap> loadBlockStates() throws IOException {
