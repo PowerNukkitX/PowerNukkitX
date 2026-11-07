@@ -1,16 +1,16 @@
 package org.powernukkitx.camera;
 
 import com.google.common.base.Preconditions;
-import org.cloudburstmc.protocol.bedrock.data.camera.EasingType;
+import org.cloudburstmc.protocol.bedrock.data.camera.EasingFunction;
 
 /**
  * Defines camera progress along a spline at a specific time.
  *
  * @author Curse
  */
-public record CameraProgressKeyFrame(float timeSeconds, float alpha, EasingType easing) {
+public record CameraProgressKeyFrame(float timeSeconds, float alpha, EasingFunction easing) {
     public CameraProgressKeyFrame(float timeSeconds, float alpha) {
-        this(timeSeconds, alpha, EasingType.LINEAR);
+        this(timeSeconds, alpha, EasingFunction.LINEAR);
     }
 
     public CameraProgressKeyFrame {
