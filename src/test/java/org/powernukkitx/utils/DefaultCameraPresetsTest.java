@@ -4,7 +4,7 @@ import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import org.cloudburstmc.protocol.bedrock.codec.BedrockCodecHelper;
 import org.cloudburstmc.protocol.bedrock.data.camera.CameraPreset;
-import org.cloudburstmc.protocol.bedrock.data.camera.CameraSetInstruction;
+import org.cloudburstmc.protocol.bedrock.data.camera.instruction.CameraSetInstruction;
 import org.cloudburstmc.protocol.bedrock.packet.CameraInstructionPacket;
 import org.cloudburstmc.protocol.common.NamedDefinition;
 import org.cloudburstmc.protocol.common.util.OptionalBoolean;
@@ -52,10 +52,10 @@ class DefaultCameraPresetsTest {
         helper.setCameraPresetDefinitions(DefaultCameraPresets.getDefinitions());
 
         CameraInstructionPacket packet = new CameraInstructionPacket();
-        packet.setSetInstruction(CameraSetInstruction.builder()
-                .preset(DefaultCameraPresets.getDefinition(DefaultCameraPresets.FREE.getName()))
-                .defaultPreset(OptionalBoolean.of(true))
-                .build());
+        CameraSetInstruction set = new CameraSetInstruction();
+        set.setPreset(DefaultCameraPresets.getDefinition(DefaultCameraPresets.FREE.getName()));
+        set.setDefaultValue(OptionalBoolean.of(true));
+        packet.getCameraInstruction().setSet(set);
 
         ByteBuf buf = Unpooled.buffer();
         try {
