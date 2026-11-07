@@ -8,10 +8,14 @@ import org.powernukkitx.entity.ai.behaviorgroup.IBehaviorGroup;
 import org.powernukkitx.entity.ai.controller.LookController;
 import org.powernukkitx.entity.ai.controller.WalkController;
 import org.powernukkitx.entity.ai.evaluator.EntityCheckEvaluator;
+import org.powernukkitx.entity.ai.evaluator.MemoryCheckEmptyEvaluator;
+import org.powernukkitx.entity.ai.evaluator.MemoryCheckNotEmptyEvaluator;
 import org.powernukkitx.entity.ai.evaluator.RandomSoundEvaluator;
 import org.powernukkitx.entity.ai.executor.FlatRandomRoamExecutor;
 import org.powernukkitx.entity.ai.executor.MeleeAttackExecutor;
+import org.powernukkitx.entity.ai.executor.MoveToTargetExecutor;
 import org.powernukkitx.entity.ai.executor.PlaySoundExecutor;
+import org.powernukkitx.entity.ai.executor.RaiderCelebrationExecutor;
 import org.powernukkitx.entity.ai.memory.CoreMemoryTypes;
 import org.powernukkitx.entity.ai.memory.MemoryType;
 import org.powernukkitx.entity.ai.route.finder.impl.SimpleFlatAStarRouteFinder;
@@ -57,6 +61,8 @@ public class EntityVindicator extends EntityIllager {
     @Override
     public IBehaviorGroup requireBehaviorGroup() {
         return EntityAI.of(this)
+                .behavior(new RaiderCelebrationExecutor(Sound.MOB_VINDICATOR_CELEBRATE, 30 * 20, 20, 50, 40, 100))
+                        .when(entity -> getMemoryStorage().get(CoreMemoryTypes.CELEBRATING))
                 .behavior(new PlaySoundExecutor(Sound.MOB_VINDICATOR_IDLE, isBaby() ? 1.3f : 0.8f, isBaby() ? 1.7f : 1.2f, 1, 1))
                         .when(new RandomSoundEvaluator())
                 .behavior(new VindicatorMeleeAttackExecutor(CoreMemoryTypes.ATTACK_TARGET, 0.5f, 40, true, 30))
@@ -65,6 +71,10 @@ public class EntityVindicator extends EntityIllager {
                         .when(new EntityCheckEvaluator(CoreMemoryTypes.NEAREST_PLAYER))
                 .behavior(new VindicatorMeleeAttackExecutor(CoreMemoryTypes.NEAREST_SUITABLE_ATTACK_TARGET, 0.5f, 40, true, 30))
                         .when(new EntityCheckEvaluator(CoreMemoryTypes.NEAREST_SUITABLE_ATTACK_TARGET))
+                .behavior(new MoveToTargetExecutor(CoreMemoryTypes.RAID_TARGET, 0.5f, true))
+                        .when(all(new MemoryCheckNotEmptyEvaluator(CoreMemoryTypes.RAID_TARGET),
+                                new MemoryCheckEmptyEvaluator(CoreMemoryTypes.ATTACK_TARGET)))
+                        .alongsidePrevious()
                 .behavior(new FlatRandomRoamExecutor(0.5f, 12, 100, false, -1, true, 10))
                 .sensors(new NearestTargetEntitySensor<>(0, 16, 20,
                                 List.of(CoreMemoryTypes.NEAREST_SUITABLE_ATTACK_TARGET), this::attackTarget),
@@ -148,6 +158,7 @@ public class EntityVindicator extends EntityIllager {
             }
         }
 
+        drops.addAll(Arrays.asList(raidDrops(weapon)));
         return drops.toArray(Item.EMPTY_ARRAY);
     }
 
