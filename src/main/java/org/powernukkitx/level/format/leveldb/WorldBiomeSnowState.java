@@ -34,7 +34,9 @@ final class WorldBiomeSnowState {
         return snowAccumulation.get(biomeId);
     }
 
-    synchronized void tick(float previousRainLevel, float currentRainLevel) {
+    synchronized boolean tick(float previousRainLevel, float currentRainLevel) {
+        boolean changed = false;
+
         for (int biomeId : biomeIds) {
             var registeredBiome = Registries.BIOME.get(biomeId);
             if (registeredBiome == null) continue;
@@ -48,6 +50,7 @@ final class WorldBiomeSnowState {
             float downfall = definition.getDownfall();
             float snow = snowAccumulation.get(biomeId);
             float foliage = foliageSnow.get(biomeId);
+            int previousSnow = (int) (snow * 8.0f);
 
             if (currentRainLevel > 0.2f) {
                 if (temperature <= 0.15f) {
@@ -63,12 +66,13 @@ final class WorldBiomeSnowState {
                 foliage -= 0.002f;
             }
 
-            snowAccumulation.put(
-                    biomeId,
-                    Math.max(climate.getSnowAccumulationMin(), Math.min(BiomeState.getEffectiveSnowAccumulationMax(climate), snow))
-            );
+            snow = Math.max(climate.getSnowAccumulationMin(), Math.min(BiomeState.getEffectiveSnowAccumulationMax(climate), snow));
+            snowAccumulation.put(biomeId, snow);
             foliageSnow.put(biomeId, Math.max(0.0f, Math.min(1.0f, foliage)));
+            changed |= previousSnow != (int) (snow * 8.0f);
         }
+
+        return changed;
     }
 
     synchronized NbtMap createNbt() {

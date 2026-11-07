@@ -783,7 +783,7 @@ public class Chunk implements IChunk {
 
             section.setBlockState(x, localY, z, blockstate, layer, oldState);
 
-            if (oldState != blockstate) {
+            if (oldState != blockstate && ChunkRainHeightMap.isCached(this, x, z) && (ChunkRainHeightMap.obstructsRain(blockstate) != ChunkRainHeightMap.obstructsRain(oldState))) {
                 ChunkRainHeightMap.invalidateAfterBlockChange(this, x, y, z);
             }
 
@@ -828,7 +828,7 @@ public class Chunk implements IChunk {
 
             section.setBlockState(x, localY, z, blockstate, layer, oldState);
 
-            if (oldState != blockstate) {
+            if (oldState != blockstate && ChunkRainHeightMap.isCached(this, x, z) && (ChunkRainHeightMap.obstructsRain(blockstate) != ChunkRainHeightMap.obstructsRain(oldState))) {
                 ChunkRainHeightMap.invalidateAfterBlockChange(this, x, y, z);
             }
 

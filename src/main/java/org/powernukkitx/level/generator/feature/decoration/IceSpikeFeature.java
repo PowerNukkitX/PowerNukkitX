@@ -1,7 +1,6 @@
 package org.powernukkitx.level.generator.feature.decoration;
 
 import org.powernukkitx.block.BlockPackedIce;
-import org.powernukkitx.block.BlockSnowLayer;
 import org.powernukkitx.block.BlockState;
 import org.powernukkitx.level.Level;
 import org.powernukkitx.level.biome.BiomeID;
@@ -23,7 +22,6 @@ public class IceSpikeFeature extends GenerateFeature {
     public static final String NAME = "minecraft:ice_spike_feature";
 
     private static final BlockState STATE_SPIKE = BlockPackedIce.PROPERTIES.getDefaultState();
-    private static final BlockState STATE_SNOW_LAYER = BlockSnowLayer.PROPERTIES.getDefaultState();
 
     @Override
     public void apply(ChunkGenerateContext context) {
@@ -121,28 +119,7 @@ public class IceSpikeFeature extends GenerateFeature {
                     }
                 }
             }
-
-            int snowRadius = Math.max(2, width + 2);
-            int topY = originY + height + 1;
-            int bottomY = Math.max(level.getMinHeight() + 1, originY - 2);
-            for (int x = originX - snowRadius; x <= originX + snowRadius; x++) {
-                for (int z = originZ - snowRadius; z <= originZ + snowRadius; z++) {
-                    for (int y = topY; y >= bottomY; y--) {
-                        String here = manager.getBlockIfCachedOrLoaded(x, y, z).getId();
-                        if (here.equals(PACKED_ICE)) {
-                            String above = manager.getBlockIfCachedOrLoaded(x, y + 1, z).getId();
-                            if (above.equals(AIR)) {
-                                manager.setBlockStateAt(x, y + 1, z, STATE_SNOW_LAYER);
-                            }
-                            break;
-                        } else if (!here.equals(AIR) && !here.equals(SNOW_LAYER)) {
-                            break;
-                        }
-                    }
-                }
-            }
         }
-
         queueObject(chunk, manager);
     }
 
