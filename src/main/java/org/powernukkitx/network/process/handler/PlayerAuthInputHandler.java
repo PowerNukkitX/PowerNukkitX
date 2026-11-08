@@ -299,7 +299,7 @@ public class PlayerAuthInputHandler implements PacketHandler<PlayerAuthInputPack
 
         Long clientPredictedVehicle = pk.getClientPredictedVehicle();
         if (clientPredictedVehicle == null || clientPredictedVehicle == 0L) return;
-        if (clientPredictedVehicle.longValue() != vehicle.runtimeId()) return;
+        if (clientPredictedVehicle.longValue() != vehicle.uniqueIdLong()) return;
 
         Vector3f pos = Vector3f.fromNetwork(pk.getPosition());
 
