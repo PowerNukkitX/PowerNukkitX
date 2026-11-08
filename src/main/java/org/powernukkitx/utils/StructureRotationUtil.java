@@ -143,6 +143,14 @@ public class StructureRotationUtil {
                 meta = ((meta << 1) | (meta >> 3)) & 0xf;
                 var rotated = VINE_DIRECTION_BITS.createValue(meta);
                 states.set(idx, rotated);
+            } else if (type == CONNECTION_NORTH) {
+                states.set(idx, CONNECTION_NORTH.createValue(state.getPropertyValue(CONNECTION_WEST)));
+            } else if (type == CONNECTION_EAST) {
+                states.set(idx, CONNECTION_EAST.createValue(state.getPropertyValue(CONNECTION_NORTH)));
+            } else if (type == CONNECTION_SOUTH) {
+                states.set(idx, CONNECTION_SOUTH.createValue(state.getPropertyValue(CONNECTION_EAST)));
+            } else if (type == CONNECTION_WEST) {
+                states.set(idx, CONNECTION_WEST.createValue(state.getPropertyValue(CONNECTION_SOUTH)));
             } else {
                 if (rotatedWallConnections != null) {
                     WallConnectionType rotatedConnection = getRotatedWallConnection(type, rotatedWallConnections);
@@ -321,6 +329,10 @@ public class StructureRotationUtil {
                 states.set(idx, VINE_DIRECTION_BITS.createValue(mirrored));
             } else if (type == DOOR_HINGE_BIT) {
                 states.set(idx, DOOR_HINGE_BIT.createValue(!state.getPropertyValue(DOOR_HINGE_BIT)));
+            } else if (type == CONNECTION_EAST) {
+                states.set(idx, CONNECTION_EAST.createValue(state.getPropertyValue(CONNECTION_WEST)));
+            } else if (type == CONNECTION_WEST) {
+                states.set(idx, CONNECTION_WEST.createValue(state.getPropertyValue(CONNECTION_EAST)));
             } else {
                 if (mirroredWallConnections != null) {
                     WallConnectionType mirroredConnection = getRotatedWallConnection(type, mirroredWallConnections);
