@@ -6,7 +6,7 @@ import org.powernukkitx.block.definition.BlockDefinition;
 import org.jetbrains.annotations.NotNull;
 
 public class BlockBlueIce extends BlockPackedIce {
-    public static final BlockProperties PROPERTIES = new BlockProperties(BLUE_ICE);
+    public static final BlockProperties PROPERTIES = new BlockProperties(BLUE_ICE, PrecipitationBehavior.OBSTRUCT_RAIN);
     public static final BlockDefinition DEFINITION = BlockPackedIce.DEFINITION.toBuilder()
             .hardness(2.8f)
             .resistance(14f)

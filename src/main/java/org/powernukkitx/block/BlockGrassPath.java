@@ -67,4 +67,8 @@ public class BlockGrassPath extends BlockGrassBlock {
         return false;
     }
 
+    @Override
+    public boolean isSolid(BlockFace side) {
+        return side == BlockFace.DOWN;
     }
+}

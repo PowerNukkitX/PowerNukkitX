@@ -13,7 +13,7 @@ import org.jetbrains.annotations.NotNull;
  * @author MagicDroidX (Nukkit Project)
  */
 public class BlockIce extends BlockTransparent {
-    public static final BlockProperties PROPERTIES = new BlockProperties(ICE);
+    public static final BlockProperties PROPERTIES = new BlockProperties(ICE, PrecipitationBehavior.OBSTRUCT_RAIN);
     public static final BlockDefinition DEFINITION = TRANSPARENT.toBuilder()
             .hardness(0.5f)
             .resistance(2.5f)
@@ -47,12 +47,12 @@ public class BlockIce extends BlockTransparent {
 
     @Override
     public boolean onBreak(Item item) {
-        if (level.getDimension() == Level.DIMENSION_NETHER 
-                || item.getEnchantmentLevel(Enchantment.ID_SILK_TOUCH) > 0 
+        if (level.getDimension() == Level.DIMENSION_NETHER
+                || item.getEnchantmentLevel(Enchantment.ID_SILK_TOUCH) > 0
                 || down().isAir()) {
             return super.onBreak(item);
         }
-        
+
         return level.setBlock(this, Block.get(BlockID.WATER), true);
     }
 
