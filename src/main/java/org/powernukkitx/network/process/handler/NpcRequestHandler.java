@@ -25,6 +25,9 @@ public class NpcRequestHandler implements PacketHandler<NpcRequestPacket> {
         if (!player.spawned || !player.isAlive()) {
             return;
         }
+        if (isEditRequest(packet.getRequestType()) && !(player.isOp() && player.isCreative())){
+            return;
+        }
         if (packet.getSceneName().isEmpty() && player.level.getEntity(packet.getNpcRuntimeID()) instanceof EntityNpc npcEntity) {
             if (!player.canInteract(npcEntity, 12)) {
                 return;
@@ -70,5 +73,12 @@ public class NpcRequestHandler implements PacketHandler<NpcRequestPacket> {
                 response.getClickedButton().getNextDialog().send(player);
             }
         }
+    }
+
+    private static boolean isEditRequest(NpcRequestPacket.RequestType requestType) {
+        return requestType == NpcRequestPacket.RequestType.SET_ACTIONS
+            || requestType == NpcRequestPacket.RequestType.SET_INTERACT_TEXT
+            || requestType == NpcRequestPacket.RequestType.SET_NAME
+            || requestType == NpcRequestPacket.RequestType.SET_SKIN;
     }
 }
