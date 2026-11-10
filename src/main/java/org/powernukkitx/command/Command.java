@@ -34,6 +34,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 /**
@@ -619,19 +620,43 @@ public abstract class Command {
      * Resolves an online player from {@code arg} for command targeting, honoring nick privacy.
      * <p>
      * Matches against display names first so nicked players are targeted by their visible name.
-     * Only a sender holding {@link #TARGET_REAL_NAME_PERMISSION} may additionally fall back to
-     * matching the real login name, preventing non-admins from deanonymizing nicks.
+     * Only a sender holding {@link #TARGET_REAL_NAME_PERMISSION} may additionally fall back to,
+     * in order, the real login name, the player's {@link Player#getUniqueId() UUID} in its
+     * canonical 36-character form, and the player's {@link Player#getXUID() XUID}. All three
+     * identify the account behind a nick, so they are gated behind the same permission to
+     * prevent non-admins from deanonymizing nicks.
      *
      * @param sender the command sender resolving the target (may be null)
-     * @param arg    the name argument to resolve
+     * @param arg    the name, UUID or XUID argument to resolve
      * @return the matched online player, or null if none matched
      */
     public static Player resolveTargetPlayer(CommandSender sender, String arg) {
         Player player = Server.getInstance().getPlayerByDisplayName(arg);
         if (player == null && sender != null && sender.hasPermission(TARGET_REAL_NAME_PERMISSION)) {
             player = Server.getInstance().getPlayer(arg);
+            if (player == null){
+                player = findPlayerByIdentifier(arg);
+            }
         }
         return player;
+    }
+
+    private static @Nullable Player findPlayerByIdentifier(String arg) {
+        if (arg.length() == 36){
+            try {
+                return Server.getInstance().getPlayer(UUID.fromString(arg)).orElse(null);
+            } catch (IllegalArgumentException e) {
+                //Try it as an XUID
+            }
+        }
+
+        for (Player online : Server.getInstance().getOnlinePlayers().values()){
+            if (arg.equals(online.getXUID())){
+                return online;
+            }
+        }
+
+        return null;
     }
 
     /**

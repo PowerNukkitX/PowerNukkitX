@@ -14,14 +14,14 @@ import java.util.List;
  * Parses a command parameter as a {@code List<Entity>} value for PowerNukkitX command trees.
  * <p>
  * This node is used for all command parameters of type {@link org.powernukkitx.command.data.CommandParamType#TARGET TARGET}
- * if no custom {@link IParamNode} is specified. It supports entity selectors, player names, and will be extended to support UUID or xuid.
- * <p>
+ * if no custom {@link IParamNode} is specified. It supports entity selectors, player names, and player UUIDs or XUIDs.
+ * * <p>
  * <b>Features:</b>
  * <ul>
  *   <li>Parses entity selectors (e.g., @a, @e[type=player], etc.) using {@link EntitySelectorAPI}.</li>
- *   <li>Supports direct player name lookup as a fallback.</li>
+ *   <li>Supports direct player name lookup as a fallback, plus player UUID and XUID lookup for senders allowed to
+ *   target real names (see {@link Command#resolveTargetPlayer(CommandSender, String)}).</li>
  *   <li>Returns a list of matched entities or triggers an error if invalid.</li>
- *   <li>TODO: Add support for UUID or xuid.</li>
  * </ul>
  * <p>
  * <b>Usage:</b>
@@ -48,7 +48,6 @@ public class EntitiesNode extends TargetNode<Entity> {
         fill(arg, paramList.getParamTree().getSender());
     }
 
-    // TODO: Support UUID or xuid
     @Override
     public void fill(String arg, CommandSender sender) {
         List<Entity> entities;
