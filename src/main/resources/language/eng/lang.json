@@ -175,6 +175,7 @@
   "pnx.settings.network.maxdecompresssize": "Maximum number of bytes the server can decompress",
   "pnx.settings.network.query": "Whether to enable query",
   "pnx.settings.network.logintime": "Login time",
+  "pnx.settings.network.logintimeout": "Seconds a new connection has to send its login before it is closed, so a client that connects and then stays silent cannot hold a session open. Time spent waiting in the login queue does not count. 0 removes the limit",
   "pnx.settings.network.maxpendinglogins": "Maximum number of logins verified at the same time. Further logins wait for a free slot, see maxQueuedLogins. 0 picks a value from the CPU count",
   "pnx.settings.network.maxpendingloginsperaddress": "Maximum number of logins from one public IP address verified at the same time, so a single host cannot take every login slot. Loopback and private network addresses, such as a proxy in front of the server, are not limited. 0 removes the limit",
   "pnx.settings.network.maxqueuedlogins": "Maximum number of logins waiting for one of the maxPendingLogins slots. Logins beyond that are refused with a server full message. 0 uses eight times maxPendingLogins",
