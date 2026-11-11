@@ -1,5 +1,6 @@
 package org.powernukkitx.scheduler;
 
+import lombok.extern.slf4j.Slf4j;
 import org.powernukkitx.block.Block;
 import org.powernukkitx.block.BlockState;
 import org.powernukkitx.level.Level;
@@ -13,6 +14,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+@Slf4j
 public class BlockUpdateScheduler {
     private static final int MAX_UPDATES_PER_TICK = 100;
     private static final int LIVE_AVAILABILITY_RADIUS = 8;
@@ -70,7 +72,11 @@ public class BlockUpdateScheduler {
         }
 
         if (!block.isTickingDisabled()) {
-            block.onUpdate(Level.BLOCK_UPDATE_SCHEDULED);
+            try {
+                block.onUpdate(Level.BLOCK_UPDATE_SCHEDULED);
+            } catch (Exception | StackOverflowError e){
+                log.error("Error in scheduled update of block {} at {}, {}, {} in level {}", block.getId(), update.x, update.y, update.z, level.getName(), e);
+            }
         }
     }
 

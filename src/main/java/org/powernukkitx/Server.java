@@ -1299,8 +1299,12 @@ public class Server {
     private void checkTickUpdates(int currentTick) {
         boolean tickPlayers = !this.levelThreadMode && getSettings().levelSettings().alwaysTickPlayers();
         for (Player player : this.players.values()) {
-            if (tickPlayers) player.onUpdate(currentTick);
-            player.checkNetwork();
+          try {
+              if (tickPlayers) player.onUpdate(currentTick);
+              player.checkNetwork();
+          } catch (Exception | StackOverflowError e){
+              log.error("Error ticking player {}", player.getName(), e);
+          }
         }
 
         int baseTickRate = getSettings().levelSettings().baseTickRate();
