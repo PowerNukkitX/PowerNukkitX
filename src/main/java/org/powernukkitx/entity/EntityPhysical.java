@@ -526,6 +526,15 @@ public abstract class EntityPhysical extends EntityCreature implements EntityAsy
     protected void syncRiderLocationFromInput(Player rider, PlayerAuthInputPacket pk) {
         org.cloudburstmc.math.vector.Vector3f pos = pk.getPosition();
 
+        final double maxDistance = 10.0d;
+        double offsetX = pos.getX() - this.x;
+        double offsetY = pos.getY() - this.y;
+        double offsetZ = pos.getZ() - this.z;
+
+        if (offsetX * offsetX + offsetY * offsetY + offsetZ * offsetZ > maxDistance * maxDistance) {
+            return;
+        }
+
         rider.applyClientLocationFromAuthInput(new Location(
                 pos.getX(),
                 pos.getY(),
@@ -917,8 +926,10 @@ public abstract class EntityPhysical extends EntityCreature implements EntityAsy
         applyAirRideRotation(pk.getInteractRotation().getY());
 
         Vector2f input = Vector2f.fromNetwork(pk.getRawMoveVector());
-        float forward = input.y;
-        float strafe = input.x;
+        // The client sends -1..1; the motion is this times the speed, so a larger value
+        // makes the collision check scan every block along the way
+        float forward = Math.max(-1f, Math.min(1f, input.y));
+        float strafe = Math.max(-1f, Math.min(1f, input.x));
 
         float strafeSpeedModifier = this.getAirStrafeSpeedModifier();
         float backwardsMovementModifier = this.getAirBackwardsMovementModifier();
@@ -1018,8 +1029,10 @@ public abstract class EntityPhysical extends EntityCreature implements EntityAsy
 
         // Movement input
         Vector2f input = Vector2f.fromNetwork(pk.getRawMoveVector());
-        float forward = input.y;
-        float strafe = input.x;
+        // The client sends -1..1; the motion is this times the speed, so a larger value
+        // makes the collision check scan every block along the way
+        float forward = Math.max(-1f, Math.min(1f, input.y));
+        float strafe = Math.max(-1f, Math.min(1f, input.x));
 
         float strafeSpeedModifier = getAirStrafeSpeedModifier();
         float backwardsMovementModifier = getAirBackwardsMovementModifier();

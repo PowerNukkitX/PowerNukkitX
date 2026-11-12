@@ -46,6 +46,11 @@ public class PlayerAuthInputHandler implements PacketHandler<PlayerAuthInputPack
             return;
         }
 
+        if (isInvalid(packet.getMoveVector()) || isInvalid(packet.getRawMoveVector()) || isInvalid(packet.getInteractRotation())) {
+            log.debug("Player {} sent invalid input vectors (NaN or Infinite)", player.getName());
+            return;
+        }
+
         handleBlockActionsAndItemStackRequest(packet, holder, server, player);
 
         if (packet.getInputData().contains(PlayerAuthInputData.START_SPRINTING)) {
@@ -280,6 +285,10 @@ public class PlayerAuthInputHandler implements PacketHandler<PlayerAuthInputPack
             itemStackRequestPacket.getRequests().add(packet.getItemStackRequest());
             PacketHandlerRegistry.getPacketHandler(ItemStackRequestPacket.class).handle(itemStackRequestPacket, holder, server);
         }
+    }
+
+    private static boolean isInvalid(org.cloudburstmc.math.vector.Vector2f vector) {
+        return vector != null && (!Float.isFinite(vector.getX()) || !Float.isFinite(vector.getY()));
     }
 
     private static void syncMountedPlayerRotationFromInput(Player player, PlayerAuthInputPacket pk) {
