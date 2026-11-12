@@ -4,25 +4,25 @@ import org.powernukkitx.lang.BaseLang;
 import org.powernukkitx.utils.Utils;
 import lombok.extern.slf4j.Slf4j;
 import net.minecrell.terminalconsole.TerminalConsoleAppender;
-import org.jline.reader.LineReader;
-import org.jline.reader.LineReaderBuilder;
 import org.jline.terminal.Terminal;
 import org.jline.terminal.TerminalBuilder;
-import org.jline.reader.Candidate;
-import org.jline.reader.Completer;
-import org.jline.reader.ParsedLine;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.nio.charset.Charset;
 import java.util.*;
-import java.util.function.Consumer;
 
 /**
- * Interactive setup wizard for PowerNukkitX using JLine for better user experience.
- * Provides language selection and configuration options with navigation and auto-completion.
- * Implements AutoCloseable for proper resource management.
+ * First-run setup wizard for PowerNukkitX.
+ * <p>
+ * The flow is: language selection, license acceptance, then an offer to skip. When the user does not skip,
+ * seven questions are asked in turn and a recap lists every answer; entering the number of a setting in the
+ * recap asks that question again. When no person can answer (no console, CI), nothing is read and the
+ * defaults are used.
+ * <p>
+ * Not thread-safe; it runs on the main thread before the server is created.
  *
  * @author AzaleeX
  * @author xRookieFight
@@ -31,39 +31,62 @@ import java.util.function.Consumer;
  */
 @Slf4j
 public class SetupWizard implements AutoCloseable {
-    private final Terminal terminal;
-    private final boolean ownsTerminal;
-    private final LineReader reader;
+    private final WizardConsole console;
+    private final WizardEnvironment environment;
     private final Map<String, String> availableLanguages;
     private final WizardConfig wizardConfig = new WizardConfig();
     private final boolean interactive;
     private final boolean unicodeOutput;
     private boolean skipWizard = false;
     protected BaseLang baseLang;
-
-    private boolean motdProvidedByArg = false;
-    private boolean portProvidedByArg = false;
+    private List<WizardStep> steps = List.of();
+    private String localAddress;
+    private String externalAddress;
 
     public SetupWizard() throws IOException {
-        this.interactive = System.console() != null && !SetupWizardSupport.isAutomatedEnvironment();
-        this.unicodeOutput = supportsUnicodeOutput();
+        this(loadAvailableLanguages());
+    }
 
+    private SetupWizard(Map<String, String> languages) throws IOException {
+        this(openConsole(languages.keySet()), detectEnvironment(languages));
+    }
+
+    SetupWizard(WizardConsole console, WizardEnvironment environment) {
+        this.console = console;
+        this.environment = environment;
+        this.availableLanguages = environment.languages();
+        this.interactive = environment.interactive();
+        this.unicodeOutput = environment.unicodeOutput();
+    }
+
+    private static WizardConsole openConsole(Set<String> languageCodes) throws IOException {
         Terminal sharedTerminal = TerminalConsoleAppender.getTerminal();
-        this.ownsTerminal = sharedTerminal == null;
-        this.terminal = sharedTerminal != null ? sharedTerminal : TerminalBuilder.builder()
+        Terminal terminal = sharedTerminal != null ? sharedTerminal : TerminalBuilder.builder()
                 .system(true)
                 .jna(false)
                 .dumb(isDumbTerminal())
                 .build();
+        return new JLineWizardConsole(terminal, sharedTerminal == null, languageCodes);
+    }
 
-        this.availableLanguages = loadAvailableLanguages();
-        this.reader = LineReaderBuilder.builder()
-                .terminal(terminal)
-                .completer(new LanguageCompleter(availableLanguages.keySet()))
-                .option(LineReader.Option.CASE_INSENSITIVE, true)
-                .option(LineReader.Option.AUTO_LIST, true)
-                .option(LineReader.Option.LIST_PACKED, true)
-                .build();
+    private static WizardEnvironment detectEnvironment(Map<String, String> languages) {
+        return new WizardEnvironment(
+                System.console() != null && !SetupWizardSupport.isAutomatedEnvironment(),
+                supportsUnicodeOutput(),
+                languages,
+                BaseLang::new,
+                SetupWizard::lookupLocalAddress,
+                Utils::getExternalIP
+        );
+    }
+
+    private static String lookupLocalAddress() {
+        try {
+            return InetAddress.getLocalHost().getHostAddress();
+        } catch (UnknownHostException e) {
+            log.error("Error reading IP address", e);
+            return "unknown";
+        }
     }
 
     /**
@@ -71,9 +94,9 @@ public class SetupWizard implements AutoCloseable {
      *
      * @return Map of language codes to language names
      */
-    private Map<String, String> loadAvailableLanguages() {
+    private static Map<String, String> loadAvailableLanguages() {
         Map<String, String> languages = new LinkedHashMap<>();
-        try (InputStream languageList = getClass().getClassLoader().getResourceAsStream("language/language.list")) {
+        try (InputStream languageList = SetupWizard.class.getClassLoader().getResourceAsStream("language/language.list")) {
             if (languageList == null) {
                 throw new IllegalStateException("language/language.list is missing. If you are running a development version, make sure you have run 'git submodule update --init --recursive'.");
             }
@@ -112,45 +135,50 @@ public class SetupWizard implements AutoCloseable {
     public WizardConfig run(String predefinedLanguage, boolean forceSkip, boolean forceAcceptLicense, String serverName, Integer port) {
         try {
             String selectedLanguage = selectLanguage(predefinedLanguage);
+            console.disableCompletion();
             wizardConfig.setLanguage(selectedLanguage);
-            baseLang = new BaseLang(selectedLanguage);
+            baseLang = environment.langLoader().apply(selectedLanguage);
 
             if (!acceptLicense(forceAcceptLicense)) {
-                terminal.writer().println();
-                refuse(baseLang.tr("pnx.setupWizard.license.no_accept"));
+                console.println("");
                 refuse(baseLang.tr("pnx.setupWizard.license.terminating"));
-                terminal.writer().flush();
+                console.flush();
                 return wizardConfig;
             }
             wizardConfig.setLicenseAccepted(true);
 
             // Set server name and port if provided
-            if (serverName != null && !serverName.isEmpty()) {
+            boolean motdProvidedByArg = serverName != null && !serverName.isEmpty();
+            if (motdProvidedByArg) {
                 wizardConfig.setMotd(serverName);
-                motdProvidedByArg = true;
             }
-            if (port != null) {
+            boolean portProvidedByArg = port != null;
+            if (portProvidedByArg) {
                 wizardConfig.setPort(port);
-                portProvidedByArg = true;
             }
+            steps = buildSteps(motdProvidedByArg, portProvidedByArg);
 
             if (forceSkip) {
                 skipWizard = true;
-                terminal.writer().println();
-                terminal.writer().println(baseLang.tr("pnx.setupWizard.skipped"));
-                terminal.writer().flush();
+                console.println("");
+                console.println(baseLang.tr("pnx.setupWizard.skipped"));
+                console.flush();
             } else {
                 askSkipWizard();
 
                 if (!skipWizard) {
                     notice(baseLang.tr("pnx.setupWizard.modifyLater"));
-                    terminal.writer().flush();
+                    console.flush();
 
                     configureServerComplete();
                 }
             }
 
-            displaySummaryAndWaitForStart();
+            if (skipWizard) {
+                displaySummaryAndWaitForStart();
+            } else {
+                reviewAndWaitForStart();
+            }
 
             return wizardConfig;
         } catch (Exception e) {
@@ -167,24 +195,24 @@ public class SetupWizard implements AutoCloseable {
      * @return Selected language code
      */
     private String selectLanguage(String predefinedLanguage) {
-        terminal.writer().println();
-        terminal.writer().println(borderLine());
-        terminal.writer().println(centerText("PowerNukkitX Setup Wizard - Language Selection", 59));
-        terminal.writer().println(borderLine());
-        terminal.writer().println();
-        terminal.writer().println("Welcome! Please choose a language first!");
-        terminal.writer().println();
+        console.println("");
+        console.println(borderLine());
+        console.println(centerText("PowerNukkitX Setup Wizard - Language Selection", 59));
+        console.println(borderLine());
+        console.println("");
+        console.println("Welcome! Please choose a language first!");
+        console.println("");
 
         if (predefinedLanguage != null && !predefinedLanguage.isEmpty()) {
             String normalizedLanguage = SetupWizardSupport.normalizeLanguageCode(predefinedLanguage);
             if (validateLanguage(normalizedLanguage)) {
                 accept("Using predefined language: " + normalizedLanguage);
-                terminal.writer().flush();
+                console.flush();
                 return normalizedLanguage;
             } else {
                 refuse("Invalid predefined language: " + predefinedLanguage);
-                terminal.writer().println("  Please choose a valid language from the list.");
-                terminal.writer().flush();
+                console.println("  Please choose a valid language from the list.");
+                console.flush();
             }
         }
 
@@ -192,33 +220,33 @@ public class SetupWizard implements AutoCloseable {
         String defaultLanguage = languageList.isEmpty() ? "eng" : languageList.get(0).getKey();
         if (!interactive) {
             accept("Automated environment detected. Language selected: " + defaultLanguage);
-            terminal.writer().println();
-            terminal.writer().flush();
+            console.println("");
+            console.flush();
             return defaultLanguage;
         }
 
         notice("Enter a language code from the list below (press Enter for default).");
         for (Map.Entry<String, String> entry : languageList) {
-            terminal.writer().println("  [" + entry.getKey() + "] " + entry.getValue());
+            console.println("  [" + entry.getKey() + "] " + entry.getValue());
         }
-        terminal.writer().println();
+        console.println("");
 
         try {
             while (true) {
-            String input = SetupWizardSupport.normalizeLanguageCode(reader.readLine(promptText("Language code [" + defaultLanguage + "]: ")));
+                String input = SetupWizardSupport.normalizeLanguageCode(console.readLine(promptText("Language code [" + defaultLanguage + "]: ")));
                 if (input.isEmpty()) {
                     accept("Language selected: " + defaultLanguage + " (" + availableLanguages.get(defaultLanguage) + ")");
-                    terminal.writer().println();
-                    terminal.writer().flush();
+                    console.println("");
+                    console.flush();
                     return defaultLanguage;
                 } else if (validateLanguage(input)) {
                     accept("Language selected: " + input + " (" + availableLanguages.get(input) + ")");
-                    terminal.writer().println();
-                    terminal.writer().flush();
+                    console.println("");
+                    console.flush();
                     return input;
                 } else {
                     warn("Invalid input. Enter a valid language code from the list.");
-                    terminal.writer().flush();
+                    console.flush();
                 }
             }
         } catch (Exception e) {
@@ -236,397 +264,340 @@ public class SetupWizard implements AutoCloseable {
      */
     public boolean acceptLicense(boolean forceAccept) {
         if (forceAccept) {
-            terminal.writer().println();
-            terminal.writer().println("License automatically accepted by command line argument.");
-            terminal.writer().flush();
+            console.println("");
+            console.println(baseLang.tr("pnx.setupWizard.license.autoAccepted"));
+            console.flush();
             return true;
         }
         if (!interactive) {
-            terminal.writer().println();
-            warn("Automated environment detected. Continuing setup with default configuration.");
-            terminal.writer().flush();
+            console.println("");
+            warn(baseLang.tr("pnx.setupWizard.automated"));
+            console.flush();
             return true;
         }
-        terminal.writer().println();
-        terminal.writer().println(borderLine());
-        terminal.writer().println("          GNU Lesser General Public License v3.0");
-        terminal.writer().println(borderLine());
-        terminal.writer().println();
-        terminal.writer().println("PowerNukkitX is licensed under the GNU LGPL v3.0");
-        terminal.writer().println();
-        terminal.writer().println("This program is free software: you can redistribute it and/or modify");
-        terminal.writer().println("it under the terms of the GNU Lesser General Public License as published");
-        terminal.writer().println("by the Free Software Foundation, either version 3 of the License, or");
-        terminal.writer().println("(at your option) any later version.");
-        terminal.writer().println();
-        terminal.writer().println("This program is distributed in the hope that it will be useful,");
-        terminal.writer().println("but WITHOUT ANY WARRANTY; without even the implied warranty of");
-        terminal.writer().println("MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.");
-        terminal.writer().println();
-        terminal.writer().println("See the GNU Lesser General Public License for more details:");
-        terminal.writer().println("https://www.gnu.org/licenses/lgpl-3.0.html");
-        terminal.writer().println();
+        console.println("");
+        console.println(borderLine());
+        console.println("          GNU Lesser General Public License v3.0");
+        console.println(borderLine());
+        console.println("");
+        console.println("PowerNukkitX is licensed under the GNU LGPL v3.0");
+        console.println("");
+        console.println("This program is free software: you can redistribute it and/or modify");
+        console.println("it under the terms of the GNU Lesser General Public License as published");
+        console.println("by the Free Software Foundation, either version 3 of the License, or");
+        console.println("(at your option) any later version.");
+        console.println("");
+        console.println("This program is distributed in the hope that it will be useful,");
+        console.println("but WITHOUT ANY WARRANTY; without even the implied warranty of");
+        console.println("MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.");
+        console.println("");
+        console.println("See the GNU Lesser General Public License for more details:");
+        console.println("https://www.gnu.org/licenses/lgpl-3.0.html");
+        console.println("");
         warn(baseLang.tr("pnx.setupWizard.license.notice"));
-        terminal.writer().println();
-        terminal.writer().flush();
-        return askConfirmation(
-            baseLang.tr("pnx.setupWizard.license.question"),
-            baseLang.tr("pnx.setupWizard.license.accept"),
-            baseLang.tr("pnx.setupWizard.license.no_accept"),
-            baseLang.tr("pnx.setupWizard.invalid_input"),
-            false
-        );
+        console.println("");
+        console.flush();
+        boolean accepted = readYesNo(promptText(baseLang.tr("pnx.setupWizard.license.question")), false);
+        if (accepted) {
+            accept(baseLang.tr("pnx.setupWizard.license.accept"));
+        } else {
+            refuse(baseLang.tr("pnx.setupWizard.license.no_accept"));
+        }
+        console.flush();
+        return accepted;
     }
 
     /**
      * Handles the user confirmation for skipping the wizard.
      */
     private void askSkipWizard() {
-        terminal.writer().println();
-        terminal.writer().println(borderLine());
-        terminal.writer().println(centerText(baseLang.tr("pnx.setupWizard.category.additionnal", "Additional Setup Configuration"), 59));
-        terminal.writer().println(borderLine());
-        terminal.writer().println(baseLang.tr("pnx.setupWizard.skip_prompt"));
-        terminal.writer().println();
-        terminal.writer().flush();
+        console.println("");
+        console.println(borderLine());
+        console.println(centerText(baseLang.tr("pnx.setupWizard.category.additionnal", "Additional Setup Configuration"), 59));
+        console.println(borderLine());
+        console.println(baseLang.tr("pnx.setupWizard.skip_prompt"));
+        console.println("");
+        console.flush();
         if (!interactive) {
             skipWizard = true;
             accept(baseLang.tr("pnx.setupWizard.skip"));
-            terminal.writer().println();
-            terminal.writer().flush();
+            console.println("");
+            console.flush();
             return;
         }
-        handleUserInputLoop(
-                baseLang.tr("pnx.setupWizard.skip.question"),
-                new String[]{"y", "yes", "n", "no", ""},
-                input -> {
-                    if (input.equals("y") || input.equals("yes") || input.isEmpty()) {
-                        skipWizard = true;
-                        accept(baseLang.tr("pnx.setupWizard.skip"));
-                    } else {
-                        skipWizard = false;
-                        accept(baseLang.tr("pnx.setupWizard.noskip"));
-                    }
-                },
-                () -> warn(baseLang.tr("pnx.setupWizard.invalid_input")),
-                () -> {
-                    log.error("Error reading skip wizard input");
-                    skipWizard = true;
-                }
-        );
-
-        terminal.writer().println();
-        terminal.writer().flush();
+        skipWizard = readYesNo(promptText(baseLang.tr("pnx.setupWizard.skip.question")), true);
+        accept(baseLang.tr(skipWizard ? "pnx.setupWizard.skip" : "pnx.setupWizard.noskip"));
+        console.println("");
+        console.flush();
     }
 
     /**
      * Configures all server settings through interactive prompts in the correct order.
      */
     private void configureServerComplete() {
-        terminal.writer().println();
-        terminal.writer().println(borderLine());
-        terminal.writer().println(centerText(baseLang.tr("pnx.setupWizard.category.serverconfig", "Server Configuration"), 59));
-        terminal.writer().println(borderLine());
-        terminal.writer().println();
-        terminal.writer().flush();
+        console.println("");
+        console.println(borderLine());
+        console.println(centerText(baseLang.tr("pnx.setupWizard.category.serverconfig", "Server Configuration"), 59));
+        console.println(borderLine());
+        console.println("");
+        console.flush();
 
-        configureServerMotd();
-        configureServerPort();
-        configureGamemode();
-        configureMaxPlayers();
-        configureOperators();
-        configureWhitelist();
-        configureQuery();
-    }
-
-    /**
-     * Configures server MOTD.
-     */
-    private void configureServerMotd() {
-        if (motdProvidedByArg) {
-            accept(baseLang.tr("pnx.setupWizard.motd.accept", wizardConfig.getMotd()));
-            terminal.writer().println();
-            terminal.writer().flush();
-            return;
-        }
-        try {
-            String input = reader.readLine(promptText(baseLang.tr("pnx.setupWizard.motd.question"))).trim();
-            if (!input.isEmpty()) {
-                wizardConfig.setMotd(input);
-            }
-            accept(baseLang.tr("pnx.setupWizard.motd.accept", wizardConfig.getMotd()));
-            terminal.writer().println();
-            terminal.writer().flush();
-        } catch (Exception e) {
-            log.error("Error reading server MOTD", e);
+        for (int i = 0; i < steps.size(); i++) {
+            runStep(i, !steps.get(i).presetByArg());
         }
     }
 
     /**
-     * Configures server port.
+     * Prints the header of a step, asks its question when requested, then confirms the stored value.
+     *
+     * @param index zero-based position in {@link #steps}
+     * @param ask   false to keep the current value without prompting
      */
-    private void configureServerPort() {
-        if (portProvidedByArg) {
-            accept(baseLang.tr("pnx.setupWizard.port.accept", wizardConfig.getPort()));
-            terminal.writer().println();
-            terminal.writer().flush();
-            return;
+    private void runStep(int index, boolean ask) {
+        WizardStep step = steps.get(index);
+        console.println(separatorLine());
+        console.println(baseLang.tr("pnx.setupWizard.step.header",
+                String.valueOf(index + 1), String.valueOf(steps.size()), baseLang.tr(step.labelKey())));
+        if (ask) {
+            step.ask().run();
         }
-        terminal.writer().println(separatorLine());
-        while (true) {
-            try {
-                String input = reader.readLine(promptText(baseLang.tr("pnx.setupWizard.port.question"))).trim();
-                if (input.isEmpty()) {
-                    break; // Use default
-                }
-
-                wizardConfig.setPort(SetupWizardSupport.parsePortOrDefault(input, wizardConfig.getPort()));
-                break;
-            } catch (NumberFormatException e) {
-                refuse(baseLang.tr("pnx.setupWizard.port.error.number"));
-                terminal.writer().flush();
-            } catch (IllegalArgumentException e) {
-                refuse(baseLang.tr("pnx.setupWizard.port.invalid"));
-                terminal.writer().flush();
-            } catch (Exception e) {
-                log.error("Error reading server port", e);
-                break;
-            }
-        }
-        accept(baseLang.tr("pnx.setupWizard.port.accept", wizardConfig.getPort()));
-        terminal.writer().println();
-        terminal.writer().flush();
+        step.confirm().run();
+        console.println("");
+        console.flush();
     }
 
     /**
-     * Configures default gamemode.
+     * Builds the questions in the order they are asked.
+     *
+     * @param motdPreset whether the server name came from the command line
+     * @param portPreset whether the port came from the command line
      */
-    private void configureGamemode() {
-        terminal.writer().println(separatorLine());
+    private List<WizardStep> buildSteps(boolean motdPreset, boolean portPreset) {
+        return List.of(
+                new WizardStep("pnx.setupWizard.motd.label", motdPreset,
+                        wizardConfig::getMotd,
+                        () -> wizardConfig.setMotd(askText("pnx.setupWizard.motd.label", wizardConfig.getMotd())),
+                        () -> accept(baseLang.tr("pnx.setupWizard.motd.accept", wizardConfig.getMotd()))),
+                new WizardStep("pnx.setupWizard.port.label", portPreset,
+                        () -> String.valueOf(wizardConfig.getPort()),
+                        () -> wizardConfig.setPort(askNumber("pnx.setupWizard.port.label", wizardConfig.getPort(),
+                                SetupWizardSupport::parsePortOrDefault,
+                                "pnx.setupWizard.port.error.number", "pnx.setupWizard.port.invalid")),
+                        () -> accept(baseLang.tr("pnx.setupWizard.port.accept", wizardConfig.getPort()))),
+                new WizardStep("pnx.setupWizard.gamemode.label", false,
+                        this::gamemodeName,
+                        this::askGamemode,
+                        () -> accept(baseLang.tr("pnx.setupWizard.gamemode.accept", gamemodeName()))),
+                new WizardStep("pnx.setupWizard.maxPlayers.label", false,
+                        () -> String.valueOf(wizardConfig.getMaxPlayers()),
+                        () -> wizardConfig.setMaxPlayers(askNumber("pnx.setupWizard.maxPlayers.label", wizardConfig.getMaxPlayers(),
+                                SetupWizardSupport::parseMaxPlayersOrDefault,
+                                "pnx.setupWizard.maxPlayers.invalid", "pnx.setupWizard.maxPlayers.invalid.positive")),
+                        () -> accept(baseLang.tr("pnx.setupWizard.maxPlayers.set", String.valueOf(wizardConfig.getMaxPlayers())))),
+                new WizardStep("pnx.setupWizard.operators.label", false,
+                        () -> namesOrNone(wizardConfig.getOperators()),
+                        this::askOperators,
+                        this::confirmOperators),
+                new WizardStep("pnx.setupWizard.whitelist.label", false,
+                        this::whitelistSummary,
+                        this::askWhitelist,
+                        this::confirmWhitelist),
+                new WizardStep("pnx.setupWizard.query.label", false,
+                        () -> baseLang.tr(wizardConfig.isQueryEnabled() ? "pnx.setupWizard.value.enabled" : "pnx.setupWizard.value.disabled"),
+                        () -> wizardConfig.setQueryEnabled(askYesNo("pnx.setupWizard.query.ask", wizardConfig.isQueryEnabled())),
+                        () -> accept(baseLang.tr(wizardConfig.isQueryEnabled() ? "pnx.setupWizard.query.enabled" : "pnx.setupWizard.query.disabled")))
+        );
+    }
+
+    private void askGamemode() {
         notice(baseLang.tr("pnx.setupWizard.gamemode"));
         prompt("[0] " + baseLang.tr("pnx.setupWizard.gamemode.survival"));
         prompt("[1] " + baseLang.tr("pnx.setupWizard.gamemode.creative"));
         prompt("[2] " + baseLang.tr("pnx.setupWizard.gamemode.adventure"));
         prompt("[3] " + baseLang.tr("pnx.setupWizard.gamemode.spectator"));
-        terminal.writer().println();
-        terminal.writer().flush();
+        console.println("");
+        console.flush();
+        wizardConfig.setGamemode(askNumber("pnx.setupWizard.gamemode.label", wizardConfig.getGamemode(),
+                SetupWizardSupport::parseGamemodeOrDefault,
+                "pnx.setupWizard.gamemode.error.number", "pnx.setupWizard.gamemode.invalid"));
+    }
 
-        while (true) {
-            try {
-                String input = reader.readLine(promptText(baseLang.tr("pnx.setupWizard.gamemode.question"))).trim();
-                if (input.isEmpty()) {
-                    break;
-                }
-
-                wizardConfig.setGamemode(SetupWizardSupport.parseGamemodeOrDefault(input, wizardConfig.getGamemode()));
-                break;
-            } catch (NumberFormatException e) {
-                refuse(baseLang.tr("pnx.setupWizard.gamemode.error.number"));
-                terminal.writer().flush();
-            } catch (IllegalArgumentException e) {
-                warn(baseLang.tr("pnx.setupWizard.gamemode.invalid"));
-                terminal.writer().flush();
-            } catch (Exception e) {
-                log.error("Error reading gamemode", e);
-                break;
-            }
-        }
-
-        String gamemodeName = switch (wizardConfig.getGamemode()) {
+    private String gamemodeName() {
+        return switch (wizardConfig.getGamemode()) {
             case 1 -> baseLang.tr("pnx.setupWizard.gamemode.creative");
             case 2 -> baseLang.tr("pnx.setupWizard.gamemode.adventure");
             case 3 -> baseLang.tr("pnx.setupWizard.gamemode.spectator");
             default -> baseLang.tr("pnx.setupWizard.gamemode.survival");
         };
-        accept(baseLang.tr("pnx.setupWizard.gamemode.accept", gamemodeName));
-        terminal.writer().println();
-        terminal.writer().flush();
     }
 
-    /**
-     * Configures whitelist settings.
-     */
-    private void configureWhitelist() {
-        terminal.writer().println(separatorLine());
-
-        handleUserInputLoop(
-                baseLang.tr("pnx.setupWizard.whitelist.question"),
-                new String[]{"y", "yes", "n", "no", ""},
-                input -> {
-                    if (input.equals("y") || input.equals("yes")) {
-                        wizardConfig.setWhitelistEnabled(true);
-                        accept(baseLang.tr("pnx.setupWizard.whitelist.enabled"));
-                        configureWhitelistedPlayers();
-                    } else {
-                        wizardConfig.setWhitelistEnabled(false);
-                        accept(baseLang.tr("pnx.setupWizard.whitelist.disabled"));
-                    }
-                },
-                () -> warn(baseLang.tr("pnx.setupWizard.invalid_input")),
-                () -> log.error("Error reading whitelist setting")
-        );
+    private void askOperators() {
+        prompt(baseLang.tr("pnx.setupWizard.operators.enter"));
+        notice(baseLang.tr("pnx.setupWizard.operators.example"));
+        console.flush();
+        wizardConfig.setOperators(askNames("pnx.setupWizard.operators.label", wizardConfig.getOperators()));
     }
 
-
-    /**
-     * Configures whitelisted players.
-     */
-    private void configureWhitelistedPlayers() {
-        try {
-            terminal.writer().println();
-            prompt(baseLang.tr("pnx.setupWizard.whitelist.enter"));
-            notice(baseLang.tr("pnx.setupWizard.whitelist.example"));
-            prompt(baseLang.tr("pnx.setupWizard.whitelist.skip"));
-            terminal.writer().flush();
-            String input = reader.readLine("  " + promptPrefix()).trim();
-            if (!input.isEmpty()) {
-                List<String> whitelisted = SetupWizardSupport.parseCommaSeparatedNames(input);
-                wizardConfig.setWhitelistedPlayers(whitelisted);
-                if (!whitelisted.isEmpty()) {
-                    accept(baseLang.tr("pnx.setupWizard.whitelist.added", String.join(", ", whitelisted)));
-                } else {
-                    warn(baseLang.tr("pnx.setupWizard.whitelist.none"));
-                }
-                terminal.writer().println();
-                terminal.writer().flush();
-            } else {
-                warn(baseLang.tr("pnx.setupWizard.whitelist.none"));
-                terminal.writer().println();
-                terminal.writer().flush();
-            }
-        } catch (Exception e) {
-            log.error("Error reading whitelisted players", e);
+    private void confirmOperators() {
+        List<String> operators = wizardConfig.getOperators();
+        if (operators.isEmpty()) {
+            warn(baseLang.tr("pnx.setupWizard.operators.none"));
+        } else {
+            accept(baseLang.tr("pnx.setupWizard.operators.added", String.join(", ", operators)));
         }
     }
 
     /**
-     * Configures server operators.
+     * Asks whether the whitelist is enabled and, if so, who is on it. Disabling it drops the names already
+     * entered, because the server writes them to the whitelist file whether or not the whitelist is enabled.
      */
-    private void configureOperators() {
-        terminal.writer().println(separatorLine());
-        try {
-            prompt(baseLang.tr("pnx.setupWizard.operators.enter"));
-            notice(baseLang.tr("pnx.setupWizard.operators.example"));
-            prompt(baseLang.tr("pnx.setupWizard.operators.skip"));
-            terminal.writer().flush();
-            String input = reader.readLine("  " + promptPrefix()).trim();
-            if (!input.isEmpty()) {
-                List<String> operators = SetupWizardSupport.parseCommaSeparatedNames(input);
-                wizardConfig.setOperators(operators);
-                if (!operators.isEmpty()) {
-                    accept(baseLang.tr("pnx.setupWizard.operators.added", String.join(", ", operators)));
-                } else {
-                    warn(baseLang.tr("pnx.setupWizard.operators.none"));
-                }
-                terminal.writer().println();
-                terminal.writer().flush();
-            } else {
-                warn(baseLang.tr("pnx.setupWizard.operators.none"));
-                terminal.writer().println();
-                terminal.writer().flush();
-            }
-        } catch (Exception e) {
-            log.error("Error reading operators", e);
+    private void askWhitelist() {
+        boolean enabled = askYesNo("pnx.setupWizard.whitelist.ask", wizardConfig.isWhitelistEnabled());
+        wizardConfig.setWhitelistEnabled(enabled);
+        if (!enabled) {
+            wizardConfig.setWhitelistedPlayers(new ArrayList<>());
+            return;
+        }
+        accept(baseLang.tr("pnx.setupWizard.whitelist.enabled"));
+        console.println("");
+        prompt(baseLang.tr("pnx.setupWizard.whitelist.enter"));
+        notice(baseLang.tr("pnx.setupWizard.whitelist.example"));
+        console.flush();
+        wizardConfig.setWhitelistedPlayers(askNames("pnx.setupWizard.whitelist.players.label", wizardConfig.getWhitelistedPlayers()));
+    }
+
+    private void confirmWhitelist() {
+        List<String> players = wizardConfig.getWhitelistedPlayers();
+        if (!wizardConfig.isWhitelistEnabled()) {
+            accept(baseLang.tr("pnx.setupWizard.whitelist.disabled"));
+        } else if (players.isEmpty()) {
+            warn(baseLang.tr("pnx.setupWizard.whitelist.none"));
+        } else {
+            accept(baseLang.tr("pnx.setupWizard.whitelist.added", String.join(", ", players)));
         }
     }
 
-    /**
-     * Configures maximum number of players.
-     */
-    private void configureMaxPlayers() {
-        terminal.writer().println(separatorLine());
-        while (true) {
-            try {
-                String input = reader.readLine(promptText(baseLang.tr("pnx.setupWizard.maxPlayers.prompt"))).trim();
-                if (input.isEmpty()) {
-                    break; // Use default
-                }
-                wizardConfig.setMaxPlayers(SetupWizardSupport.parseMaxPlayersOrDefault(input, wizardConfig.getMaxPlayers()));
-                break;
-            } catch (NumberFormatException e) {
-                refuse(baseLang.tr("pnx.setupWizard.maxPlayers.invalid"));
-                terminal.writer().flush();
-            } catch (IllegalArgumentException e) {
-                refuse(baseLang.tr("pnx.setupWizard.maxPlayers.invalid.positive"));
-                terminal.writer().flush();
-            } catch (Exception e) {
-                log.error("Error reading max players", e);
-                break;
-            }
+    private String whitelistSummary() {
+        if (!wizardConfig.isWhitelistEnabled()) {
+            return baseLang.tr("pnx.setupWizard.value.disabled");
         }
-        accept(baseLang.tr("pnx.setupWizard.maxPlayers.set",String.valueOf(wizardConfig.getMaxPlayers())));
-        terminal.writer().println();
-        terminal.writer().flush();
+        return baseLang.tr("pnx.setupWizard.value.enabled") + " (" + namesOrNone(wizardConfig.getWhitelistedPlayers()) + ")";
     }
 
-    /**
-     * Configures query settings.
-     */
-    private void configureQuery() {
-        terminal.writer().println(separatorLine());
-        while (true) {
-            try {
-                String input = reader.readLine(promptText(baseLang.tr("pnx.setupWizard.query.prompt"))).trim().toLowerCase(Locale.ENGLISH);
-                if (input.isEmpty() || input.equals("y") || input.equals("yes")) {
-                    wizardConfig.setQueryEnabled(true);
-                    accept(baseLang.tr("pnx.setupWizard.query.enabled"));
-                    terminal.writer().println();
-                    terminal.writer().flush();
-                    break;
-                } else if (input.equals("n") || input.equals("no")) {
-                    wizardConfig.setQueryEnabled(false);
-                    accept(baseLang.tr("pnx.setupWizard.query.disabled"));
-                    terminal.writer().println();
-                    terminal.writer().flush();
-                    break;
-                } else {
-                    refuse(baseLang.tr("pnx.setupWizard.query.invalid"));
-                    terminal.writer().flush();
-                }
-            } catch (Exception e) {
-                log.error("Error reading query setting", e);
-                break;
-            }
-        }
+    private String namesOrNone(List<String> names) {
+        return names.isEmpty() ? baseLang.tr("pnx.setupWizard.value.none") : String.join(", ", names);
     }
 
     /**
      * Displays a summary of configuration and waits for user to press ENTER to start the server.
      */
     private void displaySummaryAndWaitForStart() {
-        terminal.writer().println();
-        terminal.writer().println(borderLine());
-        terminal.writer().println(centerText(baseLang.tr("pnx.setupWizard.summary.title"), 59));
-        terminal.writer().println(borderLine());
-        terminal.writer().println();
+        console.println("");
+        console.println(borderLine());
+        console.println(centerText(baseLang.tr("pnx.setupWizard.summary.title"), 59));
+        console.println(borderLine());
+        console.println("");
         accept(baseLang.tr("pnx.setupWizard.summary.ready"));
-        terminal.writer().println();
-        try {
-            String localIP = InetAddress.getLocalHost().getHostAddress();
-            String externalIP = Utils.getExternalIP();
-            prompt(baseLang.tr("pnx.setupWizard.summary.local", localIP, String.valueOf(wizardConfig.getPort())));
-            prompt(baseLang.tr("pnx.setupWizard.summary.external", externalIP, String.valueOf(wizardConfig.getPort())));
-            terminal.writer().println();
-            terminal.writer().println(borderLine());
-            terminal.writer().println();
-            terminal.writer().flush();
-        } catch (Exception e) {
-            log.error("Error reading IP address", e);
-        }
+        console.println("");
+        printAddresses();
+        console.println("");
+        console.println(borderLine());
+        console.println("");
+        console.flush();
         if (!interactive) {
             accept(baseLang.tr("pnx.setupWizard.summary.starting"));
-            terminal.writer().println();
-            terminal.writer().flush();
+            console.println("");
+            console.flush();
             return;
         }
         try {
-            reader.readLine(baseLang.tr("pnx.setupWizard.summary.startPrompt"));
-            terminal.writer().println();
+            console.readLine(baseLang.tr("pnx.setupWizard.summary.startPrompt"));
+            console.println("");
             accept(baseLang.tr("pnx.setupWizard.summary.starting"));
-            terminal.writer().println();
-            terminal.writer().flush();
+            console.println("");
+            console.flush();
         } catch (Exception e) {
             log.error("Error waiting for ENTER", e);
+        }
+    }
+
+    /**
+     * Prints the local and external address of the server. Both are resolved on the first call only, because
+     * the external lookup is a network request; the port always reflects the current setting.
+     */
+    private void printAddresses() {
+        try {
+            if (localAddress == null) {
+                String local = environment.localAddress().get();
+                externalAddress = environment.externalAddress().get();
+                localAddress = local;
+            }
+            String port = String.valueOf(wizardConfig.getPort());
+            prompt(baseLang.tr("pnx.setupWizard.summary.local", localAddress, port));
+            prompt(baseLang.tr("pnx.setupWizard.summary.external", externalAddress, port));
+        } catch (Exception e) {
+            log.error("Error reading IP address", e);
+        }
+    }
+
+    /**
+     * Shows every setting with its value and waits for the user to start the server. Entering the number of
+     * a setting asks that question again, then shows the recap again.
+     */
+    private void reviewAndWaitForStart() {
+        printRecap();
+        while (true) {
+            String input = readAnswer(promptText(baseLang.tr("pnx.setupWizard.recap.prompt")));
+            if (input == null || input.trim().isEmpty()) {
+                break;
+            }
+            int choice = parseStepChoice(input);
+            if (choice == -1) {
+                warn(baseLang.tr("pnx.setupWizard.recap.invalid", String.valueOf(steps.size())));
+                console.flush();
+                continue;
+            }
+            console.println("");
+            runStep(choice - 1, true);
+            printRecap();
+        }
+        console.println("");
+        accept(baseLang.tr("pnx.setupWizard.summary.starting"));
+        console.println("");
+        console.flush();
+    }
+
+    /**
+     * The values are concatenated rather than passed as translation arguments, because {@link BaseLang}
+     * translates its arguments and would rewrite a server name that happens to match a translation key.
+     */
+    private void printRecap() {
+        console.println(borderLine());
+        console.println(centerText(baseLang.tr("pnx.setupWizard.recap.title"), 59));
+        console.println(borderLine());
+        console.println("");
+        List<String> labels = steps.stream().map(step -> baseLang.tr(step.labelKey())).toList();
+        int labelWidth = labels.stream().mapToInt(String::length).max().orElse(0);
+        for (int i = 0; i < steps.size(); i++) {
+            String label = labels.get(i);
+            console.println("  " + (i + 1) + ". " + label + " ".repeat(labelWidth - label.length())
+                    + ": " + steps.get(i).displayValue().get());
+        }
+        console.println("");
+        printAddresses();
+        console.println("");
+        console.flush();
+    }
+
+    /**
+     * @return the one-based step number entered, or -1 if the input is not the number of a step
+     */
+    private int parseStepChoice(String input) {
+        try {
+            int choice = Integer.parseInt(input.trim());
+            return choice >= 1 && choice <= steps.size() ? choice : -1;
+        } catch (NumberFormatException e) {
+            return -1;
         }
     }
 
@@ -674,30 +645,8 @@ public class SetupWizard implements AutoCloseable {
      */
     @Override
     public void close() {
-        try {
-            if (terminal != null && ownsTerminal) {
-                terminal.close();
-            }
-        } catch (IOException e) {
-            log.error("Error closing terminal", e);
-        }
+        console.close();
     }
-         /**
-          * Language completer for auto-completion support.
-          */
-        private record LanguageCompleter(Set<String> languageCodes) implements Completer {
-
-        @Override
-            public void complete(LineReader reader, ParsedLine line, List<Candidate> candidates) {
-                String word = line.word();
-                String wordLower = word.toLowerCase();
-                for (String langCode : languageCodes) {
-                    if (langCode.startsWith(wordLower)) {
-                        candidates.add(new Candidate(langCode));
-                    }
-                }
-            }
-        }
 
     /**
      * Centers the given text for display purposes.
@@ -715,19 +664,19 @@ public class SetupWizard implements AutoCloseable {
     }
 
     private void warn(String message) {
-        terminal.writer().println("[!] " + message);
+        console.println("[!] " + message);
     }
     private void accept(String message) {
-        terminal.writer().println((unicodeOutput ? "✓ " : "[OK] ") + message);
+        console.println((unicodeOutput ? "✓ " : "[OK] ") + message);
     }
     private void refuse(String message) {
-        terminal.writer().println("[x] " + message);
+        console.println("[x] " + message);
     }
     private void notice(String message) {
-        terminal.writer().println("[*] " + message);
+        console.println("[*] " + message);
     }
     private void prompt(String message) {
-        terminal.writer().println(promptPrefix() + message);
+        console.println(promptPrefix() + message);
     }
 
     private String promptText(String text) {
@@ -767,74 +716,93 @@ public class SetupWizard implements AutoCloseable {
     }
 
     /**
-     * Displays a prompt and waits for user confirmation (yes/no).
-     * Returns true if accepted, false if rejected.
+     * Reads one line from the console.
+     *
+     * @return the line entered, or null when the console cannot be read (closed input, interrupt);
+     * callers then keep the current value so the wizard always terminates
      */
-    private boolean askConfirmation(String prompt, String acceptMsg, String refuseMsg, String invalidMsg, boolean defaultAccept) {
-        terminal.writer().flush();
-        while (true) {
-            try {
-                String input = reader.readLine(promptText(prompt)).trim();
-                if (input.isEmpty()) {
-                    if (defaultAccept) {
-                        accept(acceptMsg);
-                        terminal.writer().flush();
-                        return true;
-                    } else {
-                        refuse(refuseMsg);
-                        terminal.writer().flush();
-                        return false;
-                    }
-                } else if (input.equalsIgnoreCase("y") || input.equalsIgnoreCase("yes")) {
-                    accept(acceptMsg);
-                    terminal.writer().flush();
-                    return true;
-                } else if (input.equalsIgnoreCase("n") || input.equalsIgnoreCase("no")) {
-                    refuse(refuseMsg);
-                    terminal.writer().flush();
-                    return false;
-                } else {
-                    warn(invalidMsg);
-                    terminal.writer().flush();
-                }
-            } catch (Exception e) {
-                log.error("Error reading confirmation input", e);
-                return false;
-            }
+    private String readAnswer(String prompt) {
+        try {
+            return console.readLine(prompt);
+        } catch (Exception e) {
+            log.error("Error reading setup wizard input", e);
+            return null;
         }
     }
 
     /**
-     * Handles a generic user input loop for confirmation or selection.
-     *
-     * @param prompt      The prompt to display
-     * @param validInputs Array of valid inputs (case-insensitive)
-     * @param onValid     Runnable to execute when input is valid
-     * @param onInvalid   Runnable to execute when input is invalid
-     * @param onException Runnable to execute on exception
+     * Asks for a free-text value. A blank answer keeps the current value.
      */
-    private void handleUserInputLoop(
-            String prompt,
-            String[] validInputs,
-            Consumer<String> onValid,
-            Runnable onInvalid,
-            Runnable onException
-    ) {
-        while (true) {
-            try {
-                String input = reader.readLine(promptText(prompt)).trim().toLowerCase(Locale.ENGLISH);
-                if (Arrays.asList(validInputs).contains(input)) {
-                    onValid.accept(input);
-                    terminal.writer().flush();
-                    return;
-                } else {
-                    onInvalid.run();
-                    terminal.writer().flush();
-                }
-            } catch (Exception e) {
-                onException.run();
-                break;
-            }
+    private String askText(String labelKey, String current) {
+        String input = readAnswer(promptText(SetupWizardSupport.formatValuePrompt(baseLang.tr(labelKey), current)));
+        if (input == null || input.trim().isEmpty()) {
+            return current;
         }
+        return input.trim();
+    }
+
+    /**
+     * Asks for a number until the parser accepts the answer. A blank answer keeps the current value.
+     *
+     * @param notANumberKey translation key of the message shown when the answer is not a number
+     * @param outOfRangeKey translation key of the message shown when the parser rejects the number
+     */
+    private int askNumber(String labelKey, int current, NumberParser parser, String notANumberKey, String outOfRangeKey) {
+        String prompt = promptText(SetupWizardSupport.formatValuePrompt(baseLang.tr(labelKey), String.valueOf(current)));
+        while (true) {
+            String input = readAnswer(prompt);
+            if (input == null) {
+                return current;
+            }
+            try {
+                return parser.parse(input, current);
+            } catch (NumberFormatException e) {
+                refuse(baseLang.tr(notANumberKey));
+            } catch (IllegalArgumentException e) {
+                refuse(baseLang.tr(outOfRangeKey));
+            }
+            console.flush();
+        }
+    }
+
+    /**
+     * Asks a yes/no question until the answer is recognised. A blank answer selects the default.
+     *
+     * @param fullPrompt the prompt exactly as displayed, including its (y/n) hint
+     */
+    private boolean readYesNo(String fullPrompt, boolean defaultYes) {
+        while (true) {
+            String input = readAnswer(fullPrompt);
+            if (input == null) {
+                return defaultYes;
+            }
+            Optional<Boolean> answer = SetupWizardSupport.parseYesNo(input, defaultYes);
+            if (answer.isPresent()) {
+                return answer.get();
+            }
+            warn(baseLang.tr("pnx.setupWizard.invalid_input"));
+            console.flush();
+        }
+    }
+
+    private boolean askYesNo(String questionKey, boolean defaultYes) {
+        return readYesNo(promptText(SetupWizardSupport.formatYesNoPrompt(baseLang.tr(questionKey), defaultYes)), defaultYes);
+    }
+
+    /**
+     * Asks for comma-separated names. A blank answer, or one that contains no name, keeps the current list.
+     */
+    private List<String> askNames(String labelKey, List<String> current) {
+        String input = readAnswer(promptText(SetupWizardSupport.formatValuePrompt(baseLang.tr(labelKey), namesOrNone(current))));
+        if (input == null) {
+            return current;
+        }
+        List<String> names = SetupWizardSupport.parseCommaSeparatedNames(input);
+        return names.isEmpty() ? current : names;
+    }
+
+    @FunctionalInterface
+    private interface NumberParser {
+        int parse(String input, int defaultValue);
     }
 }

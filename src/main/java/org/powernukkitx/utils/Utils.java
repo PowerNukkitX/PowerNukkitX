@@ -25,6 +25,7 @@ import java.nio.file.Path;
 import java.nio.file.SimpleFileVisitor;
 import java.nio.file.StandardCopyOption;
 import java.nio.file.attribute.BasicFileAttributes;
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -708,11 +709,23 @@ public class Utils {
         };
     }
 
+    /**
+     * Asks {@code api.ipify.org} for the public IP address of this machine.
+     * <p>
+     * This is a blocking network request: the connection attempt and the wait for the response are each
+     * limited to 3 seconds. Do not call it from a tick or network thread.
+     *
+     * @return the address as text, or {@code "unknown"} if the request fails, times out or returns an empty
+     * body; never null, and no exception is thrown
+     */
     public static String getExternalIP() {
         try {
-            HttpClient client = HttpClient.newHttpClient();
+            HttpClient client = HttpClient.newBuilder()
+                    .connectTimeout(Duration.ofSeconds(3))
+                    .build();
             HttpRequest request = HttpRequest.newBuilder()
                     .uri(new URI("https://api.ipify.org"))
+                    .timeout(Duration.ofSeconds(3))
                     .GET()
                     .build();
 

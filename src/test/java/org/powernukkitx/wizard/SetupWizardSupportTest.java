@@ -4,6 +4,7 @@ import org.junit.jupiter.api.Test;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -76,5 +77,23 @@ class SetupWizardSupportTest {
     void detectsUnicodeCapabilityFromCharset() {
         assertTrue(SetupWizardSupport.supportsUnicodeOutput(StandardCharsets.UTF_8));
         assertFalse(SetupWizardSupport.supportsUnicodeOutput(StandardCharsets.US_ASCII));
+    }
+
+    @Test
+    void formatsPromptsWithCurrentValueAndYesNoHint() {
+        assertEquals("Server port [19132]: ", SetupWizardSupport.formatValuePrompt("Server port", "19132"));
+        assertEquals("Enable Query? (Y/n): ", SetupWizardSupport.formatYesNoPrompt("Enable Query?", true));
+        assertEquals("Enable whitelist? (y/N): ", SetupWizardSupport.formatYesNoPrompt("Enable whitelist?", false));
+    }
+
+    @Test
+    void parsesStrictYesNo() {
+        assertEquals(Optional.of(true), SetupWizardSupport.parseYesNo("", true));
+        assertEquals(Optional.of(false), SetupWizardSupport.parseYesNo("  ", false));
+        assertEquals(Optional.of(true), SetupWizardSupport.parseYesNo(" YES ", false));
+        assertEquals(Optional.of(true), SetupWizardSupport.parseYesNo("y", false));
+        assertEquals(Optional.of(false), SetupWizardSupport.parseYesNo("No", true));
+        assertEquals(Optional.empty(), SetupWizardSupport.parseYesNo("maybe", true));
+        assertEquals(Optional.of(true), SetupWizardSupport.parseYesNo(null, true));
     }
 }

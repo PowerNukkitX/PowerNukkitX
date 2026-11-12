@@ -6,9 +6,8 @@ import org.junit.jupiter.api.Test;
 import java.util.List;
 
 /**
- * Pure POJO coverage for {@link WizardConfig}. The interactive {@link SetupWizard}
- * itself is skipped - it opens a JLine system terminal and reads from stdin, which
- * needs a live console.
+ * Pure POJO coverage for {@link WizardConfig}. The flow of the {@link SetupWizard}
+ * itself is covered by {@link SetupWizardFlowTest}.
  */
 public class WizardConfigTest {
 

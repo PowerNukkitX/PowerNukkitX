@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 
 /**
@@ -79,6 +80,35 @@ public final class SetupWizardSupport {
             return false;
         }
         return defaultValue;
+    }
+
+    /**
+     * Strict yes/no parsing: unlike {@link #parseYesNoOrDefault(String, boolean)}, an unrecognised answer is
+     * reported as empty so the caller can ask again. Blank or null input selects the default.
+     */
+    static Optional<Boolean> parseYesNo(String input, boolean defaultValue) {
+        String normalized = normalize(input).toLowerCase(Locale.ENGLISH);
+        if (normalized.isEmpty()) {
+            return Optional.of(defaultValue);
+        }
+        if (normalized.equals("y") || normalized.equals("yes")) {
+            return Optional.of(true);
+        }
+        if (normalized.equals("n") || normalized.equals("no")) {
+            return Optional.of(false);
+        }
+        return Optional.empty();
+    }
+
+    static String formatValuePrompt(String label, String currentValue) {
+        return label + " [" + currentValue + "]: ";
+    }
+
+    /**
+     * The capital letter marks the answer selected by pressing ENTER.
+     */
+    static String formatYesNoPrompt(String question, boolean defaultYes) {
+        return question + (defaultYes ? " (Y/n): " : " (y/N): ");
     }
 
     public static List<String> parseCommaSeparatedNames(String input) {
