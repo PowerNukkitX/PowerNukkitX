@@ -55,7 +55,6 @@ public abstract class EntityPhysical extends EntityCreature implements EntityAsy
     protected boolean needsRecalcMovement = true;
     private boolean needsCollisionDamage = false;
     private static final double GROUND_FRICTION_EXPONENT = 0.5574929506502402;
-    private static final double MAX_RIDER_POSITION_DESYNC = 10.0d;
 
     protected int rideJumpingTicks = -1;
     protected AtomicInteger rideJumping;
@@ -527,7 +526,8 @@ public abstract class EntityPhysical extends EntityCreature implements EntityAsy
     protected void syncRiderLocationFromInput(Player rider, PlayerAuthInputPacket pk) {
         org.cloudburstmc.math.vector.Vector3f pos = pk.getPosition();
 
-        if (this.distanceSquared(pos.getX(), pos.getY(), pos.getZ()) > MAX_RIDER_POSITION_DESYNC * MAX_RIDER_POSITION_DESYNC) {
+        if (rider.isCheckingMovement()
+                && rider.distanceSquared(pos.getX(), pos.getY(), pos.getZ()) > Player.MAX_CLIENT_POSITION_DESYNC_SQUARED) {
             return;
         }
 
