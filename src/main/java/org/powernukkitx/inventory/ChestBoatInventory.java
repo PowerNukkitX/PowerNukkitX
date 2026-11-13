@@ -1,5 +1,6 @@
 package org.powernukkitx.inventory;
 
+import org.powernukkitx.Player;
 import org.powernukkitx.entity.item.EntityChestBoat;
 import org.cloudburstmc.protocol.bedrock.data.inventory.ContainerEnumName;
 import org.cloudburstmc.protocol.bedrock.data.inventory.ContainerType;
@@ -9,7 +10,7 @@ import java.util.Map;
 
 public class ChestBoatInventory extends ContainerInventory {
     public ChestBoatInventory(EntityChestBoat holder) {
-        super(holder, ContainerType.CHEST_BOAT, 27);
+        super(holder, ContainerType.CONTAINER, 27);
     }
 
     @Override
