@@ -7,7 +7,7 @@ import org.powernukkitx.item.ItemTool;
 import org.jetbrains.annotations.NotNull;
 
 public class BlockPackedIce extends BlockIce {
-    public static final BlockProperties PROPERTIES = new BlockProperties(PACKED_ICE);
+    public static final BlockProperties PROPERTIES = new BlockProperties(PACKED_ICE, PrecipitationBehavior.OBSTRUCT_RAIN);
     public static final BlockDefinition DEFINITION = BlockIce.DEFINITION.toBuilder()
             .toolType(ItemTool.TYPE_PICKAXE)
             .burnChance(0)
@@ -37,13 +37,13 @@ public class BlockPackedIce extends BlockIce {
         return "Packed Ice";
     }
 
-    
+
     @Override
     public int onUpdate(int type) {
         return 0; //not being melted
     }
 
-    
+
     @Override
     public boolean onBreak(Item item) {
         this.getLevel().setBlock(this, Block.get(BlockID.AIR), true); //no water
