@@ -49,6 +49,7 @@ import org.powernukkitx.plugin.InternalPlugin;
 import org.powernukkitx.registry.ItemRegistry;
 import org.powernukkitx.registry.ItemRuntimeIdRegistry;
 import org.powernukkitx.registry.Registries;
+import org.powernukkitx.resourcepacks.PackType;
 import org.powernukkitx.registry.VoxelShapeRegistry;
 import org.powernukkitx.utils.DefaultCameraAimAssistPresets;
 import org.powernukkitx.utils.DefaultCameraPresets;
@@ -309,8 +310,6 @@ public class PlayerSessionHolder {
         packet.setMessages(new DisconnectPacketMessages(message, ""));
 
         this.session.sendPacketImmediately(packet);
-        // Same idea as BedrockServerSession#disconnect, which we can't use since it drops the reason:
-        // let the client read the message and leave first, then close whatever is still open.
         this.session.getPeer().getChannel().eventLoop().schedule(() -> {
             if (this.session.isConnected()) {
                 this.session.close(message);
@@ -332,10 +331,13 @@ public class PlayerSessionHolder {
         }
     }
 
+    /**
+     * Offers the client the packs it has to download.
+     */
     public void sendResourcePacksInfo(Server server) {
         final ResourcePacksInfoPacket infoPacket = new ResourcePacksInfoPacket();
 
-        for (final var resourcePack : server.getResourcePackManager().getResourceStack()) {
+        for (final var resourcePack : server.getResourcePackManager().getPacks(PackType.RESOURCES)) {
             final PackInfoData packInfoData = new PackInfoData();
             final PackIdVersion packIdVersion = new PackIdVersion();
 

@@ -131,6 +131,20 @@ public final class RecipeUnlockIndex {
         return direct == null ? Set.of() : Collections.unmodifiableSet(direct);
     }
 
+    /**
+     * Drops a recipe from every trigger it was indexed under, so a recipe registered again under the
+     * same id is unlocked by its own triggers only.
+     *
+     * @param recipeId the id the recipe was indexed under
+     */
+    public void remove(@NotNull String recipeId) {
+        recipesByItemId.values().forEach(recipes -> recipes.remove(recipeId));
+        recipesByItemTag.values().forEach(recipes -> recipes.remove(recipeId));
+        alwaysUnlockedRecipes.remove(recipeId);
+        playerInWaterRecipes.remove(recipeId);
+        playerHasManyItemsRecipes.remove(recipeId);
+    }
+
     public void clear() {
         recipesByItemId.clear();
         recipesByItemTag.clear();

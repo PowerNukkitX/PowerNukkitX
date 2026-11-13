@@ -16,7 +16,6 @@ import org.cloudburstmc.protocol.bedrock.packet.ResourcePackStackPacket;
 
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Arrays;
 import java.util.UUID;
 
 /**
@@ -69,7 +68,8 @@ public class ResourcePackClientResponseHandler implements PacketHandler<Resource
                 final ResourcePackStackPacket resourcePackStack = new ResourcePackStackPacket();
                 resourcePackStack.setTexturePackRequired(server.getForceResources() && !server.getForceResourcesAllowOwnPacks());
                 resourcePackStack.getTexturePackList().addAll(
-                        Arrays.stream(server.getResourcePackManager().getResourceStack())
+                        server.getResourcePackManager().getPacks(org.powernukkitx.resourcepacks.PackType.RESOURCES)
+                                .stream()
                                 .map(resourcePack ->
                                         new PackInstanceId(
                                                 resourcePack.getPackId().toString(),

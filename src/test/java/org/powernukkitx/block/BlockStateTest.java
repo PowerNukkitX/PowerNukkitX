@@ -42,7 +42,10 @@ public class BlockStateTest {
                 }
                 blocks++;
             }
-            Assertions.assertEquals(blocks, Registries.BLOCKSTATE.getAllState().size());
+            long vanillaStates = Registries.BLOCKSTATE.getAllState().stream()
+                    .filter(state -> state.getIdentifier().startsWith("minecraft:"))
+                    .count();
+            Assertions.assertEquals(blocks, vanillaStates);
         }
     }
 

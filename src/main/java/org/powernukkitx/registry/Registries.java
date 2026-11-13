@@ -23,4 +23,5 @@ public final class Registries {
     public static final VoxelShapeRegistry VOXEL_SHAPE = new VoxelShapeRegistry();
     public static final DisconnectReasonRegistry DISCONNECT_REASON = new DisconnectReasonRegistry();
     public static final TrimRegistry TRIM = new TrimRegistry();
+    public static final LootTableRegistry LOOT_TABLE = new LootTableRegistry();
 }
