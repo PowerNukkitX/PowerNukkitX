@@ -55,6 +55,7 @@ public abstract class EntityPhysical extends EntityCreature implements EntityAsy
     protected boolean needsRecalcMovement = true;
     private boolean needsCollisionDamage = false;
     private static final double GROUND_FRICTION_EXPONENT = 0.5574929506502402;
+    private static final double MAX_RIDER_POSITION_DESYNC = 10.0d;
 
     protected int rideJumpingTicks = -1;
     protected AtomicInteger rideJumping;
@@ -526,12 +527,7 @@ public abstract class EntityPhysical extends EntityCreature implements EntityAsy
     protected void syncRiderLocationFromInput(Player rider, PlayerAuthInputPacket pk) {
         org.cloudburstmc.math.vector.Vector3f pos = pk.getPosition();
 
-        final double maxDistance = 10.0d;
-        double offsetX = pos.getX() - this.x;
-        double offsetY = pos.getY() - this.y;
-        double offsetZ = pos.getZ() - this.z;
-
-        if (offsetX * offsetX + offsetY * offsetY + offsetZ * offsetZ > maxDistance * maxDistance) {
+        if (this.distanceSquared(pos.getX(), pos.getY(), pos.getZ()) > MAX_RIDER_POSITION_DESYNC * MAX_RIDER_POSITION_DESYNC) {
             return;
         }
 
@@ -926,8 +922,6 @@ public abstract class EntityPhysical extends EntityCreature implements EntityAsy
         applyAirRideRotation(pk.getInteractRotation().getY());
 
         Vector2f input = Vector2f.fromNetwork(pk.getRawMoveVector());
-        // The client sends -1..1; the motion is this times the speed, so a larger value
-        // makes the collision check scan every block along the way
         float forward = Math.max(-1f, Math.min(1f, input.y));
         float strafe = Math.max(-1f, Math.min(1f, input.x));
 
@@ -1029,8 +1023,6 @@ public abstract class EntityPhysical extends EntityCreature implements EntityAsy
 
         // Movement input
         Vector2f input = Vector2f.fromNetwork(pk.getRawMoveVector());
-        // The client sends -1..1; the motion is this times the speed, so a larger value
-        // makes the collision check scan every block along the way
         float forward = Math.max(-1f, Math.min(1f, input.y));
         float strafe = Math.max(-1f, Math.min(1f, input.x));
 

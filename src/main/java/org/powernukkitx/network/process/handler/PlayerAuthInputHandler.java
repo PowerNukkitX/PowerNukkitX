@@ -48,6 +48,10 @@ public class PlayerAuthInputHandler implements PacketHandler<PlayerAuthInputPack
 
         if (isInvalid(packet.getMoveVector()) || isInvalid(packet.getRawMoveVector()) || isInvalid(packet.getInteractRotation())) {
             log.debug("Player {} sent invalid input vectors (NaN or Infinite)", player.getName());
+            PlayerHackDetectedEvent detectedEvent = new PlayerHackDetectedEvent(player, PlayerHackDetectedEvent.HackType.BAD_PACKET);
+            Server.getInstance().getPluginManager().callEvent(detectedEvent);
+            if (detectedEvent.isKick())
+                player.close("Bad Packet");
             return;
         }
 
