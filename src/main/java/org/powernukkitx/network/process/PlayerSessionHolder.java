@@ -2,6 +2,7 @@ package org.powernukkitx.network.process;
 
 import io.netty.channel.Channel;
 import io.netty.util.ReferenceCountUtil;
+import io.netty.util.concurrent.ScheduledFuture;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import lombok.AccessLevel;
 import lombok.Data;
@@ -110,6 +111,7 @@ public class PlayerSessionHolder {
 
     private static final long WARN_TIME_INTERVAL_IN_MS = 2000L;
     private static final long DISCONNECT_TIMEOUT_SECONDS = 10L;
+    static final int MAX_SPAWN_BACKLOG = 512;
 
     private final Object rateLimitLock = new Object();
     private volatile boolean disconnected = false;
@@ -236,6 +238,27 @@ public class PlayerSessionHolder {
 
     private @Nullable InetAddress remoteAddress() {
         return this.session.getSocketAddress() instanceof InetSocketAddress inet ? inet.getAddress() : null;
+    }
+
+    public boolean isAwaitingLogin() {
+        final SessionState current = this.state;
+        return current == SessionState.INITIAL
+            || current == SessionState.REQUESTED_NETWORK_SETTINGS
+            || current == SessionState.LOGIN;
+    }
+
+    public void startLoginDeadline(int timeoutSeconds) {
+        if (timeoutSeconds <= 0) {
+            return;
+        }
+        final Channel channel = this.session.getPeer().getChannel();
+        final ScheduledFuture<?> deadline = channel.eventLoop().schedule(() -> {
+            if (this.isAwaitingLogin() && this.session.isConnected()) {
+                log.debug("Closing {}: no login within {} seconds", this.session.getSocketAddress(), timeoutSeconds);
+                this.session.close("Login timed out");
+            }
+        }, timeoutSeconds, TimeUnit.SECONDS);
+        channel.closeFuture().addListener(_ -> deadline.cancel(false));
     }
 
     public InternalPackManager getInternalPackManager() {
@@ -503,6 +526,12 @@ public class PlayerSessionHolder {
      * level thread once the creation is done, in arrival order.
      */
     void deferUntilSpawned(BedrockPacket packet) {
+        if (this.spawnBacklog.size() >= MAX_SPAWN_BACKLOG) {
+            log.warn("{}: sent more than {} packets while its player was being created",
+                this.session.getSocketAddress(), MAX_SPAWN_BACKLOG);
+            this.disconnect(DisconnectFailReason.UNKNOWN, "Too many packets while joining");
+            return;
+        }
         this.spawnBacklog.add(packet);
         // The creation may have finished, and drained the backlog, while this packet was added
         if (!this.isSpawning()) {
