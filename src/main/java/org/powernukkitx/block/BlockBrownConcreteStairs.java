@@ -4,7 +4,7 @@ import org.powernukkitx.block.property.CommonBlockProperties;
 import org.jetbrains.annotations.NotNull;
 
 public class BlockBrownConcreteStairs extends BlockConcreteStairs {
-    public static final BlockProperties PROPERTIES = new BlockProperties("minecraft:brown_concrete_stairs", CommonBlockProperties.UPSIDE_DOWN_BIT, CommonBlockProperties.WEIRDO_DIRECTION, CommonBlockProperties.CORNER);
+    public static final BlockProperties PROPERTIES = new BlockProperties(BROWN_CONCRETE_STAIRS, CommonBlockProperties.UPSIDE_DOWN_BIT, CommonBlockProperties.WEIRDO_DIRECTION, CommonBlockProperties.CORNER);
 
     @Override
     @NotNull public BlockProperties getProperties() {
