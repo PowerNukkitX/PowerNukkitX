@@ -73,6 +73,7 @@
   "pnx.settings.network.compressionBufferSize": "Puffer für die Server-Dekomprimierung",
   "pnx.settings.network.maxDecompressSize": "Maximale Anzahl an Bytes, die der Server dekomprimieren kann",
   "pnx.settings.network.packetLimit": "Maximale Anzahl von Paketen pro Sekunde",
+  "pnx.settings.network.logintimeout": "Sekunden, die eine neue Verbindung hat, um ihren Login zu senden, bevor sie geschlossen wird, damit ein Client, der sich verbindet und dann still bleibt, keine Sitzung offen halten kann. Die Wartezeit in der Login-Warteschlange zählt nicht. 0 hebt das Limit auf",
   "pnx.settings.debug": "Server Debug-Konfiguration",
   "pnx.settings.debug.level": "Debug-Level des Servers [INFO, DEBUG, TRACE, ALL]",
   "pnx.settings.debug.command": "Ob Debug-Befehle aktiviert werden sollen",

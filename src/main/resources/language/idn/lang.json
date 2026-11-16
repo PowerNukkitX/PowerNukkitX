@@ -73,6 +73,7 @@
   "pnx.settings.network.compressionBufferSize": "Buffer for server decompression",
   "pnx.settings.network.maxDecompressSize": "Maximum number of bytes the server can decompress",
   "pnx.settings.network.packetLimit": "Maximun number of packet per seconds",
+  "pnx.settings.network.logintimeout": "Detik yang dimiliki koneksi baru untuk mengirim login sebelum ditutup, sehingga klien yang terhubung lalu diam tidak dapat menahan sesi tetap terbuka. Waktu menunggu di antrean login tidak dihitung. 0 menghapus batas",
   "pnx.settings.debug": "Server's debug configuration",
   "pnx.settings.debug.level": "Server's debug level [INFO, DEBUG, TRACE, ALL]",
   "pnx.settings.debug.command": "Whether to enable debug commands",

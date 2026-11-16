@@ -73,6 +73,7 @@
   "pnx.settings.network.compressionBufferSize": "Buffer for server decompression",
   "pnx.settings.network.maxDecompressSize": "Maximum number of bytes the server can decompress",
   "pnx.settings.network.packetLimit": "Maximun number of packet per seconds",
+  "pnx.settings.network.logintimeout": "Sekundės, per kurias naujas ryšys turi išsiųsti prisijungimą, kitaip jis bus uždarytas, kad prisijungęs ir tylintis klientas negalėtų laikyti atidarytos sesijos. Laukimas prisijungimo eilėje neįskaičiuojamas. 0 panaikina apribojimą",
   "pnx.settings.debug": "Server's debug configuration",
   "pnx.settings.debug.level": "Server's debug level [INFO, DEBUG, TRACE, ALL]",
   "pnx.settings.debug.command": "Whether to enable debug commands",
