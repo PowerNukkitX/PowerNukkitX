@@ -37,7 +37,7 @@ Pay particular attention to the **"PRs we close without review"** and **"AI Tool
 | Task                                         | Command                     |
 |----------------------------------------------|-----------------------------|
 | First full build                             | `./gradlew buildSkipChores` |
-| Incremental rebuild                          | `./gradlew buildFast`       |
+| Incremental rebuild (runnable `build/libs`)  | `./gradlew buildFast`       |
 | Unit tests                                   | `./gradlew test`            |
 | Distributable jar (`build/powernukkitx.jar`) | `./gradlew shadowJar`       |
 | Clean                                        | `./gradlew clean`           |

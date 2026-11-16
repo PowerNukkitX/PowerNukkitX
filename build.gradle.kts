@@ -145,8 +145,9 @@ tasks.processTestResources {
 
 tasks.register<DefaultTask>("buildFast") {
     group = ALPHA_BUILD
-    description = "Compile resources and create the plain jar without tests, docs, or shadow packaging"
-    dependsOn(tasks.compileJava, tasks.processResources, tasks.classes, tasks.jar)
+    description = "Create a runnable build/libs (plain jar + dependencies) without tests, docs, or shadow packaging"
+    // Skipping shadowJar keeps incremental builds fast; run with: java -cp "build/libs/*" org.powernukkitx.JarStart
+    dependsOn(tasks.compileJava, tasks.processResources, tasks.classes, tasks.jar, "copyDependencies")
 }
 
 tasks.register<DefaultTask>("buildSkipChores") {
@@ -315,12 +316,17 @@ tasks.named<ShadowJar>("shadowJar") {
     isZip64 = true
 }
 
-tasks.register<Copy>("copyDependencies") {
+tasks.register<Sync>("copyDependencies") {
     dependsOn(tasks.jar)
     group = "other"
     description = "Copy all dependencies to libs folder"
     from(configurations.runtimeClasspath)
     into(layout.buildDirectory.dir("libs"))
+
+    // Sync rather than Copy: jars from a previous dependency version are deleted instead of staying on the
+    // "build/libs/*" classpath next to the new one. The project's own jars live in the same folder.
+    val projectJarPrefix = tasks.jar.get().archiveBaseName.get()
+    preserve { include("$projectJarPrefix-*.jar") }
 
     // Enable up-to-date checking for better incremental builds
     duplicatesStrategy = DuplicatesStrategy.INCLUDE
