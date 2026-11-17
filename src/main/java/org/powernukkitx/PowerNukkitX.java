@@ -36,6 +36,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
 import java.util.Properties;
+import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import static org.powernukkitx.utils.Utils.dynamic;
@@ -137,6 +138,7 @@ public class PowerNukkitX {
         OptionSpec<String> jsDebugPortSpec = parser.accepts("js-debug", "Debug javascript using chrome dev tool with specific port.").withRequiredArg().ofType(String.class);
         OptionSpec<String> serverNameSpec = parser.accepts("server-name", "Set the server name (MOTD)").withRequiredArg().ofType(String.class);
         OptionSpec<Integer> portSpec = parser.accepts("port", "Set the server port").withRequiredArg().ofType(Integer.class);
+        OptionSpec<Void> aotTrainSpec = parser.accepts("aot-train", "Load the registries and exit. Run once with -XX:AOTCacheOutput=<file>, then start with -XX:AOTCache=<file> for a faster boot");
 
         // Parse arguments
         OptionSet options = parser.parse(args);
@@ -148,6 +150,11 @@ public class PowerNukkitX {
             } catch (IOException e) {
                 // ignore
             }
+            return;
+        }
+
+        if (options.has(aotTrainSpec)) {
+            trainAotCache();
             return;
         }
 
@@ -260,6 +267,22 @@ public class PowerNukkitX {
         }
         LogManager.shutdown();
         Runtime.getRuntime().halt(0); // force exit
+    }
+
+    // AOT training run: the JVM records the classes loaded here and writes the cache on exit. Registry init is the bulk
+    // of class loading at boot, and it needs no config, world or network. A failure exits non-zero so a scripted
+    // training run fails visibly instead of leaving a partial cache behind.
+    private static void trainAotCache() {
+        int status = 0;
+        try {
+            Server.startRegistries(ForkJoinPool.commonPool(), null, true, true).join();
+            log.info("AOT training run finished");
+        } catch (Throwable t) {
+            log.error("AOT training run failed", t);
+            status = 1;
+        }
+        LogManager.shutdown();
+        System.exit(status);
     }
 
     // Holds an exclusive lock on server.lock so a second server started from the same directory or jar refuses to boot.
