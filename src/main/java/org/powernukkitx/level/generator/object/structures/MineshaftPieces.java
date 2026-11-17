@@ -439,6 +439,11 @@ public class MineshaftPieces {
                                                 .add(new FloatTag(0))
                                                 .add(new FloatTag(0)))
                         );
+                        // createEntity returns null instead of throwing, e.g. on an actor unique id clash. Skipping one
+                        // loot minecart beats failing the structure stage, which rolls back and fails the chunk.
+                        if (minecart == null) {
+                            return;
+                        }
                         new ChestPopulator().create(minecart.getInventory(), random);
                         minecart.spawnToAll();
                     }
