@@ -15,6 +15,10 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.core.LoggerContext;
 import org.apache.logging.log4j.core.config.Configuration;
 import org.apache.logging.log4j.core.config.LoggerConfig;
+import org.powernukkitx.config.ServerSettings;
+import org.powernukkitx.config.YamlSnakeYamlConfigurer;
+import org.powernukkitx.registry.RegistryCache;
+import eu.okaeri.configs.ConfigManager;
 
 import java.io.File;
 import java.io.IOException;
@@ -269,13 +273,24 @@ public class PowerNukkitX {
         Runtime.getRuntime().halt(0); // force exit
     }
 
-    // AOT training run: the JVM records the classes loaded here and writes the cache on exit. Registry init is the bulk
-    // of class loading at boot, and it needs no config, world or network. A failure exits non-zero so a scripted
-    // training run fails visibly instead of leaving a partial cache behind.
     private static void trainAotCache() {
         int status = 0;
         try {
-            Server.startRegistries(ForkJoinPool.commonPool(), null, true, true).join();
+            ServerSettings settings = ConfigManager.create(ServerSettings.class, it -> {
+                it.withConfigurer(new YamlSnakeYamlConfigurer());
+                it.withBindFile(new File(DATA_PATH, "pnx.yml"));
+                it.withRemoveOrphans(true);
+                it.saveDefaults();
+                it.load(true);
+            });
+            boolean creativeInventoryEnabled = settings.gameplaySettings().enableCreativeInventory();
+            boolean recipesEnabled = settings.gameplaySettings().enableRecipes() && creativeInventoryEnabled;
+            boolean useRegistryCache = settings.performanceSettings().registryCacheEnabled()
+                    && creativeInventoryEnabled && recipesEnabled;
+            RegistryCache registryCache = useRegistryCache
+                    ? RegistryCache.tryLoad(Path.of(settings.performanceSettings().registryCachePath()))
+                    : null;
+            Server.startRegistries(ForkJoinPool.commonPool(), registryCache, creativeInventoryEnabled, recipesEnabled).join();
             log.info("AOT training run finished");
         } catch (Throwable t) {
             log.error("AOT training run failed", t);
