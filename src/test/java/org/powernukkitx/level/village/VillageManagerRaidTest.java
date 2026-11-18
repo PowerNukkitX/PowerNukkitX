@@ -1,6 +1,7 @@
 package org.powernukkitx.level.village;
 
 import org.junit.jupiter.api.Test;
+import org.powernukkitx.Server;
 import org.powernukkitx.entity.ai.memory.CoreMemoryTypes;
 import org.powernukkitx.entity.ai.memory.MemoryStorage;
 import org.powernukkitx.entity.mob.EntityPillager;
@@ -19,7 +20,7 @@ class VillageManagerRaidTest {
     void importedActiveGroupsAdvanceOnceAndFinalGroupAwardsOnlyOnce() {
         org.powernukkitx.registry.Registries.EFFECT.init();
         for (int group = 0; group < 3; group++) {
-            Level level = mock(Level.class);
+            Level level = normalDifficultyLevel();
             VillageManager manager = new VillageManager(level);
             Village village = manager.createVillage(new BlockVector3(0, 64, 0));
             manager.addDweller(village.uuid(), new VillageDwellers.Actor(1L, new BlockVector3(), 0L, null));
@@ -60,7 +61,7 @@ class VillageManagerRaidTest {
     @Test
     void importedResultPhaseRetainsItsRemainingTimeWithoutAwardingAgain() {
         for (int status : new int[]{VillageRaid.STATUS_VICTORY, VillageRaid.STATUS_LOSS}) {
-            Level level = mock(Level.class);
+            Level level = normalDifficultyLevel();
             when(level.getPlayers()).thenReturn(java.util.Map.of());
             VillageManager manager = new VillageManager(level);
             Village village = manager.createVillage(new BlockVector3(0, 64, 0));
@@ -81,7 +82,7 @@ class VillageManagerRaidTest {
 
     @Test
     void importedFinishedRaidIsRemovedWithoutStartingAnotherResultPhase() {
-        Level level = mock(Level.class);
+        Level level = normalDifficultyLevel();
         VillageManager manager = new VillageManager(level);
         Village village = manager.createVillage(new BlockVector3(0, 64, 0));
         village.setRaid(VillageRaid.fromCompound(VillageRaidTest.bedrockRaid(6, 2, 3, 0)));
@@ -94,7 +95,7 @@ class VillageManagerRaidTest {
 
     @Test
     void reloadRestoresNavigationForAnActiveRaid() {
-        Level level = mock(Level.class);
+        Level level = normalDifficultyLevel();
         VillageManager manager = new VillageManager(level);
         Village village = manager.createVillage(new BlockVector3(0, 64, 0));
         village.setRaid(VillageRaid.starting(0, 3, new Vector3()).withGroup(1, List.of(42L), 24f));
@@ -107,7 +108,7 @@ class VillageManagerRaidTest {
 
     @Test
     void removingVillageClearsLoadedRaiderAndRaidState() {
-        Level level = mock(Level.class);
+        Level level = normalDifficultyLevel();
         VillageManager manager = new VillageManager(level);
         Village village = manager.createVillage(new BlockVector3(0, 64, 0));
         village.setRaid(VillageRaid.starting(0, 3, new Vector3()).withGroup(1, List.of(42L), 24f));
@@ -130,7 +131,7 @@ class VillageManagerRaidTest {
 
     @Test
     void reloadClearsRaidStateForARaiderWhoseVillageWasRemoved() {
-        Level level = mock(Level.class);
+        Level level = normalDifficultyLevel();
         VillageManager manager = new VillageManager(level);
         Village village = manager.createVillage(new BlockVector3(0, 64, 0));
         EntityPillager raider = raider(village);
@@ -145,7 +146,7 @@ class VillageManagerRaidTest {
 
     @Test
     void invalidVillageLosesItsRaidAndStartsRaiderCelebration() {
-        Level level = mock(Level.class);
+        Level level = normalDifficultyLevel();
         VillageManager manager = new VillageManager(level);
         Village village = manager.createVillage(new BlockVector3(0, 64, 0));
         village.setRaid(VillageRaid.starting(0, 3, new Vector3()).withGroup(1, List.of(42L), 24f));
@@ -165,7 +166,7 @@ class VillageManagerRaidTest {
 
     @Test
     void removingDwellerUpdatesPopulationWithoutRemovingUnloadedNeighbours() {
-        Level level = mock(Level.class);
+        Level level = normalDifficultyLevel();
         VillageManager manager = new VillageManager(level);
         Village village = manager.createVillage(new BlockVector3(0, 64, 0));
         manager.addDweller(village.uuid(), new VillageDwellers.Actor(1L, new BlockVector3(), 0L, null));
@@ -182,7 +183,7 @@ class VillageManagerRaidTest {
 
     @Test
     void snapshotKeepsDamagedRaiderHealthAcrossPersistence() {
-        Level level = mock(Level.class);
+        Level level = normalDifficultyLevel();
         VillageManager manager = new VillageManager(level);
         Village village = manager.createVillage(new BlockVector3(0, 64, 0));
         village.setRaid(VillageRaid.starting(0, 3, new Vector3()).withGroup(1, List.of(42L), 24f));
@@ -197,7 +198,7 @@ class VillageManagerRaidTest {
 
     @Test
     void bossBarKeepsUnloadedRaiderHealthAndRefreshesItOnReload() {
-        Level level = mock(Level.class);
+        Level level = normalDifficultyLevel();
         VillageManager manager = new VillageManager(level);
         Village village = manager.createVillage(new BlockVector3(0, 64, 0));
         manager.addDweller(village.uuid(), new VillageDwellers.Actor(1L, new BlockVector3(), 0L, null));
@@ -234,7 +235,7 @@ class VillageManagerRaidTest {
 
     @Test
     void reloadedRaiderCelebratesDuringDefeat() {
-        Level level = mock(Level.class);
+        Level level = normalDifficultyLevel();
         VillageManager manager = new VillageManager(level);
         Village village = manager.createVillage(new BlockVector3(0, 64, 0));
         village.setRaid(VillageRaid.starting(0, 3, new Vector3())
@@ -248,7 +249,7 @@ class VillageManagerRaidTest {
 
     @Test
     void clearingManagerTerminatesItsRaids() {
-        Level level = mock(Level.class);
+        Level level = normalDifficultyLevel();
         VillageManager manager = new VillageManager(level);
         Village village = manager.createVillage(new BlockVector3(0, 64, 0));
         village.setRaid(VillageRaid.starting(0, 3, new Vector3()));
@@ -257,6 +258,29 @@ class VillageManagerRaidTest {
 
         assertTrue(manager.getVillages().isEmpty());
         assertNull(village.raid());
+    }
+
+    @Test
+    void peacefulDifficultyStopsAnActiveRaidBeforeAwardingRewards() {
+        Level level = normalDifficultyLevel();
+        when(level.getServer().getDifficulty()).thenReturn(0);
+        VillageManager manager = new VillageManager(level);
+        Village village = manager.createVillage(new BlockVector3(0, 64, 0));
+        village.setRaid(VillageRaid.starting(0, 3, new Vector3())
+                .withState(VillageRaid.STATE_AWARDING_REWARDS));
+
+        manager.tick(1);
+        assertEquals(VillageRaid.STATUS_STOPPED, village.raid().status());
+        manager.tick(2);
+        assertNull(village.raid());
+    }
+
+    private static Level normalDifficultyLevel() {
+        Server server = mock(Server.class);
+        Level level = mock(Level.class);
+        when(server.getDifficulty()).thenReturn(2);
+        when(level.getServer()).thenReturn(server);
+        return level;
     }
 
     private static EntityPillager raider(Village village) {

@@ -2,6 +2,7 @@ package org.powernukkitx.level.village;
 
 import org.junit.jupiter.api.Test;
 import org.powernukkitx.Player;
+import org.powernukkitx.Server;
 import org.powernukkitx.entity.Entity;
 import org.powernukkitx.entity.EntityIntelligent;
 import org.powernukkitx.entity.ai.memory.CoreMemoryTypes;
@@ -172,6 +173,9 @@ class VillageRaidSupportTest {
         final EntityPillager member;
 
         Fixture() {
+            Server server = mock(Server.class);
+            when(server.getDifficulty()).thenReturn(2);
+            when(level.getServer()).thenReturn(server);
             manager.addDweller(village.uuid(), new VillageDwellers.Actor(1L, new BlockVector3(), 0L, null));
             village.pois().poi().add(new VillagePoiGroup(1L,
                     List.of(new VillagePoi(PoiType.HOME, new BlockVector3(0, 64, 0)))));

@@ -396,6 +396,9 @@ public final class VillageManager {
                     ? raid.withTicks(ticks)
                     : raid.withState(VillageRaid.STATE_FINISHED);
         }
+        if (level.getServer().getDifficulty() == 0) {
+            return raid.withStatus(VillageRaid.STATUS_STOPPED);
+        }
         if (!village.isValid()) {
             return loseRaid(raid);
         }
