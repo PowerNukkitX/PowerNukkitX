@@ -664,6 +664,7 @@ public class Level implements Metadatable, LiquidUpdateAccess {
                             this.doTick(loop);
                         } else {
                             this.scheduler.mainThreadHeartbeat(loop.getTick());
+                            this.villageManager.removeDepartedRaidBossBars();
                         }
                     } catch (Throwable t) {
                         log.error("Error in base-tick for level {}", this.getName(), t);

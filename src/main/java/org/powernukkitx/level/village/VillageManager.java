@@ -964,6 +964,23 @@ public final class VillageManager {
         };
     }
 
+    /**
+     * Removes raid bars for disconnected players and players who changed levels.
+     * Called on the owning level thread while full level ticks are suspended.
+     */
+    public void removeDepartedRaidBossBars() {
+        for (Map<UUID, DummyBossBar> bars : raidBossBars.values()) {
+            bars.values().removeIf(bar -> {
+                Player player = bar.getPlayer();
+                if (!player.isConnected() || player.getLevel() != level) {
+                    player.removeBossBar(bar.getBossBarId());
+                    return true;
+                }
+                return false;
+            });
+        }
+    }
+
     private void removeBossBars(Village village) {
         Map<UUID, DummyBossBar> bars = raidBossBars.remove(village.uuid());
         if (bars != null) {
