@@ -2179,7 +2179,7 @@ public class Level implements Metadatable, LiquidUpdateAccess {
                 this.checkSleep();
             }
 
-            this.villageManager.tick(currentTick);
+            this.villageManager.tick(getCurrentTick());
 
             if (!this.chunkPackets.isEmpty()) {
                 for (var entry : this.chunkPackets.entrySet()) {
