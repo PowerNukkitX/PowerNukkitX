@@ -320,7 +320,7 @@ public final class VillageManager {
         for (Village village : villages.values()) {
             VillageRaid raid = village.raid();
             if (raid == null) {
-                if (currentTick % 20 == 0) {
+                if (currentTick % 20 == 0 && village.isValid()) {
                     gainRaidOmen(village);
                 }
                 continue;
