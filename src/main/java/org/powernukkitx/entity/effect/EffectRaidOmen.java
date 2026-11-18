@@ -19,7 +19,7 @@ public class EffectRaidOmen extends Effect {
     @Override
     public void remove(Entity entity) {
         super.remove(entity);
-        if (this.getDuration() > 0) {
+        if (this.isInfinite() || this.getDuration() > 0) {
             return;
         }
         if (entity instanceof Player player && player.getLevel() != null) {
