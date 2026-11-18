@@ -291,6 +291,18 @@ public final class LevelDBStorage {
         pendingActorDeletions.add(LevelDBActorStorage.getActorStorageKey(actorUniqueId));
     }
 
+    /**
+     * Checks the actor record without loading its chunk. An actor pending deletion is absent.
+     *
+     * @param actorUniqueId persistent actor ID
+     * @return whether the actor has a stored record
+     */
+    public synchronized boolean hasStoredActor(long actorUniqueId) {
+        long storageKey = LevelDBActorStorage.getActorStorageKey(actorUniqueId);
+        return !pendingActorDeletions.contains(storageKey)
+                && this.db.get(LevelDBActorStorage.getActorKey(storageKey)) != null;
+    }
+
     synchronized void writePendingActorDeletions(WriteBatch writeBatch) throws IOException {
         if (pendingActorDeletions.isEmpty()) return;
 

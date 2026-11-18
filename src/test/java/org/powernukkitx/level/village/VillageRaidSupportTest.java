@@ -8,6 +8,8 @@ import org.powernukkitx.entity.ai.memory.CoreMemoryTypes;
 import org.powernukkitx.entity.ai.memory.MemoryStorage;
 import org.powernukkitx.entity.mob.*;
 import org.powernukkitx.level.Level;
+import org.powernukkitx.level.format.leveldb.LevelDBProvider;
+import org.powernukkitx.level.format.leveldb.LevelDBStorage;
 import org.powernukkitx.math.AxisAlignedBB;
 import org.powernukkitx.math.BlockVector3;
 import org.powernukkitx.math.Vector3;
@@ -121,6 +123,46 @@ class VillageRaidSupportTest {
         assertEquals(List.of(42L), f.village.raid().raiders());
         verify(f.level, never()).addLevelSoundEvent(any(Vector3.class), eq(SoundEvent.RAID_HORN));
         verify(f.level, never()).getChunk(anyInt(), anyInt());
+    }
+
+    @Test
+    void restoredWaveKeepsStoredActorsAndDropsMissingActorsWithoutLoadingChunks() {
+        Fixture f = new Fixture();
+        LevelDBProvider provider = mock(LevelDBProvider.class);
+        LevelDBStorage storage = mock(LevelDBStorage.class);
+        when(f.level.getProvider()).thenReturn(provider);
+        when(provider.getStorage()).thenReturn(storage);
+        when(f.level.getEntityByUniqueId(42L)).thenReturn(null);
+        when(storage.hasStoredActor(42L)).thenReturn(true);
+        VillageRaid saved = f.village.raid().withRaiders(List.of(42L, 43L));
+        f.village.setRaid(VillageRaid.fromCompound(saved.toCompound()));
+
+        f.tick(20);
+
+        assertEquals(List.of(42L), f.village.raid().raiders());
+        verify(f.level, never()).getChunk(anyInt(), anyInt());
+
+        when(storage.hasStoredActor(42L)).thenReturn(false);
+        f.tick(40);
+        assertTrue(f.village.raid().raiders().isEmpty());
+    }
+
+    @Test
+    void raidCleanupPreservesPersistenceAnUnnamedRecruitHadBeforeJoining() {
+        Fixture f = new Fixture();
+        EntityPillager persistent = f.actor(EntityPillager.class, 43, Entity.PILLAGER, false);
+        EntityPillager temporary = f.actor(EntityPillager.class, 44, Entity.PILLAGER, false);
+        when(persistent.isPersistent()).thenReturn(true);
+        when(f.level.fastNearbyEntities(any(AxisAlignedBB.class), eq(f.member), eq(false)))
+                .thenReturn(List.of(persistent, temporary));
+
+        f.tick(20);
+        assertTrue(persistent.getNbt().getBoolean("PersistentBeforeRaid"));
+        assertTrue(f.manager.removeVillage(f.village));
+
+        verify(persistent, never()).setPersistent(false);
+        verify(temporary).setPersistent(false);
+        assertFalse(persistent.getNbt().contains("PersistentBeforeRaid"));
     }
 
     private static class Fixture {

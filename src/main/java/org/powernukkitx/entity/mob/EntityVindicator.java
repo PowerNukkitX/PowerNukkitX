@@ -74,7 +74,6 @@ public class EntityVindicator extends EntityIllager {
                 .behavior(new MoveToTargetExecutor(CoreMemoryTypes.RAID_TARGET, 0.5f, true))
                         .when(all(new MemoryCheckNotEmptyEvaluator(CoreMemoryTypes.RAID_TARGET),
                                 new MemoryCheckEmptyEvaluator(CoreMemoryTypes.ATTACK_TARGET)))
-                        .alongsidePrevious()
                 .behavior(new FlatRandomRoamExecutor(0.5f, 12, 100, false, -1, true, 10))
                 .sensors(new NearestTargetEntitySensor<>(0, 16, 20,
                                 List.of(CoreMemoryTypes.NEAREST_SUITABLE_ATTACK_TARGET), this::attackTarget),

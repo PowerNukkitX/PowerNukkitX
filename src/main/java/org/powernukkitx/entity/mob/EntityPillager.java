@@ -68,7 +68,6 @@ public class EntityPillager extends EntityIllager {
                 .behavior(new MoveToTargetExecutor(CoreMemoryTypes.RAID_TARGET, 0.3f, true))
                         .when(all(new MemoryCheckNotEmptyEvaluator(CoreMemoryTypes.RAID_TARGET),
                                 new MemoryCheckEmptyEvaluator(CoreMemoryTypes.ATTACK_TARGET)))
-                        .alongsidePrevious()
                 .behavior(new FlatRandomRoamExecutor(0.3f, 12, 100, false, -1, true, 10))
                 .sensors(
                         new NearestPlayerSensor(40, 0, 20),

@@ -19,6 +19,7 @@ import org.powernukkitx.event.entity.CreatureSpawnEvent;
 import org.powernukkitx.level.Level;
 import org.powernukkitx.level.Position;
 import org.powernukkitx.level.format.IChunk;
+import org.powernukkitx.level.format.leveldb.LevelDBProvider;
 import org.powernukkitx.math.BlockFace;
 import org.powernukkitx.math.BlockVector3;
 import org.powernukkitx.math.Vector3;
@@ -486,7 +487,8 @@ public final class VillageManager {
     }
 
     private VillageRaid tickGroupInPlay(Village village, VillageRaid raid) {
-        if (level.getCurrentTick() % RAID_RECRUIT_INTERVAL == 0) {
+        boolean checkMissingActors = level.getCurrentTick() % RAID_RECRUIT_INTERVAL == 0;
+        if (checkMissingActors) {
             raid = recruitRaiders(village, raid, false);
         }
         List<Long> alive = new ArrayList<>();
@@ -503,7 +505,14 @@ public final class VillageManager {
                 continue;
             }
             BlockVector3 last = village.raiderPositions().get(raiderId);
-            if (last == null || level.getChunkIfLoaded(last.x >> 4, last.z >> 4) == null) {
+            if (last == null) {
+                // A restored raid may reference an actor in a chunk that has never loaded this session.
+                if (!checkMissingActors || !(level.getProvider() instanceof LevelDBProvider provider)
+                        || provider.getStorage().hasStoredActor(raiderId)) {
+                    alive.add(raiderId);
+                    continue;
+                }
+            } else if (level.getChunkIfLoaded(last.x >> 4, last.z >> 4) == null) {
                 alive.add(raiderId);
                 continue;
             }
@@ -622,6 +631,7 @@ public final class VillageManager {
                     new Vector3(center.x + 0.5, center.y, center.z + 0.5));
         }
         if (raider instanceof EntityIllager illager) illager.setRaiding(true);
+        raider.getNbt().putBoolean("PersistentBeforeRaid", raider.isPersistent());
         raider.getNbt().putString("RaidVillageUUID", village.uuid().toString());
         raider.setPersistent(true);
     }
@@ -668,10 +678,12 @@ public final class VillageManager {
     }
 
     private void clearRaider(Entity raider, boolean celebrating) {
-        raider.getNbt().remove("RaidVillageUUID");
-        if (!raider.hasCustomName()) {
+        CompoundTag nbt = raider.getNbt();
+        nbt.remove("RaidVillageUUID");
+        if (!raider.hasCustomName() && !nbt.getBoolean("PersistentBeforeRaid")) {
             raider.setPersistent(false);
         }
+        nbt.remove("PersistentBeforeRaid");
         if (raider instanceof EntityIllager illager) {
             illager.setRaiding(false);
         }
