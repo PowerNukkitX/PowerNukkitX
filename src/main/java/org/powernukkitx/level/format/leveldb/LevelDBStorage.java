@@ -809,8 +809,9 @@ public final class LevelDBStorage {
                 batch.put(getVillageKey(villagePrefix, "PLAYERS"), writeLittleEndianCompound(village.players().toCompound()));
                 batch.put(getVillageKey(villagePrefix, "POI"), writeLittleEndianCompound(village.pois().toCompound()));
                 byte[] raidKey = getVillageKey(villagePrefix, "RAID");
-                if (village.raid() == null) batch.delete(raidKey);
-                else batch.put(raidKey, writeLittleEndianCompound(village.raid().toCompound()));
+                VillageRaid raid = village.raid();
+                if (raid == null) batch.delete(raidKey);
+                else batch.put(raidKey, writeLittleEndianCompound(raid.toCompound()));
             }
             this.db.write(batch, new WriteOptions().sync(false));
         } catch (IOException e) {
