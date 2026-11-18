@@ -776,7 +776,7 @@ public final class VillageManager {
         for (int type = 0; type < RAIDER_TYPES.length; type++) {
             for (int spawned = 0; spawned < group[type]; spawned++) {
                 Entity raider = Entity.createEntity(RAIDER_TYPES[type], spawnPosition);
-                if (raider == null) {
+                if (raider == null || raider.isClosed() || !raider.isAlive()) {
                     continue;
                 }
 
@@ -789,6 +789,9 @@ public final class VillageManager {
                     continue;
                 }
 
+                if (raider.isClosed() || !raider.isAlive()) {
+                    continue;
+                }
                 configureRaider(village, raider);
                 raider.spawnToAll();
                 raiders.add(raider.uniqueIdLong());
