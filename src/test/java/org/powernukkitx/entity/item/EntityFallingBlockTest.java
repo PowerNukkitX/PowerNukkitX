@@ -9,6 +9,8 @@ import org.powernukkitx.level.format.IChunk;
 import org.powernukkitx.math.Vector3;
 
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class EntityFallingBlockTest {
@@ -28,5 +30,7 @@ class EntityFallingBlockTest {
 
         assertInstanceOf(EntityFallingBlock.class, entity);
         assertTrue(entity.isClosed());
+        assertFalse(chunk.getEntities().containsKey(entity.runtimeId()));
+        assertNull(level.getEntity(entity.runtimeId()));
     }
 }
