@@ -18,12 +18,14 @@ public class ItemLog2 extends Item {
 
     public void internalAdjust() {
         switch (getDamage()) {
-            case 0:
+            case 0 -> {
                 this.name = "Acacia Log";
                 this.block = Block.get(BlockID.ACACIA_LOG);
-            case 1:
+            }
+            case 1 -> {
                 this.name = "Dark Oak Log";
                 this.block = Block.get(BlockID.DARK_OAK_LOG);
+            }
         }
         this.meta = 0;
     }
