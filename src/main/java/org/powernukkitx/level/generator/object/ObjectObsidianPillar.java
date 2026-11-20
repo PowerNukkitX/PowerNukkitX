@@ -160,7 +160,9 @@ public class ObjectObsidianPillar extends ObjectGenerator {
                 crystal.setInvulnerable(true);
                 crystal.setBeamTarget(beamTarget);
             }
-            entity.spawnToAll();
+            if (entity != null) {
+                entity.spawnToAll();
+            }
         });
         return true;
     }

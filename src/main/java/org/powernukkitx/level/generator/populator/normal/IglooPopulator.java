@@ -99,8 +99,12 @@ public class IglooPopulator extends Populator implements PopulatorStructure {
                 object.addHook(() -> {
                     var villager = Entity.createEntity(Entity.VILLAGER_V2, chunk, Entity.getDefaultNBT(vec.asVector3().add(2.5, 1, 1.5)));
                     var zombie = Entity.createEntity(Entity.ZOMBIE_VILLAGER_V2, chunk, Entity.getDefaultNBT(vec.asVector3().add(4.5, 1, 1.5)));
-                    villager.spawnToAll();
-                    zombie.spawnToAll();
+                    if (villager != null) {
+                        villager.spawnToAll();
+                    }
+                    if (zombie != null) {
+                        zombie.spawnToAll();
+                    }
                 });
             } else
                 object.setBlockStateAt(new BlockVector3(vec.x + 3, vec.y, vec.z + 5), BlockSnow.PROPERTIES.getDefaultState());

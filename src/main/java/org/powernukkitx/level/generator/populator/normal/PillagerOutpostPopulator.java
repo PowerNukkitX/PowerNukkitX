@@ -235,13 +235,17 @@ public class PillagerOutpostPopulator extends Populator implements PopulatorStru
                      "pillager_outpost/feature_cage2" -> {
                     manager.addHook(() -> {
                         Entity entity = Entity.createEntity(Entity.IRON_GOLEM, base.add(3.5,1,3.5));
-                        entity.spawnToAll();
+                        if (entity != null) {
+                            entity.spawnToAll();
+                        }
                     });
                 }
                 case "pillager_outpost/feature_cage_with_allays" ->{
                     manager.addHook(() -> {
                         Entity entity = Entity.createEntity(Entity.ALLAY, base.add(4.5,2,4.5));
-                        entity.spawnToAll();
+                        if (entity != null) {
+                            entity.spawnToAll();
+                        }
                     });
                 }
             }
