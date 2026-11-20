@@ -10,8 +10,10 @@ import org.powernukkitx.config.category.NetworkSettings;
 import java.net.InetAddress;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -49,6 +51,7 @@ public final class LoginService {
     private final int maxPendingLoginsPerAddress;
     private final AtomicInteger reservedPlayerSlots = new AtomicInteger();
     private final ArrayDeque<Waiter> waiting = new ArrayDeque<>();
+    private final Map<InetAddress, Integer> waitingLoginsByAddress = new HashMap<>();
     private final int maxWaitingLogins;
 
     /**
@@ -146,7 +149,8 @@ public final class LoginService {
      * A burst of joins larger than {@link #getMaxPendingLogins()} waits for its turn instead of
      * being turned away, up to {@code network-settings.maxQueuedLogins} waiting logins. Logins are
      * let in the order they arrived. A public address that already holds its share of slots, see
-     * {@link #tryAdmit(InetAddress)}, is refused rather than queued.
+     * {@link #tryAdmit(InetAddress)}, is refused rather than queued. Waiting logins count towards
+     * the same per-address limit; private proxy addresses remain exempt.
      *
      * @param address the address the login comes from, or {@code null} when unknown
      * @param resume  run once a queued login has been given its slot; never run for
@@ -160,13 +164,16 @@ public final class LoginService {
                 return Admission.ADMITTED;
             }
             final InetAddress limited = this.limitedAddress(address);
-            if (limited != null && this.pendingLoginsByAddress.getOrDefault(limited, 0) >= this.maxPendingLoginsPerAddress) {
+            if (limited != null && this.pendingLoginsByAddress.getOrDefault(limited, 0) + this.waitingLoginsByAddress.getOrDefault(limited, 0) >= this.maxPendingLoginsPerAddress) {
                 return Admission.REFUSED;
             }
             if (this.waiting.size() >= this.maxWaitingLogins) {
                 return Admission.REFUSED;
             }
             this.waiting.add(new Waiter(address, resume));
+            if (limited != null) {
+                this.waitingLoginsByAddress.merge(limited, 1, Integer::sum);
+            }
         }
         this.drainWaiting();
         return Admission.QUEUED;
@@ -180,7 +187,13 @@ public final class LoginService {
      */
     public void cancelWaiting(Runnable resume) {
         synchronized (this.waiting) {
-            this.waiting.removeIf(waiter -> waiter.resume() == resume);
+            this.waiting.removeIf(waiter -> {
+               if (waiter.resume() != resume){
+                   return false;
+               }
+               this.releaseWaitingAddress(waiter.address());
+               return true;
+            });
         }
     }
 
@@ -212,6 +225,7 @@ public final class LoginService {
                 final Waiter waiter = iterator.next();
                 if (this.tryAdmit(waiter.address())) {
                     iterator.remove();
+                    this.releaseWaitingAddress(waiter.address());
                     if (admitted == null) {
                         admitted = new ArrayList<>();
                     }
@@ -228,6 +242,16 @@ public final class LoginService {
 
     private void releaseAddress(InetAddress address) {
         this.pendingLoginsByAddress.computeIfPresent(address, (key, count) -> count > 1 ? count - 1 : null);
+    }
+
+    /**
+     * Guarded by waiting, like the queue itself.
+     */
+    private void releaseWaitingAddress(@Nullable InetAddress address){
+        final InetAddress limited = this.limitedAddress(address);
+        if (limited != null){
+            this.waitingLoginsByAddress.computeIfPresent(limited, (key, count) -> count > 1 ? count - 1 : null);
+        }
     }
 
     private @Nullable InetAddress limitedAddress(@Nullable InetAddress address) {
