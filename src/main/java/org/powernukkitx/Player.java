@@ -95,6 +95,7 @@ import org.powernukkitx.entity.Entity;
 import org.powernukkitx.entity.EntityHuman;
 import org.powernukkitx.entity.EntityInteractable;
 import org.powernukkitx.entity.EntityLiving;
+import org.powernukkitx.entity.effect.EffectType;
 import org.powernukkitx.entity.components.NameableComponent;
 import org.powernukkitx.entity.data.human.Skin;
 import org.powernukkitx.entity.data.warden.WardenWarningData;
@@ -346,7 +347,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
      * Unresponsive dialogs will be cleared after 5 minutes
      */
     protected Cache<String, FormWindowDialog> dialogWindows = Caffeine.newBuilder().expireAfterAccess(5, TimeUnit.MINUTES).build();
-    protected Map<Long, DummyBossBar> dummyBossBars = new Long2ObjectLinkedOpenHashMap<>();
+    protected Map<Long, DummyBossBar> dummyBossBars = Collections.synchronizedMap(new Long2ObjectLinkedOpenHashMap<>());
     protected int lastInAirTick = 0;
     protected int previousInteractTick = 0;
     private final float rotationUpdateThreshold;
@@ -3969,7 +3970,9 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         }
 
         if (this.spawned && !this.dummyBossBars.isEmpty() && currentTick % 100 == 0) {
-            this.dummyBossBars.values().forEach(DummyBossBar::updateBossEntityPosition);
+            synchronized (this.dummyBossBars) {
+                this.dummyBossBars.values().forEach(DummyBossBar::updateBossEntityPosition);
+            }
         }
 
         PlayerFood foodData = getFoodData();
@@ -4401,6 +4404,17 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         pk.setMessageType(TextPacketType.TEXT_OBJECT);
         pk.setSendersXUID("");
         pk.setBody(messageOnly);
+        this.sendPacket(pk);
+    }
+
+    /**
+     * Plays the screen animation of an effect.
+     *
+     * @param effect the effect whose animation is played
+     */
+    public void sendEffectAnimation(EffectType effect) {
+        final OnScreenTextureAnimationPacket pk = new OnScreenTextureAnimationPacket();
+        pk.setEffectId(effect.id());
         this.sendPacket(pk);
     }
 
@@ -6051,7 +6065,9 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         }
         this.resetFallDistance();
         //DummyBossBar
-        this.getDummyBossBars().values().forEach(DummyBossBar::reshow);
+        synchronized (this.dummyBossBars) {
+            this.dummyBossBars.values().forEach(DummyBossBar::reshow);
+        }
         //Weather
         this.getLevel().sendWeather(this);
         updateTrackingPositions(true);
@@ -6206,8 +6222,10 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
      * @see DummyBossBar.Builder
      */
     public long createBossBar(DummyBossBar dummyBossBar) {
-        this.dummyBossBars.put(dummyBossBar.getBossBarId(), dummyBossBar);
-        dummyBossBar.create();
+        synchronized (this.dummyBossBars) {
+            this.dummyBossBars.put(dummyBossBar.getBossBarId(), dummyBossBar);
+            dummyBossBar.create();
+        }
         return dummyBossBar.getBossBarId();
     }
 
@@ -6227,6 +6245,8 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     /**
      * Get all DummyBossBar objects
      *
+     * Synchronize on the returned map when iterating its entries or views.
+     *
      * @return DummyBossBars Map
      */
     public Map<Long, DummyBossBar> getDummyBossBars() {
@@ -6241,10 +6261,12 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
      * @param bossBarId The BossBar ID
      */
     public void updateBossBar(String text, int length, long bossBarId) {
-        if (this.dummyBossBars.containsKey(bossBarId)) {
+        synchronized (this.dummyBossBars) {
             DummyBossBar bossBar = this.dummyBossBars.get(bossBarId);
-            bossBar.setText(text);
-            bossBar.setLength(length);
+            if (bossBar != null) {
+                bossBar.setText(text);
+                bossBar.setLength(length);
+            }
         }
     }
 
@@ -6254,9 +6276,11 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
      * @param bossBarId The BossBar ID
      */
     public void removeBossBar(long bossBarId) {
-        if (this.dummyBossBars.containsKey(bossBarId)) {
-            this.dummyBossBars.get(bossBarId).destroy();
-            this.dummyBossBars.remove(bossBarId);
+        synchronized (this.dummyBossBars) {
+            DummyBossBar bossBar = this.dummyBossBars.remove(bossBarId);
+            if (bossBar != null) {
+                bossBar.destroy();
+            }
         }
     }
 
