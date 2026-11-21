@@ -1,5 +1,6 @@
 package org.powernukkitx.block;
 
+import org.powernukkitx.block.customblock.BlockDataDriven;
 import org.powernukkitx.block.definition.BlockDefinition;
 
 import org.powernukkitx.Player;
@@ -400,6 +401,9 @@ public abstract class BlockWallBase extends BlockTransparent implements BlockCon
 
     @Override
     public boolean canConnect(Block block) {
+        if (block instanceof BlockDataDriven dataDriven && !dataDriven.acceptsConnectionFrom(this, false)) {
+            return false;
+        }
         switch (block.getId()) {
             case GLASS_PANE, IRON_BARS, GLASS -> {
                 return true;

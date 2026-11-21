@@ -9,6 +9,7 @@ import org.powernukkitx.event.player.PlayerItemHeldEvent;
 import org.powernukkitx.item.Item;
 import org.powernukkitx.item.ItemArmor;
 import org.powernukkitx.item.ItemFilledMap;
+import org.powernukkitx.item.customitem.ItemDataDriven;
 import org.powernukkitx.level.vibration.VibrationEvent;
 import org.powernukkitx.level.vibration.VibrationType;
 import com.google.common.collect.BiMap;
@@ -286,6 +287,9 @@ public class HumanInventory extends BaseInventory {
         IHuman holder = this.getHolder();
         if (holder instanceof Player && !((Player) holder).spawned) {
             return;
+        }
+        if (before != null && this.getUnclonedItem(index) instanceof ItemDataDriven sensed) {
+            sensed.senseDurability(before, holder.getEntity());
         }
 
         if (index >= ARMORS_INDEX) {

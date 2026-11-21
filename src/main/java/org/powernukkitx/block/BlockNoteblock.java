@@ -1,5 +1,6 @@
 package org.powernukkitx.block;
 
+import org.powernukkitx.block.customblock.BlockDataDriven;
 import org.powernukkitx.block.definition.BlockDefinition;
 
 import org.powernukkitx.Player;
@@ -117,6 +118,14 @@ public class BlockNoteblock extends BlockSolid implements RedstoneComponent, Blo
     }
 
     public Instrument getInstrument() {
+        if (this.up() instanceof BlockDataDriven above && above.getInstrumentSound() != null
+                && above.getInstrumentSound().down() != null) {
+            return above.getInstrumentSound().down();
+        }
+        if (this.down() instanceof BlockDataDriven below && below.getInstrumentSound() != null
+                && below.getInstrumentSound().up() != null) {
+            return below.getInstrumentSound().up();
+        }
         return switch (this.up()) {
             case BlockSkeletonSkull ignored -> Instrument.SKELETON;
             case BlockWitherSkeletonSkull ignored -> Instrument.WITHER_SKELETON;
@@ -192,6 +201,9 @@ public class BlockNoteblock extends BlockSolid implements RedstoneComponent, Blo
 
         this.level.getVibrationManager().callVibrationEvent(new VibrationEvent(player != null ? player.getLocation() : this, this.add(0.5, 0.5, 0.5).clone(), VibrationType.BLOCK_CHANGE));
 
+        if (isSilenced()) {
+            return;
+        }
         Instrument instrument = this.getInstrument();
 
         this.level.addLevelSoundEvent(this, SoundEvent.NOTE, instrument.getId() << 8 | this.getStrength());
@@ -225,6 +237,19 @@ public class BlockNoteblock extends BlockSolid implements RedstoneComponent, Blo
             }
         }
         return super.onUpdate(type);
+    }
+
+    /**
+     * A pack block under the note block may declare {@code note.none} for its top face, so the note block
+     * plays nothing unless the block on top of it sounds an instrument.
+     */
+    private boolean isSilenced() {
+        if (this.up() instanceof BlockDataDriven above && above.getInstrumentSound() != null
+                && above.getInstrumentSound().down() != null) {
+            return false;
+        }
+        return this.down() instanceof BlockDataDriven below && below.getInstrumentSound() != null
+                && below.getInstrumentSound().up() == null;
     }
 
     public enum Instrument {

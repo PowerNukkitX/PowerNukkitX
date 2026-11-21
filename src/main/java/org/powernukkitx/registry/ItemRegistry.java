@@ -17,6 +17,7 @@ import org.powernukkitx.item.tools.copper.ItemCopperSword;
 import org.powernukkitx.nbt.tag.CompoundTag;
 import org.powernukkitx.plugin.Plugin;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
+import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 import it.unimi.dsi.fastutil.objects.ObjectSet;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
@@ -24,6 +25,7 @@ import me.sunlan.fastreflection.FastConstructor;
 import me.sunlan.fastreflection.FastMemberLoader;
 import org.cloudburstmc.nbt.NbtMap;
 import org.cloudburstmc.nbt.NbtUtils;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.UnmodifiableView;
@@ -42,7 +44,24 @@ import java.util.concurrent.atomic.AtomicLong;
  */
 @Slf4j
 public final class ItemRegistry implements ItemID, IRegistry<String, Item, Class<? extends Item>> {
-    private static final Object2ObjectOpenHashMap<String, FastConstructor<? extends Item>> CACHE_CONSTRUCTORS = new Object2ObjectOpenHashMap<>();
+    /**
+     * Creates a fresh {@link Item} instance for a registered identifier.
+     * <p>
+     * Registrations made from a class wrap that class' no-arg constructor, so registering
+     * an item still needs nothing but the class. Registrations that have no class of
+     * their own supply a closure instead, which is what
+     * {@link #registerCustomItemDefinition(CustomItem, ItemFactory)} exists for.
+     */
+    @FunctionalInterface
+    public interface ItemFactory {
+        /**
+         * @throws Throwable whatever the underlying constructor throws; the registry
+         *                   logs it and yields no item rather than propagating
+         */
+        Item create() throws Throwable;
+    }
+
+    private static final Object2ObjectOpenHashMap<String, ItemFactory> CACHE_CONSTRUCTORS = new Object2ObjectOpenHashMap<>();
     private static final Map<String, CustomItemDefinition> CUSTOM_ITEM_DEFINITIONS = new HashMap<>();
     private static final Map<String, String> ALIASES = new HashMap<>();
     private static final AtomicLong CUSTOM_ITEM_DEFINITION_CHANGES = new AtomicLong();
@@ -708,13 +727,13 @@ public final class ItemRegistry implements ItemID, IRegistry<String, Item, Class
     @Override
     public Item get(String key) {
         try {
-            FastConstructor<? extends Item> fastConstructor = CACHE_CONSTRUCTORS.get(key);
+            ItemFactory fastConstructor = CACHE_CONSTRUCTORS.get(key);
             if (fastConstructor == null) {
                 key = resolveAlias(key);
                 fastConstructor = CACHE_CONSTRUCTORS.get(key);
             }
             if (fastConstructor == null) return null;
-            Item item = (Item) fastConstructor.invoke();
+            Item item = fastConstructor.create();
 
             if (item instanceof ItemCustomEntitySpawnEgg egg) {
                 egg.resolveSpawnEgg(key);
@@ -734,7 +753,7 @@ public final class ItemRegistry implements ItemID, IRegistry<String, Item, Class
                 c = CACHE_CONSTRUCTORS.get(id);
             }
             if (c == null) return null;
-            Item item = (Item) c.invoke();
+            Item item = c.create();
 
             if (item instanceof ItemCustomEntitySpawnEgg egg) {
                 egg.resolveSpawnEgg(id);
@@ -755,7 +774,7 @@ public final class ItemRegistry implements ItemID, IRegistry<String, Item, Class
                 c = CACHE_CONSTRUCTORS.get(id);
             }
             if (c == null) return null;
-            Item item = (Item) c.invoke();
+            Item item = c.create();
 
             if (item instanceof ItemCustomEntitySpawnEgg egg) {
                 egg.resolveSpawnEgg(id);
@@ -777,7 +796,7 @@ public final class ItemRegistry implements ItemID, IRegistry<String, Item, Class
                 c = CACHE_CONSTRUCTORS.get(id);
             }
             if (c == null) return null;
-            Item item = (Item) c.invoke();
+            Item item = c.create();
 
             item.setCount(count);
             item.setNbt(tags == null ? null : CompoundTag.fromNetwork(tags));
@@ -801,7 +820,7 @@ public final class ItemRegistry implements ItemID, IRegistry<String, Item, Class
                 c = CACHE_CONSTRUCTORS.get(id);
             }
             if (c == null) return null;
-            Item item = (Item) c.invoke();
+            Item item = c.create();
 
             item.setCount(count);
             if (tags != null) {
@@ -819,8 +838,12 @@ public final class ItemRegistry implements ItemID, IRegistry<String, Item, Class
         }
     }
 
+    /**
+     * @return a snapshot of every registered item identifier, vanilla and custom; changes to the
+     * returned set do not affect the registry
+     */
     public ObjectSet<String> getAll() {
-        ObjectSet<String> ids = CACHE_CONSTRUCTORS.keySet();
+        ObjectSet<String> ids = new ObjectOpenHashSet<>(CACHE_CONSTRUCTORS.keySet());
         ids.addAll(CUSTOM_ITEM_DEFINITIONS.keySet());
         return ids;
     }
@@ -843,7 +866,7 @@ public final class ItemRegistry implements ItemID, IRegistry<String, Item, Class
     public void register(String key, Class<? extends Item> value) throws RegisterException {
         try {
             FastConstructor<? extends Item> c = FastConstructor.create(value.getConstructor());
-            if (CACHE_CONSTRUCTORS.putIfAbsent(key, c) != null) {
+            if (CACHE_CONSTRUCTORS.putIfAbsent(key, () -> (Item) c.invoke()) != null) {
                 throw new RegisterException("This item has already been registered with the identifier: " + key);
             }
             registerAliases(key, (Item) c.invoke());
@@ -874,29 +897,90 @@ public final class ItemRegistry implements ItemID, IRegistry<String, Item, Class
             FastConstructor<? extends Item> c = FastConstructor.create(value.getConstructor(), memberLoader, false);
 
             CustomItem customItem = (CustomItem) c.invoke((Object) null);
-            CustomItemDefinition def = customItem.getDefinition();
-            String key = def.identifier();
-
-            if (CACHE_CONSTRUCTORS.putIfAbsent(key, c) != null) {
-                throw new RegisterException("This item has already been registered with the identifier: " + key);
-            }
-
-            CUSTOM_ITEM_DEFINITIONS.put(key, def);
-            registerAliases(key, (Item) customItem);
-            CUSTOM_ITEM_DEFINITION_CHANGES.incrementAndGet();
-            Registries.ITEM_RUNTIMEID.registerCustomRuntimeItem(new ItemRuntimeIdRegistry.RuntimeEntry(key, def.getRuntimeId(), true));
-
-            CompoundTag nbt = def.nbt();
-            if (Registries.CREATIVE.shouldBeRegisteredItem(nbt)) {
-                Item ci = (Item) c.invoke((Object) null);
-                ci.setNetId(null);
-                int groupIndex = Registries.CREATIVE.resolveGroupIndexFromItemDefinition(key, nbt);
-                Registries.CREATIVE.addCreativeItem(ci, groupIndex);
-            }
+            registerCustomItemDefinition(customItem, () -> (Item) c.invoke());
         } catch (NoSuchMethodException e) {
             throw new RegisterException(e);
         } catch (Throwable e) {
             throw new RuntimeException(e);
+        }
+    }
+
+    /**
+     * Registers a custom item from an existing instance and a factory, for callers that
+     * have no dedicated item class to register - a single generic class can back many
+     * identifiers this way, each with its own definition.
+     * <p>
+     * The prototype supplies the definition and the aliases; the factory is what every
+     * later lookup goes through, including the instance placed in the creative inventory.
+     *
+     * @param prototype an instance carrying the {@link CustomItemDefinition} to register
+     * @param factory   creates new instances of this item
+     * @throws RegisterException when the definition's identifier is already registered
+     */
+    public void registerCustomItemDefinition(@NotNull CustomItem prototype, @NotNull ItemFactory factory) throws RegisterException {
+        CustomItemDefinition def = prototype.getDefinition();
+        String key = def.identifier();
+
+        if (CACHE_CONSTRUCTORS.putIfAbsent(key, factory) != null) {
+            throw new RegisterException("This item has already been registered with the identifier: " + key);
+        }
+
+        CUSTOM_ITEM_DEFINITIONS.put(key, def);
+        registerAliases(key, (Item) prototype);
+        CUSTOM_ITEM_DEFINITION_CHANGES.incrementAndGet();
+        Registries.ITEM_RUNTIMEID.registerCustomRuntimeItem(new ItemRuntimeIdRegistry.RuntimeEntry(key, def.getRuntimeId(), true));
+
+        CompoundTag nbt = def.nbt();
+        if (Registries.CREATIVE.shouldBeRegisteredItem(nbt)) {
+            Item ci;
+            try {
+                ci = factory.create();
+            } catch (Throwable e) {
+                throw new RegisterException(e);
+            }
+            ci.setNetId(null);
+            int groupIndex = Registries.CREATIVE.resolveGroupIndexFromItemDefinition(key, nbt);
+            Registries.CREATIVE.addCreativeItem(ci, groupIndex);
+        }
+    }
+
+    /**
+     * Registers a custom item that takes over the item form of a custom block with the same identifier,
+     * as a behaviour pack's {@code minecraft:block_placer} with {@code replace_block_item} does: the
+     * identifier keeps the block item's runtime ID, but clients are sent the item's components and the
+     * server creates the item from {@code factory}, so its icon, name, food and other components apply
+     * wherever the block's item would have appeared, the creative inventory included.
+     *
+     * @param prototype an instance of the item, whose definition is registered
+     * @param factory   creates the item from now on
+     * @throws RegisterException when no custom block has the identifier, or an item already replaced it
+     */
+    public void registerBlockItemReplacement(@NotNull CustomItem prototype, @NotNull ItemFactory factory) throws RegisterException {
+        CustomItemDefinition def = prototype.getDefinition();
+        String key = def.identifier();
+        if (BlockRegistry.getCustomBlockDefinitionByIdStatic(key) == null) {
+            throw new RegisterException("No custom block has the identifier " + key + " to replace the item of");
+        }
+        if (CACHE_CONSTRUCTORS.putIfAbsent(key, factory) != null) {
+            throw new RegisterException("This item has already been registered with the identifier: " + key);
+        }
+        int runtimeId = Registries.ITEM_RUNTIMEID.getInt(key);
+        Registries.ITEM_RUNTIMEID.replaceCustomRuntimeItem(new ItemRuntimeIdRegistry.RuntimeEntry(key, runtimeId, true));
+        CUSTOM_ITEM_DEFINITIONS.put(key, def);
+        registerAliases(key, (Item) prototype);
+        CUSTOM_ITEM_DEFINITION_CHANGES.incrementAndGet();
+
+        Item ci;
+        try {
+            ci = factory.create();
+        } catch (Throwable e) {
+            throw new RegisterException(e);
+        }
+        ci.setNetId(null);
+        CompoundTag nbt = def.nbt();
+        int groupIndex = Registries.CREATIVE.resolveGroupIndexFromItemDefinition(key, nbt);
+        if (!Registries.CREATIVE.replaceCreativeItem(key, ci, groupIndex) && Registries.CREATIVE.shouldBeRegisteredItem(nbt)) {
+            Registries.CREATIVE.addCreativeItem(ci, groupIndex);
         }
     }
 
@@ -929,7 +1013,7 @@ public final class ItemRegistry implements ItemID, IRegistry<String, Item, Class
         return CUSTOM_ITEM_DEFINITIONS.get(id);
     }
 
-    public static org.powernukkitx.item.customitem.CustomItemDefinition getCustomItemDefinition(String identifier) {
+    public static CustomItemDefinition getCustomItemDefinition(String identifier) {
         return CUSTOM_ITEM_DEFINITIONS.get(identifier);
     }
 }

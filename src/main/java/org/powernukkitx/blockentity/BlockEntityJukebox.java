@@ -4,6 +4,7 @@ import org.powernukkitx.block.Block;
 import org.powernukkitx.item.Item;
 import org.powernukkitx.entity.passive.EntityParrot;
 import org.powernukkitx.item.ItemMusicDisc;
+import org.powernukkitx.item.customitem.ItemDataDriven;
 import org.powernukkitx.level.format.IChunk;
 import org.powernukkitx.nbt.tag.CompoundTag;
 import org.powernukkitx.utils.ItemHelper;
@@ -61,19 +62,26 @@ public class BlockEntityJukebox extends BlockEntitySpawnable {
 
 
     public void play() {
-        if (!(this.recordItem instanceof ItemMusicDisc itemRecord)) {
+        String sound;
+        int duration;
+        if (this.recordItem instanceof ItemMusicDisc itemRecord) {
+            sound = itemRecord.getSoundId();
+            duration = itemRecord.getDurationTicks();
+        } else if (this.recordItem instanceof ItemDataDriven dataDriven && dataDriven.getRecord() != null) {
+            sound = dataDriven.getRecord().soundEvent();
+            duration = Math.round(dataDriven.getRecord().duration() * 20);
+        } else {
             return;
         }
         stop();
 
         final ServerSoundHandle handle = new ServerSoundHandle(SOUND_HANDLES.getAndIncrement());
         this.soundHandle = handle;
-        int duration = itemRecord.getDurationTicks();
         playbackEndsAt = duration > 0 ? level.getTick() + duration : Integer.MAX_VALUE;
         scheduleUpdate();
 
         final PlaySoundPacket playSound = new PlaySoundPacket();
-        playSound.setName(itemRecord.getSoundId());
+        playSound.setName(sound);
         playSound.setPosition(Vector3f.from(this.getFloorX() + 0.5f, this.getFloorY() + 0.5f, this.getFloorZ() + 0.5f));
         playSound.setVolume(1f);
         playSound.setPitch(1f);
@@ -92,7 +100,8 @@ public class BlockEntityJukebox extends BlockEntitySpawnable {
 
     /** @return whether this jukebox has an active record playback */
     public boolean isPlaying() {
-        return !closed && level != null && soundHandle != null && recordItem instanceof ItemMusicDisc
+        return !closed && level != null && soundHandle != null
+                && (recordItem instanceof ItemMusicDisc || recordItem instanceof ItemDataDriven dataDriven && dataDriven.getRecord() != null)
                 && level.getTick() < playbackEndsAt;
     }
 

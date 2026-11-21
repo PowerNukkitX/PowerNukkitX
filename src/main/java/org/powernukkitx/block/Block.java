@@ -1,6 +1,7 @@
 package org.powernukkitx.block;
 
 import org.powernukkitx.Player;
+import org.powernukkitx.block.customblock.BlockDataDriven;
 import org.powernukkitx.block.customblock.CustomBlock;
 import org.powernukkitx.block.customblock.CustomBlockComponentBehavior;
 import org.powernukkitx.block.customblock.CustomBlockDefinition;
@@ -116,7 +117,31 @@ public abstract class Block extends Position implements Metadatable, AxisAligned
         } else {
             this.blockstate = this.getProperties().getDefaultState();
         }
+        initDefinition(definition);
+    }
 
+    /**
+     * Constructor for blocks whose properties belong to the instance rather than the class, so one
+     * class can back many identifiers, each with its own states. Unlike
+     * {@link #Block(BlockState, BlockDefinition)} it never calls {@link #getProperties()}, which lets a
+     * subclass answer that method from a field it only assigns after {@code super()} returns.
+     *
+     * @param blockState the state to take; null, or a state that does not belong to {@code properties},
+     *                   falls back to the default state
+     * @param properties the block's own state definition
+     * @param definition the definition backing the property getters, or null for {@link #DEFAULT_DEFINITION}
+     */
+    protected Block(@Nullable BlockState blockState, @NotNull BlockProperties properties, @Nullable BlockDefinition definition) {
+        super(0, 0, 0, null);
+        if (properties.containBlockState(blockState)) {
+            this.blockstate = blockState;
+        } else {
+            this.blockstate = properties.getDefaultState();
+        }
+        initDefinition(definition);
+    }
+
+    private void initDefinition(@Nullable BlockDefinition definition) {
         if (definition != null) {
             this.definition = definition;
         } else {
@@ -421,6 +446,11 @@ public abstract class Block extends Position implements Metadatable, AxisAligned
      */
     public boolean hasFreeSpaceAbove() {
         Block above = this.up();
+
+        if (above instanceof BlockDataDriven dataDriven
+                && dataDriven.getChestObstruction() != BlockDataDriven.ChestObstruction.SHAPE) {
+            return dataDriven.getChestObstruction() == BlockDataDriven.ChestObstruction.NEVER;
+        }
 
         if (above instanceof BlockSlab slab) {
             return slab.isOnTop();
