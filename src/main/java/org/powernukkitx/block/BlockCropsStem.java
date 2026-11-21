@@ -6,7 +6,6 @@ import org.powernukkitx.event.block.BlockGrowEvent;
 import org.powernukkitx.item.Item;
 import org.powernukkitx.level.Level;
 import org.powernukkitx.math.BlockFace;
-import org.powernukkitx.math.NukkitMath;
 import org.powernukkitx.utils.Faceable;
 
 import java.util.concurrent.ThreadLocalRandom;
@@ -20,29 +19,6 @@ import java.util.concurrent.ThreadLocalRandom;
 public abstract class BlockCropsStem extends BlockCrops implements Faceable {
 
     public abstract BlockState getStrippedState();
-
-    //https://minecraft.wiki/w/Melon_Seeds#Breaking
-    private static final double[][] dropChances = new double[][]{
-            {.8130,.1742,.0124,.0003}, //0
-            {.6510,.3004,.0462,.0024}, //1
-            {.5120,.3840,.0960,.0080}, //2
-            {.3944,.4302,.1564,.0190}, //3
-            {.2913,.4444,.2222,.0370}, //4
-            {.2160,.4320,.2880,.0640}, //5
-            {.1517,.3982,.3484,.1016}, //6
-            {.1016,.3484,.3982,.1517}  //7
-    };
-    
-    static {
-        for (double[] dropChance : dropChances) {
-            double last = dropChance[0];
-            for (int i = 1; i < dropChance.length; i++) {
-                last += dropChance[i];
-                assert last <= 1.0;
-                dropChance[i] = last;
-            }
-        }
-    }
 
     public BlockCropsStem(BlockState blockstate) {
         super(blockstate);
@@ -138,12 +114,13 @@ public abstract class BlockCropsStem extends BlockCrops implements Faceable {
 
     @Override
     public Item[] getDrops(Item item) {
-        double[] dropChance = dropChances[NukkitMath.clamp(getGrowth(), 0, dropChances.length)];
-        
-        double dice = ThreadLocalRandom.current().nextDouble();
+        ThreadLocalRandom random = ThreadLocalRandom.current();
+        int growth = getGrowth();
         int count = 0;
-        while (dice > dropChance[count]) {
-            count++;
+        for (int i = 0; i < 3; i++) {
+            if (random.nextInt(15) <= growth) {
+                count++;
+            }
         }
         
         if (count == 0) {
