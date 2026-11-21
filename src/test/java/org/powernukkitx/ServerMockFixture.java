@@ -93,6 +93,10 @@ public final class ServerMockFixture {
         Registries.FUEL.init();
         Registries.GENERATE_STAGE.init();
         Registries.GENERATOR.init();
+        Registries.POPULATOR.init();
+        Registries.GENERATE_FEATURE.init();
+        Registries.STRUCTURE_SPAWN_OVERRIDE.init();
+        Registries.STRUCTURE.init();
         Registries.EFFECT.init();
         Attribute.init();
         BlockComposter.init();
