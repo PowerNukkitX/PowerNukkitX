@@ -76,6 +76,7 @@
   "pnx.settings.network.pacing.enabled": "Kung papaganahin ang pacing/shaping ng packet",
   "pnx.settings.network.pacing.flushintervalmillis": "Pagkaantala ng micro-batching (milliseconds) sa pagitan ng mga flush",
   "pnx.settings.network.pacing.maxbytespersecond": "Pinakamataas na bilang ng mga byte bawat segundo bawat koneksyon",
+  "pnx.settings.network.logintimeout": "Mga segundo na mayroon ang isang bagong koneksyon upang ipadala ang login nito bago ito isara, upang ang client na kumokonekta at nananatiling tahimik ay hindi makapagpanatiling bukas ng session. Hindi kasama ang oras ng paghihintay sa login queue. 0 ay nag-aalis ng limitasyon",
   "pnx.settings.debug.deprecatedverbose": "Kung ipo-prompt ba ang mga hindi na ginagamit na kaganapan para sa plugin",
   "pnx.settings.debug.level": "Antas ng debug ng server [INFO, DEBUG, TRACE, ALL]",
   "pnx.settings.debug.command": "Kung paganahin ba ang mga debug command",

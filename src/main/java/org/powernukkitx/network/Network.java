@@ -358,12 +358,10 @@ public class Network implements NetworkInterface, SignalingService {
         }
 
         session.setCodec(NetworkConstants.CODEC);
-        session.setPacketHandler(new NetworkPacketHandler(this.server,
-            new PlayerSessionHolder(
-                session,
-                this.server.getSettings().networkSettings().rateLimitSettings()
-            )
-        ));
+        final NetworkSettings networkSettings = this.server.getSettings().networkSettings();
+        final PlayerSessionHolder holder = new PlayerSessionHolder(session, networkSettings.rateLimitSettings());
+        session.setPacketHandler(new NetworkPacketHandler(this.server, holder));
+        holder.startLoginDeadline(networkSettings.loginTimeoutSeconds());
         final Channel sessionChannel = session.getPeer().getChannel();
         this.sessionMap.put(address, session);
         if (this.botnetDetector != null) {

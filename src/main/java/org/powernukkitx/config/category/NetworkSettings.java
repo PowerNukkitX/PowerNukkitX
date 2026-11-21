@@ -35,6 +35,8 @@ public class NetworkSettings extends OkaeriConfig {
     boolean enableQuery = true;
     @Comment("pnx.settings.network.logintime")
     boolean checkLoginTime = false;
+    @Comment("pnx.settings.network.logintimeout")
+    int loginTimeoutSeconds = 30;
     @Comment("pnx.settings.network.maxpendinglogins")
     int maxPendingLogins = 0;
     @Comment("pnx.settings.network.maxpendingloginsperaddress")

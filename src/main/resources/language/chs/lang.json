@@ -73,6 +73,7 @@
   "pnx.settings.network.compressionBufferSize": "服务器是解压缩的缓存",
   "pnx.settings.network.maxDecompressSize": "服务器最大可以解压的字节数 单位B",
   "pnx.settings.network.packetLimit": "服务器每秒最大的可以接受的数据包数量",
+  "pnx.settings.network.logintimeout": "新连接在被关闭前必须发送登录数据的秒数，防止客户端连接后保持静默而一直占用会话。在登录队列中等待的时间不计入。0 表示不限制",
   "pnx.settings.debug": "服务器的调试配置",
   "pnx.settings.debug.level": "服务器的调试等级 [INFO,DEBUG,TRACE,ALL]",
   "pnx.settings.debug.command": "是否开启调试命令",
