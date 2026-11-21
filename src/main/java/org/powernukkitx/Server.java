@@ -152,6 +152,7 @@ import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Executor;
 import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.ForkJoinWorkerThread;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -524,7 +525,7 @@ public class Server {
             registryCache = cache;
         }
 
-        CompletableFuture<Void> registriesF = startRegistries(registryCache, creativeInventoryEnabled, recipesEnabled);
+        CompletableFuture<Void> registriesF = startRegistries(computeThreadPool, registryCache, creativeInventoryEnabled, recipesEnabled);
 
         int chunkIoThreads = this.settings.chunkSettings().chunkIoThreads();
         if (chunkIoThreads <= 0) {
@@ -820,64 +821,71 @@ public class Server {
         this.start();
     }
 
-    private CompletableFuture<Void> startRegistries(RegistryCache registryCache, boolean creativeInventoryEnabled, boolean recipesEnabled) {
-        CompletableFuture<Void> blockF = CompletableFuture.runAsync(Registries.BLOCK::init, computeThreadPool);
-        CompletableFuture<Void> potionF = CompletableFuture.runAsync(Registries.POTION::init, computeThreadPool);
-        CompletableFuture<Void> effectF = CompletableFuture.runAsync(Registries.EFFECT::init, computeThreadPool);
+    /**
+     * Initialises every registry the server needs, in dependency order, on {@code pool}.
+     * <p>
+     * Also used by {@code --aot-train} to load the same classes a real boot loads.
+     *
+     * @param registryCache restored instead of parsing the bundled game data when non-null
+     */
+    static CompletableFuture<Void> startRegistries(Executor pool, @Nullable RegistryCache registryCache, boolean creativeInventoryEnabled, boolean recipesEnabled) {
+        CompletableFuture<Void> blockF = CompletableFuture.runAsync(Registries.BLOCK::init, pool);
+        CompletableFuture<Void> potionF = CompletableFuture.runAsync(Registries.POTION::init, pool);
+        CompletableFuture<Void> effectF = CompletableFuture.runAsync(Registries.EFFECT::init, pool);
         CompletableFuture<Void> itemF = CompletableFuture.allOf(potionF, effectF)
-            .thenRunAsync(Registries.ITEM::init, computeThreadPool);
+            .thenRunAsync(Registries.ITEM::init, pool);
 
-        CompletableFuture<Void> entityF = CompletableFuture.runAsync(Registries.ENTITY::init, computeThreadPool);
-        CompletableFuture<Void> blockEntityF = CompletableFuture.runAsync(Registries.BLOCKENTITY::init, computeThreadPool);
+        CompletableFuture<Void> entityF = CompletableFuture.runAsync(Registries.ENTITY::init, pool);
+        CompletableFuture<Void> blockEntityF = CompletableFuture.runAsync(Registries.BLOCKENTITY::init, pool);
         CompletableFuture<Void> itemRtIdF = CompletableFuture.runAsync(registryCache != null
                 ? () -> registryCache.restoreItemRuntimeId(Registries.ITEM_RUNTIMEID)
                 : Registries.ITEM_RUNTIMEID::init,
-            computeThreadPool);
+            pool);
         CompletableFuture<Void> biomeF = CompletableFuture.runAsync(registryCache != null
                 ? () -> registryCache.restoreBiome(Registries.BIOME)
                 : Registries.BIOME::init,
-            computeThreadPool);
-        CompletableFuture<Void> fuelF = CompletableFuture.runAsync(Registries.FUEL::init, computeThreadPool);
-        CompletableFuture<Void> generatorF = CompletableFuture.runAsync(Registries.GENERATOR::init, computeThreadPool);
-        CompletableFuture<Void> genStageF = CompletableFuture.runAsync(Registries.GENERATE_STAGE::init, computeThreadPool);
-        CompletableFuture<Void> populatorF = CompletableFuture.runAsync(Registries.POPULATOR::init, computeThreadPool);
-        CompletableFuture<Void> genFeatF = CompletableFuture.runAsync(Registries.GENERATE_FEATURE::init, computeThreadPool);
-        CompletableFuture<Void> structureSpawnOverrideF = CompletableFuture.runAsync(Registries.STRUCTURE_SPAWN_OVERRIDE::init, computeThreadPool);
-        CompletableFuture<Void> voxelF = CompletableFuture.runAsync(Registries.VOXEL_SHAPE::init, computeThreadPool);
-        CompletableFuture<Void> disconnectF = CompletableFuture.runAsync(Registries.DISCONNECT_REASON::init, computeThreadPool);
-        CompletableFuture<Void> trimF = CompletableFuture.runAsync(Registries.TRIM::init, computeThreadPool);
+            pool);
+        CompletableFuture<Void> fuelF = CompletableFuture.runAsync(Registries.FUEL::init, pool);
+        CompletableFuture<Void> generatorF = CompletableFuture.runAsync(Registries.GENERATOR::init, pool);
+        CompletableFuture<Void> genStageF = CompletableFuture.runAsync(Registries.GENERATE_STAGE::init, pool);
+        CompletableFuture<Void> populatorF = CompletableFuture.runAsync(Registries.POPULATOR::init, pool);
+        CompletableFuture<Void> genFeatF = CompletableFuture.runAsync(Registries.GENERATE_FEATURE::init, pool);
+        CompletableFuture<Void> structureSpawnOverrideF = CompletableFuture.runAsync(Registries.STRUCTURE_SPAWN_OVERRIDE::init, pool);
+        CompletableFuture<Void> voxelF = CompletableFuture.runAsync(Registries.VOXEL_SHAPE::init, pool);
+        CompletableFuture<Void> disconnectF = CompletableFuture.runAsync(Registries.DISCONNECT_REASON::init, pool);
+        CompletableFuture<Void> trimF = CompletableFuture.runAsync(Registries.TRIM::init, pool);
 
         CompletableFuture<Void> blockStateF = blockF.thenRunAsync(registryCache != null
                 ? registryCache::restoreBlockStateColors
                 : Registries.BLOCKSTATE::init,
-            computeThreadPool);
-        CompletableFuture<Void> structureF = blockF.thenRunAsync(Registries.STRUCTURE::init, computeThreadPool);
+            pool);
+        CompletableFuture<Void> structureF = blockF.thenRunAsync(Registries.STRUCTURE::init, pool);
         CompletableFuture<Void> creativeF = creativeInventoryEnabled
             ? CompletableFuture.allOf(itemF, blockStateF, potionF, entityF, itemRtIdF)
             .thenRunAsync(registryCache != null
                           ? () -> registryCache.restoreCreative(Registries.CREATIVE)
                           : Registries.CREATIVE::init,
-                computeThreadPool)
-            : CompletableFuture.runAsync(Registries.CREATIVE::initDisabled, computeThreadPool);
+                pool)
+            : CompletableFuture.runAsync(Registries.CREATIVE::initDisabled, pool);
         CompletableFuture<Void> recipeF = recipesEnabled
             ? creativeF.thenRunAsync(registryCache != null
                                      ? () -> Registries.RECIPE.init(registryCache.getRecipePktBytes())
                                      : Registries.RECIPE::init,
-            computeThreadPool)
-            : CompletableFuture.runAsync(Registries.RECIPE::initDisabled, computeThreadPool);
+            pool)
+            : CompletableFuture.runAsync(Registries.RECIPE::initDisabled, pool);
 
         CompletableFuture<Void> miscF = CompletableFuture.runAsync(() -> {
             Profession.init();
             Updater updater = BlockStateUpdaterBase.INSTANCE;
             Enchantment.init();
             Attribute.init();
-        }, computeThreadPool);
+        }, pool);
 
         CompletableFuture<Void> dispenseF = CompletableFuture.allOf(blockF, itemF)
             .thenRunAsync(() -> {
                 BlockComposter.init();
                 DispenseBehaviorRegister.init();
-            }, computeThreadPool);
+            }, pool);
 
         return CompletableFuture.allOf(potionF, entityF, blockEntityF, itemRtIdF, biomeF,
             fuelF, generatorF, genStageF, populatorF, genFeatF, structureF, structureSpawnOverrideF, effectF,
