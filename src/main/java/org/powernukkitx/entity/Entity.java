@@ -1127,6 +1127,7 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
         }
         try {
             this.initEntity();
+            if (this.closed) return;
             if (this.initialized) return;
             this.initialized = true;
 
