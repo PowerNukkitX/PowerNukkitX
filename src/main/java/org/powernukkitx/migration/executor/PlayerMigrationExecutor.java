@@ -171,6 +171,7 @@ public final class PlayerMigrationExecutor {
         boolean remapPositionTracking = migrationService.getContext().hasLegacyPositionTrackingRemap();
         int positionSourceLastId = migrationService.getContext().getLegacyPositionTrackingSourceLastId();
         int positionOffset = migrationService.getContext().getLegacyPositionTrackingOffset();
+        var positionSourceHandles = migrationService.getContext().getLegacyPositionTrackingSourceHandles();
 
         int migratedCount = 0;
         int preservedCount = 0;
@@ -225,9 +226,9 @@ public final class PlayerMigrationExecutor {
                             : new CompoundTag();
 
                     if (remapPositionTracking) {
-                        PositionTrackingV3_1_0Migration.remapLegacyPnxItems(source, positionSourceLastId, positionOffset);
-                        PositionTrackingV3_1_0Migration.remapLegacyPnxItems(sourcePnxExtra, positionSourceLastId, positionOffset);
-                        PositionTrackingV3_1_0Migration.remapLegacyPnxItems(custom, positionSourceLastId, positionOffset);
+                        PositionTrackingV3_1_0Migration.remapLegacyPnxItems(source, positionSourceLastId, positionOffset, positionSourceHandles);
+                        PositionTrackingV3_1_0Migration.remapLegacyPnxItems(sourcePnxExtra, positionSourceLastId, positionOffset, positionSourceHandles);
+                        PositionTrackingV3_1_0Migration.remapLegacyPnxItems(custom, positionSourceLastId, positionOffset, positionSourceHandles);
                     }
 
                     DynamicPropertiesMigrationExecutor.normalizeNbt(source, dynamicPropertiesNamespace);

@@ -5,6 +5,7 @@ import org.powernukkitx.Server;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 
 /**
@@ -18,6 +19,7 @@ public final class MigrationContext {
     private final Map<Long, Long> migratedLegacyPlayerUniqueIds = new HashMap<>();
     private int legacyPositionTrackingSourceLastId = -1;
     private int legacyPositionTrackingOffset;
+    private Set<Integer> legacyPositionTrackingSourceHandles = Set.of();
 
     /**
      * Creates a migration context for the supplied server.
@@ -48,13 +50,17 @@ public final class MigrationContext {
     }
 
     /**
-     * Stores the active legacy PNX position-tracking handle remap.
+     * Stores the active legacy PNX position-tracking remap and existing source handles.
      */
-    public void setLegacyPositionTrackingRemap(int sourceLastId, int offset) {
+    public void setLegacyPositionTrackingRemap(int sourceLastId, int offset, Set<Integer> sourceHandles) {
         Preconditions.checkArgument(sourceLastId >= 0, "sourceLastId must not be negative");
         Preconditions.checkArgument(offset >= 0, "offset must not be negative");
+        Preconditions.checkNotNull(sourceHandles, "sourceHandles must not be null");
+        Preconditions.checkArgument(sourceHandles.stream().allMatch(handle -> handle > 0 && handle <= sourceLastId),
+                "sourceHandles must be inside the source allocator range");
         this.legacyPositionTrackingSourceLastId = sourceLastId;
         this.legacyPositionTrackingOffset = offset;
+        this.legacyPositionTrackingSourceHandles = Set.copyOf(sourceHandles);
     }
 
     /**
@@ -79,10 +85,18 @@ public final class MigrationContext {
     }
 
     /**
+     * Returns handles backed by valid legacy PNX position-tracking records.
+     */
+    public Set<Integer> getLegacyPositionTrackingSourceHandles() {
+        return this.legacyPositionTrackingSourceHandles;
+    }
+
+    /**
      * Clears the transient legacy PNX position-tracking remap.
      */
     public void clearLegacyPositionTrackingRemap() {
         this.legacyPositionTrackingSourceLastId = -1;
         this.legacyPositionTrackingOffset = 0;
+        this.legacyPositionTrackingSourceHandles = Set.of();
     }
 }

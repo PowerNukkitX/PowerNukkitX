@@ -44,11 +44,12 @@ public final class LevelDBActorV3_1_0Migration implements MigrationStep<LevelDBA
     public Data migrate(MigrationContext context, Data value) throws IOException {
         CompoundTag tag = value.actor();
 
-        if (context.hasLegacyPositionTrackingRemap()) {
+        if (value.legacyPnxStorage() && context.hasLegacyPositionTrackingRemap()) {
             PositionTrackingV3_1_0Migration.remapLegacyPnxItems(
                     tag,
                     context.getLegacyPositionTrackingSourceLastId(),
-                    context.getLegacyPositionTrackingOffset()
+                    context.getLegacyPositionTrackingOffset(),
+                    context.getLegacyPositionTrackingSourceHandles()
             );
         }
 
@@ -62,6 +63,7 @@ public final class LevelDBActorV3_1_0Migration implements MigrationStep<LevelDBA
                     value.migratedActorUniqueIdsByUuid(),
                     value.migratedRidingLinks(),
                     value.migratedCreakingLinks(),
+                    value.legacyPnxStorage(),
                     false
             );
         }
@@ -76,6 +78,7 @@ public final class LevelDBActorV3_1_0Migration implements MigrationStep<LevelDBA
                     value.migratedActorUniqueIdsByUuid(),
                     value.migratedRidingLinks(),
                     value.migratedCreakingLinks(),
+                    value.legacyPnxStorage(),
                     false
             );
         }
@@ -95,6 +98,7 @@ public final class LevelDBActorV3_1_0Migration implements MigrationStep<LevelDBA
                 value.migratedActorUniqueIdsByUuid(),
                 value.migratedRidingLinks(),
                 value.migratedCreakingLinks(),
+                value.legacyPnxStorage(),
                 true
         );
     }
@@ -859,6 +863,7 @@ public final class LevelDBActorV3_1_0Migration implements MigrationStep<LevelDBA
             Map<UUID, Long> migratedActorUniqueIdsByUuid,
             List<LegacyRidingLink> migratedRidingLinks,
             Map<CreakingHeartPosition, Long> migratedCreakingLinks,
+            boolean legacyPnxStorage,
             boolean keep
     ) {
     }
