@@ -9,8 +9,6 @@ import org.powernukkitx.Player;
 import org.powernukkitx.block.Block;
 import org.powernukkitx.block.BlockFlowingWater;
 import org.powernukkitx.block.BlockID;
-import org.powernukkitx.block.BlockTurtleEgg;
-import org.powernukkitx.block.property.enums.TurtleEggCount;
 import org.powernukkitx.entity.EntityID;
 import org.powernukkitx.entity.EntityIntelligent;
 import org.powernukkitx.entity.EntitySwimmable;
@@ -22,12 +20,14 @@ import org.powernukkitx.entity.ai.controller.DiveController;
 import org.powernukkitx.entity.ai.controller.LookController;
 import org.powernukkitx.entity.ai.controller.SpaceMoveController;
 import org.powernukkitx.entity.ai.controller.WalkController;
-import org.powernukkitx.entity.ai.executor.BreedingExecutor;
 import org.powernukkitx.entity.ai.executor.FlatRandomRoamExecutor;
-import org.powernukkitx.entity.ai.executor.IBehaviorExecutor;
-import org.powernukkitx.entity.ai.executor.LookAtTargetExecutor;
-import org.powernukkitx.entity.ai.executor.SpaceRandomRoamExecutor;
 import org.powernukkitx.entity.ai.executor.TemptExecutor;
+import org.powernukkitx.entity.ai.executor.turtle.TurtleBreedingExecutor;
+import org.powernukkitx.entity.ai.executor.turtle.TurtleGoalExecutor;
+import org.powernukkitx.entity.ai.executor.turtle.TurtleGoalExecutor.Goal;
+import org.powernukkitx.entity.ai.executor.turtle.TurtleLookExecutor;
+import org.powernukkitx.entity.ai.executor.turtle.TurtleSwimExecutor;
+import org.powernukkitx.entity.ai.executor.turtle.TurtleTemptExecutor;
 import org.powernukkitx.entity.ai.memory.CoreMemoryTypes;
 import org.powernukkitx.entity.ai.route.finder.impl.SimpleSpaceAStarRouteFinder;
 import org.powernukkitx.entity.ai.route.posevaluator.SwimmingPosEvaluator;
@@ -38,15 +38,12 @@ import org.powernukkitx.entity.components.BreedableComponent;
 import org.powernukkitx.entity.components.HealthComponent;
 import org.powernukkitx.entity.components.HomeComponent;
 import org.powernukkitx.entity.components.MovementComponent;
-import org.powernukkitx.event.entity.EntityBlockChangeEvent;
 import org.powernukkitx.event.entity.EntityDamageEvent;
 import org.powernukkitx.event.entity.EntityDamageByEntityEvent;
 import org.powernukkitx.item.Item;
 import org.powernukkitx.item.ItemID;
 import org.powernukkitx.item.enchantment.Enchantment;
-import org.powernukkitx.level.Sound;
 import org.powernukkitx.level.format.IChunk;
-import org.powernukkitx.level.particle.DestroyBlockParticle;
 import org.powernukkitx.math.Vector3;
 import org.powernukkitx.math.VectorMath;
 import org.powernukkitx.nbt.tag.CompoundTag;
@@ -390,35 +387,35 @@ public class EntityTurtle extends EntityAnimal implements EntitySwimmable, Entit
 
     @Override
     public IBehaviorGroup requireBehaviorGroup() {
-        TurtleGoal panic = new TurtleGoal(Goal.PANIC);
-        TurtleGoal babyWater = new TurtleGoal(Goal.WATER);
-        TurtleGoal water = new TurtleGoal(Goal.WATER);
-        TurtleGoal land = new TurtleGoal(Goal.LAND);
-        TurtleGoal lay = new TurtleGoal(Goal.LAY);
-        TurtleGoal home = new TurtleGoal(Goal.HOME);
+        TurtleGoalExecutor panic = new TurtleGoalExecutor(Goal.PANIC);
+        TurtleGoalExecutor babyWater = new TurtleGoalExecutor(Goal.WATER);
+        TurtleGoalExecutor water = new TurtleGoalExecutor(Goal.WATER);
+        TurtleGoalExecutor land = new TurtleGoalExecutor(Goal.LAND);
+        TurtleGoalExecutor lay = new TurtleGoalExecutor(Goal.LAY);
+        TurtleGoalExecutor home = new TurtleGoalExecutor(() -> homePos.add(0.5, 0.5, 0.5), () -> wantsToLayEgg = true);
         return EntityAI.of(this)
                 .behavior(panic)
-                        .when(e -> isPanicking() && !isInsideOfWater() && panic.canStart())
+                        .when(e -> isPanicking() && !isInsideOfWater() && panic.canStart(e))
                 .behavior(new TurtleSwimExecutor(true))
                         .when(e -> isPanicking() && isInsideOfWater())
                 .behavior(new FlatRandomRoamExecutor(0.12f, 12, 40, true, 100, false, 10))
                         .when(e -> isPanicking())
                 .behavior(babyWater)
-                        .when(e -> isBaby() && !isInsideOfWater() && babyWater.canStart())
+                        .when(e -> isBaby() && !isInsideOfWater() && babyWater.canStart(e))
                 .behavior(home)
                         .when(e -> isPregnant() && !wantsToLayEgg && homeDimension == level.getDimension()
                                 && home.canGoHome())
                 .behavior(lay)
-                        .when(e -> wantsToLayEgg && homeDimension == level.getDimension() && lay.canStart())
+                        .when(e -> wantsToLayEgg && homeDimension == level.getDimension() && lay.canStart(e))
                 .behavior(new TurtleBreedingExecutor())
                         .when(e -> !isBaby() && !isPregnant()
                                 && getMemoryStorage().get(CoreMemoryTypes.IS_IN_LOVE))
-                .behavior(new TurtleTemptExecutor())
+                .behavior(new TurtleTemptExecutor(TEMPT_ITEMS))
                         .when(e -> TemptExecutor.hasTemptingPlayer(e, false, 10, TEMPT_ITEMS))
                 .behavior(water)
-                        .when(e -> !isBaby() && !isInsideOfWater() && water.canStart())
+                        .when(e -> !isBaby() && !isInsideOfWater() && water.canStart(e))
                 .behavior(land)
-                        .when(e -> !isBaby() && isInsideOfWater() && land.canStart())
+                        .when(e -> !isBaby() && isInsideOfWater() && land.canStart(e))
                 .behavior(new TurtleSwimExecutor(false))
                         .when(e -> isInsideOfWater())
                 .behavior(new TurtleLookExecutor())
@@ -446,183 +443,6 @@ public class EntityTurtle extends EntityAnimal implements EntitySwimmable, Entit
         return isOnFire() || level.getTick() - lastPanicTick <= 100;
     }
 
-    private enum Goal { PANIC, WATER, HOME, LAY, LAND }
-
-    private final class TurtleGoal implements IBehaviorExecutor {
-        private final Goal goal;
-        private Vector3 target;
-        private int nextSearch;
-        private int diggingTicks;
-        private int elapsed;
-        private boolean goingHome;
-
-        private TurtleGoal(Goal goal) {
-            this.goal = goal;
-        }
-
-        private boolean canGoHome() {
-            if (!goingHome && ThreadLocalRandom.current().nextInt(700) == 0) goingHome = true;
-            return goingHome;
-        }
-
-        private boolean canStart() {
-            if (target != null && validTarget(target)) return true;
-            target = null;
-            resetDigging();
-            if (level.getTick() < nextSearch) return false;
-            nextSearch = level.getTick() + 100;
-            target = findTarget();
-            return target != null;
-        }
-
-        @Override
-        public boolean execute(EntityIntelligent entity) {
-            elapsed++;
-            if (goal == Goal.HOME) {
-                if (target == null || elapsed % 40 == 0) target = homePos.add(0.5, 0.5, 0.5);
-                if (distanceSquared(target) <= 16) {
-                    wantsToLayEgg = true;
-                    return false;
-                }
-            } else {
-                if (target != null && !validTarget(target)) {
-                    target = null;
-                    resetDigging();
-                }
-                if (target == null && !canStart()) return false;
-                double radius = goal == Goal.WATER ? (isBaby() ? 0.1 : 1.5) : goal == Goal.LAY ? 1.5 : 0.5;
-                if (distanceSquared(target) <= radius * radius) {
-                    if (goal != Goal.LAY && (goal != Goal.WATER || isInsideOfWater())) return false;
-                    if (goal == Goal.LAY && !isInsideOfWater() && onGround) return dig();
-                }
-                if (goal == Goal.LAY) resetDigging();
-            }
-            if (goal != Goal.HOME && !level.isChunkLoaded(target.getFloorX() >> 4, target.getFloorZ() >> 4)) return false;
-            var finder = getBehaviorGroup().getRouteFinder();
-            if (goal != Goal.HOME && elapsed > 20 && finder.isFinished() && !finder.isReachable()
-                    && target.equals(finder.getTarget())) {
-                nextSearch = level.getTick() + 100;
-                return false;
-            }
-            if (getMoveTarget() == null || !getMoveTarget().equals(target)) {
-                getBehaviorGroup().setForceUpdateRoute(true);
-            }
-            setMoveTarget(target);
-            setLookTarget(target);
-            setMovementSpeed((isInsideOfWater() ? getDefaultUnderWaterSpeed() : 0.1f) * (goal == Goal.PANIC ? 1.2f : 1f));
-            if (elapsed % 20 == 0) getBehaviorGroup().setForceUpdateRoute(true);
-            return true;
-        }
-
-        private boolean dig() {
-            setMoveTarget(null);
-            setDataFlag(ActorFlags.LAYING_EGG, true);
-            if (++diggingTicks % 5 == 0) {
-                level.addParticle(new DestroyBlockParticle(target, level.getBlock(target.add(0, -1, 0))));
-            }
-            if (diggingTicks <= 200) return true;
-            Block from = level.getBlock(target);
-            BlockTurtleEgg eggs = new BlockTurtleEgg();
-            eggs.setEggCount(TurtleEggCount.values()[ThreadLocalRandom.current().nextInt(4)]);
-            EntityBlockChangeEvent event = new EntityBlockChangeEvent(EntityTurtle.this, from, eggs);
-            getServer().getPluginManager().callEvent(event);
-            if (!event.isCancelled() && validTarget(target) && level.setBlock(target, eggs, true, true)) {
-                level.addSound(target, Sound.BLOCK_TURTLE_EGG_DROP);
-                setPregnant(false);
-            }
-            nextSearch = level.getTick() + 100;
-            return false;
-        }
-
-        private Vector3 findTarget() {
-            int range = goal == Goal.PANIC ? 10 : goal == Goal.WATER && isBaby() ? 15 : 16;
-            int height = goal == Goal.LAY || goal == Goal.PANIC ? 4 : 5;
-            Vector3 best = null;
-            double nearest = Double.MAX_VALUE;
-            for (int dx = -range; dx <= range; dx++) {
-                for (int dz = -range; dz <= range; dz++) {
-                    int bx = getFloorX() + dx;
-                    int bz = getFloorZ() + dz;
-                    if (!level.isChunkLoaded(bx >> 4, bz >> 4)) continue;
-                    for (int dy = -height; dy <= height; dy++) {
-                        double cy = getFloorY() + dy;
-                        double distance = (bx + 0.5 - x) * (bx + 0.5 - x)
-                                + (cy - y) * (cy - y) + (bz + 0.5 - z) * (bz + 0.5 - z);
-                        if (distance >= nearest) continue;
-                        Vector3 candidate = new Vector3(bx + 0.5, cy, bz + 0.5);
-                        if (validTarget(candidate)) {
-                            best = candidate;
-                            nearest = distance;
-                        }
-                    }
-                }
-            }
-            return best;
-        }
-
-        private boolean validTarget(Vector3 pos) {
-            if (!level.isChunkLoaded(pos.getFloorX() >> 4, pos.getFloorZ() >> 4)) return false;
-            Block block = level.getBlock(pos);
-            if (goal == Goal.WATER || goal == Goal.PANIC) {
-                if (!(block instanceof BlockFlowingWater)) return false;
-                double dx = pos.x - x;
-                double dz = pos.z - z;
-                int stepX = Math.abs(dx) >= Math.abs(dz) ? (dx >= 0 ? 1 : -1) : 0;
-                int stepZ = stepX == 0 ? (dz >= 0 ? 1 : -1) : 0;
-                return level.getBlock(pos.add(-stepX, 0, -stepZ), false) instanceof BlockFlowingWater;
-            }
-            if (!block.isAir() || !level.getBlock(pos, 1).isAir()) return false;
-            Block below = level.getBlock(pos.add(0, -1, 0));
-            return goal == Goal.LAY ? BlockID.SAND.equals(below.getId()) : below.isSolid();
-        }
-
-        private void resetDigging() {
-            diggingTicks = 0;
-            if (goal == Goal.LAY) setDataFlag(ActorFlags.LAYING_EGG, false);
-        }
-
-        @Override
-        public void onStop(EntityIntelligent entity) {
-            target = null;
-            elapsed = 0;
-            goingHome = false;
-            resetDigging();
-            setMoveTarget(null);
-            setLookTarget(null);
-            setMovementSpeed(getMovementSpeedDefault());
-        }
-
-        @Override
-        public void onInterrupt(EntityIntelligent entity) {
-            onStop(entity);
-        }
-    }
-
-    private static final class TurtleLookExecutor extends LookAtTargetExecutor {
-        private TurtleLookExecutor() {
-            super(CoreMemoryTypes.NEAREST_PLAYER, 100);
-        }
-
-        @Override
-        public boolean execute(EntityIntelligent entity) {
-            Player player = entity.getMemoryStorage().get(CoreMemoryTypes.NEAREST_PLAYER);
-            return player != null && player.isAlive() && entity.distanceSquared(player) <= 36
-                    && super.execute(entity);
-        }
-
-        @Override
-        public void onStop(EntityIntelligent entity) {
-            super.onStop(entity);
-            removeLookTarget(entity);
-        }
-
-        @Override
-        public void onInterrupt(EntityIntelligent entity) {
-            super.onInterrupt(entity);
-            removeLookTarget(entity);
-        }
-    }
-
     private static final class TurtleSwimController extends SpaceMoveController {
         @Override
         public boolean control(EntityIntelligent entity) {
@@ -648,89 +468,6 @@ public class EntityTurtle extends EntityAnimal implements EntitySwimmable, Entit
             double turn = Math.IEEEremainder(entity.getYaw() - yaw, 360);
             entity.setYaw(yaw + Math.max(-5, Math.min(5, turn)));
             return result;
-        }
-    }
-
-    private static final class TurtleTemptExecutor extends TemptExecutor {
-        private TurtleTemptExecutor() {
-            super(1.1f, true, false, false, 10, 2.0f, null, TEMPT_ITEMS);
-        }
-
-        @Override
-        public boolean execute(@NotNull EntityIntelligent entity) {
-            boolean result = super.execute(entity);
-            if (result && entity.isInsideOfWater()) {
-                entity.setMovementSpeed(entity.getDefaultUnderWaterSpeed() * 1.1f);
-            }
-            return result;
-        }
-    }
-
-    private static final class TurtleSwimExecutor extends SpaceRandomRoamExecutor {
-        private final float speedMultiplier;
-        private final SwimmingPosEvaluator swimPositions = new SwimmingPosEvaluator();
-
-        private TurtleSwimExecutor(boolean panicking) {
-            super(panicking ? 0.144f : 0.12f, panicking ? 5 : 30, panicking ? 4 : 15,
-                    panicking ? 40 : Integer.MAX_VALUE - 1, true, panicking ? 100 : 160, false, 10);
-            speedMultiplier = panicking ? 1.2f : 1;
-        }
-
-        @Override
-        protected boolean needUpdateTarget(EntityIntelligent entity) {
-            return super.needUpdateTarget(entity) || entity.distanceSquared(entity.getMoveTarget()) <= 1;
-        }
-
-        @Override
-        protected @Nullable Vector3 next(EntityIntelligent entity) {
-            var random = ThreadLocalRandom.current();
-            for (int i = 0; i < 10; i++) {
-                int x = entity.getFloorX() + random.nextInt(-maxRoamRange, maxRoamRange + 1);
-                int z = entity.getFloorZ() + random.nextInt(-maxRoamRange, maxRoamRange + 1);
-                if (!entity.level.isChunkLoaded(x >> 4, z >> 4)) continue;
-                for (int dy = 0; dy <= maxYRoamRange * 2; dy++) {
-                    int y = entity.getFloorY() + (dy % 2 == 0 ? dy / 2 : -(dy + 1) / 2);
-                    Vector3 pos = new Vector3(x + 0.5, y + 0.5, z + 0.5);
-                    if (isSwimTarget(entity, pos)) return pos;
-                }
-            }
-            Vector3 target = null;
-            int count = 0;
-            for (int dx = -4; dx <= 4; dx++) {
-                for (int dz = -4; dz <= 4; dz++) {
-                    for (int dy = -2; dy <= 2; dy++) {
-                        Vector3 pos = new Vector3(entity.getFloorX() + dx + 0.5,
-                                entity.getFloorY() + dy + 0.5, entity.getFloorZ() + dz + 0.5);
-                        if (isSwimTarget(entity, pos) && random.nextInt(++count) == 0) target = pos;
-                    }
-                }
-            }
-            return target;
-        }
-
-        private boolean isSwimTarget(EntityIntelligent entity, Vector3 pos) {
-            return entity.distanceSquared(pos) >= 1
-                    && entity.level.isChunkLoaded(pos.getFloorX() >> 4, pos.getFloorZ() >> 4)
-                    && entity.level.getBlock(pos, false) instanceof BlockFlowingWater
-                    && swimPositions.evalPos(entity, pos);
-        }
-
-        @Override
-        public boolean execute(@NotNull EntityIntelligent entity) {
-            durationTick++;
-            if (needUpdateTarget(entity) || durationTick > runningTime) {
-                Vector3 target = next(entity);
-                if (target == null) {
-                    stop(entity);
-                    return false;
-                }
-                setRouteTarget(entity, target);
-                setLookTarget(entity, target);
-                entity.getBehaviorGroup().setForceUpdateRoute(true);
-                durationTick = 0;
-            }
-            entity.setMovementSpeed(entity.getDefaultUnderWaterSpeed() * speedMultiplier);
-            return true;
         }
     }
 
@@ -769,41 +506,6 @@ public class EntityTurtle extends EntityAnimal implements EntitySwimmable, Entit
                 }
             }
             return false;
-        }
-    }
-
-    private static final class TurtleBreedingExecutor extends BreedingExecutor {
-        private TurtleBreedingExecutor() {
-            super(8, 60, 0.1f);
-        }
-
-        @Override
-        public boolean execute(EntityIntelligent entity) {
-            EntityIntelligent spouse = getSpouse(entity);
-            if (spouse != null) {
-                if (!spouse.isAlive() || spouse.isPregnant()
-                        || !spouse.getMemoryStorage().get(CoreMemoryTypes.IS_IN_LOVE)) {
-                    onInterrupt(entity);
-                    return false;
-                }
-                if (entity.distanceSquared(spouse) > 9) setBreedingTick(entity, -1);
-            }
-            boolean result = super.execute(entity);
-            if (result && entity.isInsideOfWater()) entity.setMovementSpeed(entity.getDefaultUnderWaterSpeed());
-            return result;
-        }
-
-        @Override
-        protected boolean isValidMatePair(EntityIntelligent a, BreedableComponent ac, EntityIntelligent b, BreedableComponent bc) {
-            return a.isAlive() && b.isAlive() && !a.isPregnant() && !b.isPregnant()
-                    && super.isValidMatePair(a, ac, b, bc);
-        }
-
-        @Override
-        protected void breed(EntityIntelligent a, EntityIntelligent b) {
-            if (!a.isAlive() || !b.isAlive() || a.distanceSquared(b) > 9 || a.isPregnant() || b.isPregnant()) return;
-            super.breed(a, b);
-            a.level.dropExpOrb(a, ThreadLocalRandom.current().nextInt(1, 8));
         }
     }
 }
