@@ -135,6 +135,9 @@ public class BastionStructure extends JigsawStructure {
     private void spawnEntity(Level level, BlockVector3 anchor, String entityId) {
         Position position = new Position(anchor.getX() + 0.5, anchor.getY() + 1, anchor.getZ() + 0.5, level);
         Entity entity = Entity.createEntity(entityId, position);
+        if (entity == null) {
+            return;
+        }
         entity.setPersistent(true);
         entity.spawnToAll();
     }
