@@ -32,7 +32,6 @@ import org.powernukkitx.math.BlockFace;
 import org.powernukkitx.math.Vector3;
 import org.powernukkitx.registry.Registries;
 import org.cloudburstmc.protocol.bedrock.data.SoundEvent;
-import org.cloudburstmc.protocol.bedrock.data.actor.ActorFlags;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
@@ -198,17 +197,13 @@ public class BlockTurtleEgg extends BlockFlowable {
 
     public void hatch(TurtleEggCount eggs, Block newState) {
         TurtleEggHatchEvent turtleEggHatchEvent = new TurtleEggHatchEvent(this, eggs.ordinal() + 1, newState);
-        //TODO Cancelled by default because EntityTurtle doesn't have AI yet, remove it when AI is added
-        turtleEggHatchEvent.setCancelled(true);
         this.level.getServer().getPluginManager().callEvent(turtleEggHatchEvent);
         int eggsHatching = turtleEggHatchEvent.getEggsHatching();
         if (!turtleEggHatchEvent.isCancelled()) {
-            level.addSound(this, Sound.BLOCK_TURTLE_EGG_CRACK);
+            level.addLevelSoundEvent(this, SoundEvent.TURTLE_EGG_HATCHED);
 
             boolean hasFailure = false;
             for (int i = 0; i < eggsHatching; i++) {
-
-                this.level.addSound(this, Sound.BLOCK_TURTLE_EGG_CRACK);
 
                 CreatureSpawnEvent creatureSpawnEvent = new CreatureSpawnEvent(
                         Registries.ENTITY.getEntityNetworkId(EntityID.TURTLE),
@@ -226,8 +221,6 @@ public class BlockTurtleEgg extends BlockFlowable {
                     if (turtle != null) {
                         turtle.setBreedingAge(-24000);
                         turtle.setHomePos(new Vector3(x, y, z));
-                        turtle.setDataFlag(ActorFlags.BABY, true);
-                        turtle.setScale(0.16f);
                         turtle.spawnToAll();
                         continue;
                     }
@@ -250,6 +243,7 @@ public class BlockTurtleEgg extends BlockFlowable {
     @Override
     public void onEntityCollide(Entity entity) {
         if (entity instanceof EntityLiving
+                && !(entity instanceof EntityTurtle)
                 && !(entity instanceof EntityChicken)
                 && !(entity instanceof EntityBat)
                 && !(entity instanceof EntityGhast)
