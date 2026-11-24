@@ -166,8 +166,11 @@ public class ClearCommand extends VanillaCommand {
                             int count = slot.getCount();
                             int amount = Math.min(count, remaining);
 
-                            slot.setCount(count - amount);
-                            inventory.setItem(entry.getKey(), slot);
+                            Item reduced = slot.clone();
+                            reduced.setCount(count - amount);
+                            if (!inventory.setItem(entry.getKey(), reduced)) {
+                                continue;
+                            }
 
                             if ((remaining -= amount) <= 0) {
                                 break;
@@ -182,8 +185,9 @@ public class ClearCommand extends VanillaCommand {
                             int amount = Math.min(count, remaining);
 
                             slot.setCount(count - amount);
-                            offhand.setItem(0, slot);
-                            remaining -= amount;
+                            if (offhand.setItem(0, slot)) {
+                                remaining -= amount;
+                            }
                         }
                     }
 
