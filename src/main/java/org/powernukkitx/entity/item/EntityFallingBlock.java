@@ -109,6 +109,12 @@ public class EntityFallingBlock extends Entity {
                     return;
                 } else this.blockState = blockState;
             }
+            if (this.blockState == null) {
+                // No "Block" tag (hand-made or old NBT): there is nothing to show or place, so drop the entity
+                // instead of failing its construction.
+                close();
+                return;
+            }
 
             breakOnLava = nbtMap.getBoolean("BreakOnLava");
             breakOnGround = nbtMap.getBoolean("BreakOnGround");
