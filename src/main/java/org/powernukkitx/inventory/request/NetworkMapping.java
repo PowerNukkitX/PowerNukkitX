@@ -6,6 +6,7 @@ import org.powernukkitx.inventory.CraftTypeInventory;
 import org.powernukkitx.inventory.Inventory;
 import org.powernukkitx.inventory.InventoryHolder;
 import org.powernukkitx.inventory.fake.FakeInventory;
+import org.powernukkitx.item.Item;
 import org.powernukkitx.item.ItemBundle;
 import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
@@ -84,21 +85,39 @@ public class NetworkMapping {
                 yield player.getCraftingGrid();
             }
             case DYNAMIC_CONTAINER -> {
-                //If player is looking in container. If not, check the players inventory.
-                var item = player.getTopWindow().orElse(player.getInventory()).getContents().values().stream().filter(itm -> itm instanceof ItemBundle bundle && bundle.getBundleId() == dynamicId).findFirst();
-                if (item.isPresent()) {
-                    yield ((ItemBundle) item.get()).getInventory();
-                } else {
-                    //If player is looking in container, but bundle is not inside the container.
-                    item = player.getInventory().getContents().values().stream().filter(itm -> itm instanceof ItemBundle bundle && bundle.getBundleId() == dynamicId).findFirst();
-                    if (item.isPresent()) {
-                        yield ((ItemBundle) item.get()).getInventory();
-                    } else yield ((ItemBundle) player.getCursorInventory().getUnclonedItem()).getInventory();
+                if (dynamicId == null) {
+                    throw new IllegalArgumentException("Can't handle a dynamic container without a dynamic id when an ItemStackRequest is received!");
                 }
+                int bundleId = dynamicId;
+                //If player is looking in container. If not, check the players inventory.
+                Inventory playerInventory = player.getInventory();
+                Inventory topInventory = player.getTopWindow().orElse(playerInventory);
+                var item = findBundle(topInventory, bundleId);
+                if (item == null && topInventory != playerInventory) {
+                    //If player is looking in container, but bundle is not inside the container.
+                    item = findBundle(playerInventory, bundleId);
+                }
+                if (item == null && player.getCursorInventory().getUnclonedItem() instanceof ItemBundle onCursor && onCursor.getBundleId() == bundleId) {
+                    item = onCursor;
+                }
+                if (item == null) {
+                    throw new IllegalArgumentException("Can't find the bundle %d addressed by an ItemStackRequest".formatted(bundleId));
+                }
+                yield item.getInventory();
             }
             default -> {
                 throw new IllegalArgumentException("Can't handle containerSlotType: %s when an ItemStackRequest is received!".formatted(containerSlotType.name().toUpperCase(Locale.ENGLISH)));
             }
         };
+    }
+
+    private ItemBundle findBundle(Inventory inventory, int bundleId) {
+        for (int slot = 0; slot < inventory.getSize(); slot++) {
+            Item item = inventory.getUnclonedItem(slot);
+            if (item instanceof ItemBundle bundle && bundle.getBundleId() == bundleId) {
+                return bundle;
+            }
+        }
+        return null;
     }
 }

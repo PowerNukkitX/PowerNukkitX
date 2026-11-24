@@ -15,6 +15,7 @@ import org.powernukkitx.utils.ItemHelper;
 import org.cloudburstmc.protocol.bedrock.data.inventory.ContainerEnumName;
 import org.cloudburstmc.protocol.bedrock.data.inventory.ContainerId;
 import org.cloudburstmc.protocol.bedrock.data.inventory.FullContainerName;
+import org.cloudburstmc.protocol.bedrock.data.inventory.ItemData;
 import org.cloudburstmc.protocol.bedrock.packet.InventorySlotPacket;
 
 import lombok.Getter;
@@ -60,7 +61,14 @@ public class ItemBundle extends Item implements INBT, InventoryHolder {
         }
     }
 
+    /**
+     * Returns the bundle ID for the current server run, initializing the inventory if needed.
+     * Initialization replaces any ID saved in NBT from a previous run.
+     *
+     * @return the initialized bundle ID
+     */
     public int getBundleId() {
+        getInventory();
         return getNbt().getInt("bundle_id");
     }
 
@@ -74,6 +82,18 @@ public class ItemBundle extends Item implements INBT, InventoryHolder {
         }
         if(inventory.getHolder() != this) inventory.setHolder(this);
         return inventory;
+    }
+
+    /**
+     * Serializes the bundle with its initialized ID so clients never receive a saved ID
+     * from a previous server run.
+     *
+     * @return the network item data with the current bundle ID
+     */
+    @Override
+    public ItemData toNetwork() {
+        getInventory();
+        return super.toNetwork();
     }
 
     public void saveNBT() {
