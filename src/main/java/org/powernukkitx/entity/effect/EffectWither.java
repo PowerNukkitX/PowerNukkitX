@@ -13,7 +13,7 @@ public class EffectWither extends Effect {
 
     @Override
     public int getInterval() {
-        return 25 >> this.getAmplifier();
+        return 40 >> Math.min(5, this.getAmplifier());
     }
 
     @Override

@@ -73,6 +73,17 @@ class EffectTest {
     }
 
     @Test
+    void fatalPoisonTicksEveryTickAtHighAmplifiers() {
+        Effect fatalPoison = new EffectFatalPoison();
+        assertEquals(25, fatalPoison.getInterval());
+        assertEquals(3, fatalPoison.setAmplifier(3).getInterval());
+        assertEquals(1, fatalPoison.setAmplifier(4).getInterval());
+        assertEquals(1, fatalPoison.setAmplifier(5).getInterval());
+        assertTrue(fatalPoison.canTick(1));
+        assertEquals(1, fatalPoison.setAmplifier(32).getInterval());
+    }
+
+    @Test
     void instantEffectDurationAndInterval() {
         Effect health = new EffectInstantHealth();
         assertEquals(1, health.getDuration());
