@@ -90,10 +90,12 @@ public class NetworkMapping {
                 }
                 int bundleId = dynamicId;
                 //If player is looking in container. If not, check the players inventory.
-                var item = findBundle(player.getTopWindow().orElse(player.getInventory()), bundleId);
-                if (item == null) {
+                Inventory playerInventory = player.getInventory();
+                Inventory topInventory = player.getTopWindow().orElse(playerInventory);
+                var item = findBundle(topInventory, bundleId);
+                if (item == null && topInventory != playerInventory) {
                     //If player is looking in container, but bundle is not inside the container.
-                    item = findBundle(player.getInventory(), bundleId);
+                    item = findBundle(playerInventory, bundleId);
                 }
                 if (item == null && player.getCursorInventory().getUnclonedItem() instanceof ItemBundle onCursor && onCursor.getBundleId() == bundleId) {
                     item = onCursor;
@@ -110,7 +112,8 @@ public class NetworkMapping {
     }
 
     private ItemBundle findBundle(Inventory inventory, int bundleId) {
-        for (Item item : inventory.getContents().values()) {
+        for (int slot = 0; slot < inventory.getSize(); slot++) {
+            Item item = inventory.getUnclonedItem(slot);
             if (item instanceof ItemBundle bundle && bundle.getBundleId() == bundleId) {
                 return bundle;
             }

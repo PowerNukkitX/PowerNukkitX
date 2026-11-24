@@ -91,6 +91,7 @@ public class ItemStackRequestHandler implements PacketHandler<ItemStackRequestPa
             ItemStackResponseInfo itemStackResponse = new ItemStackResponseInfo(ItemStackNetResult.SUCCESS, new ItemStackRequestId(request.getClientRequestId()), new ObjectArrayList<>());
             Map<ContainerEnumName, ItemStackResponseContainerInfo> responseContainerMap = new LinkedHashMap<>();
             Set<Inventory> affectedInventories = new LinkedHashSet<>();
+            boolean failed = false;
 
             for (int index = 0; index < actions.length; index++) {
                 ItemStackRequestAction action = actions[index];
@@ -106,7 +107,14 @@ public class ItemStackRequestHandler implements PacketHandler<ItemStackRequestPa
                 affectedInventories.addAll(resolveAffectedInventories(player, action));
 
                 ItemStackRequestActionEvent event = new ItemStackRequestActionEvent(player, action, context);
-                TransferItemEventCaller.call(event);
+                try {
+                    TransferItemEventCaller.call(event);
+                } catch (IllegalArgumentException e) {
+                    log.debug("Rejected item stack request action {} from {}", action.getType(), player.getName(), e);
+                    responses.add(new ItemStackResponseInfo(ItemStackNetResult.ERROR, new ItemStackRequestId(request.getClientRequestId()), new ObjectArrayList<>()));
+                    failed = true;
+                    break;
+                }
                 Server.getInstance().getPluginManager().callEvent(event);
 
                 Optional<Inventory> topWindow = player.getTopWindow();
@@ -115,17 +123,23 @@ public class ItemStackRequestHandler implements PacketHandler<ItemStackRequestPa
                 }
 
                 ActionResponse response;
-                if (event.getResponse() != null) {
-                    response = event.getResponse();
-                } else if (event.isCancelled()) {
+                try {
+                    if (event.getResponse() != null) {
+                        response = event.getResponse();
+                    } else if (event.isCancelled()) {
+                        response = context.error();
+                    } else {
+                        response = processor.handle(action, player, context);
+                    }
+                } catch (IllegalArgumentException e) {
+                    log.debug("Rejected item stack request action {} from {}", action.getType(), player.getName(), e);
                     response = context.error();
-                } else {
-                    response = processor.handle(action, player, context);
                 }
 
                 if (response != null) {
                     if (!response.ok()) {
                         responses.add(new ItemStackResponseInfo(ItemStackNetResult.ERROR, new ItemStackRequestId(request.getClientRequestId()), new ObjectArrayList<>()));
+                        failed = true;
                         break;
                     }
 
@@ -143,8 +157,10 @@ public class ItemStackRequestHandler implements PacketHandler<ItemStackRequestPa
             }
 
             resyncInventories(player, affectedInventories);
-            itemStackResponse.getContainers().addAll(responseContainerMap.values());
-            responses.add(itemStackResponse);
+            if (!failed) {
+                itemStackResponse.getContainers().addAll(responseContainerMap.values());
+                responses.add(itemStackResponse);
+            }
         }
 
         for (var r : responses) {
