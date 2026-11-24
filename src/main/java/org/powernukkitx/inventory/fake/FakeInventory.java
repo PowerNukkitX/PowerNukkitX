@@ -161,11 +161,7 @@ public class FakeInventory extends BaseInventory implements InputInventory {
         player.sendPacket(packet);
 
         if (this.fakeBlock != null) {
-            if (this.fakeInventoryType == FakeInventoryType.ENTITY) {
-                this.fakeBlock.remove(player);
-            } else {
-                player.waitForAck(() -> this.fakeBlock.remove(player));
-            }
+            this.fakeBlock.remove(player);
         }
 
         super.onClose(player);
