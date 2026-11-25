@@ -4922,6 +4922,27 @@ public class Level implements Metadatable, LiquidUpdateAccess {
         return entities;
     }
 
+    public void resyncBlocksFor(@NotNull Player player, @NotNull Block... positions) {
+        if (positions.length == 0) {
+            return;
+        }
+        Map<BlockVector3, Block> unique = new LinkedHashMap<>();
+        for (Block position : positions) {
+            unique.putIfAbsent(position.asBlockVector3(), position);
+        }
+        Player[] players = {player};
+        Block[] layer0 = new Block[unique.size()];
+        Block[] layer1 = new Block[unique.size()];
+        int i = 0;
+        for (Block position : unique.values()) {
+            layer0[i] = getBlock(position);
+            layer1[i] = position.getLevelBlockAtLayer(1);
+            i++;
+        }
+        sendBlocks(players, layer0, UpdateBlockPacket.FLAG_ALL_PRIORITY);
+        sendBlocks(players, layer1, UpdateBlockPacket.FLAG_ALL_PRIORITY, 1);
+    }
+
     public Item useItemOn(Vector3 vector, Item item, BlockFace face, ItemUseInventoryTransaction data) {
         return this.useItemOn(vector, item, face, data, null);
     }
@@ -4985,6 +5006,10 @@ public class Level implements Metadatable, LiquidUpdateAccess {
                     if (item.isTool() && item.getDamage() >= item.getMaxDurability()) {
                         addSound(player, Sound.RANDOM_BREAK);
                         item = Item.AIR;
+                    }
+                    boolean placesBlock = item.canBePlaced() || item.getBlockPlacerTargetBlock() != null;
+                    if (placesBlock && data.getClientInteractPrediction() == ItemUsePredictedResult.SUCCESS) {
+                        resyncBlocksFor(player, block);
                     }
                     return item;
                 }
