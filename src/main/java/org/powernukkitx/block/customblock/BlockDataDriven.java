@@ -616,6 +616,14 @@ public class BlockDataDriven extends Block implements CustomBlock, BlockFlowerPo
     }
 
     /**
+     * @return whether the block drops from a pack loot table in its current state; an explosion always rolls
+     * such a table, which decides with {@code explosion_decay} what survives
+     */
+    public boolean hasLootTable() {
+        return lootTable() != null;
+    }
+
+    /**
      * {@inheritDoc}
      * <p>
      * A {@code tint_method} on the pack's {@code minecraft:map_color} multiplies the colour by that tint of
@@ -634,11 +642,13 @@ public class BlockDataDriven extends Block implements CustomBlock, BlockFlowerPo
                 color.getBlue() * biome.getBlue() / 255, color.getAlpha());
     }
 
-    private Item[] getDrops(Item item, double explosionRadius) {
+    private @Nullable String lootTable() {
         String table = spec.lootTableByState().get(this.blockstate.blockStateHash());
-        if (table == null) {
-            table = spec.lootTable();
-        }
+        return table != null ? table : spec.lootTable();
+    }
+
+    private Item[] getDrops(Item item, double explosionRadius) {
+        String table = lootTable();
         if (table == null) {
             return super.getDrops(item);
         }

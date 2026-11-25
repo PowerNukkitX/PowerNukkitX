@@ -307,7 +307,8 @@ public class Explosion {
                     }
                     inventoryHolder.getInventory().clearAll();
                 }
-            } else if (random.nextDouble() * 100 < yield) {
+            } else if (block instanceof BlockDataDriven dataDriven && dataDriven.hasLootTable()
+                    || random.nextDouble() * 100 < yield) {
                 Item tool = air;
                 if (this.what instanceof EntityTnt && block.getToolType() != ItemTool.TYPE_SHEARS) {
                     tool = ItemTool.getBestTool(block.getToolType());
