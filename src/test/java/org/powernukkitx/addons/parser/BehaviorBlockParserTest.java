@@ -240,6 +240,23 @@ class BehaviorBlockParserTest {
     }
 
     @Test
+    void readsTagListComponent() {
+        BlockDataDriven.Spec spec = parse(block("pnxtest:tag_list",
+                ", \"states\": { \"pnxtest:color\": [\"red\", \"blue\"] }",
+                "{ \"minecraft:tags\": [\"pnxtest_base\", \"pnxtest_more\"] }",
+                "[ { \"condition\": \"q.block_state('pnxtest:color') == 'blue'\", \"components\": { \"minecraft:tags\": [\"pnxtest_blue\"] } } ]"));
+
+        BlockDataDriven red = new BlockDataDriven(stateWith(spec, "pnxtest:color", "red"), spec);
+        BlockDataDriven blue = new BlockDataDriven(stateWith(spec, "pnxtest:color", "blue"), spec);
+
+        assertTrue(red.hasTag("pnxtest_base"));
+        assertTrue(red.hasTag("pnxtest_more"));
+        assertFalse(red.hasTag("pnxtest_blue"));
+        assertTrue(blue.hasTag("pnxtest_blue"));
+        assertTrue(tracker.isEmpty(), "minecraft:tags must not be reported unsupported");
+    }
+
+    @Test
     void registersBlockWithServerSideGameplayValues() {
         String id = "pnxtest:registered_block";
 

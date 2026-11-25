@@ -695,7 +695,7 @@ public final class BehaviorBlockParser {
 
     private void applyComponent(String packName, String identifier, CustomBlockDefinition.Builder builder,
                                 CompoundTag raw, String key, JsonElement value) {
-        if (key.startsWith("tag:")) {
+        if (isTagComponent(key)) {
             return;
         }
         switch (key) {
@@ -897,12 +897,20 @@ public final class BehaviorBlockParser {
         return new CraftingTable(tableName, craftingTags);
     }
 
+    private static boolean isTagComponent(String key) {
+        return key.startsWith("tag:") || key.equals("minecraft:tags");
+    }
+
     private static Set<String> collectTags(@Nullable JsonObject components) {
         Set<String> tags = new LinkedHashSet<>();
         if (components != null) {
-            for (String key : components.keySet()) {
-                if (key.startsWith("tag:")) {
-                    tags.add(key.substring("tag:".length()));
+            for (Map.Entry<String, JsonElement> entry : components.entrySet()) {
+                if (entry.getKey().startsWith("tag:")) {
+                    tags.add(entry.getKey().substring("tag:".length()));
+                } else if (entry.getKey().equals("minecraft:tags") && entry.getValue().isJsonArray()) {
+                    for (JsonElement tag : entry.getValue().getAsJsonArray()) {
+                        tags.add(tag.getAsString());
+                    }
                 }
             }
         }
@@ -992,7 +1000,7 @@ public final class BehaviorBlockParser {
                     if (entry.getKey().equals("minecraft:redstone_producer")) {
                         producer = redstoneProducer(entry.getValue());
                         putIfPresent(clientComponents, entry.getKey(), ClientBlockComponents.redstoneProducer(entry.getValue()));
-                    } else if (!entry.getKey().startsWith("tag:")) {
+                    } else if (!isTagComponent(entry.getKey())) {
                         translatePermutationComponent(packName, clientComponents, serverValues, entry.getKey(), entry.getValue());
                     }
                 }
