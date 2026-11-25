@@ -104,16 +104,9 @@ public class BlockEntityJukebox extends BlockEntitySpawnable {
         this.soundHandle = null;
         notifyParrots(false);
 
-        final Stop stop = new Stop();
         final ClientboundUpdateSoundDataPacket packet = new ClientboundUpdateSoundDataPacket();
         packet.setServerSoundHandle(handle);
-        packet.setStop(stop);
-        packet.setSetVolume(stop);
-        packet.setSetPitch(stop);
-        packet.setFade(stop);
-        packet.setSeekTo(stop);
-        packet.setPause(stop);
-        packet.setResume(stop);
+        packet.setEvent(new Stop());
 
         this.broadcast(packet);
     }
