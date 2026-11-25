@@ -2567,6 +2567,15 @@ public abstract class Item implements Cloneable, ItemID {
         return def == null ? null : def.getComponents();
     }
 
+    /**
+     * @return whether the custom item's {@code liquid_clipped} property is set, so using it aims at liquid
+     * surfaces instead of passing through them; false for every other item
+     */
+    public boolean isLiquidClipped() {
+        CompoundTag properties = getCustomItemProperties();
+        return properties != null && properties.getBoolean("liquid_clipped");
+    }
+
     private CompoundTag getCustomItemProperties() {
         CompoundTag comps = customComponents();
         if (comps == null) return null;

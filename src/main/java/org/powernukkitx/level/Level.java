@@ -4933,7 +4933,7 @@ public class Level implements Metadatable, LiquidUpdateAccess {
 
     public Item useItemOn(Vector3 vector, Item item, BlockFace face, ItemUseInventoryTransaction data, Player player, boolean playSound) {
         Block target = this.getBlock(vector);
-        Block block = target.canBeReplaced() ? target : (target.getSnowloggingLevel() > 0 && item.getBlock() instanceof BlockSnowLayer ? target : target.getSide(face));
+        Block block = replacesTarget(item, target) ? target : (target.getSnowloggingLevel() > 0 && item.getBlock() instanceof BlockSnowLayer ? target : target.getSide(face));
 
         float fx = data.getClickPosition().getX();
         float fy = data.getClickPosition().getY();
@@ -5015,6 +5015,13 @@ public class Level implements Metadatable, LiquidUpdateAccess {
         return item.canBePlaced() && item.getBlock() instanceof BlockDataDriven dataDriven && dataDriven.hasPlacementFilter();
     }
 
+    /**
+     * A liquid-clipped item treats liquid as a surface, so it places on top of the liquid instead of into it.
+     */
+    private static boolean replacesTarget(Item item, Block target) {
+        return target.canBeReplaced() && !(target instanceof BlockLiquid && item.isLiquidClipped());
+    }
+
     private Block beforePlaceBlock(Item item, BlockFace face, Block block, Block target) {
         Block hand;
 
@@ -5049,7 +5056,7 @@ public class Level implements Metadatable, LiquidUpdateAccess {
         }
 
         // cause bug (eg: frog_spawn) (and I don't know what this is for)
-        if (!(hand instanceof BlockFrogSpawn) && target.canBeReplaced()) {
+        if (!(hand instanceof BlockFrogSpawn) && replacesTarget(item, target)) {
             block = target;
             hand.position(block);
         }
