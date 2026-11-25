@@ -10,7 +10,6 @@ import org.powernukkitx.item.ItemID;
 import org.powernukkitx.item.customitem.CustomItemDefinition;
 import org.powernukkitx.item.customitem.ItemDataDriven;
 import org.powernukkitx.item.customitem.ItemDataDrivenStorage;
-import org.powernukkitx.math.BlockFace;
 import org.powernukkitx.nbt.tag.CompoundTag;
 import org.powernukkitx.nbt.tag.IntTag;
 import org.powernukkitx.nbt.tag.ListTag;
@@ -129,18 +128,15 @@ class BehaviorItemParserTest {
     }
 
     @Test
-    void seedPlantsOnlyAtItsFace() {
-        String id = "pnxtest:parsed_hanging_seed";
+    void readsDurabilitySensor() {
+        String id = "pnxtest:parsed_sensor";
 
         assertEquals(id, register(id, """
-                { "minecraft:seed": { "crop_result": "minecraft:wheat", "plant_at_face": "DOWN" },
-                  "minecraft:durability_sensor": { "durability_thresholds": [ { "durability": 5, "particle_type": "wolfarmorcrack" } ] } }
+                { "minecraft:durability_sensor": { "durability_thresholds": [ { "durability": 5, "particle_type": "wolfarmorcrack" } ] } }
                 """));
 
-        ItemDataDriven seed = assertInstanceOf(ItemDataDriven.class, Registries.ITEM.get(id));
-        assertFalse(seed.isPiercingWeapon());
-        assertTrue(seed.canPlantAt(BlockFace.DOWN));
-        assertFalse(seed.canPlantAt(BlockFace.UP));
+        ItemDataDriven sensor = assertInstanceOf(ItemDataDriven.class, Registries.ITEM.get(id));
+        assertFalse(sensor.isPiercingWeapon());
         assertTrue(tracker.isEmpty(), "durability_sensor must not be reported unsupported");
     }
 
@@ -307,19 +303,14 @@ class BehaviorItemParserTest {
     }
 
     @Test
-    void mapsFireResistantSeedAndLegacyUseDuration() {
-        String id = "pnxtest:parsed_seed";
+    void mapsFireResistant() {
+        String id = "pnxtest:parsed_fire_resistant";
 
         assertEquals(id, register(id, """
-                { "minecraft:fire_resistant": { "value": true },
-                  "minecraft:seed": { "crop_result": "minecraft:wheat", "plant_at": ["farmland"] },
-                  "minecraft:use_duration": 1.5 }
+                { "minecraft:fire_resistant": { "value": true } }
                 """));
 
-        Item item = Item.get(id);
-        assertTrue(item.isLavaResistant());
-        assertEquals("minecraft:wheat", item.getCustomDefinition().getBlockPlacerData().blockId());
-        assertEquals(java.util.List.of("minecraft:farmland"), item.getCustomDefinition().getBlockPlacerData().useOn());
+        assertTrue(Item.get(id).isLavaResistant());
         assertTrue(tracker.isEmpty());
     }
 

@@ -105,7 +105,7 @@ final class ClientBlockComponents {
                     | (asBoolean(material.get("isotropic"), false) ? 0x2 : 0)
                     | 0x4;
             materials.putCompound(entry.getKey(), new CompoundTag(new LinkedHashMap<>())
-                    .putFloat("ambient_occlusion", ambientOcclusion(material.get("ambient_occlusion")))
+                    .putFloat("ambient_occlusion", asFloat(material.get("ambient_occlusion"), 1f))
                     .putByte("packed_bools", packed)
                     .putString("render_method", lowerOr(material, "render_method", "opaque"))
                     .putString("texture", optString(material, "texture"))
@@ -114,16 +114,6 @@ final class ClientBlockComponents {
         return new CompoundTag(new LinkedHashMap<>())
                 .putCompound("mappings", mappings)
                 .putCompound("materials", materials);
-    }
-
-    /**
-     * Older packs give ambient occlusion as a boolean; newer ones as its intensity.
-     */
-    private static float ambientOcclusion(@Nullable JsonElement element) {
-        if (element != null && element.isJsonPrimitive() && element.getAsJsonPrimitive().isBoolean()) {
-            return element.getAsBoolean() ? 1f : 0f;
-        }
-        return asFloat(element, 1f);
     }
 
     static @Nullable CompoundTag transformation(JsonElement value) {
@@ -322,7 +312,7 @@ final class ClientBlockComponents {
                 JsonObject material = entry.getValue().getAsJsonObject();
                 materials.putCompound(entry.getKey(), new CompoundTag(new LinkedHashMap<>())
                         .putByte("alpha_masked_tint", asBoolean(material.get("alpha_masked_tint"), false) ? 1 : 0)
-                        .putFloat("ambient_occlusion", ambientOcclusion(material.get("ambient_occlusion")))
+                        .putFloat("ambient_occlusion", asFloat(material.get("ambient_occlusion"), 1f))
                         .putByte("face_dimming", asBoolean(material.get("face_dimming"), true) ? 1 : 0)
                         .putByte("isotropic", asBoolean(material.get("isotropic"), false) ? 1 : 0)
                         .putString("render_method", lowerOr(material, "render_method", "opaque"))

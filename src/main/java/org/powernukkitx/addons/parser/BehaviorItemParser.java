@@ -7,7 +7,6 @@ import org.powernukkitx.item.customitem.ItemDataDriven;
 import org.powernukkitx.item.customitem.ItemDataDrivenStorage;
 import org.powernukkitx.item.customitem.data.CreativeCategory;
 import org.powernukkitx.item.utils.DiggerEntry;
-import org.powernukkitx.math.BlockFace;
 import org.powernukkitx.registry.BlockRegistry;
 import org.powernukkitx.registry.ItemRegistry;
 import org.powernukkitx.registry.Registries;
@@ -159,17 +158,16 @@ public final class BehaviorItemParser {
             causes = asStringList(absorption.getAsJsonObject().get("absorbable_causes"));
         }
         List<ItemDataDriven.DurabilityThreshold> thresholds = durabilityThresholds(components.get("minecraft:durability_sensor"));
-        BlockFace plantAtFace = plantAtFace(components.get("minecraft:seed"));
         ItemDataDriven.Storage storage = storage(components);
         JsonElement weightModifier = components.get("minecraft:storage_weight_modifier");
         int storageWeight = weightModifier != null && weightModifier.isJsonObject()
                 ? Math.max(asInt(weightModifier.getAsJsonObject().get("weight_in_storage_item"), 4), 0) : -1;
         ItemDataDriven.PiercingWeapon piercingWeapon = piercingWeapon(components.get("minecraft:piercing_weapon"));
         ItemDataDriven.KineticWeapon kineticWeapon = kineticWeapon(components.get("minecraft:kinetic_weapon"));
-        return record == null && causes.isEmpty() && thresholds.isEmpty() && plantAtFace == null && storage == null
+        return record == null && causes.isEmpty() && thresholds.isEmpty() && storage == null
                 && storageWeight < 0 && piercingWeapon == null && kineticWeapon == null
                 ? ItemDataDriven.ServerComponents.NONE
-                : new ItemDataDriven.ServerComponents(record, Set.copyOf(causes), thresholds, plantAtFace, storage,
+                : new ItemDataDriven.ServerComponents(record, Set.copyOf(causes), thresholds, storage,
                 storageWeight, piercingWeapon, kineticWeapon);
     }
 
@@ -245,23 +243,6 @@ public final class BehaviorItemParser {
             }
         }
         return names;
-    }
-
-    /**
-     * @return the face a seed plants on, {@code up} unless {@code plant_at_face} names another, or null when
-     * the element is not a seed
-     */
-    private static @Nullable BlockFace plantAtFace(@Nullable JsonElement element) {
-        if (element == null || !element.isJsonObject() || optString(element.getAsJsonObject(), "crop_result").isEmpty()) {
-            return null;
-        }
-        String name = optString(element.getAsJsonObject(), "plant_at_face");
-        for (BlockFace face : BlockFace.values()) {
-            if (face.getName().equalsIgnoreCase(name)) {
-                return face;
-            }
-        }
-        return BlockFace.UP;
     }
 
     /**
@@ -365,7 +346,7 @@ public final class BehaviorItemParser {
             }
             case "minecraft:max_stack_size" -> builder.maxStackSize(asInt(unwrapValue(value), 64));
             case "minecraft:hand_equipped" -> builder.handEquipped(asBoolean(unwrapValue(value), false));
-            case "minecraft:glint", "minecraft:foil" -> builder.glint(asBoolean(unwrapValue(value), false));
+            case "minecraft:glint" -> builder.glint(asBoolean(unwrapValue(value), false));
             case "minecraft:allow_off_hand" -> builder.allowOffHand(asBoolean(unwrapValue(value), false));
             case "minecraft:can_destroy_in_creative" -> builder.canDestroyInCreative(asBoolean(unwrapValue(value), true));
             case "minecraft:stacked_by_data" -> builder.stackedByData(asBoolean(unwrapValue(value), false));
@@ -443,12 +424,6 @@ public final class BehaviorItemParser {
             case "minecraft:compostable", "minecraft:fire_resistant", "minecraft:record", "minecraft:damage_absorption",
                  "minecraft:durability_sensor", "minecraft:kinetic_weapon" -> {
             }
-            case "minecraft:seed" -> {
-                if (value.isJsonObject()) {
-                    applySeed(builder, value.getAsJsonObject());
-                }
-            }
-            case "minecraft:use_duration" -> builder.useModifiers(1.0f, asFloat(unwrapValue(value), 0f));
             default -> {
                 if (!ClientItemComponents.HANDLED.contains(key)) {
                     tracker.reportUnsupported(packName, "item-component", key);
@@ -507,35 +482,6 @@ public final class BehaviorItemParser {
         if (digger.has("use_efficiency")) {
             builder.useEfficiency(asBoolean(digger.get("use_efficiency"), false));
         }
-    }
-
-    /**
-     * A seed is a block placer for its crop, limited to the blocks it may be planted on unless it may go on
-     * any solid surface.
-     */
-    private static void applySeed(CustomItemDefinition.SimpleBuilder builder, JsonObject seed) {
-        String crop = optString(seed, "crop_result");
-        if (crop.isEmpty()) {
-            return;
-        }
-        List<String> plantAt = new ArrayList<>();
-        if (!optBoolean(seed, "plant_at_any_solid_surface", false)) {
-            JsonElement entries = seed.get("plant_at");
-            if (entries != null && entries.isJsonArray()) {
-                for (JsonElement entry : entries.getAsJsonArray()) {
-                    String block = entry.isJsonObject() ? optString(entry.getAsJsonObject(), "name") : asStringOrEmpty(entry);
-                    if (!block.isEmpty()) {
-                        plantAt.add(block.indexOf(':') >= 0 ? block : "minecraft:" + block);
-                    }
-                }
-            } else if (entries != null) {
-                String block = asStringOrEmpty(entries);
-                if (!block.isEmpty()) {
-                    plantAt.add(block.indexOf(':') >= 0 ? block : "minecraft:" + block);
-                }
-            }
-        }
-        builder.blockPlacer(crop, plantAt.toArray(new String[0]));
     }
 
     private static void applyDurability(CustomItemDefinition.SimpleBuilder builder, JsonElement value) {

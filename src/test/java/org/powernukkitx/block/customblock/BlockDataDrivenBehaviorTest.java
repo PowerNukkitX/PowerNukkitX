@@ -110,7 +110,7 @@ class BlockDataDrivenBehaviorTest {
                   "minecraft:precipitation_interactions": { "precipitation_behavior": "none" },
                   "minecraft:chest_obstruction": { "obstruction_rule": "never" },
                   "minecraft:flower_pottable": {},
-                  "minecraft:block_light_emission": 0.5 }
+                  "minecraft:light_emission": 8 }
                 """, "[]"));
 
         assertFalse(block.isNormalBlock());

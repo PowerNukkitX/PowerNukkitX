@@ -11,7 +11,6 @@ import org.powernukkitx.level.Level;
 import org.powernukkitx.level.MovingObjectPosition;
 import org.powernukkitx.level.particle.GenericParticle;
 import org.powernukkitx.math.AxisAlignedBB;
-import org.powernukkitx.math.BlockFace;
 import org.powernukkitx.math.Vector3;
 
 import org.cloudburstmc.protocol.bedrock.data.ParticleType;
@@ -143,8 +142,6 @@ public class ItemDataDriven extends Item implements CustomItem {
      *                             {@code minecraft:damage_absorption}; {@code all} absorbs every cause
      * @param durabilityThresholds the thresholds of {@code minecraft:durability_sensor}, empty when the item
      *                             has none
-     * @param plantAtFace          the face of the target block a {@code minecraft:seed} plants on, or null when
-     *                             the item is not a seed
      * @param storage              what the item stores, or null when it stores nothing
      * @param storageWeight        the weight of one of this item inside a storage item, 0 when it may not be
      *                             stored, or -1 for the weight of its share of a stack of 64
@@ -153,10 +150,10 @@ public class ItemDataDriven extends Item implements CustomItem {
      */
     public record ServerComponents(@Nullable Record record, @NotNull Set<String> absorbableCauses,
                                    @NotNull List<DurabilityThreshold> durabilityThresholds,
-                                   @Nullable BlockFace plantAtFace, @Nullable Storage storage, int storageWeight,
+                                   @Nullable Storage storage, int storageWeight,
                                    @Nullable PiercingWeapon piercingWeapon, @Nullable KineticWeapon kineticWeapon) {
 
-        public static final ServerComponents NONE = new ServerComponents(null, Set.of(), List.of(), null, null, -1, null, null);
+        public static final ServerComponents NONE = new ServerComponents(null, Set.of(), List.of(), null, -1, null, null);
 
         public ServerComponents {
             absorbableCauses = Set.copyOf(absorbableCauses);
@@ -332,15 +329,6 @@ public class ItemDataDriven extends Item implements CustomItem {
             }
         }
         return targets;
-    }
-
-    /**
-     * @param face the face of the target block that was clicked
-     * @return whether the item may place its block from that face; only a seed limits the face
-     */
-    public boolean canPlantAt(@NotNull BlockFace face) {
-        BlockFace plantAtFace = serverComponents.plantAtFace();
-        return plantAtFace == null || plantAtFace == face;
     }
 
     /**

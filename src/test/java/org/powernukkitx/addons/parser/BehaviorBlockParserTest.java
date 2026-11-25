@@ -204,7 +204,7 @@ class BehaviorBlockParserTest {
         BlockDataDriven.Spec spec = parse(block("pnxtest:tag_only_permutation",
                 ", \"states\": { \"pnxtest:open\": [false, true] }",
                 "{}",
-                "[ { \"condition\": \"q.block_state('pnxtest:open')\", \"components\": { \"tag:pnxtest_open\": {} } } ]"));
+                "[ { \"condition\": \"q.block_state('pnxtest:open')\", \"components\": { \"minecraft:tags\": [\"pnxtest_open\"] } } ]"));
 
         assertFalse(spec.definition().nbt().contains("permutations"), "an empty components compound must not be sent");
     }
@@ -226,23 +226,6 @@ class BehaviorBlockParserTest {
     void resolvesConditionalTagsPerState() {
         BlockDataDriven.Spec spec = parse(block("pnxtest:conditional_tags",
                 ", \"states\": { \"pnxtest:color\": [\"red\", \"blue\"] }",
-                "{ \"tag:pnxtest_base\": {} }",
-                "[ { \"condition\": \"q.block_state('pnxtest:color') == 'blue'\", \"components\": { \"tag:pnxtest_blue\": {} } } ]"));
-
-        BlockDataDriven red = new BlockDataDriven(stateWith(spec, "pnxtest:color", "red"), spec);
-        BlockDataDriven blue = new BlockDataDriven(stateWith(spec, "pnxtest:color", "blue"), spec);
-
-        assertTrue(red.hasTag("pnxtest_base"));
-        assertFalse(red.hasTag("pnxtest_blue"));
-        assertTrue(blue.hasTag("pnxtest_base"));
-        assertTrue(blue.hasTag("pnxtest_blue"));
-        assertEquals(2, blue.getTags().length);
-    }
-
-    @Test
-    void readsTagListComponent() {
-        BlockDataDriven.Spec spec = parse(block("pnxtest:tag_list",
-                ", \"states\": { \"pnxtest:color\": [\"red\", \"blue\"] }",
                 "{ \"minecraft:tags\": [\"pnxtest_base\", \"pnxtest_more\"] }",
                 "[ { \"condition\": \"q.block_state('pnxtest:color') == 'blue'\", \"components\": { \"minecraft:tags\": [\"pnxtest_blue\"] } } ]"));
 
@@ -252,7 +235,9 @@ class BehaviorBlockParserTest {
         assertTrue(red.hasTag("pnxtest_base"));
         assertTrue(red.hasTag("pnxtest_more"));
         assertFalse(red.hasTag("pnxtest_blue"));
+        assertTrue(blue.hasTag("pnxtest_base"));
         assertTrue(blue.hasTag("pnxtest_blue"));
+        assertEquals(3, blue.getTags().length);
         assertTrue(tracker.isEmpty(), "minecraft:tags must not be reported unsupported");
     }
 
@@ -359,6 +344,13 @@ class BehaviorBlockParserTest {
     }
 
     @Test
+    void reportsSingleCollisionBoxObject() {
+        parse(block("pnxtest:single_box", "", "{ \"minecraft:collision_box\": { \"origin\": [-8, 0, -8], \"size\": [16, 8, 16] } }", "[]"));
+
+        assertFalse(tracker.isEmpty(), "a single box object is the pre-1.26.60 form and is not read");
+    }
+
+    @Test
     void readsCollisionBoxList() {
         BlockDataDriven.Spec spec = parse(block("pnxtest:box_list",
                 ", \"states\": { \"pnxtest:tall\": [false, true] }",
@@ -385,7 +377,7 @@ class BehaviorBlockParserTest {
     void rotatesCollisionBoxWithPermutationTransformation() {
         BlockDataDriven.Spec spec = parse(block("pnxtest:rotated_box",
                 ", \"states\": { \"pnxtest:turned\": [false, true] }",
-                "{ \"minecraft:collision_box\": { \"origin\": [-8, 0, -8], \"size\": [16, 8, 8] } }",
+                "{ \"minecraft:collision_box\": [ { \"origin\": [-8, 0, -8], \"size\": [16, 8, 8] } ] }",
                 "[ { \"condition\": \"q.block_state('pnxtest:turned')\", \"components\": { "
                         + "\"minecraft:transformation\": { \"rotation\": [0, 90, 0] } } } ]"));
 
@@ -440,7 +432,7 @@ class BehaviorBlockParserTest {
     @Test
     void scalesCollisionBoxAboutScalePivot() {
         BlockDataDriven.Spec spec = parse(block("pnxtest:squashed_box", "",
-                "{ \"minecraft:collision_box\": { \"origin\": [-8, 0, -8], \"size\": [16, 16, 16] }, "
+                "{ \"minecraft:collision_box\": [ { \"origin\": [-8, 0, -8], \"size\": [16, 16, 16] } ], "
                         + "\"minecraft:transformation\": { \"scale\": [1, 0.5, 1], \"scale_pivot\": [0, -0.5, 0] } }", "[]"));
 
         AxisAlignedBB box = new BlockDataDriven(null, spec).getCollisionBoxes()[0];

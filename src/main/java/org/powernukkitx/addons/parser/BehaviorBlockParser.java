@@ -255,7 +255,7 @@ public final class BehaviorBlockParser {
             wireStepsDown = asBoolean(conductivity.getAsJsonObject().get("allows_wire_to_step_down"), true);
         } else if (consumer != null && consumer.isJsonObject()) {
             JsonObject json = consumer.getAsJsonObject();
-            conductor = asBoolean(json.has("propagates_power") ? json.get("propagates_power") : json.get("propogates_power"), false);
+            conductor = asBoolean(json.get("propagates_power"), false);
         }
         return new BlockDataDriven.Behavior(
                 instrumentSound(components.get("minecraft:instrument_sound")),
@@ -702,7 +702,7 @@ public final class BehaviorBlockParser {
             case "minecraft:destructible_by_mining" -> builder.destructibleByMining(miningSeconds(value));
             case "minecraft:destructible_by_explosion" -> builder.destructibleByExplosion(explosionResistance(value));
             case "minecraft:friction" -> builder.friction(Math.min(asFloat(value, 0.4f), 0.9f));
-            case "minecraft:light_dampening", "minecraft:block_light_absorption" -> builder.lightDampening(asInt(value, 15));
+            case "minecraft:light_dampening" -> builder.lightDampening(asInt(value, 15));
             case "minecraft:light_emission" -> builder.lightEmission(asInt(value, 0));
             case "minecraft:display_name" -> {
                 String name = value.isJsonObject() ? optString(value.getAsJsonObject(), "value") : asStringOrEmpty(value);
@@ -718,7 +718,9 @@ public final class BehaviorBlockParser {
             }
             case "minecraft:geometry" -> putIfPresent(raw, key, ClientBlockComponents.geometry(value));
             case "minecraft:collision_box" -> {
-                if (isFalse(value)) {
+                if (value.isJsonObject()) {
+                    tracker.reportUnsupported(packName, "block-component-form", key);
+                } else if (isFalse(value)) {
                     raw.putCompound(key, disabledCollisionBox());
                 } else {
                     for (JsonElement box : collisionBoxes(value)) {
@@ -749,7 +751,6 @@ public final class BehaviorBlockParser {
                     raw.putCompound(key, ClientBlockComponents.materialInstances(value.getAsJsonObject()));
                 }
             }
-            case "minecraft:unit_cube" -> raw.putCompound(key, new CompoundTag());
             case "minecraft:flammable" -> applyFlammable(builder, value);
             case "minecraft:movable" -> builder.movable(movable(value));
             case "minecraft:replaceable" -> {
@@ -772,9 +773,6 @@ public final class BehaviorBlockParser {
             case "minecraft:random_offset" -> raw.putCompound(key, ClientBlockComponents.randomOffset(value));
             case "minecraft:embedded_visual" -> putIfPresent(raw, key, ClientBlockComponents.embeddedVisual(value));
             case "minecraft:item_visual" -> putIfPresent(raw, key, ClientBlockComponents.itemVisual(value));
-            case "minecraft:block_light_emission" -> builder.lightEmission(Math.round(Math.clamp(asFloat(value, 0f), 0f, 1f) * 15));
-            case "minecraft:destroy_time" -> builder.destructibleByMining(asFloat(value, 0f));
-            case "minecraft:explosion_resistance" -> builder.destructibleByExplosion((int) asFloat(value, 0f));
             case "minecraft:loot", "minecraft:chest_obstruction", "minecraft:instrument_sound", "minecraft:redstone_consumer" -> {
             }
             default -> tracker.reportUnsupported(packName, "block-component", key);
@@ -900,20 +898,15 @@ public final class BehaviorBlockParser {
     }
 
     private static boolean isTagComponent(String key) {
-        return key.startsWith("tag:") || key.equals("minecraft:tags");
+        return key.equals("minecraft:tags");
     }
 
     private static Set<String> collectTags(@Nullable JsonObject components) {
         Set<String> tags = new LinkedHashSet<>();
-        if (components != null) {
-            for (Map.Entry<String, JsonElement> entry : components.entrySet()) {
-                if (entry.getKey().startsWith("tag:")) {
-                    tags.add(entry.getKey().substring("tag:".length()));
-                } else if (entry.getKey().equals("minecraft:tags") && entry.getValue().isJsonArray()) {
-                    for (JsonElement tag : entry.getValue().getAsJsonArray()) {
-                        tags.add(tag.getAsString());
-                    }
-                }
+        JsonElement list = components == null ? null : components.get("minecraft:tags");
+        if (list != null && list.isJsonArray()) {
+            for (JsonElement tag : list.getAsJsonArray()) {
+                tags.add(tag.getAsString());
             }
         }
         return tags;
@@ -1075,9 +1068,13 @@ public final class BehaviorBlockParser {
                 target.putCompound(key, new CompoundTag().putInt("explosion_resistance", resistance));
                 serverValues.add(builder -> builder.destructibleByExplosion(resistance));
             }
-            case "minecraft:collision_box" -> target.putCompound(key, isFalse(value)
-                    ? disabledCollisionBox()
-                    : collisionBox(value));
+            case "minecraft:collision_box" -> {
+                if (value.isJsonObject()) {
+                    tracker.reportUnsupported(packName, "block-component-form", key);
+                } else {
+                    target.putCompound(key, isFalse(value) ? disabledCollisionBox() : collisionBox(value));
+                }
+            }
             case "minecraft:selection_box" -> target.putCompound(key, isFalse(value)
                     ? selectionBox(false, new Vector3f(0f, 0f, 0f), new Vector3f(0f, 0f, 0f))
                     : selectionBox(true, boxOrigin(value), boxSize(value)));
@@ -1143,10 +1140,10 @@ public final class BehaviorBlockParser {
     }
 
     /**
-     * A collision box is a single box up to format version 1.26.50 and a list of boxes from 1.26.60.
+     * @return the boxes of a collision box list; {@code true} has none, which keeps the full cube
      */
     private static List<JsonElement> collisionBoxes(JsonElement value) {
-        return value.isJsonArray() ? value.getAsJsonArray().asList() : List.of(value);
+        return value.isJsonArray() ? value.getAsJsonArray().asList() : List.of();
     }
 
     /**
