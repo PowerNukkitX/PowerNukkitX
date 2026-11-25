@@ -21,7 +21,8 @@ import java.util.stream.Collectors;
  * <ul>
  *   <li>Parses entity selectors (e.g., @a, @p) using {@link EntitySelectorAPI}.</li>
  *   <li>Filters matched entities to {@link Player} instances only.</li>
- *   <li>Supports player name lookup as a fallback.</li>
+ *   <li>Supports player name lookup as a fallback, plus UUID and XUID lookup for senders allowed to target real names
+ *   (see {@link org.powernukkitx.command.Command#resolveTargetPlayer(org.powernukkitx.command.CommandSender, String)}).</li>
  *   <li>Returns a list of matching players.</li>
  * </ul>
  * <p>
