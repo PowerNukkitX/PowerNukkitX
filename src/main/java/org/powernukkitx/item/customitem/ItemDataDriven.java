@@ -12,6 +12,7 @@ import org.powernukkitx.level.MovingObjectPosition;
 import org.powernukkitx.level.particle.GenericParticle;
 import org.powernukkitx.math.AxisAlignedBB;
 import org.powernukkitx.math.Vector3;
+import org.powernukkitx.nbt.tag.CompoundTag;
 
 import org.cloudburstmc.protocol.bedrock.data.ParticleType;
 import org.cloudburstmc.protocol.bedrock.data.SoundEvent;
@@ -234,11 +235,29 @@ public class ItemDataDriven extends Item implements CustomItem {
     /**
      * {@inheritDoc}
      * <p>
-     * A {@code minecraft:kinetic_weapon} is used by holding it, so using it in the air starts that use.
+     * A {@code minecraft:kinetic_weapon} is used by holding it, so using it in the air starts that use. A
+     * {@code minecraft:cooldown} starts with the use, as the client counts it, and no use starts while it runs.
      */
     @Override
     public boolean onClickAir(Player player, Vector3 directionVector) {
-        return serverComponents.kineticWeapon() != null || super.onClickAir(player, directionVector);
+        CompoundTag cooldown = getCustomItemComponent("minecraft:cooldown");
+        if (cooldown != null && !player.isItemCoolDownEnd(cooldown.getString("category"))) {
+            return false;
+        }
+        boolean used = serverComponents.kineticWeapon() != null || super.onClickAir(player, directionVector);
+        if (used && cooldown != null) {
+            super.afterUse(player);
+        }
+        return used;
+    }
+
+    /**
+     * {@inheritDoc}
+     * <p>
+     * The cooldown already started with the use in {@link #onClickAir(Player, Vector3)}.
+     */
+    @Override
+    public void afterUse(Player player) {
     }
 
     /**
