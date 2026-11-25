@@ -669,6 +669,7 @@ public class Level implements Metadatable, LiquidUpdateAccess {
                             }
                         } else {
                             this.scheduler.mainThreadHeartbeat(loop.getTick());
+                            this.villageManager.removeDepartedRaidBossBars();
                         }
                     } catch (Throwable t) {
                         log.error("Error in base-tick for level {}", this.getName(), t);
@@ -2298,6 +2299,8 @@ public class Level implements Metadatable, LiquidUpdateAccess {
             if (this.sleepTicks > 0 && --this.sleepTicks <= 0) {
                 this.checkSleep();
             }
+
+            this.villageManager.tick(getCurrentTick());
 
             if (!this.chunkPackets.isEmpty()) {
                 for (var entry : this.chunkPackets.entrySet()) {

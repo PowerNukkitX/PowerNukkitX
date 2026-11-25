@@ -2130,7 +2130,7 @@ public abstract class Entity extends Location implements Metadatable, EntityID {
                 effect.onTick(this);
 
                 if (!effect.isInfinite()) {
-                    effect.setDuration(effect.getDuration() - tickDiff);
+                    effect.setDuration(Math.max(0, effect.getDuration() - tickDiff));
 
                     if (effect.getDuration() <= 0) {
                         this.removeEffect(effect.getType());
