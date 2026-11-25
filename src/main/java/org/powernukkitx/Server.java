@@ -866,8 +866,8 @@ public class Server {
             computeThreadPool)
             : CompletableFuture.runAsync(Registries.RECIPE::initDisabled, computeThreadPool);
 
+        CompletableFuture<Void> professionF = blockStateF.thenRunAsync(Profession::init, computeThreadPool);
         CompletableFuture<Void> miscF = CompletableFuture.runAsync(() -> {
-            Profession.init();
             Updater updater = BlockStateUpdaterBase.INSTANCE;
             Enchantment.init();
             Attribute.init();
@@ -881,7 +881,7 @@ public class Server {
 
         return CompletableFuture.allOf(potionF, entityF, blockEntityF, itemRtIdF, biomeF,
             fuelF, generatorF, genStageF, populatorF, genFeatF, structureF, structureSpawnOverrideF, effectF,
-            creativeF, recipeF, voxelF, disconnectF, trimF, miscF, dispenseF);
+            creativeF, recipeF, voxelF, disconnectF, trimF, professionF, miscF, dispenseF);
     }
 
 
