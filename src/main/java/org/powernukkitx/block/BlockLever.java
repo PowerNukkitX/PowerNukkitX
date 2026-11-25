@@ -1,6 +1,5 @@
 package org.powernukkitx.block;
 
-import org.powernukkitx.block.customblock.BlockDataDriven;
 import org.powernukkitx.block.definition.BlockDefinition;
 
 import org.powernukkitx.AdventureSettings;
@@ -152,8 +151,7 @@ public class BlockLever extends BlockFlowable implements RedstoneComponent, Face
             return true;
         }
 
-        if (support instanceof BlockWallBase || support instanceof BlockFence
-                || (support instanceof BlockDataDriven dataDriven && dataDriven.getSupportShape() == BlockDataDriven.SupportShape.FENCE)) {
+        if (support instanceof BlockWallBase || support instanceof BlockFence) {
             return face == BlockFace.UP;
         }
 

@@ -5,6 +5,7 @@ import org.powernukkitx.addons.AddonFeatureTracker;
 import org.powernukkitx.addons.parser.BehaviorBlockParser;
 import org.powernukkitx.block.Block;
 import org.powernukkitx.block.BlockID;
+import org.powernukkitx.block.BlockLever;
 import org.powernukkitx.block.BlockState;
 import org.powernukkitx.block.PrecipitationBehavior;
 import org.powernukkitx.block.property.type.BlockPropertyType;
@@ -156,6 +157,15 @@ class BlockDataDrivenBehaviorTest {
         assertFalse(stairs.isSolid(BlockFace.UP));
         assertTrue(stairs.isSolid(BlockFace.NORTH));
         assertFalse(stairs.isSolid(BlockFace.SOUTH));
+    }
+
+    @Test
+    void fenceSupportHoldsAttachmentsOnTopOnly() {
+        BlockDataDriven fence = new BlockDataDriven(null, parse("pnxtest:custom_post", "",
+                "{ \"minecraft:support\": { \"shape\": \"fence\" } }", "[]"));
+
+        assertTrue(BlockLever.isSupportValid(fence, BlockFace.UP), "a torch or lantern stands on top");
+        assertFalse(BlockLever.isSupportValid(fence, BlockFace.NORTH), "nothing attaches to the sides");
     }
 
     @Test

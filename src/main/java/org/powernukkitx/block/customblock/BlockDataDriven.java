@@ -924,6 +924,9 @@ public class BlockDataDriven extends Block implements CustomBlock, BlockFlowerPo
         if (spec.behavior().support() == SupportShape.STAIR) {
             return isStairSideFull(side);
         }
+        if (spec.behavior().support() == SupportShape.FENCE) {
+            return side == BlockFace.UP;
+        }
         if (stateData.collisionBoxes() == null) {
             return super.isSolid(side);
         }
@@ -953,12 +956,6 @@ public class BlockDataDriven extends Block implements CustomBlock, BlockFlowerPo
         return side.getName().equalsIgnoreCase(String.valueOf(facing));
     }
 
-    /**
-     * @return the support shape the block declares, or null when it supports attachments as a full cube
-     */
-    public @Nullable SupportShape getSupportShape() {
-        return spec.behavior().support();
-    }
 
     /**
      * @return the note block instruments the block sounds, or null when it sounds the default harp
