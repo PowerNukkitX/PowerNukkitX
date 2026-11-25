@@ -51,6 +51,11 @@ public abstract class ItemCushion extends Item {
         });
     }
 
+    @Override
+    public int getMaxStackSize() {
+        return 16;
+    }
+
     public DyeColor getColor() {
         return this.color;
     }
@@ -62,17 +67,12 @@ public abstract class ItemCushion extends Item {
 
     @Override
     public boolean onActivate(Level level, Player player, Block block, Block target, BlockFace face, double fx, double fy, double fz) {
-        if (player.isAdventure()) {
+        if (player.isAdventure() || face != BlockFace.UP) {
             return false;
         }
 
         IChunk chunk = block.getChunk();
-        if (chunk == null || !block.canBeReplaced()) {
-            return false;
-        }
-
-        // a cushion rests on whatever is under it, so it needs something solid to sit on
-        if (!block.down().isSolid()) {
+        if (chunk == null) {
             return false;
         }
 
@@ -83,8 +83,8 @@ public abstract class ItemCushion extends Item {
             }
         }
 
-        CompoundTag nbt = Entity.getDefaultNBT(block.add(0.5, 0, 0.5), new Vector3(), (float) ((player.yaw + 180f) % 360), 0f)
-                .putByte("Color", this.color.getWoolData());
+        CompoundTag nbt = Entity.getDefaultNBT(block.add(0.5, target.getMaxY() - block.getY(), 0.5), new Vector3(), 0f, 0f)
+                .putByte("Color", this.color.getDyeData());
 
         Entity entity = Entity.createEntity(Entity.CUSHION, chunk, nbt);
         if (entity == null) {

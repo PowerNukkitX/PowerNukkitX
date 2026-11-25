@@ -451,11 +451,30 @@ public class LevelDBChunkSerializer {
                 }
                 builder.heightMap(heights);
 
+                // Worlds written with a lower dimension height, or by other tools, can store fewer biome
+                // sections than the dimension has now. The missing ones (and a section cut off mid-way)
+                // repeat the last complete one, as vanilla does, instead of failing the whole chunk.
                 Palette<Integer> lastPalette = null;
-
-                for (Palette<Integer> biomePalette : biomeSections) {
-                    biomePalette.readFromStorageRuntime(heightAndBiomesBuffer, Integer::valueOf, lastPalette);
+                int read = 0;
+                while (read < sectionCount && heightAndBiomesBuffer.isReadable()) {
+                    Palette<Integer> biomePalette = biomeSections[read];
+                    try {
+                        biomePalette.readFromStorageRuntime(heightAndBiomesBuffer, Integer::valueOf, lastPalette);
+                    } catch (IndexOutOfBoundsException e) {
+                        log.warn("Biome data of chunk [{},{}] ends inside section {} of {}; repeating the last complete section",
+                                builder.getChunkX(), builder.getChunkZ(), read, sectionCount);
+                        break;
+                    }
                     lastPalette = biomePalette;
+                    read++;
+                }
+
+                for (int i = read; i < sectionCount; i++) {
+                    if (lastPalette != null) {
+                        lastPalette.copyTo(biomeSections[i]);
+                    } else {
+                        biomeSections[i] = new Palette<>(BiomeID.PLAINS, BitArrayVersion.V0);
+                    }
                 }
 
                 return;

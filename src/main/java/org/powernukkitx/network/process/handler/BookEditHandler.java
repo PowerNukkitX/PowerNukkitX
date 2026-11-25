@@ -30,6 +30,10 @@ public class BookEditHandler implements PacketHandler<BookEditPacket> {
             return;
         }
 
+        if (!playerHandle.packetRateLimiter.tryWorldInteraction()){
+            return;
+        }
+
         if (packet.getBookSlot() < 0 || packet.getBookSlot() >= player.getInventory().getHotbarSize()) {
             log.debug("{}: BookEditPacket with an out of range book slot {}", playerHandle.getUsername(), packet.getBookSlot());
             return;

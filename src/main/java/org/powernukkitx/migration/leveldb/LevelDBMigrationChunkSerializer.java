@@ -78,16 +78,23 @@ public final class LevelDBMigrationChunkSerializer {
     }
 
     /**
-     * Reads consecutive little-endian compound NBT values.
+     * Reads consecutive little-endian compound NBT values using the default depth limit.
      */
     public static List<CompoundTag> readLittleEndianCompounds(byte[] data) throws IOException {
+        return readLittleEndianCompounds(data, NbtUtils.MAX_DEPTH);
+    }
+
+    /**
+     * Reads consecutive little-endian compound NBT values with an explicit depth limit.
+     */
+    public static List<CompoundTag> readLittleEndianCompounds(byte[] data, int maxDepth) throws IOException {
         List<CompoundTag> result = new ArrayList<>();
         ByteBuf buffer = Unpooled.wrappedBuffer(data);
         try {
             while (buffer.isReadable()) {
                 try (ByteBufInputStream inputStream = new ByteBufInputStream(buffer);
                      NBTInputStream nbtInputStream = NbtUtils.createReaderLE(inputStream)) {
-                    Object tag = nbtInputStream.readTag();
+                    Object tag = nbtInputStream.readTag(maxDepth);
                     if (!(tag instanceof NbtMap map)) {
                         throw new IOException("Invalid little-endian compound NBT");
                     }

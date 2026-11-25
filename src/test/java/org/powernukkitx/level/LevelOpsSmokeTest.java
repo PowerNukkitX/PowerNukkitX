@@ -53,7 +53,7 @@ public class LevelOpsSmokeTest {
         safe(level::getDimensionCount);
         safe(level::getMinHeight);
         safe(level::getMaxHeight);
-        safe(level::getUpdateLCG);
+        safe(level::getRandomTickState);
         safe(level::isAntiXrayEnabled);
         safe(level::getTick);
         safe(level::getNetherScale);

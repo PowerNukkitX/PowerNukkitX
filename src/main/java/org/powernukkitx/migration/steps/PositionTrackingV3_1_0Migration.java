@@ -12,6 +12,7 @@ import org.iq80.leveldb.DBIterator;
 import org.iq80.leveldb.WriteBatch;
 import org.powernukkitx.ServerDBStorageFormat;
 import org.powernukkitx.blockentity.BlockEntityLodestone;
+import org.powernukkitx.level.format.leveldb.LevelDBActorStorage;
 import org.powernukkitx.migration.MigrationContext;
 import org.powernukkitx.migration.MigrationFormat;
 import org.powernukkitx.migration.MigrationStep;
@@ -25,12 +26,16 @@ import org.powernukkitx.nbt.tag.Tag;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * Converts legacy PNX and native BDS position-tracking data to the 3.1.0 server-global representation. BDS imports reserve a global
@@ -38,6 +43,7 @@ import java.util.Map;
  *
  * @author Curse
  */
+@Slf4j
 public final class PositionTrackingV3_1_0Migration implements MigrationStep<PositionTrackingMigrationData> {
     private static final byte STATUS_ENABLED = 0;
     private static final byte STATUS_DISABLED = 1;
@@ -105,28 +111,39 @@ public final class PositionTrackingV3_1_0Migration implements MigrationStep<Posi
     }
 
     /**
-     * Rewrites lodestone-compass references stored inside one legacy PNX player or actor compound.
+     * Rewrites legacy PNX lodestone-compass references, clearing orphaned handles.
      */
-    public static void remapLegacyPnxItems(CompoundTag root, int sourceLastId, int offset) throws IOException {
-        remapItemReferences(root, sourceLastId, offset);
+    public static void remapLegacyPnxItems(
+            CompoundTag root, int sourceLastId, int offset, Set<Integer> sourceHandles
+    ) throws IOException {
+        remapItemReferences(root, handle -> remapLegacyPnxHandle(handle, sourceLastId, offset, sourceHandles));
     }
 
     /**
-     * Rewrites lodestone and nested item references before a legacy PNX block entity becomes canonical.
+     * Rewrites legacy PNX Lodestone and nested item references and reports modifications.
+     *
+     * @return whether any persisted NBT was modified
      */
-    public static void remapLegacyPnxBlockEntity(CompoundTag blockEntity, int sourceLastId, int offset) throws IOException {
-        remapItemReferences(blockEntity, sourceLastId, offset);
+    public static boolean remapLegacyPnxBlockEntity(
+            CompoundTag blockEntity, int sourceLastId, int offset, Set<Integer> sourceHandles
+    ) throws IOException {
+        boolean changed = remapItemReferences(
+                blockEntity, handle -> remapLegacyPnxHandle(handle, sourceLastId, offset, sourceHandles));
 
-        if (!"Lodestone".equals(blockEntity.getString("id"))) {
-            return;
-        }
+        if (!"Lodestone".equals(blockEntity.getString("id"))) return changed;
 
         int trackingHandle = readLodestoneHandle(blockEntity);
-        if (trackingHandle <= 0) {
-            return;
+        if (trackingHandle == 0) return changed;
+
+        int migratedHandle = remapLegacyPnxHandle(trackingHandle, sourceLastId, offset, sourceHandles);
+        if (migratedHandle == 0) {
+            blockEntity.remove("trackingHandle", "trackingHandler");
+            log.warn("[PositionTracking Migration] Clearing orphaned legacy PNX Lodestone handle {} at {},{},{}",
+                    trackingHandle, blockEntity.getInt("x"), blockEntity.getInt("y"), blockEntity.getInt("z"));
+            return true;
         }
 
-        int migratedHandle = remapHandle(trackingHandle, sourceLastId, offset);
+        if (trackingHandle == migratedHandle) return changed;
 
         if (blockEntity.contains("trackingHandle")) {
             blockEntity.putInt("trackingHandle", migratedHandle);
@@ -134,12 +151,74 @@ public final class PositionTrackingV3_1_0Migration implements MigrationStep<Posi
         if (blockEntity.contains("trackingHandler")) {
             blockEntity.putInt("trackingHandler", migratedHandle);
         }
+        return true;
+    }
+
+    /**
+     * Captures original BDS reference records before chunk migration creates PNX storage records.
+     */
+    public static BdsSourceKeys captureBdsSourceKeys(DB db) throws IOException {
+        byte[] allocator = db.get(ServerDBStorageFormat.SERVER_DATA_POSITION_TRACKING_LAST_ID_KEY);
+        if (allocator == null || allocator.length == 0) {
+            return new BdsSourceKeys(Set.of(), Set.of());
+        }
+
+        Set<ByteBuffer> blockEntities = new HashSet<>();
+        Set<ByteBuffer> actors = new HashSet<>();
+
+        try (DBIterator iterator = db.iterator()) {
+            iterator.seekToFirst();
+            while (iterator.hasNext()) {
+                Map.Entry<byte[], byte[]> entry = iterator.next();
+                byte[] key = entry.getKey();
+
+                if (isBlockEntityKey(key)) {
+                    byte[] extraKey = key.clone();
+                    extraKey[extraKey.length - 1] = '|';
+                    if (db.get(extraKey) == null) {
+                        blockEntities.add(ByteBuffer.wrap(key.clone()));
+                    }
+                    continue;
+                }
+
+                if (!isActorKey(key)) continue;
+
+                actors.add(ByteBuffer.wrap(key.clone()));
+
+                List<CompoundTag> tags = readLittleEndianCompounds(entry.getValue());
+                if (tags.size() != 1) {
+                    throw new IOException("Invalid original actorprefix position-tracking source record");
+                }
+
+                long uniqueId = tags.getFirst().getLong("UniqueID");
+                if (uniqueId != 0) {
+                    try {
+                        long storageKey = LevelDBActorStorage.getActorStorageKey(uniqueId);
+                        actors.add(ByteBuffer.wrap(LevelDBActorStorage.getActorKey(storageKey)));
+                    } catch (IllegalArgumentException e) {
+                        throw new IOException("Invalid original BDS actor UniqueID " + uniqueId, e);
+                    }
+                }
+            }
+        }
+
+        return new BdsSourceKeys(Set.copyOf(blockEntities), Set.copyOf(actors));
+    }
+
+    /**
+     * Original BDS records eligible for position-tracking remapping.
+     *
+     * @param blockEntities original native BDS block-entity keys
+     * @param actors original actorprefix keys, including their canonical UniqueID keys
+     */
+    public record BdsSourceKeys(Set<ByteBuffer> blockEntities, Set<ByteBuffer> actors) {
     }
 
     /**
      * Rewrites BDS references to a reserved global handle range and clears the original BDS position-tracking values atomically.
      */
-    public static void remapBdsWorld(DB sourceDB, int sourceLastId, int offset) throws IOException {
+    public static void remapBdsWorld(DB sourceDB, int sourceLastId, int offset, BdsSourceKeys bdsSourceKeys)
+            throws IOException {
         try (WriteBatch batch = sourceDB.createWriteBatch()) {
             try (DBIterator iterator = sourceDB.iterator()) {
                 iterator.seekToFirst();
@@ -153,11 +232,15 @@ public final class PositionTrackingV3_1_0Migration implements MigrationStep<Posi
                         continue;
                     }
                     if (isBlockEntityKey(key) && value.length != 0) {
-                        remapBlockEntities(sourceDB, batch, key, value, sourceLastId, offset);
+                        if (bdsSourceKeys.blockEntities().contains(ByteBuffer.wrap(key))) {
+                            remapBlockEntities(sourceDB, batch, key, value, sourceLastId, offset);
+                        }
                         continue;
                     }
                     if (isActorKey(key) && value.length != 0) {
-                        remapCompoundRecord(batch, key, value, sourceLastId, offset, "actorprefix");
+                        if (bdsSourceKeys.actors().contains(ByteBuffer.wrap(key))) {
+                            remapCompoundRecord(batch, key, value, sourceLastId, offset, "actorprefix");
+                        }
                         continue;
                     }
                     if (isBdsPlayerDataKey(key) && value.length != 0) {
@@ -244,7 +327,16 @@ public final class PositionTrackingV3_1_0Migration implements MigrationStep<Posi
         }
     }
 
+    @FunctionalInterface
+    private interface HandleRemapper {
+        int remap(int handle) throws IOException;
+    }
+
     private static boolean remapItemReferences(CompoundTag tag, int sourceLastId, int offset) throws IOException {
+        return remapItemReferences(tag, handle -> remapHandle(handle, sourceLastId, offset));
+    }
+
+    private static boolean remapItemReferences(CompoundTag tag, HandleRemapper remapper) throws IOException {
         boolean changed = false;
         String itemName = tag.containsString("Name") ? tag.getString("Name") : tag.getString("name");
 
@@ -255,28 +347,32 @@ public final class PositionTrackingV3_1_0Migration implements MigrationStep<Posi
             }
             if (itemNbt.containsNumber("trackingHandle")) {
                 int trackingHandle = itemNbt.getInt("trackingHandle");
-                int migratedHandle = remapHandle(trackingHandle, sourceLastId, offset);
+                int migratedHandle = remapper.remap(trackingHandle);
                 if (trackingHandle != migratedHandle) {
                     itemNbt.putInt("trackingHandle", migratedHandle);
                     changed = true;
+                    if (trackingHandle > 0 && migratedHandle == 0) {
+                        log.warn("[PositionTracking Migration] Resetting orphaned legacy PNX Lodestone Compass "
+                                + "trackingHandle {} to 0", trackingHandle);
+                    }
                 }
             }
         }
 
         for (Tag child : tag.getAllTags()) {
-            changed |= remapNestedItemReferences(child, sourceLastId, offset);
+            changed |= remapNestedItemReferences(child, remapper);
         }
         return changed;
     }
 
-    private static boolean remapNestedItemReferences(Tag tag, int sourceLastId, int offset) throws IOException {
+    private static boolean remapNestedItemReferences(Tag tag, HandleRemapper remapper) throws IOException {
         if (tag instanceof CompoundTag compound) {
-            return remapItemReferences(compound, sourceLastId, offset);
+            return remapItemReferences(compound, remapper);
         }
         if (tag instanceof ListTag<?> list) {
             boolean changed = false;
             for (Tag child : list.getAll()) {
-                changed |= remapNestedItemReferences(child, sourceLastId, offset);
+                changed |= remapNestedItemReferences(child, remapper);
             }
             return changed;
         }
@@ -300,6 +396,17 @@ public final class PositionTrackingV3_1_0Migration implements MigrationStep<Posi
             throw new IOException("Lodestone has invalid or conflicting position-tracking handles");
         }
         return handle > 0 ? handle : handler;
+    }
+
+    private static int remapLegacyPnxHandle(
+            int trackingHandle, int sourceLastId, int offset, Set<Integer> sourceHandles
+    ) throws IOException {
+        if (trackingHandle == 0) return 0;
+        if (trackingHandle < 0) {
+            throw new IOException("Negative legacy PNX position-tracking reference: " + trackingHandle);
+        }
+        if (trackingHandle > sourceLastId || !sourceHandles.contains(trackingHandle)) return 0;
+        return addHandle(trackingHandle, offset);
     }
 
     private static int remapHandle(int trackingHandle, int sourceLastId, int offset) throws IOException {

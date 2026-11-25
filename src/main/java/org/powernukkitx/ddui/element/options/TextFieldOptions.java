@@ -28,4 +28,11 @@ public class TextFieldOptions implements ElementOptions {
      */
     @Builder.Default
     private final Object visible = true;
+
+    /**
+     * Tooltip shown when hovering over the text field. Empty means no tooltip.
+     * Can be a plain {@code String} or an {@link Observable}.
+     */
+    @Builder.Default
+    private final Object tooltip = "";
 }

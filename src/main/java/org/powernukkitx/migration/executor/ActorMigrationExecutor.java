@@ -53,6 +53,7 @@ public final class ActorMigrationExecutor {
             Map<LevelDBActorV3_1_0Migration.CreakingHeartPosition, Long> migratedCreakingLinks,
             Map<UUID, Long> migratedActorUniqueIdsByUuid,
             List<LevelDBActorV3_1_0Migration.LegacyRidingLink> migratedRidingLinks,
+            boolean pnxManagedStorage,
             MigrationService migrationService,
             MigrationVersion currentVersion
     ) throws IOException {
@@ -134,6 +135,7 @@ public final class ActorMigrationExecutor {
                                 migratedActorUniqueIdsByUuid,
                                 migratedRidingLinks,
                                 migratedCreakingLinks,
+                                pnxManagedStorage,
                                 true
                         )
                 );

@@ -25,4 +25,11 @@ public class SliderElementOptions implements ElementOptions {
      */
     @Builder.Default
     private final Object step = 1;
+
+    /**
+     * Tooltip shown when hovering over the slider. Empty means no tooltip.
+     * Can be a plain {@code String} or an {@link org.powernukkitx.ddui.Observable}.
+     */
+    @Builder.Default
+    private final Object tooltip = "";
 }

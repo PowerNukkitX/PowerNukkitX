@@ -171,11 +171,12 @@ public final class SubChunkRelighter {
             int neighborZ = z + OFFSET_Z[direction];
             if (!access.isAvailable(neighborX, neighborY, neighborZ)) continue;
 
+            int currentLight = clampLight(access.getSkyLight(neighborX, neighborY, neighborZ));
+            if (currentLight >= sourceLight - 1) continue;
+
             int attenuation = attenuation(access.getLightFilter(neighborX, neighborY, neighborZ));
             int candidateLight = sourceLight - attenuation;
             if (candidateLight <= 0) continue;
-
-            int currentLight = clampLight(access.getSkyLight(neighborX, neighborY, neighborZ));
             if (candidateLight <= currentLight) continue;
 
             access.setSkyLight(neighborX, neighborY, neighborZ, candidateLight);
@@ -257,16 +258,16 @@ public final class SubChunkRelighter {
             int neighborZ = z + OFFSET_Z[direction];
             if (!access.isAvailable(neighborX, neighborY, neighborZ)) continue;
 
-            int attenuation = attenuation(access.getLightFilter(neighborX, neighborY, neighborZ));
-            int candidateLight = sourceLight - attenuation;
+            int currentLight = clampLight(access.getBlockLight(neighborX, neighborY, neighborZ));
             int emission = clampLight(access.getBlockEmission(neighborX, neighborY, neighborZ));
-            if (emission > candidateLight) {
+            int candidateLight;
+            if (currentLight >= sourceLight - 1) {
                 candidateLight = emission;
+            } else {
+                candidateLight = Math.max(sourceLight - attenuation(access.getLightFilter(neighborX, neighborY, neighborZ)), emission);
             }
 
             if (candidateLight <= 0) continue;
-
-            int currentLight = clampLight(access.getBlockLight(neighborX, neighborY, neighborZ));
             if (candidateLight <= currentLight) continue;
 
             access.setBlockLight(neighborX, neighborY, neighborZ, candidateLight);

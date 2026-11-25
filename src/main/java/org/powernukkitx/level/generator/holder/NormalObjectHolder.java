@@ -43,6 +43,8 @@ public class NormalObjectHolder extends RandomizedObjectHolder {
         private NormalNoise jagged;
         private DensityFunction densityFunction;
         private DensityFunction continents;
+        private DensityFunction temperature;
+        private DensityFunction humidity;
         private DensityFunction erosion;
         private DensityFunction ridges;
         private DensityFunction ridgesFolded;
@@ -101,13 +103,33 @@ public class NormalObjectHolder extends RandomizedObjectHolder {
 
             NormalNoise shiftNoise = noises.getOffsetNoise();
             NormalNoise continentalness = noises.getContinentalNoise();
+            NormalNoise temperatureNoise = noises.getTemperatureNoise();
+            NormalNoise humidityNoise = noises.getHumidityNoise();
             NormalNoise erosionNoise = noises.getErosionNoise();
             NormalNoise ridgeNoise = noises.getWeirdnessNoise();
             NormalNoise jaggedNoise = noises.getJaggedNoise();
 
-            continents = DensityContinents.overworldContinents(continentalness, shiftNoise);
-            erosion = DensityErosion.overworldErosion(erosionNoise, shiftNoise);
-            ridges = DensityRidges.overworldRidges(ridgeNoise, shiftNoise);
+            DensityFunction shiftX = DensityCommon.flatCache(DensityCommon.shiftA(shiftNoise));
+            DensityFunction shiftZ = DensityCommon.flatCache(DensityCommon.shiftB(shiftNoise));
+            continents = DensityContinents.overworldContinents(continentalness, shiftX, shiftZ);
+            temperature = DensityCommon.flatCache(new DensityCommon.ShiftedNoise(
+                    shiftX,
+                    DensityCommon.zero(),
+                    shiftZ,
+                    0.25,
+                    0.0,
+                    new DensityFunction.NoiseHolder(temperatureNoise)
+            ));
+            humidity = DensityCommon.flatCache(new DensityCommon.ShiftedNoise(
+                    shiftX,
+                    DensityCommon.zero(),
+                    shiftZ,
+                    0.25,
+                    0.0,
+                    new DensityFunction.NoiseHolder(humidityNoise)
+            ));
+            erosion = DensityErosion.overworldErosion(erosionNoise, shiftX, shiftZ);
+            ridges = DensityRidges.overworldRidges(ridgeNoise, shiftX, shiftZ);
             ridgesFolded = DensityRidgesFolded.overworldRidgesFolded(ridges);
 
             offset = DensityOffset.overworldOffset(continents, erosion, ridgesFolded);

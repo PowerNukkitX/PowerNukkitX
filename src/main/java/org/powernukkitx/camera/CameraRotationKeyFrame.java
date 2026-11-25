@@ -1,7 +1,7 @@
 package org.powernukkitx.camera;
 
 import com.google.common.base.Preconditions;
-import org.cloudburstmc.protocol.bedrock.data.camera.EasingType;
+import org.cloudburstmc.protocol.bedrock.data.camera.EasingFunction;
 import org.powernukkitx.math.Vector3;
 
 /**
@@ -9,16 +9,16 @@ import org.powernukkitx.math.Vector3;
  *
  * @author Curse
  */
-public record CameraRotationKeyFrame(float timeSeconds, Vector3 rotation, EasingType easing) {
+public record CameraRotationKeyFrame(float timeSeconds, Vector3 rotation, EasingFunction easing) {
     public CameraRotationKeyFrame(float timeSeconds, Vector3 rotation) {
-        this(timeSeconds, rotation, EasingType.LINEAR);
+        this(timeSeconds, rotation, EasingFunction.LINEAR);
     }
 
     public CameraRotationKeyFrame(float timeSeconds, float x, float y, float z) {
         this(
             timeSeconds,
             new Vector3(x, y, z),
-            EasingType.LINEAR
+            EasingFunction.LINEAR
         );
     }
 

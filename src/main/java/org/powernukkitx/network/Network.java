@@ -152,7 +152,7 @@ public class Network implements NetworkInterface, SignalingService {
         // Query keeps the UDP side of the listener port, so ICE can only have it when query is off
         final boolean iceOnListenerPort = icePort <= 0 && !queryEnabled;
         if (mode.binds() && icePort <= 0 && !iceOnListenerPort) {
-            log.warn("Query holds udp/{}, so NetherNet media falls back to an ephemeral port per peer. "
+            log.debug("Query holds udp/{}, so NetherNet media falls back to an ephemeral port per peer. "
                 + "Set network-settings.nethernet.udpPort to give it a fixed one", bindAddress.getPort());
         }
 
@@ -195,10 +195,10 @@ public class Network implements NetworkInterface, SignalingService {
                 .channel();
 
             if (mode.builtin()) {
-                log.info("NetherNet signalling listening on tcp/{}{}", signalingAddress.getPort(),
+                log.debug("NetherNet signalling listening on tcp/{}{}", signalingAddress.getPort(),
                     icePort > 0 ? ", with WebRTC on udp/" + icePort : "");
             } else {
-                log.info("NetherNet is bound but serves no endpoint, offers must arrive through the signalling API");
+                log.debug("NetherNet is bound but serves no endpoint, offers must arrive through the signalling API");
             }
         } else {
             this.signaling = null;
@@ -278,7 +278,7 @@ public class Network implements NetworkInterface, SignalingService {
                                                   boolean iceOnListenerPort, boolean serveHttp) {
         try {
             OperatorIdentity identity = ServerIdentityProvider.identity(this.server);
-            log.info("NetherNet identifies this operator to players as {}", ServerIdentityProvider.domain(this.server));
+            log.debug("NetherNet identifies this operator to players as {}", ServerIdentityProvider.domain(this.server));
 
             IpRangeSet trustedProxies = TrustedProxies.parse(settings.trustedProxies());
             // ok so STUN asks from the ICE port, without a fixed one there is nothing to discover
@@ -405,7 +405,7 @@ public class Network implements NetworkInterface, SignalingService {
             return List.of();
         }
         if (!fixedIcePort) {
-            log.warn("NetherNet STUN discovery is off, as ICE has no fixed UDP port to ask from. "
+            log.debug("NetherNet STUN discovery is off, as ICE has no fixed UDP port to ask from. "
                 + "Set network-settings.nethernet.udpPort to enable it");
             return List.of();
         }

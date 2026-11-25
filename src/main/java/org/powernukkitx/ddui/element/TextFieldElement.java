@@ -44,6 +44,8 @@ public class TextFieldElement extends Element<String> {
         } else {
             setDescription((String) options.getDescription());
         }
+
+        applyToolTip(options.getTooltip());
     }
 
     public boolean getTextFieldVisible() {

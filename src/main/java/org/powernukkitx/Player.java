@@ -2475,6 +2475,11 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     }
 
     @Override
+    public boolean isCollisionEnabled() {
+        return super.isCollisionEnabled() && !this.isSpectator();
+    }
+
+    @Override
     public void resetFallDistance() {
         super.resetFallDistance();
         if (this.inAirTicks != 0) {

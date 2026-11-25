@@ -4,7 +4,7 @@ import org.powernukkitx.block.property.CommonBlockProperties;
 import org.jetbrains.annotations.NotNull;
 
 public class BlockCyanConcreteSlab extends BlockConcreteSlab {
-    public static final BlockProperties PROPERTIES = new BlockProperties("minecraft:cyan_concrete_slab", CommonBlockProperties.MINECRAFT_VERTICAL_HALF);
+    public static final BlockProperties PROPERTIES = new BlockProperties(CYAN_CONCRETE_SLAB, CommonBlockProperties.MINECRAFT_VERTICAL_HALF);
 
     @Override
     @NotNull public BlockProperties getProperties() {

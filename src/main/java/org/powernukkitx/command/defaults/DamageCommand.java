@@ -60,7 +60,7 @@ public class DamageCommand extends VanillaCommand {
                 EntityDamageEvent.DamageCause cause = EntityDamageEvent.DamageCause.NONE;
                 if (list.hasResult(2)) {
                     String str = list.getResult(2);
-                    cause = EntityDamageEvent.DamageCause.valueOf(str);
+                    cause = EntityDamageEvent.DamageCause.valueOf(str.toUpperCase(Locale.ENGLISH));
                 }
                 boolean all_success = true;
                 List<Entity> failed = new ArrayList<>();

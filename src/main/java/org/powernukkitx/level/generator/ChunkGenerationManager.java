@@ -3,6 +3,7 @@ package org.powernukkitx.level.generator;
 import com.google.common.base.Preconditions;
 import it.unimi.dsi.fastutil.longs.Long2IntOpenHashMap;
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
+import it.unimi.dsi.fastutil.longs.LongOpenHashSet;
 import org.powernukkitx.Player;
 import org.powernukkitx.level.ChunkBuildOrderPolicy;
 import org.powernukkitx.level.Level;
@@ -10,15 +11,16 @@ import org.powernukkitx.level.format.Chunk;
 import org.powernukkitx.level.format.IChunk;
 import org.powernukkitx.level.tickingarea.TickingArea;
 
+import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentLinkedDeque;
 import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.ForkJoinWorkerThread;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -45,13 +47,14 @@ public final class ChunkGenerationManager {
     private final AtomicInteger inFlight = new AtomicInteger();
     private final AtomicInteger pendingCount = new AtomicInteger();
     private final AtomicBoolean schedulerRequested = new AtomicBoolean();
-    private final ReentrantLock schedulerLock = new ReentrantLock();
+    private final AtomicBoolean schedulerRunning = new AtomicBoolean();
     private final ReentrantLock generationQueueLock = new ReentrantLock();
     private final Map<ChunkGenerationState, ChunkGenerationTask> tasksByState = new EnumMap<>(ChunkGenerationState.class);
     private final ConcurrentHashMap<Long, GenerationDemand> demands = new ConcurrentHashMap<>();
     private final Long2ObjectOpenHashMap<List<GenerationDemand>> drivenChunks = new Long2ObjectOpenHashMap<>();
-    private final ConcurrentHashMap<GenerationRequestKey, GenerationRequest> requests = new ConcurrentHashMap<>();
-    private final ConcurrentLinkedDeque<GenerationRequest> pending = new ConcurrentLinkedDeque<>();
+    private final Map<ChunkGenerationState, Long2ObjectOpenHashMap<GenerationRequest>> requestsByState = new EnumMap<>(ChunkGenerationState.class);
+    private final ArrayDeque<GenerationRequest> pending = new ArrayDeque<>();
+    private final Set<SpatialKey> dirtyCenters = ConcurrentHashMap.newKeySet();
 
     /**
      * Creates a chunk generation manager.
@@ -107,6 +110,10 @@ public final class ChunkGenerationManager {
         }
 
         this.terrainReadyState = terrainTask.successState();
+
+        for (ChunkGenerationState state : tasksByState.keySet()) {
+            requestsByState.put(state, new Long2ObjectOpenHashMap<>());
+        }
     }
 
     /**
@@ -411,7 +418,15 @@ public final class ChunkGenerationManager {
         if (!(loaded instanceof Chunk chunk)) return false;
 
         ChunkGenerationState state = chunk.getGenerationState();
-        return state.isActive() || requests.containsKey(new GenerationRequestKey(chunkHash, state));
+        if (state.isActive()) return true;
+
+        generationQueueLock.lock();
+        try {
+            Long2ObjectOpenHashMap<GenerationRequest> byChunk = requestsByState.get(state);
+            return byChunk != null && byChunk.containsKey(chunkHash);
+        } finally {
+            generationQueueLock.unlock();
+        }
     }
 
     /**
@@ -576,7 +591,7 @@ public final class ChunkGenerationManager {
         }
 
         if (chunk.getGenerationState() == ChunkGenerationState.NEEDS_GENERATION) {
-            enqueueStableState(chunk);
+            enqueueStableStateChecked(chunk, ChunkGenerationState.NEEDS_GENERATION);
         } else {
             reevaluateAround(chunk.getX(), chunk.getZ());
         }
@@ -602,27 +617,33 @@ public final class ChunkGenerationManager {
     }
 
     private void enqueueLocked(GenerationRequest request) {
-        if (requests.get(request.key) != request) return;
-        if (request.queued.get()) return;
+        if (requestsByState.get(request.state).get(request.chunkHash) != request || request.queued) return;
 
-        request.queued.set(true);
+        request.queued = true;
         pendingCount.incrementAndGet();
         pending.offerLast(request);
     }
 
     private void enqueueStableState(Chunk chunk) {
-        if (!isCurrentChunk(chunk)) return;
-
         ChunkGenerationState state = chunk.getGenerationState();
         if (state.isActive() || !tasksByState.containsKey(state)) return;
+        if (!isCurrentChunk(chunk)) return;
 
-        GenerationRequestKey key = new GenerationRequestKey(chunk.getIndex(), state);
+        enqueueStableStateChecked(chunk, state);
+    }
+
+    /** The caller has already verified that the chunk is current and its state has a task. */
+    private void enqueueStableStateChecked(Chunk chunk, ChunkGenerationState state) {
+        final long chunkHash = chunk.getIndex();
 
         generationQueueLock.lock();
         try {
-            GenerationRequest request = requests.computeIfAbsent(
-                    key,
-                    ignored -> new GenerationRequest(key, chunk.getX(), chunk.getZ(), state));
+            Long2ObjectOpenHashMap<GenerationRequest> byChunk = requestsByState.get(state);
+            GenerationRequest request = byChunk.get(chunkHash);
+            if (request == null) {
+                request = new GenerationRequest(chunkHash, chunk.getX(), chunk.getZ(), state);
+                byChunk.put(chunkHash, request);
+            }
             enqueueLocked(request);
         } finally {
             generationQueueLock.unlock();
@@ -630,15 +651,15 @@ public final class ChunkGenerationManager {
     }
 
     private void tryEnqueueStableState(Chunk chunk) {
-        if (!isCurrentChunk(chunk)) return;
-
         ChunkGenerationState state = chunk.getGenerationState();
         if (state.isActive() || !tasksByState.containsKey(state)) return;
+        if (!isCurrentChunk(chunk)) return;
+
         if (!dependenciesSatisfied(chunk, state)) {
             driveDependencies(chunk);
             return;
         }
-        enqueueStableState(chunk);
+        enqueueStableStateChecked(chunk, state);
     }
 
     private GenerationRequest pollPending() {
@@ -647,7 +668,7 @@ public final class ChunkGenerationManager {
             GenerationRequest request = pending.pollFirst();
             if (request != null) {
                 pendingCount.decrementAndGet();
-                request.queued.set(false);
+                request.queued = false;
             }
             return request;
         } finally {
@@ -658,7 +679,7 @@ public final class ChunkGenerationManager {
     private boolean isRegisteredRequest(GenerationRequest request) {
         generationQueueLock.lock();
         try {
-            return requests.get(request.key) == request;
+            return requestsByState.get(request.state).get(request.chunkHash) == request;
         } finally {
             generationQueueLock.unlock();
         }
@@ -667,7 +688,10 @@ public final class ChunkGenerationManager {
     private boolean removeRequest(GenerationRequest request) {
         generationQueueLock.lock();
         try {
-            return requests.remove(request.key, request);
+            Long2ObjectOpenHashMap<GenerationRequest> byChunk = requestsByState.get(request.state);
+            if (byChunk.get(request.chunkHash) != request) return false;
+            byChunk.remove(request.chunkHash);
+            return true;
         } finally {
             generationQueueLock.unlock();
         }
@@ -676,8 +700,9 @@ public final class ChunkGenerationManager {
     private void discardRequestUnlessRequeued(GenerationRequest request) {
         generationQueueLock.lock();
         try {
-            if (!request.queued.get()) {
-                requests.remove(request.key, request);
+            Long2ObjectOpenHashMap<GenerationRequest> byChunk = requestsByState.get(request.state);
+            if (!request.queued && byChunk.get(request.chunkHash) == request) {
+                byChunk.remove(request.chunkHash);
             }
         } finally {
             generationQueueLock.unlock();
@@ -685,12 +710,29 @@ public final class ChunkGenerationManager {
     }
 
     private void reevaluateAround(int chunkX, int chunkZ) {
-        for (int dx = -1; dx <= 1; dx++) {
-            for (int dz = -1; dz <= 1; dz++) {
-                IChunk loaded = level.getPhysicalChunkIfLoaded(chunkX + dx, chunkZ + dz);
-                if (loaded instanceof Chunk chunk) {
-                    tryEnqueueStableState(chunk);
+        dirtyCenters.add(new SpatialKey(Level.chunkHash(chunkX, chunkZ)));
+        schedule();
+    }
+
+    private void processReevaluations() {
+        if (dirtyCenters.isEmpty()) return;
+
+        LongOpenHashSet affected = new LongOpenHashSet();
+        for (SpatialKey center : dirtyCenters) {
+            if (!dirtyCenters.remove(center)) continue;
+            int chunkX = Level.getHashX(center.chunkHash());
+            int chunkZ = Level.getHashZ(center.chunkHash());
+            for (int dx = -1; dx <= 1; dx++) {
+                for (int dz = -1; dz <= 1; dz++) {
+                    affected.add(Level.chunkHash(chunkX + dx, chunkZ + dz));
                 }
+            }
+        }
+
+        for (long hash : affected) {
+            IChunk loaded = level.getPhysicalChunkIfLoaded(Level.getHashX(hash), Level.getHashZ(hash));
+            if (loaded instanceof Chunk chunk) {
+                tryEnqueueStableState(chunk);
             }
         }
     }
@@ -757,23 +799,42 @@ public final class ChunkGenerationManager {
     }
 
     private void schedule() {
+        if (level.isClosing()) return;
         schedulerRequested.set(true);
-        if (!schedulerLock.tryLock()) return;
 
+        if (!schedulerRunning.compareAndSet(false, true)) return;
+        try {
+            executor.execute(this::runScheduler);
+        } catch (RuntimeException exception) {
+            schedulerRunning.set(false);
+            if (!level.isClosing()) {
+                log.error("Could not submit chunk generation scheduler for level '{}'", level.getFolderName(), exception);
+            }
+        }
+    }
+
+    private void runScheduler() {
         try {
             do {
+                if (level.isClosing()) return;
                 schedulerRequested.set(false);
                 refill();
-            } while (schedulerRequested.get());
+            } while (schedulerRequested.get() && !level.isClosing());
+        } catch (Throwable throwable) {
+            log.error("Chunk generation scheduler failed for level '{}'", level.getFolderName(), throwable);
         } finally {
-            schedulerLock.unlock();
-            if (schedulerRequested.get()) schedule();
+            schedulerRunning.set(false);
+            if (schedulerRequested.get() && !level.isClosing()) schedule();
         }
     }
 
     private void refill() {
+        if (level.isClosing()) return;
+
+        processReevaluations();
+
         final int active = inFlight.get();
-        if (active >= refillLowWater || pending.isEmpty()) return;
+        if (active >= refillLowWater || pendingCount.get() == 0) return;
 
         int dispatchAllowance = refillHighWater - active;
         if (dispatchAllowance <= 0) return;
@@ -802,14 +863,17 @@ public final class ChunkGenerationManager {
             ChunkGenerationTask task = tasksByState.get(request.state);
             if (task == null) {
                 removeRequest(request);
-                failDemand(request.key.chunkHash(), new IllegalStateException(
+                failDemand(request.chunkHash, new IllegalStateException(
                         "No generation task for chunk (" + request.chunkX + ", " + request.chunkZ
                                 + ") in generator '" + generator.getName() + "' at state " + request.state));
                 continue;
             }
 
+            int stateId = request.state.getNativeId();
+            boolean needsExtraPhysicalCheck = stateId >= 2
+                && stateId != 2 && stateId != 4 && stateId != 6 && stateId != 8;
             if (!dependenciesSatisfied(chunk, request.state)
-                    || request.state.getNativeId() >= 2 && !hasPhysicalNeighborhood(request.chunkX, request.chunkZ)) {
+                || needsExtraPhysicalCheck && !hasPhysicalNeighborhood(request.chunkX, request.chunkZ)) {
                 removeRequest(request);
                 if (blocked == null) blocked = new ArrayList<>();
                 blocked.add(chunk);
@@ -850,7 +914,7 @@ public final class ChunkGenerationManager {
             }
         }
 
-        if (inFlight.get() == 0 && !pending.isEmpty()) {
+        if (inFlight.get() == 0 && pendingCount.get() > 0) {
             schedulerRequested.set(true);
         }
     }
@@ -861,7 +925,7 @@ public final class ChunkGenerationManager {
 
         if (!(loaded instanceof Chunk chunk)) {
             removeRequest(request);
-            failDemand(request.key.chunkHash(), new IllegalStateException(
+            failDemand(request.chunkHash, new IllegalStateException(
                     "Chunk generation manager requires Chunk, got " + loaded.getClass().getName()));
             return null;
         }
@@ -884,6 +948,7 @@ public final class ChunkGenerationManager {
         final GenerationRequest request = candidate.request();
         final Chunk chunk = candidate.chunk();
         final ChunkGenerationTask task = candidate.task();
+        if (level.isClosing()) return false;
         if (!isCurrentChunk(chunk)) return false;
         if (!chunk.compareAndSetGenerationState(task.stableState(), task.activeState())) return false;
 
@@ -900,7 +965,7 @@ public final class ChunkGenerationManager {
 
             inFlight.decrementAndGet();
             level.releaseGenerationTask(chunk.getIndex());
-            failDemand(request.key.chunkHash(), throwable);
+            failDemand(request.chunkHash, throwable);
             schedule();
             return false;
         }
@@ -933,7 +998,7 @@ public final class ChunkGenerationManager {
             log.error("Chunk generation task '{}' failed for chunk ({}, {}) in level '{}'; rolled back {} -> {}",
                     task.name(), request.chunkX, request.chunkZ, level.getFolderName(), task.activeState(),
                     task.failureState(), throwable);
-            failDemand(request.key.chunkHash(), throwable);
+            failDemand(request.chunkHash, throwable);
             finishTask(request);
             return;
         }
@@ -952,7 +1017,7 @@ public final class ChunkGenerationManager {
         }
 
         if (!chunk.compareAndSetGenerationState(task.activeState(), resultState)) {
-            failDemand(request.key.chunkHash(), new IllegalStateException(
+            failDemand(request.chunkHash, new IllegalStateException(
                     "Chunk (" + request.chunkX + ", " + request.chunkZ + ") completed generation task '"
                             + task.name() + "' but state changed from " + task.activeState() + " to "
                             + chunk.getGenerationState()));
@@ -973,7 +1038,7 @@ public final class ChunkGenerationManager {
             level.initializeAcquiredChunk(chunk);
         }
 
-        GenerationDemand demand = demands.get(request.key.chunkHash());
+        GenerationDemand demand = demands.get(request.chunkHash);
         if (demand != null) {
             completeReachedWaiters(demand, chunk);
             if (hasReachedTarget(chunk, demand)) {
@@ -1013,7 +1078,7 @@ public final class ChunkGenerationManager {
     }
 
     private void submitCompletion(GenerationRequest request, Chunk chunk) {
-        long chunkHash = request.key.chunkHash();
+        long chunkHash = request.chunkHash;
         level.retainGenerationTask(chunkHash);
 
         try {
@@ -1040,7 +1105,7 @@ public final class ChunkGenerationManager {
                 ChunkGenerationState.NEEDS_COMPLETION, ChunkGenerationState.COMPLETE);
 
         if (!transitioned && chunk.getGenerationState() != ChunkGenerationState.COMPLETE) {
-            failDemand(request.key.chunkHash(), new IllegalStateException(
+            failDemand(request.chunkHash, new IllegalStateException(
                     "Chunk (" + request.chunkX + ", " + request.chunkZ
                             + ") could not complete generation from state " + chunk.getGenerationState()));
             return;
@@ -1058,7 +1123,7 @@ public final class ChunkGenerationManager {
         if (isCurrentChunk(chunk)) {
             chunk.setAvailable(true);
 
-            GenerationDemand demand = demands.get(request.key.chunkHash());
+            GenerationDemand demand = demands.get(request.chunkHash);
             if (demand != null) {
                 completeReachedWaiters(demand, chunk);
                 if (hasReachedTarget(chunk, demand)) {
@@ -1074,7 +1139,7 @@ public final class ChunkGenerationManager {
 
     private void finishTask(GenerationRequest request) {
         inFlight.decrementAndGet();
-        level.releaseGenerationTask(request.key.chunkHash());
+        level.releaseGenerationTask(request.chunkHash);
         schedule();
     }
 
@@ -1205,27 +1270,40 @@ public final class ChunkGenerationManager {
                 Comparator.comparingInt(Candidate::priority);
     }
 
-    /**
-     * Immutable key for one stable generation-state request.
-     */
-    private record GenerationRequestKey(long chunkHash, ChunkGenerationState state) {}
+    private static int spatialHash(long chunkHash) {
+        long hash = chunkHash;
+        hash ^= hash >>> 33;
+        hash *= 0xff51afd7ed558ccdL;
+        hash ^= hash >>> 33;
+        hash *= 0xc4ceb9fe1a85ec53L;
+        hash ^= hash >>> 33;
+        return Long.hashCode(hash);
+    }
+
+    private record SpatialKey(long chunkHash) {
+        @Override
+        public int hashCode() {
+            return spatialHash(chunkHash);
+        }
+    }
 
     /**
      * Tracks one immutable stable-state scheduling request.
      */
     private static final class GenerationRequest {
-        private final GenerationRequestKey key;
+        private final long chunkHash;
         private final int chunkX;
         private final int chunkZ;
         private final ChunkGenerationState state;
-        private final AtomicBoolean queued = new AtomicBoolean();
+        /** Protected by generationQueueLock. */
+        private boolean queued;
 
         private GenerationRequest(
-                GenerationRequestKey key,
+                long chunkHash,
                 int chunkX,
                 int chunkZ,
                 ChunkGenerationState state) {
-            this.key = key;
+            this.chunkHash = chunkHash;
             this.chunkX = chunkX;
             this.chunkZ = chunkZ;
             this.state = state;

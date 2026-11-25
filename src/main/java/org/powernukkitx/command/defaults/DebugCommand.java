@@ -7,7 +7,9 @@ import org.cloudburstmc.nbt.NbtUtils;
 import org.cloudburstmc.protocol.bedrock.data.biome.BiomeConsolidatedFeatureData;
 import org.cloudburstmc.protocol.bedrock.data.biome.BiomeDefinitionChunkGenData;
 import org.cloudburstmc.protocol.bedrock.data.biome.BiomeDefinitionData;
+import org.cloudburstmc.protocol.bedrock.data.camera.instruction.RotOption;
 import org.cloudburstmc.protocol.bedrock.data.command.CommandParamType;
+import org.cloudburstmc.protocol.bedrock.data.payload.structure.Rotation;
 import org.powernukkitx.Player;
 import org.powernukkitx.Server;
 import org.powernukkitx.block.BlockAir;
@@ -84,7 +86,8 @@ public class DebugCommand extends TestCommand implements CoreCommand {
         this.commandParameters.put("structure", new CommandParameter[]{
                 CommandParameter.newEnum("structure", new String[]{"structure"}),
                 CommandParameter.newEnum("type", new String[]{"placejava", "place", "registry"}),
-                CommandParameter.newType("file", CommandParamType.ID)
+                CommandParameter.newType("file", CommandParamType.ID),
+                CommandParameter.newEnum("rotation", true, Arrays.stream(Rotation.values()).map(r -> r.name().toLowerCase()).toArray(String[]::new))
         });
         this.commandParameters.put("reload", new CommandParameter[]{
                 CommandParameter.newEnum("reload", new String[]{"reload"}),
@@ -161,6 +164,7 @@ public class DebugCommand extends TestCommand implements CoreCommand {
         if (!sender.isPlayer()) return 0;
         Player player = sender.asPlayer();
         String structureName = list.getResult(2);
+        Rotation rotation = Rotation.valueOf(list.getResult(3, Rotation.NONE.name()).toUpperCase());
         Location loc = player.getLocation();
 
         AbstractStructure structure = switch (list.getResult(1).toString()) {
@@ -174,8 +178,7 @@ public class DebugCommand extends TestCommand implements CoreCommand {
             log.addError("Structure " + structureName + " not found").output();
             return 0;
         }
-
-        structure.place(loc);
+        structure.rotate(rotation).place(loc);
         log.addSuccess("Placed structure " + structureName + " at " + loc).output();
         return 1;
     }

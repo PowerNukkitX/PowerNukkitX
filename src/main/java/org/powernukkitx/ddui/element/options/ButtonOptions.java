@@ -27,4 +27,10 @@ public class ButtonOptions implements ElementOptions {
      */
     @Builder.Default
     private final Object visible = true;
+
+    /**
+     * Icon drawn on the button, or {@code null} for a text only button.
+     */
+    @Builder.Default
+    private final ImageDetails imageDetails = null;
 }

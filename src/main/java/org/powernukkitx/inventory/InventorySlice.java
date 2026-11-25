@@ -241,7 +241,7 @@ public class InventorySlice implements Inventory {
     public int firstEmpty(Item item) {
         for (int i = startSlot; i < endSlot; ++i) {
             if (rawInv.getItem(i).isNull()) {
-                return i;
+                return i - startSlot;
             }
         }
 

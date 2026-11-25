@@ -487,7 +487,7 @@ public class Level implements Metadatable, LiquidUpdateAccess {
     private final Class<? extends Generator> generatorClass;
     private BiomePicker biomePicker;
     private ObjectHolder generatorObjectHolder;
-    private int updateLCG = ThreadLocalRandom.current().nextInt();
+    private int randomTickState = ThreadLocalRandom.current().nextInt();
     private int tickRate;
     private long levelCurrentTick = 0;
     private long tickTime = System.currentTimeMillis();
@@ -2257,7 +2257,6 @@ public class Level implements Metadatable, LiquidUpdateAccess {
             if (prof) phase[6] = -phaseStart + (phaseStart = System.nanoTime());
 
             this.tickChunks();
-            this.tickBiomeSnowReconciliation();
             if (prof) phase[7] = -phaseStart + (phaseStart = System.nanoTime());
             if (!this.changedBlocks.isEmpty()) {
                 synchronized (changedBlocks) {
@@ -2531,11 +2530,11 @@ public class Level implements Metadatable, LiquidUpdateAccess {
     private void performThunder(long index, IChunk chunk) {
         if (areNeighboringChunksLoaded(index)) return;
         if (ThreadLocalRandom.current().nextInt(100000) == 0) {
-            int LCG = this.getUpdateLCG() >> 2;
+            int bits = this.getRandomTickState() >> 2;
 
             int chunkX = chunk.getX() * 16;
             int chunkZ = chunk.getZ() * 16;
-            Vector3 vector = this.adjustPosToNearbyEntity(new Vector3(chunkX + (LCG & 0xf), 0, chunkZ + (LCG >> 8 & 0xf)));
+            Vector3 vector = this.adjustPosToNearbyEntity(new Vector3(chunkX + (bits & 0xf), 0, chunkZ + (bits >> 8 & 0xf)));
 
             int biome = this.getBiomeId(vector.getFloorX(), 70, vector.getFloorZ());
             if (Registries.BIOME.get(biome).second().getDownfall() <= 0) {
@@ -2763,27 +2762,6 @@ public class Level implements Metadatable, LiquidUpdateAccess {
             }
 
             Server.broadcastPacket(target, packet);
-        }
-    }
-
-    private void tickBiomeSnowReconciliation() {
-        if (this.getDimension() != DIMENSION_OVERWORLD || !(requireProvider() instanceof LevelDBProvider levelDBProvider)) {
-            return;
-        }
-
-        synchronized (this.loaders) {
-            for (ChunkLoader loader : this.loaders.values()) {
-                int chunkX = (int) loader.getX() >> 4;
-                int chunkZ = (int) loader.getZ() >> 4;
-                levelDBProvider.tickBiomeSnowReconciliation(chunkX, chunkZ, this.chunkTickRadius);
-            }
-        }
-
-        TickingAreaManager areaManager = this.server.getTickingAreaManager();
-        if (areaManager == null) return;
-
-        for (TickingArea area : areaManager.getTickingAreas(this)) {
-            levelDBProvider.tickBiomeSnowReconciliation(area);
         }
     }
 
@@ -3091,10 +3069,10 @@ public class Level implements Metadatable, LiquidUpdateAccess {
                 continue;
             }
             for (int i = 0; i < tickSpeed; ++i) {
-                int lcg = this.getUpdateLCG();
-                int x = lcg & 0x0f;
-                int y = lcg >>> 8 & 0x0f;
-                int z = lcg >>> 16 & 0x0f;
+                int bits = this.getRandomTickState();
+                int x = bits & 0x0f;
+                int y = bits >>> 8 & 0x0f;
+                int z = bits >>> 16 & 0x0f;
                 BlockState state = section.getBlockState(x, y, z);
                 if (state != null && randomTickBlocks.contains(state.getIdentifier())) {
                     if (Block.isTickingDisabled(this, state.getIdentifier())) {
@@ -5085,21 +5063,9 @@ public class Level implements Metadatable, LiquidUpdateAccess {
     private Item placeBlock(Item item, BlockFace face, float fx, float fy, float fz, Player player, boolean playSound, Block block, Block target) {
         final Block hand = beforePlaceBlock(item, face, block, target);
         if (hand == null) return null;
-        if (!hand.canPassThrough() && hand.getBoundingBox() != null) {
-            int realCount = 0;
-            Entity[] entities = this.getCollidingEntities(hand.getBoundingBox());
-            for (Entity e : entities) {
-                if (e instanceof EntityProjectile || e instanceof EntityItem || e instanceof EntityXpOrb || e instanceof EntityAreaEffectCloud ||
-                        e instanceof EntityFireworksRocket || e instanceof EntityPainting || e == player ||
-                        (e instanceof Player p && p.isSpectator()) || !e.isCollisionEnabled()) {
-                    continue;
-                }
-                ++realCount;
-            }
-            if (realCount > 0) {
-                // Entity in block
-                return null;
-            }
+        if (!(hand instanceof BlockSlab) && !hand.canPassThrough() && hand.getBoundingBox() != null
+                && this.isBlockPlacementObstructed(hand.getBoundingBox(), player)) {
+            return null;
         }
 
         if (player != null) {
@@ -5580,6 +5546,27 @@ public class Level implements Metadatable, LiquidUpdateAccess {
         }
 
         return getEntitiesFromBuffer(index, overflow);
+    }
+
+    /**
+     * Checks whether an entity stands in the way of a block placed in the given box. Projectiles,
+     * dropped items, experience orbs, area effect clouds, fireworks, paintings, entities without
+     * collision and the placing player never block a placement.
+     *
+     * @param bb     the box the placed block would fill
+     * @param player the player placing the block, or {@code null} when no player is involved
+     * @return {@code true} when at least one entity blocks the placement
+     */
+    public boolean isBlockPlacementObstructed(AxisAlignedBB bb, @Nullable Player player) {
+        for (Entity e : this.getCollidingEntities(bb)) {
+            if (e instanceof EntityProjectile || e instanceof EntityItem || e instanceof EntityXpOrb || e instanceof EntityAreaEffectCloud ||
+                    e instanceof EntityFireworksRocket || e instanceof EntityPainting || e == player ||
+                    !e.isCollisionEnabled()) {
+                continue;
+            }
+            return true;
+        }
+        return false;
     }
 
     /**
@@ -8004,8 +7991,16 @@ public class Level implements Metadatable, LiquidUpdateAccess {
         return true;
     }
 
-    public int getUpdateLCG() {
-        return (this.updateLCG = (this.updateLCG * 3) ^ LCG_CONSTANT);
+    public int getRandomTickState() {
+        int value = (this.randomTickState += 0x9E3779B9);
+
+        value ^= value >>> 16;
+        value *= 0x85EBCA6B;
+        value ^= value >>> 13;
+        value *= 0xC2B2AE35;
+        value ^= value >>> 16;
+
+        return value;
     }
 
     public boolean createPortal(Block target) {

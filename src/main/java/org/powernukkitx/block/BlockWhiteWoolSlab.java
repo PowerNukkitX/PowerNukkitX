@@ -7,7 +7,7 @@ import org.powernukkitx.tags.BlockTags;
 import java.util.Set;
 
 public class BlockWhiteWoolSlab extends BlockWoolSlab {
-    public static final BlockProperties PROPERTIES = new BlockProperties("minecraft:white_wool_slab", Set.of(BlockTags.PNX_WOOL), CommonBlockProperties.MINECRAFT_VERTICAL_HALF);
+    public static final BlockProperties PROPERTIES = new BlockProperties(WHITE_WOOL_SLAB, Set.of(BlockTags.PNX_WOOL), CommonBlockProperties.MINECRAFT_VERTICAL_HALF);
 
     @Override
     @NotNull public BlockProperties getProperties() {

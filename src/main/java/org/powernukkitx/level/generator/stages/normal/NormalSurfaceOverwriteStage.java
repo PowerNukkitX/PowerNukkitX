@@ -34,7 +34,6 @@ public class NormalSurfaceOverwriteStage extends GenerateStage {
     protected static final BlockState BROWN_TERRACOTTA = BlockBrownTerracotta.PROPERTIES.getDefaultState();
     protected static final BlockState RED_TERRACOTTA = BlockRedTerracotta.PROPERTIES.getDefaultState();
     protected static final BlockState LIGHT_GRAY_TERRACOTTA = BlockLightGrayTerracotta.PROPERTIES.getDefaultState();
-    protected static final BlockState SNOW_LAYER = BlockSnowLayer.PROPERTIES.getDefaultState();
     protected static final BlockState SNOW_BLOCK = BlockSnow.PROPERTIES.getDefaultState();
     protected static final BlockState ICE = BlockIce.PROPERTIES.getDefaultState();
     protected static final BlockState PACKED_ICE = BlockPackedIce.PROPERTIES.getDefaultState();
@@ -75,18 +74,6 @@ public class NormalSurfaceOverwriteStage extends GenerateStage {
                                 if (isInRange(noise)) {
                                     unsafeChunk.setBlockState(x, y, z, COARSE_DIRT, 0);
                                 } else unsafeChunk.setBlockState(x, y, z, GRASS, 0);
-                            }
-                        }
-                        case ICE_PLAINS -> {
-                            Block support = unsafeChunk.getBlockState(x, y, z).toBlock();
-                            if(support.isSolid()) {
-                                BlockState state = unsafeChunk.getBlockState(x, y+1, z);
-                                if(state.equals(BlockAir.STATE)) {
-                                    unsafeChunk.setBlockState(x, y+1, z, SNOW_LAYER, 0);
-                                } else if(state.toBlock().getPrecipitationBehavior() == PrecipitationBehavior.SNOWLOGGING) {
-                                    unsafeChunk.setBlockState(x, y+1, z, state, 1);
-                                    unsafeChunk.setBlockState(x, y+1, z, SNOW_LAYER, 0);
-                                }
                             }
                         }
                         case FROZEN_OCEAN,

@@ -26,6 +26,12 @@ final class ChunkRainHeightMap {
         return rainHeightMap;
     }
 
+    static boolean isCached(Chunk chunk, int x, int z) {
+        int index = (z << 4) | x;
+        short cached = chunk.rainHeightMap[index];
+        return cached != UNCALCULATED;
+    }
+
     static int get(Chunk chunk, int x, int z) {
         int index = (z << 4) | x;
         int minHeight = chunk.getDimensionData().getMinHeight();
@@ -36,7 +42,7 @@ final class ChunkRainHeightMap {
         }
 
         int minSectionY = chunk.getDimensionData().getMinSectionY();
-        for (int y = chunk.getDimensionData().getMaxHeight(); y >= minHeight; y--) {
+        for (int y = chunk.isGenerationComplete() ? chunk.getDimensionData().getMaxHeight() : chunk.getHeightMap(x, z); y >= minHeight; y--) {
             int sectionIndex = (y >> 4) - minSectionY;
             if (sectionIndex < 0 || sectionIndex >= chunk.sections.length) {
                 continue;
@@ -77,7 +83,7 @@ final class ChunkRainHeightMap {
         Arrays.fill(chunk.rainHeightMap, UNCALCULATED);
     }
 
-    private static boolean obstructsRain(BlockState state) {
+    public static boolean obstructsRain(BlockState state) {
         if (state == BlockAir.STATE) {
             return false;
         }

@@ -1,12 +1,16 @@
 package org.powernukkitx.camera;
 
 import com.google.common.base.Preconditions;
-import org.cloudburstmc.math.vector.Vector2f;
 import org.cloudburstmc.math.vector.Vector3f;
-import org.cloudburstmc.protocol.bedrock.data.camera.CameraSetInstruction;
-import org.cloudburstmc.protocol.bedrock.data.camera.CameraSplineInstruction;
+import org.cloudburstmc.protocol.bedrock.data.camera.instruction.CameraSetInstruction;
+import org.cloudburstmc.protocol.bedrock.data.camera.instruction.CameraSplineInstruction;
+import org.cloudburstmc.protocol.bedrock.data.camera.instruction.PosOption;
+import org.cloudburstmc.protocol.bedrock.data.camera.instruction.RotOption;
+import org.cloudburstmc.protocol.bedrock.data.camera.spline.SplineProgressOption;
+import org.cloudburstmc.protocol.bedrock.data.camera.spline.SplineRotationOption;
 import org.cloudburstmc.protocol.bedrock.packet.CameraInstructionPacket;
 import org.cloudburstmc.protocol.common.NamedDefinition;
+import org.cloudburstmc.protocol.common.util.OptionalBoolean;
 import org.powernukkitx.Player;
 import org.powernukkitx.math.Vector3;
 import org.powernukkitx.utils.DefaultCameraPresets;
@@ -31,16 +35,10 @@ public final class PlayerCamera {
      * @param presetIdentifier camera preset identifier
      */
     public void setCamera(String presetIdentifier) {
-        NamedDefinition preset = this.resolvePreset(presetIdentifier);
+        CameraSetInstruction instruction = new CameraSetInstruction();
+        instruction.setPreset(this.resolvePreset(presetIdentifier));
 
-        CameraInstructionPacket packet = new CameraInstructionPacket();
-        packet.setSetInstruction(
-                CameraSetInstruction.builder()
-                        .preset(preset)
-                        .build()
-        );
-
-        this.player.sendPacket(packet);
+        this.sendSetInstruction(instruction);
     }
 
     /**
@@ -50,17 +48,11 @@ public final class PlayerCamera {
      * @param position camera position
      */
     public void setCamera(String presetIdentifier, Vector3 position) {
-        NamedDefinition preset = this.resolvePreset(presetIdentifier);
+        CameraSetInstruction instruction = new CameraSetInstruction();
+        instruction.setPreset(this.resolvePreset(presetIdentifier));
+        instruction.setPos(toPosOption(position));
 
-        CameraInstructionPacket packet = new CameraInstructionPacket();
-        packet.setSetInstruction(
-                CameraSetInstruction.builder()
-                        .preset(preset)
-                        .pos(toNetwork(position))
-                        .build()
-        );
-
-        this.player.sendPacket(packet);
+        this.sendSetInstruction(instruction);
     }
 
     /**
@@ -72,18 +64,16 @@ public final class PlayerCamera {
      * @param yaw camera yaw
      */
     public void setCamera(String presetIdentifier, Vector3 position, float pitch, float yaw) {
-        NamedDefinition preset = this.resolvePreset(presetIdentifier);
+        CameraSetInstruction instruction = new CameraSetInstruction();
+        instruction.setPreset(this.resolvePreset(presetIdentifier));
+        instruction.setPos(toPosOption(position));
 
-        CameraInstructionPacket packet = new CameraInstructionPacket();
-        packet.setSetInstruction(
-                CameraSetInstruction.builder()
-                        .preset(preset)
-                        .pos(toNetwork(position))
-                        .rot(Vector2f.from(pitch, yaw))
-                        .build()
-        );
+        RotOption rot = new RotOption();
+        rot.setX(pitch);
+        rot.setY(yaw);
+        instruction.setRot(rot);
 
-        this.player.sendPacket(packet);
+        this.sendSetInstruction(instruction);
     }
 
     /**
@@ -133,32 +123,26 @@ public final class PlayerCamera {
         }
 
         for (CameraProgressKeyFrame keyFrame : animation.getProgressKeyFrames()) {
-            instruction.getProgressKeyFrames().add(
-                    new CameraSplineInstruction.SplineProgressOption(
-                            keyFrame.alpha(),
-                            keyFrame.timeSeconds(),
-                            keyFrame.easing()
-                    )
-            );
+            SplineProgressOption option = new SplineProgressOption();
+            option.setKeyFrameValue(keyFrame.alpha());
+            option.setKeyFrameTime(keyFrame.timeSeconds());
+            option.setKeyFrameEasingFunc(keyFrame.easing());
+            instruction.getProgressKeyFrames().add(option);
         }
 
         for (CameraRotationKeyFrame keyFrame : animation.getRotationKeyFrames()) {
-            instruction.getRotationOption().add(
-                    new CameraSplineInstruction.SplineRotationOption(
-                            null,
-                            -1.0f,
-                            toNetwork(keyFrame.rotation()),
-                            keyFrame.timeSeconds(),
-                            keyFrame.easing()
-                    )
-            );
+            SplineRotationOption option = new SplineRotationOption();
+            option.setKeyFrameValue(toNetwork(keyFrame.rotation()));
+            option.setKeyFrameTime(keyFrame.timeSeconds());
+            option.setKeyFrameEasingFunc(keyFrame.easing());
+            instruction.getRotationOption().add(option);
         }
 
         instruction.setSplineIdentifier("");
-        instruction.setLoadFromJSON(false);
+        instruction.setLoadFromJson(false);
 
         CameraInstructionPacket packet = new CameraInstructionPacket();
-        packet.setSplineInstruction(instruction);
+        packet.getCameraInstruction().setSpline(instruction);
 
         this.player.sendPacket(packet);
     }
@@ -168,7 +152,14 @@ public final class PlayerCamera {
      */
     public void clear() {
         CameraInstructionPacket packet = new CameraInstructionPacket();
-        packet.setClear(true);
+        packet.getCameraInstruction().setClear(OptionalBoolean.of(true));
+
+        this.player.sendPacket(packet);
+    }
+
+    private void sendSetInstruction(CameraSetInstruction instruction) {
+        CameraInstructionPacket packet = new CameraInstructionPacket();
+        packet.getCameraInstruction().setSet(instruction);
 
         this.player.sendPacket(packet);
     }
@@ -228,6 +219,12 @@ public final class PlayerCamera {
 
             previousRotationTime = keyFrame.timeSeconds();
         }
+    }
+
+    private static PosOption toPosOption(Vector3 position) {
+        PosOption option = new PosOption();
+        option.setPos(toNetwork(position));
+        return option;
     }
 
     private static Vector3f toNetwork(Vector3 vector) {

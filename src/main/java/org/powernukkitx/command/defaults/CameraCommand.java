@@ -11,11 +11,15 @@ import org.powernukkitx.command.tree.node.RelativeFloatNode;
 import org.powernukkitx.command.utils.CommandLogger;
 import org.powernukkitx.level.Position;
 import org.powernukkitx.utils.DefaultCameraPresets;
-import org.cloudburstmc.math.vector.Vector2f;
 import org.cloudburstmc.math.vector.Vector3f;
-import org.cloudburstmc.protocol.bedrock.data.camera.CameraFadeInstruction;
-import org.cloudburstmc.protocol.bedrock.data.camera.CameraSetInstruction;
-import org.cloudburstmc.protocol.bedrock.data.camera.EasingType;
+import org.cloudburstmc.protocol.bedrock.data.camera.EasingFunction;
+import org.cloudburstmc.protocol.bedrock.data.camera.instruction.CameraFadeInstruction;
+import org.cloudburstmc.protocol.bedrock.data.camera.instruction.CameraSetInstruction;
+import org.cloudburstmc.protocol.bedrock.data.camera.instruction.ColorOption;
+import org.cloudburstmc.protocol.bedrock.data.camera.instruction.EaseOption;
+import org.cloudburstmc.protocol.bedrock.data.camera.instruction.PosOption;
+import org.cloudburstmc.protocol.bedrock.data.camera.instruction.RotOption;
+import org.cloudburstmc.protocol.bedrock.data.camera.instruction.TimeOption;
 import org.cloudburstmc.protocol.bedrock.data.command.CommandParamType;
 import org.cloudburstmc.protocol.bedrock.packet.CameraInstructionPacket;
 import org.cloudburstmc.protocol.common.NamedDefinition;
@@ -34,7 +38,7 @@ import java.util.Objects;
 
 public class CameraCommand extends VanillaCommand {
 
-    public static final String[] EASE_TYPES = Arrays.stream(EasingType.values()).map(EasingType::getSerializeName).toArray(String[]::new);
+    public static final String[] EASE_TYPES = Arrays.stream(EasingFunction.values()).map(EasingFunction::getSerializeName).toArray(String[]::new);
 
     public CameraCommand(String name) {
         super(name, "commands.camera.description");
@@ -153,6 +157,49 @@ public class CameraCommand extends VanillaCommand {
         return DefaultCameraPresets.getDefinition(name);
     }
 
+    private static CameraSetInstruction setInstruction(NamedDefinition preset) {
+        CameraSetInstruction set = new CameraSetInstruction();
+        set.setPreset(preset);
+        return set;
+    }
+
+    private static EaseOption easeOption(EasingFunction type, float time) {
+        EaseOption ease = new EaseOption();
+        ease.setType(type);
+        ease.setTime(time);
+        return ease;
+    }
+
+    private static PosOption posOption(Position position) {
+        PosOption pos = new PosOption();
+        pos.setPos(Vector3f.from((float) position.getX(), (float) position.getY(), (float) position.getZ()));
+        return pos;
+    }
+
+    private static RotOption rotOption(float pitch, float yaw) {
+        RotOption rot = new RotOption();
+        rot.setX(pitch);
+        rot.setY(yaw);
+        return rot;
+    }
+
+    // command takes 0..255 per channel, the client wants 0..1
+    private static ColorOption colorOption(int red, int green, int blue) {
+        ColorOption color = new ColorOption();
+        color.setRed(red / 255f);
+        color.setGreen(green / 255f);
+        color.setBlue(blue / 255f);
+        return color;
+    }
+
+    private static TimeOption timeOption(float fadeIn, float hold, float fadeOut) {
+        TimeOption time = new TimeOption();
+        time.setFadeInTime(fadeIn);
+        time.setHoldTime(hold);
+        time.setFadeOutTime(fadeOut);
+        return time;
+    }
+
     @Override
     public int execute(CommandSender sender, String commandLabel, Map.Entry<String, ParamList> result, CommandLogger log) {
         var list = result.getValue();
@@ -166,18 +213,18 @@ public class CameraCommand extends VanillaCommand {
         var pk = new CameraInstructionPacket();
         var senderLocation = sender.getLocation();
         switch (result.getKey()) {
-            case "clear" -> pk.setClear(OptionalBoolean.of(true));
-            case "fade" -> pk.setFadeInstruction(new CameraFadeInstruction());
+            case "clear" -> pk.getCameraInstruction().setClear(OptionalBoolean.of(true));
+            case "fade" -> pk.getCameraInstruction().setFade(new CameraFadeInstruction());
             case "fade-color" -> {
                 CameraFadeInstruction fade = new CameraFadeInstruction();
-                fade.setColor(new CameraFadeInstruction.ColorOption(getInteger(list, 3) / 255f, getInteger(list, 4) / 255f, getInteger(list, 5) / 255f));
-                pk.setFadeInstruction(fade);
+                fade.setColor(colorOption(getInteger(list, 3), getInteger(list, 4), getInteger(list, 5)));
+                pk.getCameraInstruction().setFade(fade);
             }
             case "fade-time-color" -> {
                 CameraFadeInstruction fade = new CameraFadeInstruction();
-                fade.setTime(new CameraFadeInstruction.TimeOption(list.get(3).get(), list.get(4).get(), list.get(5).get()));
-                fade.setColor(new CameraFadeInstruction.ColorOption(getInteger(list, 7) / 255f, getInteger(list, 8) / 255f, getInteger(list, 9) / 255f));
-                pk.setFadeInstruction(fade);
+                fade.setTime(timeOption(list.get(3).get(), list.get(4).get(), list.get(5).get()));
+                fade.setColor(colorOption(getInteger(list, 7), getInteger(list, 8), getInteger(list, 9)));
+                pk.getCameraInstruction().setFade(fade);
             }
             case "set-default" -> {
                 var preset = findPreset(list.get(2).get());
@@ -185,10 +232,9 @@ public class CameraCommand extends VanillaCommand {
                     log.addError("commands.camera.invalid-preset").output();
                     return 0;
                 }
-                pk.setSetInstruction(CameraSetInstruction.builder()
-                        .preset(preset)
-                        .defaultPreset(OptionalBoolean.of(true))
-                        .build());
+                CameraSetInstruction set = setInstruction(preset);
+                set.setDefaultValue(OptionalBoolean.of(true));
+                pk.getCameraInstruction().setSet(set);
             }
             case "set-rot" -> {
                 var preset = findPreset(list.get(2).get());
@@ -196,10 +242,9 @@ public class CameraCommand extends VanillaCommand {
                     log.addError("commands.camera.invalid-preset").output();
                     return 0;
                 }
-                pk.setSetInstruction(CameraSetInstruction.builder()
-                        .preset(preset)
-                        .rot(Vector2f.from(((RelativeFloatNode) list.get(4)).get((float) senderLocation.getPitch()), ((RelativeFloatNode) list.get(5)).get((float) senderLocation.getYaw())))
-                        .build());
+                CameraSetInstruction set = setInstruction(preset);
+                set.setRot(rotOption(((RelativeFloatNode) list.get(4)).get((float) senderLocation.getPitch()), ((RelativeFloatNode) list.get(5)).get((float) senderLocation.getYaw())));
+                pk.getCameraInstruction().setSet(set);
             }
             case "set-pos" -> {
                 var preset = findPreset(list.get(2).get());
@@ -208,10 +253,9 @@ public class CameraCommand extends VanillaCommand {
                     return 0;
                 }
                 Position position = list.get(4).get();
-                pk.setSetInstruction(CameraSetInstruction.builder()
-                        .preset(preset)
-                        .pos(Vector3f.from((float) position.getX(), (float) position.getY(), (float) position.getZ()))
-                        .build());
+                CameraSetInstruction set = setInstruction(preset);
+                set.setPos(posOption(position));
+                pk.getCameraInstruction().setSet(set);
             }
             case "set-pos-rot" -> {
                 var preset = findPreset(list.get(2).get());
@@ -220,11 +264,10 @@ public class CameraCommand extends VanillaCommand {
                     return 0;
                 }
                 Position position = list.get(4).get();
-                pk.setSetInstruction(CameraSetInstruction.builder()
-                        .preset(preset)
-                        .pos(Vector3f.from((float) position.getX(), (float) position.getY(), (float) position.getZ()))
-                        .rot(Vector2f.from(((RelativeFloatNode) list.get(6)).get((float) senderLocation.getPitch()), ((RelativeFloatNode) list.get(7)).get((float) senderLocation.getYaw())))
-                        .build());
+                CameraSetInstruction set = setInstruction(preset);
+                set.setPos(posOption(position));
+                set.setRot(rotOption(((RelativeFloatNode) list.get(6)).get((float) senderLocation.getPitch()), ((RelativeFloatNode) list.get(7)).get((float) senderLocation.getYaw())));
+                pk.getCameraInstruction().setSet(set);
             }
             case "set-ease-default" -> {
                 var preset = findPreset(list.get(2).get());
@@ -233,12 +276,11 @@ public class CameraCommand extends VanillaCommand {
                     return 0;
                 }
                 float easeTime = list.get(4).get();
-                var easeType = EasingType.valueOf(((String) list.get(5).get()).toUpperCase(Locale.ENGLISH));
-                pk.setSetInstruction(CameraSetInstruction.builder()
-                        .preset(preset)
-                        .ease(new CameraSetInstruction.EaseOption(easeType, easeTime))
-                        .defaultPreset(OptionalBoolean.of(true))
-                        .build());
+                var easeType = EasingFunction.valueOf(((String) list.get(5).get()).toUpperCase(Locale.ENGLISH));
+                CameraSetInstruction set = setInstruction(preset);
+                set.setEase(easeOption(easeType, easeTime));
+                set.setDefaultValue(OptionalBoolean.of(true));
+                pk.getCameraInstruction().setSet(set);
             }
             case "set-ease-rot" -> {
                 var preset = findPreset(list.get(2).get());
@@ -247,12 +289,11 @@ public class CameraCommand extends VanillaCommand {
                     return 0;
                 }
                 float easeTime = list.get(4).get();
-                var easeType = EasingType.valueOf(((String) list.get(5).get()).toUpperCase(Locale.ENGLISH));
-                pk.setSetInstruction(CameraSetInstruction.builder()
-                        .preset(preset)
-                        .ease(new CameraSetInstruction.EaseOption(easeType, easeTime))
-                        .rot(Vector2f.from(((RelativeFloatNode) list.get(7)).get((float) senderLocation.getPitch()), ((RelativeFloatNode) list.get(8)).get((float) senderLocation.getYaw())))
-                        .build());
+                var easeType = EasingFunction.valueOf(((String) list.get(5).get()).toUpperCase(Locale.ENGLISH));
+                CameraSetInstruction set = setInstruction(preset);
+                set.setEase(easeOption(easeType, easeTime));
+                set.setRot(rotOption(((RelativeFloatNode) list.get(7)).get((float) senderLocation.getPitch()), ((RelativeFloatNode) list.get(8)).get((float) senderLocation.getYaw())));
+                pk.getCameraInstruction().setSet(set);
             }
             case "set-ease-pos" -> {
                 var preset = findPreset(list.get(2).get());
@@ -261,13 +302,12 @@ public class CameraCommand extends VanillaCommand {
                     return 0;
                 }
                 float easeTime = list.get(4).get();
-                var easeType = EasingType.valueOf(((String) list.get(5).get()).toUpperCase(Locale.ENGLISH));
+                var easeType = EasingFunction.valueOf(((String) list.get(5).get()).toUpperCase(Locale.ENGLISH));
                 Position position = list.get(7).get();
-                pk.setSetInstruction(CameraSetInstruction.builder()
-                        .preset(preset)
-                        .ease(new CameraSetInstruction.EaseOption(easeType, easeTime))
-                        .pos(Vector3f.from((float) position.getX(), (float) position.getY(), (float) position.getZ()))
-                        .build());
+                CameraSetInstruction set = setInstruction(preset);
+                set.setEase(easeOption(easeType, easeTime));
+                set.setPos(posOption(position));
+                pk.getCameraInstruction().setSet(set);
             }
             case "set-ease-pos-rot" -> {
                 var preset = findPreset(list.get(2).get());
@@ -276,14 +316,13 @@ public class CameraCommand extends VanillaCommand {
                     return 0;
                 }
                 float easeTime = list.get(4).get();
-                var easeType = EasingType.valueOf(((String) list.get(5).get()).toUpperCase(Locale.ENGLISH));
+                var easeType = EasingFunction.valueOf(((String) list.get(5).get()).toUpperCase(Locale.ENGLISH));
                 Position position = list.get(7).get();
-                pk.setSetInstruction(CameraSetInstruction.builder()
-                        .preset(preset)
-                        .ease(new CameraSetInstruction.EaseOption(easeType, easeTime))
-                        .pos(Vector3f.from((float) position.getX(), (float) position.getY(), (float) position.getZ()))
-                        .rot(Vector2f.from(((RelativeFloatNode) list.get(9)).get((float) senderLocation.getPitch()), ((RelativeFloatNode) list.get(10)).get((float) senderLocation.getYaw())))
-                        .build());
+                CameraSetInstruction set = setInstruction(preset);
+                set.setEase(easeOption(easeType, easeTime));
+                set.setPos(posOption(position));
+                set.setRot(rotOption(((RelativeFloatNode) list.get(9)).get((float) senderLocation.getPitch()), ((RelativeFloatNode) list.get(10)).get((float) senderLocation.getYaw())));
+                pk.getCameraInstruction().setSet(set);
             }
             default -> {
                 return 0;

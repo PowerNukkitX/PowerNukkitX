@@ -21,7 +21,7 @@ jobs:
     timeout-minutes: 5
     steps:
       - name: Label and comment on flagged PRs
-        uses: MatteoGabriele/agentscan-action@8112fb79b33fafb8506159df20129a34209ac410
+        uses: MatteoGabriele/agentscan-action@7ad606f1e21df2119da8be99b763f282a670a1c5
         with:
           github-token: ${{ github.token }}
           mode: full

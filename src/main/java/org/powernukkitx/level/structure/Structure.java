@@ -1,6 +1,7 @@
 package org.powernukkitx.level.structure;
 
 import org.powernukkitx.block.BlockID;
+import org.powernukkitx.block.BlockProperties;
 import org.powernukkitx.block.BlockState;
 import org.powernukkitx.blockentity.BlockEntity;
 import org.powernukkitx.entity.Entity;
@@ -19,6 +20,8 @@ import org.powernukkitx.nbt.tag.ListTag;
 import org.powernukkitx.nbt.tag.LongTag;
 import org.powernukkitx.nbt.tag.StringTag;
 import org.powernukkitx.nbt.tag.Tag;
+import org.powernukkitx.level.updater.block.BlockStateUpdaters;
+import org.powernukkitx.registry.Registries;
 import org.powernukkitx.utils.BlockUpdateEntry;
 import org.powernukkitx.utils.Identifier;
 import org.powernukkitx.utils.ItemHelper;
@@ -29,6 +32,7 @@ import static org.powernukkitx.block.property.CommonBlockProperties.CONNECTION_N
 import static org.powernukkitx.block.property.CommonBlockProperties.CONNECTION_SOUTH;
 import static org.powernukkitx.block.property.CommonBlockProperties.CONNECTION_WEST;
 
+import org.cloudburstmc.nbt.NbtMap;
 import org.cloudburstmc.protocol.bedrock.data.payload.structure.Mirror;
 import org.cloudburstmc.protocol.bedrock.data.payload.structure.Rotation;
 
@@ -37,6 +41,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import com.google.common.base.Preconditions;
 import lombok.Getter;
@@ -341,8 +346,7 @@ public class Structure extends AbstractStructure {
 
         List<BlockState> blockPalette = new ArrayList<>();
         for (CompoundTag entry : palette.getList("block_palette", CompoundTag.class).getAll()) {
-            BlockState state = ItemHelper.getBlockStateHelper(entry);
-            blockPalette.add(state == null ? STATE_UNKNOWN : state);
+            blockPalette.add(resolvePaletteEntry(entry));
         }
 
         BlockState[][][][] blockStates = new BlockState[2][sizeX][sizeY][sizeZ];
@@ -388,6 +392,59 @@ public class Structure extends AbstractStructure {
                 origin.get(0).getData(), origin.get(1).getData(), origin.get(2).getData(),
                 nbt, upgradeVersion
         );
+    }
+
+    /**
+     * Resolve a palette entry to a block state.
+     * <p>
+     * Entries saved by older versions are run through the block state updaters first,
+     * starting at the entry's own {@code version} (missing version means "very old", so all updaters run).
+     * If the result still doesn't match a known state (e.g. the structure was saved by a newer client
+     * with properties this server doesn't know), the closest state of the same block is used instead.
+     * Falls back to the unknown block if the block identifier itself is unknown.
+     */
+    private static BlockState resolvePaletteEntry(CompoundTag entry) {
+        NbtMap tag = entry.toNetwork();
+        int version = tag.getInt("version", 0);
+        if (version < BlockStateUpdaters.getLatestVersion()) {
+            tag = BlockStateUpdaters.updateBlockState(tag, version);
+        }
+
+        BlockState state = ItemHelper.getBlockStateHelper(tag);
+        if (state != null) {
+            return state;
+        }
+
+        BlockProperties properties;
+        try {
+            properties = Registries.BLOCK.getBlockProperties(tag.getString("name"));
+        } catch (IllegalArgumentException e) {
+            log.warn("Structure palette contains unknown block {}, replacing with unknown block", tag);
+            return STATE_UNKNOWN;
+        }
+
+        NbtMap wantedStates = tag.getCompound("states");
+        BlockState best = properties.getDefaultState();
+        int bestScore = matchingStates(best, wantedStates);
+        for (BlockState candidate : properties.getSpecialValueMap().values()) {
+            int score = matchingStates(candidate, wantedStates);
+            if (score > bestScore) {
+                best = candidate;
+                bestScore = score;
+            }
+        }
+        log.debug("Structure palette state {} not found after updating, using closest match {}", tag, best.getBlockStateTag());
+        return best;
+    }
+
+    private static int matchingStates(BlockState state, NbtMap wantedStates) {
+        int score = 0;
+        for (Map.Entry<String, Object> e : state.getBlockStateTag().getCompound("states").entrySet()) {
+            if (Objects.equals(wantedStates.get(e.getKey()), e.getValue())) {
+                score++;
+            }
+        }
+        return score;
     }
 
     public static CompletableFuture<Structure> fromNbtAsync(CompoundTag nbt) {

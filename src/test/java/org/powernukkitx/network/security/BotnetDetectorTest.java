@@ -272,6 +272,19 @@ class BotnetDetectorTest {
         assertFalse(detector.isSuspicious(a.getAddress()));
     }
 
+    /**
+    * {@code minsuspiciousips} comes from the config, and a zero there used to let the signals be
+    * scored over an empty set of flooding sessions, where the packet-type and subnet majorities
+    * have no maximum to take.
+    */
+    @Test
+    void aMinimumOfZeroDoesNotScoreAnEmptyFloodingSet(){
+        BotnetDetector permissive = new BotnetDetector(THRESHOLD, 0, MIN_SCORE, fakeTime::get);
+        permissive.registerSession(addr("10.0.0.1", 1000));
+
+        assertTrue(permissive.tick().isEmpty());
+    }
+
     private InetSocketAddress addr(String ip, int port) {
         return new InetSocketAddress(ip, port);
     }

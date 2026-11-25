@@ -52,7 +52,7 @@ We don't pre-assign issues. Pick one and open a PR. For anything large or archit
    | Task              | Purpose                                                |
    |-------------------|--------------------------------------------------------|
    | `buildSkipChores` | First full build                                       |
-   | `buildFast`       | Incremental rebuild                                    |
+   | `buildFast`       | Incremental rebuild, runnable from `build/libs`        |
    | `shadowJar`       | Produce a distributable `powernukkitx.jar` in `build/` |
    | `clean`           | Wipe the build folder                                  |
    | `test`            | Run the unit tests                                     |

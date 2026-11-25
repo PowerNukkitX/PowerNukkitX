@@ -184,6 +184,9 @@ public abstract class ItemBookWritable extends Item {
             }
             pages.get(pageId).putString("text", pageText);
         } else {
+            if (pages.size() >= MAX_PAGES){
+                return false;
+            }
             pages.add(pageId, createPageTag(pageText));
         }
         this.setNbt(tag);

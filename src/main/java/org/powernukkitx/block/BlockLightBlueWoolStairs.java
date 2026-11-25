@@ -7,7 +7,7 @@ import org.powernukkitx.tags.BlockTags;
 import java.util.Set;
 
 public class BlockLightBlueWoolStairs extends BlockWoolStairs {
-    public static final BlockProperties PROPERTIES = new BlockProperties("minecraft:light_blue_wool_stairs", Set.of(BlockTags.PNX_WOOL), CommonBlockProperties.UPSIDE_DOWN_BIT, CommonBlockProperties.WEIRDO_DIRECTION, CommonBlockProperties.CORNER);
+    public static final BlockProperties PROPERTIES = new BlockProperties(LIGHT_BLUE_WOOL_STAIRS, Set.of(BlockTags.PNX_WOOL), CommonBlockProperties.UPSIDE_DOWN_BIT, CommonBlockProperties.WEIRDO_DIRECTION, CommonBlockProperties.CORNER);
 
     @Override
     @NotNull public BlockProperties getProperties() {

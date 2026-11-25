@@ -4,7 +4,7 @@ import org.powernukkitx.block.property.CommonBlockProperties;
 import org.jetbrains.annotations.NotNull;
 
 public class BlockLimeConcreteDoubleSlab extends BlockConcreteDoubleSlab {
-    public static final BlockProperties PROPERTIES = new BlockProperties("minecraft:lime_concrete_double_slab", CommonBlockProperties.MINECRAFT_VERTICAL_HALF);
+    public static final BlockProperties PROPERTIES = new BlockProperties(LIME_CONCRETE_DOUBLE_SLAB, CommonBlockProperties.MINECRAFT_VERTICAL_HALF);
 
     @Override
     @NotNull public BlockProperties getProperties() {

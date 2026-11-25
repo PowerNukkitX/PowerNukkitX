@@ -74,6 +74,44 @@ public class Xoroshiro128Test {
     }
 
     @Test
+    void nextIntMinMaxExcludesMax() {
+        Xoroshiro128 r = new Xoroshiro128(7L);
+        boolean sawMin = false;
+        for (int i = 0; i < 1000; i++) {
+            int v = r.nextInt(2, 5);
+            Assertions.assertTrue(v >= 2 && v < 5, "value " + v);
+            sawMin |= v == 2;
+        }
+        Assertions.assertTrue(sawMin, "min never returned");
+    }
+
+    @Test
+    void nextIntWithEqualBounds() {
+        Xoroshiro128 r = new Xoroshiro128(7L);
+        Assertions.assertEquals(7, r.nextInt(7, 7));
+    }
+
+    @Test
+    void nextIntRejectsMaxBelowMin() {
+        Xoroshiro128 r = new Xoroshiro128(7L);
+        Assertions.assertThrows(IllegalArgumentException.class, () -> r.nextInt(5, 2));
+    }
+
+    @Test
+    void nextIntOverFullIntRange() {
+        Xoroshiro128 r = new Xoroshiro128(7L);
+        boolean sawPositive = false;
+        boolean sawNegative = false;
+        for (int i = 0; i < 1000; i++) {
+            int v = r.nextInt(Integer.MIN_VALUE, Integer.MAX_VALUE);
+            sawPositive |= v > 0;
+            sawNegative |= v < 0;
+        }
+        Assertions.assertTrue(sawPositive, "full range never returned a positive value");
+        Assertions.assertTrue(sawNegative, "full range never returned a negative value");
+    }
+
+    @Test
     void nextBoundedInt() {
         Xoroshiro128 r = new Xoroshiro128(8L);
         for (int i = 0; i < 1000; i++) {

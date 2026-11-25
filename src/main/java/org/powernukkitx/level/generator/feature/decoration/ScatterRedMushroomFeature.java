@@ -50,9 +50,12 @@ public class ScatterRedMushroomFeature extends GroupedDiscFeature {
 
     @Override
     public boolean isSupportValid(Block block) {
+        int biome = block.getLevel().getBiomeId(block.getFloorX(), block.getFloorY(), block.getFloorZ());
         return block.isSolid() &&
                 (block.getLevel().getHeightMap(block.getFloorX(), block.getFloorZ()) - 1 != block.getFloorY()
-                        || block.getLevel().getBiomeId(block.getFloorX(), block.getFloorY(), block.getFloorZ()) == BiomeID.MUSHROOM_ISLAND);
+                        || biome == BiomeID.MUSHROOM_ISLAND
+                        || biome == BiomeID.DAPPLED_FOREST
+                );
     }
 
     @Override

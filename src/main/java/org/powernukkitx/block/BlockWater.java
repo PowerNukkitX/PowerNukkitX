@@ -51,6 +51,7 @@ public class BlockWater extends BlockFlowingWater {
     @Override
     public int onUpdate(int type) {
         if (type == Level.BLOCK_UPDATE_RANDOM) {
+            if (!isSource()) return super.onUpdate(type);
             IChunk chunk = getChunk();
             if(chunk == null) return 0;
             int x = this.getFloorX();

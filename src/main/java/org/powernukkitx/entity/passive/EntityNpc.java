@@ -123,8 +123,10 @@ public class EntityNpc extends EntityLiving implements IEntityNPC, EntityInterac
             }
             if (response.getRequestType() == NpcRequestPacket.RequestType.EXECUTE_ACTION) {
                 ElementDialogButton clickedButton = response.getClickedButton();
-                for (ElementDialogButton.CmdLine line : clickedButton.getData()) {
-                    Server.getInstance().executeCommand(new NPCCommandSender(this, player), line.cmd_line);
+                if (clickedButton != null && clickedButton.getData() != null){
+                    for (ElementDialogButton.CmdLine line : clickedButton.getData()) {
+                        Server.getInstance().executeCommand(new NPCCommandSender(this, player), line.cmd_line);
+                    }
                 }
             }
             if (response.getRequestType() == NpcRequestPacket.RequestType.EXECUTE_OPENING_COMMANDS) {
