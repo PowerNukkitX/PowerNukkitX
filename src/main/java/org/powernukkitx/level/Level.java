@@ -2189,9 +2189,13 @@ public class Level implements Metadatable, LiquidUpdateAccess {
                     }
 
                     if (!cancelled) {
-                        block.onUpdate(BLOCK_UPDATE_NORMAL);
-                        if (queuedUpdate.neighbor != null) {
-                            block.onNeighborChange(queuedUpdate.neighbor.getOpposite());
+                        try {
+                            block.onUpdate(BLOCK_UPDATE_NORMAL);
+                            if (queuedUpdate.neighbor != null) {
+                                block.onNeighborChange(queuedUpdate.neighbor.getOpposite());
+                            }
+                        } catch (Exception | StackOverflowError e){
+                            log.error("Error updating block {} at {}, {}, {} in level {}", block.getId(), block.getFloorX(), block.getFloorY(), block.getFloorZ(), this.getName(), e);
                         }
                     }
                 }
@@ -2235,7 +2239,16 @@ public class Level implements Metadatable, LiquidUpdateAccess {
                     if (entity instanceof EntityAsyncPrepare) {
                         seenAsyncPrepare = true;
                     }
-                    if (entity.closed || !entity.onUpdate(currentTick)) {
+                    boolean keepTicking;
+                    try {
+                        keepTicking = !entity.closed && entity.onUpdate(currentTick);
+                    } catch (Exception | StackOverflowError e){
+                        log.error("Error ticking entity {} (runtime id {}) in level {}", entity.getIdentifier(), id, this.getName(), e);
+                        // A player must keep ticking to drain its packets; any other entity waits for its next
+                        // scheduleUpdate() so a broken one does not log a stack trace every tick
+                        keepTicking = entity instanceof Player;
+                    }
+                    if (!keepTicking) {
                         this.updateEntities.remove(id);
                     }
                 }
@@ -2244,8 +2257,12 @@ public class Level implements Metadatable, LiquidUpdateAccess {
             if (prof) phase[5] = -phaseStart + (phaseStart = System.nanoTime());
             this.updateBlockEntities.removeIf(blockEntity -> {
                 synchronized (blockEntity) {
-                    if (!blockEntity.closed && blockEntity.getLevel() == this && blockEntity.onUpdate()) {
-                        return false;
+                    try {
+                        if (!blockEntity.closed && blockEntity.getLevel() == this && blockEntity.onUpdate()) {
+                            return false;
+                        }
+                    } catch (Exception | StackOverflowError e){
+                        log.error("Error ticking block entity {} at {}, {}, {} in level {}", blockEntity.getSaveId(), blockEntity.getFloorX(), blockEntity.getFloorY(), blockEntity.getFloorZ(), this.getName(), e);
                     }
                 }
                 this.updateBlockEntitySet.remove(blockEntity);
@@ -3078,7 +3095,11 @@ public class Level implements Metadatable, LiquidUpdateAccess {
                     }
                     Block block = Block.get(state, this, (chunk.getX() << 4) + x, (section.y() << 4) + y, (chunk.getZ() << 4) + z);
                     block.setLevel(this);
-                    block.onUpdate(BLOCK_UPDATE_RANDOM);
+                    try {
+                        block.onUpdate(BLOCK_UPDATE_RANDOM);
+                    } catch (Exception | StackOverflowError e){
+                        log.error("Error random ticking block {} at {}, {}, {} in level {}", block.getId(), block.getFloorX(), block.getFloorY(), block.getFloorZ(), this.getName(), e);
+                    }
                 }
             }
         }
