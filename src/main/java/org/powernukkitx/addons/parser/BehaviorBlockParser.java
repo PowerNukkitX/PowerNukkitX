@@ -721,7 +721,9 @@ public final class BehaviorBlockParser {
                 if (isFalse(value)) {
                     raw.putCompound(key, disabledCollisionBox());
                 } else {
-                    builder.collisionBox(boxOrigin(value), boxSize(value));
+                    for (JsonElement box : collisionBoxes(value)) {
+                        builder.collisionBox(boxOrigin(box), boxSize(box));
+                    }
                 }
             }
             case "minecraft:selection_box" -> {
@@ -1075,7 +1077,7 @@ public final class BehaviorBlockParser {
             }
             case "minecraft:collision_box" -> target.putCompound(key, isFalse(value)
                     ? disabledCollisionBox()
-                    : collisionBox(boxOrigin(value), boxSize(value)));
+                    : collisionBox(value));
             case "minecraft:selection_box" -> target.putCompound(key, isFalse(value)
                     ? selectionBox(false, new Vector3f(0f, 0f, 0f), new Vector3f(0f, 0f, 0f))
                     : selectionBox(true, boxOrigin(value), boxSize(value)));
@@ -1129,8 +1131,22 @@ public final class BehaviorBlockParser {
         return asBoolean(value, true) ? 0 : -1;
     }
 
-    private static CompoundTag collisionBox(Vector3f origin, Vector3f size) {
-        return new CollisionBox(origin.x, origin.y, origin.z, size.x, size.y, size.z).toCompoundTag();
+    private static CompoundTag collisionBox(JsonElement value) {
+        ListTag<CompoundTag> boxes = new ListTag<>();
+        for (JsonElement box : collisionBoxes(value)) {
+            Vector3f origin = boxOrigin(box);
+            Vector3f size = boxSize(box);
+            new CollisionBox(origin.x, origin.y, origin.z, size.x, size.y, size.z).toCompoundTag()
+                    .getList("boxes", CompoundTag.class).getAll().forEach(boxes::add);
+        }
+        return new CompoundTag().putBoolean("enabled", true).putList("boxes", boxes);
+    }
+
+    /**
+     * A collision box is a single box up to format version 1.26.50 and a list of boxes from 1.26.60.
+     */
+    private static List<JsonElement> collisionBoxes(JsonElement value) {
+        return value.isJsonArray() ? value.getAsJsonArray().asList() : List.of(value);
     }
 
     /**

@@ -359,6 +359,29 @@ class BehaviorBlockParserTest {
     }
 
     @Test
+    void readsCollisionBoxList() {
+        BlockDataDriven.Spec spec = parse(block("pnxtest:box_list",
+                ", \"states\": { \"pnxtest:tall\": [false, true] }",
+                "{ \"minecraft:collision_box\": [ { \"origin\": [-8, 0, -8], \"size\": [16, 8, 16] }, "
+                        + "{ \"origin\": [-4, 8, -4], \"size\": [8, 12, 8] } ] }",
+                "[ { \"condition\": \"q.block_state('pnxtest:tall')\", \"components\": { "
+                        + "\"minecraft:collision_box\": [ { \"origin\": [-6, 0, -6], \"size\": [12, 16, 12] } ] } } ]"));
+
+        ListTag<CompoundTag> sent = components(spec).getCompound("minecraft:collision_box").getList("boxes", CompoundTag.class);
+        AxisAlignedBB[] low = new BlockDataDriven(stateWith(spec, "pnxtest:tall", false), spec).getCollisionBoxes();
+        AxisAlignedBB[] tall = new BlockDataDriven(stateWith(spec, "pnxtest:tall", true), spec).getCollisionBoxes();
+
+        assertEquals(2, sent.size());
+        assertEquals(4f, sent.get(1).getFloat("minX"));
+        assertEquals(20f, sent.get(1).getFloat("maxY"), "boxes may reach 24 high, as the dedicated server sends them");
+        assertEquals(2, low.length);
+        assertEquals(1.25, low[1].getMaxY(), 1.0e-6);
+        assertEquals(1, tall.length);
+        assertEquals(0.125, tall[0].getMinX(), 1.0e-6);
+        assertTrue(tracker.isEmpty());
+    }
+
+    @Test
     void rotatesCollisionBoxWithPermutationTransformation() {
         BlockDataDriven.Spec spec = parse(block("pnxtest:rotated_box",
                 ", \"states\": { \"pnxtest:turned\": [false, true] }",
