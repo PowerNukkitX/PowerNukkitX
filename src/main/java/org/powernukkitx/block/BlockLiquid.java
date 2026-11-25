@@ -238,7 +238,7 @@ public abstract class BlockLiquid extends BlockTransparent {
         Block layer0 = level.getBlock(x, y, z, 0);
         if (layer0.isAir()) {
             level.setBlock(x, y, z, 1, Block.get(BlockID.AIR), false, false);
-            level.setBlock(x, y, z, 0, liquid, false, false);
+            level.setBlock(x, y, z, 0, liquid, false, true);
             return true;
         }
         if (layer0.getWaterloggingLevel() <= 0
