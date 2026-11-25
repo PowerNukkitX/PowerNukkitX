@@ -138,6 +138,7 @@ import org.powernukkitx.item.ItemArrow;
 import org.powernukkitx.item.ItemID;
 import org.powernukkitx.item.ItemTool;
 import org.powernukkitx.item.StorageItem;
+import org.powernukkitx.item.customitem.ItemDataDriven;
 import org.powernukkitx.item.enchantment.Enchantment;
 import org.powernukkitx.lang.CommandOutputContainer;
 import org.powernukkitx.lang.LangCode;
@@ -772,7 +773,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
                 }
 
                 if (Objects.equals(clone.getId(), handItem.getId()) || handItem.isNull()) {
-                    inventory.setItemInMainHand(handItem, false);
+                    inventory.setItemInMainHand(handItem, handItem instanceof ItemDataDriven);
                 } else {
                     log.debug("Tried to set item {} but {} had item {} in their hand slot", handItem.getId(), this.getName(), clone.getId());
                 }

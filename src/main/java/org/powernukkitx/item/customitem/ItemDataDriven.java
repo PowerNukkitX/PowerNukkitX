@@ -263,6 +263,48 @@ public class ItemDataDriven extends Item implements CustomItem {
     /**
      * {@inheritDoc}
      * <p>
+     * An item with {@code minecraft:durability} that is not worn wears down like a tool when it hits or breaks
+     * blocks.
+     */
+    @Override
+    public boolean isTool() {
+        return super.isTool() || getMaxDurability() > 0 && !isArmor();
+    }
+
+    /**
+     * {@inheritDoc}
+     * <p>
+     * A hit that wears the item gives it a new stack network id: the client predicts no wear for pack items and
+     * keeps showing the stack it knows by the old id.
+     */
+    @Override
+    public boolean useOn(Entity entity) {
+        int before = getDamage();
+        boolean used = super.useOn(entity);
+        if (getDamage() != before) {
+            autoAssignStackNetworkId();
+        }
+        return used;
+    }
+
+    /**
+     * {@inheritDoc}
+     * <p>
+     * Breaking a block that wears the item gives it a new stack network id, as {@link #useOn(Entity)} does.
+     */
+    @Override
+    public boolean useOn(Block block) {
+        int before = getDamage();
+        boolean used = super.useOn(block);
+        if (getDamage() != before) {
+            autoAssignStackNetworkId();
+        }
+        return used;
+    }
+
+    /**
+     * {@inheritDoc}
+     * <p>
      * A {@code minecraft:kinetic_weapon} hits the targets in its reach once its delay has passed. Speeds are
      * taken along the player's view in blocks per second: the player's own, from its last movement or from
      * what it rides, and the speed at which it closes in on each target. Damage is that closing speed times
