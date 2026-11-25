@@ -15,6 +15,8 @@ import org.powernukkitx.item.ItemID;
 import org.powernukkitx.item.enchantment.Enchantment;
 import org.powernukkitx.level.Level;
 import org.powernukkitx.level.Sound;
+import org.powernukkitx.molang.MolangContext;
+import org.powernukkitx.molang.MolangExpression;
 import org.powernukkitx.nbt.tag.CompoundTag;
 import io.netty.util.internal.StringUtil;
 import it.unimi.dsi.fastutil.Pair;
@@ -153,8 +155,10 @@ public class CraftRecipeOptionalProcessor implements ItemStackRequestActionProce
             int repair;
             int repair2;
             int repair3;
-            if (result.getMaxDurability() != -1 && Objects.equals(sacrifice.getId(), repairMaterial)) {//Anvil - repair
-                repair = Math.min(result.getDamage(), result.getMaxDurability() / 4);
+            int packRepair = packRepairAmount(target, sacrifice);
+            if (result.getMaxDurability() != -1 && (Objects.equals(sacrifice.getId(), repairMaterial) || packRepair >= 0)) {//Anvil - repair
+                int repairPerItem = packRepair > 0 ? packRepair : result.getMaxDurability() / 4;
+                repair = Math.min(result.getDamage(), repairPerItem);
                 if (repair <= 0) {
                     return null;
                 }
@@ -163,7 +167,7 @@ public class CraftRecipeOptionalProcessor implements ItemStackRequestActionProce
                     repair3 = result.getDamage() - repair;
                     result.setDamage(repair3);
                     ++extraCost;
-                    repair = Math.min(result.getDamage(), result.getMaxDurability() / 4);
+                    repair = Math.min(result.getDamage(), repairPerItem);
                 }
                 materialConsumed = repair2;
             } else {
@@ -379,6 +383,34 @@ public class CraftRecipeOptionalProcessor implements ItemStackRequestActionProce
 
     private static int getRepairCost(Item item) {
         return item.hasNbt() && item.getNbt().contains("RepairCost") ? item.getNbt().getInt("RepairCost") : 0;
+    }
+
+    /**
+     * @return the durability one {@code sacrifice} restores to {@code target} through the target's
+     * {@code minecraft:repairable}, a number or a Molang expression; 0 when the expression needs a context, or -1
+     * when the component does not list the sacrifice
+     */
+    private static int packRepairAmount(Item target, Item sacrifice) {
+        CompoundTag repairable = target.getCustomItemComponent("minecraft:repairable");
+        if (repairable == null) {
+            return -1;
+        }
+        for (CompoundTag entry : repairable.getList("repair_items", CompoundTag.class).getAll()) {
+            for (CompoundTag item : entry.getList("items", CompoundTag.class).getAll()) {
+                if (Objects.equals(item.getString("name"), sacrifice.getId())) {
+                    double amount;
+                    if (entry.containsCompound("repair_amount")) {
+                        String expression = entry.getCompound("repair_amount").getString("expression");
+                        amount = expression.isEmpty() ? 0
+                                : MolangExpression.compile(expression).evaluateAsDouble(MolangContext.EMPTY);
+                    } else {
+                        amount = entry.getFloat("repair_amount");
+                    }
+                    return (int) Math.max(0, amount);
+                }
+            }
+        }
+        return -1;
     }
 
     private static String getRepairMaterial(Item target) {

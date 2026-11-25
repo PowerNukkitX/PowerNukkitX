@@ -7,6 +7,7 @@ import org.powernukkitx.PlayerHandle;
 import org.powernukkitx.Server;
 import org.powernukkitx.api.NonComputationAtomic;
 import org.powernukkitx.block.*;
+import org.powernukkitx.block.customblock.BlockDataDriven;
 import org.powernukkitx.block.customblock.CustomBlock;
 import org.powernukkitx.block.customblock.CustomBlockDefinition;
 import org.powernukkitx.block.customblock.CustomBlockDefinition.BlockTickSettings;
@@ -4932,7 +4933,7 @@ public class Level implements Metadatable, LiquidUpdateAccess {
 
     public Item useItemOn(Vector3 vector, Item item, BlockFace face, ItemUseInventoryTransaction data, Player player, boolean playSound) {
         Block target = this.getBlock(vector);
-        Block block = target.canBeReplaced() ? target : (target.getSnowloggingLevel() > 0 && item.getBlock() instanceof BlockSnowLayer ? target : target.getSide(face));
+        Block block = replacesTarget(item, target) ? target : (target.getSnowloggingLevel() > 0 && item.getBlock() instanceof BlockSnowLayer ? target : target.getSide(face));
 
         float fx = data.getClickPosition().getX();
         float fy = data.getClickPosition().getY();
@@ -5000,10 +5001,25 @@ public class Level implements Metadatable, LiquidUpdateAccess {
             }
         }
 
-        if (data.getClientInteractPrediction() == ItemUsePredictedResult.SUCCESS) {
+        if (data.getClientInteractPrediction() == ItemUsePredictedResult.SUCCESS || isPlacementFiltered(item)) {
             return placeBlock(item, face, fx, fy, fz, player, playSound, block, target);
         }
         return item;
+    }
+
+    /**
+     * Clients predict a pack block's placement filter as failing where the dedicated server, which decides
+     * by the filter itself, places the block. Such placements are left to the filter.
+     */
+    private static boolean isPlacementFiltered(Item item) {
+        return item.canBePlaced() && item.getBlock() instanceof BlockDataDriven dataDriven && dataDriven.hasPlacementFilter();
+    }
+
+    /**
+     * A liquid-clipped item treats liquid as a surface, so it places on top of the liquid instead of into it.
+     */
+    private static boolean replacesTarget(Item item, Block target) {
+        return target.canBeReplaced() && !(target instanceof BlockLiquid && item.isLiquidClipped());
     }
 
     private Block beforePlaceBlock(Item item, BlockFace face, Block block, Block target) {
@@ -5015,6 +5031,8 @@ public class Level implements Metadatable, LiquidUpdateAccess {
         } else {
             Block blockToPlace = item.getBlockPlacerTargetBlock();
             if (blockToPlace == null) return null;
+            List<String> useOn = item.getCustomDefinition().getBlockPlacerData().useOn();
+            if (!useOn.isEmpty() && !useOn.contains(target.getId())) return null;
             hand = blockToPlace;
             hand.position(block);
         }
@@ -5038,7 +5056,7 @@ public class Level implements Metadatable, LiquidUpdateAccess {
         }
 
         // cause bug (eg: frog_spawn) (and I don't know what this is for)
-        if (!(hand instanceof BlockFrogSpawn) && target.canBeReplaced()) {
+        if (!(hand instanceof BlockFrogSpawn) && replacesTarget(item, target)) {
             block = target;
             hand.position(block);
         }

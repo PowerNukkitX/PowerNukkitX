@@ -4,6 +4,7 @@ import org.powernukkitx.Player;
 import org.powernukkitx.block.Block;
 import org.powernukkitx.block.BlockID;
 import org.powernukkitx.block.BlockTnt;
+import org.powernukkitx.block.customblock.BlockDataDriven;
 import org.powernukkitx.blockentity.BlockEntity;
 import org.powernukkitx.blockentity.BlockEntityShulkerBox;
 import org.powernukkitx.entity.Entity;
@@ -306,12 +307,16 @@ public class Explosion {
                     }
                     inventoryHolder.getInventory().clearAll();
                 }
-            } else if (random.nextDouble() * 100 < yield) {
+            } else if (block instanceof BlockDataDriven dataDriven && dataDriven.hasLootTable()
+                    || random.nextDouble() * 100 < yield) {
                 Item tool = air;
                 if (this.what instanceof EntityTnt && block.getToolType() != ItemTool.TYPE_SHEARS) {
                     tool = ItemTool.getBestTool(block.getToolType());
                 }
-                for (Item drop : block.getDrops(tool)) {
+                Item[] drops = block instanceof BlockDataDriven dataDriven
+                        ? dataDriven.getExplosionDrops(tool, this.size)
+                        : block.getDrops(tool);
+                for (Item drop : drops) {
                     this.level.dropItem(block.add(0.5, 0.5, 0.5), drop);
                 }
             }
