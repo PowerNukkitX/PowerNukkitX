@@ -56,6 +56,14 @@ final class ClientItemComponents {
                 target.putCompound(component.getKey(), translated);
             }
         }
+        JsonElement icon = components.get("minecraft:icon");
+        if (icon != null && icon.isJsonObject() && icon.getAsJsonObject().has("textures")
+                && icon.getAsJsonObject().get("textures").isJsonObject() && target.containsCompound("item_properties")) {
+            CompoundTag textures = new CompoundTag();
+            icon.getAsJsonObject().getAsJsonObject("textures").entrySet()
+                    .forEach(texture -> textures.putString(texture.getKey(), texture.getValue().getAsString()));
+            target.getCompound("item_properties").putCompound("minecraft:icon", new CompoundTag().putCompound("textures", textures));
+        }
         if (components.has("minecraft:liquid_clipped") && target.containsCompound("item_properties")) {
             target.getCompound("item_properties")
                     .putBoolean("liquid_clipped", asBoolean(unwrapValue(components.get("minecraft:liquid_clipped")), false));
