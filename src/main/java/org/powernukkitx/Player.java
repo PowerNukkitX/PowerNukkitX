@@ -335,6 +335,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
     private boolean customNbtExposed;
     protected final PlayerCamera camera = new PlayerCamera(this);
     protected boolean checkMovement = true;
+    public static final double MAX_CLIENT_POSITION_DESYNC_SQUARED = 128;
     protected PlayerFood foodData = null;
     protected boolean enableClientCommand = true;
     protected int formWindowCount = 0;
@@ -1098,7 +1099,7 @@ public class Player extends EntityHuman implements CommandSender, ChunkLoader, I
         var revertPos = this.getLocation().clone();
         double distanceSquared = clientPos.distanceSquared(this);
         //before check
-        if (isCheckingMovement() && distanceSquared > 128) {
+        if (isCheckingMovement() && distanceSquared > MAX_CLIENT_POSITION_DESYNC_SQUARED) {
             invalidMotion = true;
         } else if (!isMovementChunkReady(this.chunk)) {
             IChunk chunk = this.level.getChunk(clientPos.getChunkX(), clientPos.getChunkZ(), false);
