@@ -2683,10 +2683,11 @@ public class Level implements Metadatable, LiquidUpdateAccess {
             }
             updateBlockPacket.setLayer(dataLayer);
             int runtimeId;
+            BlockActorDataPacket blockActorDataPacket = null;
             if (b instanceof Block block) {
                 runtimeId = block.getRuntimeId();
                 if (block instanceof BlockEntityHolder<?> holder && holder.getBlockEntity() instanceof BlockEntitySpawnable spawnable) {
-                    packets.add(spawnable.getSpawnPacket());
+                    blockActorDataPacket = spawnable.getSpawnPacket();
                 }
             } else if (b instanceof Vector3WithRuntimeId vRid) {
                 if (dataLayer == 0) {
@@ -2703,6 +2704,9 @@ public class Level implements Metadatable, LiquidUpdateAccess {
             }
             updateBlockPacket.setDefinition(new RuntimeBlockDefinition(runtimeId));
             packets.add(updateBlockPacket);
+            if (blockActorDataPacket != null) {
+                packets.add(blockActorDataPacket);
+            }
         }
         for (var p : packets) {
             Server.broadcastPacket(target, p);
