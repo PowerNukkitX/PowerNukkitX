@@ -308,7 +308,7 @@ public class InventoryTransactionHandler implements PacketHandler<InventoryTrans
         }
         Block target = player.level.getBlock(blockVector.asVector3());
         Block block = target.getSide(BlockFace.fromIndex(transaction.getFace()));
-        player.level.sendBlocks(new Player[]{player}, new Block[]{target, block}, UpdateBlockPacket.FLAG_ALL_PRIORITY);
+        player.level.sendBlocks(new Player[]{player}, new Block[]{target, block}, UpdateBlockPacket.FLAG_ALL_PRIORITY, 0);
         player.level.sendBlocks(new Player[]{player}, new Block[]{target.getLevelBlockAtLayer(1), block.getLevelBlockAtLayer(1)}, UpdateBlockPacket.FLAG_ALL_PRIORITY, 1);
     }
 
