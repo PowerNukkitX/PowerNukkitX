@@ -75,6 +75,7 @@ import org.cloudburstmc.nbt.NbtMap;
 import org.cloudburstmc.nbt.NbtType;
 import org.cloudburstmc.nbt.NbtUtils;
 import org.cloudburstmc.protocol.bedrock.data.ServerBlockProperty;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.UnmodifiableView;
 
 import javax.annotation.Nullable;
@@ -111,6 +112,20 @@ public final class BlockRegistry implements BlockID, IRegistry<String, Block, Cl
 
     private static String resolveAlias(String id) {
         return ALIASES.getOrDefault(id, id);
+    }
+
+    /**
+     * Resolves a registered block identifier or alias without creating a block.
+     *
+     * @param identifier a namespaced block identifier or alias
+     * @return the registered identifier, or null if no block is registered for it
+     */
+    public @Nullable String findRegisteredIdentifier(@NotNull String identifier) {
+        if (CACHE_CONSTRUCTORS.containsKey(identifier)) {
+            return identifier;
+        }
+        String canonicalId = ALIASES.get(identifier);
+        return canonicalId != null && CACHE_CONSTRUCTORS.containsKey(canonicalId) ? canonicalId : null;
     }
 
     private static FastConstructor<? extends Block> resolveConstructor(String identifier) {

@@ -5056,30 +5056,11 @@ public class Level implements Metadatable, LiquidUpdateAccess {
         }
 
         if (player != null) {
-            boolean canChangeBlock = block.isBlockChangeAllowed(player);
-            if ((!player.getAdventureSettings().get(AbilitiesIndex.BUILD) && !canChangeBlock) || !canChangeBlock)
+            if (!block.isBlockPlacementAllowed(player, item, target)) {
                 return null;
+            }
 
             BlockPlaceEvent event = new BlockPlaceEvent(player, hand, block, target, item);
-            if (player.isAdventure()) {
-                Object tag = item.getNbtEntry("CanPlaceOn");
-                boolean canPlace = canChangeBlock;
-                if (tag instanceof List<?> listTag) {
-                    for (Object v : listTag) {
-                        if (!(v instanceof String stringTag)) {
-                            continue;
-                        }
-                        Item entry = Item.get(stringTag);
-                        if (!entry.isNull() && entry.getBlock().getId().equals(target.getId())) {
-                            canPlace = true;
-                            break;
-                        }
-                    }
-                }
-                if (!canPlace) {
-                    event.setCancelled();
-                }
-            }
             if (!player.isOp() && isInSpawnRadius(target)) {
                 event.setCancelled();
             }

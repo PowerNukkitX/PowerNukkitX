@@ -1473,6 +1473,23 @@ public abstract class Block extends Position implements Metadatable, AxisAligned
     }
 
     public final boolean isBlockChangeAllowed(@Nullable Player player) {
+        return isBlockChangeAllowed(player, null, null);
+    }
+
+    /**
+     * Checks placement at this position, including Allow and Deny blocks and the
+     * placing item's CanPlaceOn list in adventure mode.
+     *
+     * @param player the player placing the block
+     * @param item the item being placed
+     * @param target the block the player clicked
+     * @return whether the placement passes the block change checks
+     */
+    public final boolean isBlockPlacementAllowed(@NotNull Player player, @NotNull Item item, @NotNull Block target) {
+        return isBlockChangeAllowed(player, item, target);
+    }
+
+    private boolean isBlockChangeAllowed(@Nullable Player player, @Nullable Item placingItem, @Nullable Block target) {
         if (isBlockChangeAllowed()) {
             int height = (int) (this.getY() - 1);
             for (int i = height; i >= getLevel().getMinHeight(); i--) {
@@ -1485,32 +1502,44 @@ public abstract class Block extends Position implements Metadatable, AxisAligned
             }
             if (player == null) return true;
 
-            if(player.isAdventure()) {
-                Item itemInHand = player.getInventory().getItemInMainHand();
-                if(itemInHand.isNull()) return false;
+            if (!player.isAdventure()) {
+                return true;
+            }
+            if (placingItem != null && target != null) {
+                return matchesAdventureBlock(placingItem, "CanPlaceOn", target.getId());
+            }
+            return matchesAdventureBlock(player.getInventory().getItemInMainHand(), "CanDestroy", getId());
+        }
+        return player != null && player.isCreative() && player.isOp();
+    }
 
-                CompoundTag tag = (CompoundTag) itemInHand.getNbtEntry("CanDestroy");
-                boolean canBreak = false;
-                if (tag instanceof List<?> list) {
-                    for (Object v : list) {
-                        if (!(v instanceof String stringTag)) {
-                            continue;
-                        }
-                        Item entry = Item.get(stringTag);
-                        if (!entry.isNull() &&
-                                entry.getBlock().getId().equals(this.getId())) {
-                            canBreak = true;
-                            break;
-                        }
+    private static boolean matchesAdventureBlock(Item item, String tagName, String blockId) {
+        if (item.isNull() || !(item.getNbtEntry(tagName) instanceof ListTag<?> list)) {
+            return false;
+        }
+        for (Tag tag : list.getAll()) {
+            if (!(tag instanceof StringTag entry)) {
+                continue;
+            }
+            String id = entry.data.contains(":") ? entry.data : "minecraft:" + entry.data;
+            if (blockId.equals(id)) {
+                return true;
+            }
+            String registeredId = Registries.BLOCK.findRegisteredIdentifier(id);
+            if (registeredId == null) {
+                Item legacyItem = Item.get(id, 0, 1, null, false);
+                if (!legacyItem.isNull()) {
+                    Block legacyBlock = legacyItem.getBlock();
+                    if (!legacyBlock.isAir()) {
+                        registeredId = legacyBlock.getId();
                     }
                 }
-
-                return canBreak;
-            } else {
+            }
+            if (blockId.equals(registeredId)) {
                 return true;
             }
         }
-        return player != null && player.isCreative() && player.isOp();
+        return false;
     }
 
     /**
